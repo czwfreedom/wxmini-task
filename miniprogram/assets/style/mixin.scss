@@ -1,0 +1,91 @@
+@mixin flex-layout($direction: row, $justify: center, $align: center) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+// 必然全屏的mask。
+@mixin mask($color) {
+  position: fixed;
+  width: 100vw;
+  height: 100%;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  background-color: $color;
+}
+
+// 纵向全屏的布局。
+@mixin flex-container($color: white) {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: $color;
+  flex-direction: column;
+}
+
+@mixin flex-container-inner($color: white) {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: $color;
+  flex-direction: column;
+}
+
+// 因为iOS踩过多次坑了。
+// 页面可能有上中下三部分，中间部分占据剩余所有空间，称之为content.
+@mixin flex-scaleable-content {
+  position: relative;
+  width: 100vw;
+  flex: 1 1 auto;
+  // 这两个属性必须得有，不然里面的scroll-view是不能滑动的。
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+// 与上面配合的scroll的布局。
+@mixin flex-scaleable-scroll-view {
+  // 貌似必须这么设置，不然iOS写100%不能滑动。
+  position: absolute;
+  width: 750rpx;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+
+@mixin clear-button {
+  // 清除默认参数。
+  width: unset; // 这样设置并没用，得在style中设置。
+  margin: unset;
+  background-color: unset;
+  border-radius: unset;
+  font-weight: normal;
+}
+
+@mixin ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin ellipsis-layout {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+// 在公众号文章上看到的实现节流的方法。测试是有效的。
+// https://mp.weixin.qq.com/s/iZS0wUdPxOHbsNx5pz3G_A
+@mixin throttle {
+  animation: keyframe-throttle 1s step-end forwards;
+  // :active放在这里没用，还没有找到办法。
+}
+
+@keyframes keyframe-throttle {
+  from {
+    pointer-events: none;
+  }
+  to {
+    pointer-events: all;
+  }
+}
