@@ -1,0 +1,23 @@
+{
+  "name": "hello",
+  "version": "1.0.0",
+  "description": "Task",
+  "main": "app.ts",
+  "scripts": {
+    "compile": "tsc",
+    "prettier": "prettier --trailing-comma es5 --single-quote --write miniprogram/**/*.{json,ts,tsx,js,jsx,md,scss,less,css,html}"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "js-base64": "3.7.2"
+  },
+  "devDependencies": {
+    "miniprogram-api-typings": "^3.4.4"
+  },
+  "engines": {
+    "node": ">=8.9",
+    "npm": ">=3.0.0"
+  }
+}

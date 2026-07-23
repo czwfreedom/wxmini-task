@@ -1,0 +1,24 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <view class="userinfo">
+    <block wx:if="{{hasUserInfo}}">
+      <image
+        class="userinfo-avatar"
+        src="{{userInfo.avatarUrl}}"
+        mode="cover"
+      />
+      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+    </block>
+    <button
+      wx:else
+      class="userinfo-btn"
+      open-type="getUserInfo"
+      bindtap="getUserInfo"
+    >
+      获取头像昵称
+    </button>
+  </view>
+  <view class="motto">
+    <text class="motto-text">{{motto}}</text>
+  </view>
+</view>

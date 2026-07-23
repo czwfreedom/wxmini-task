@@ -1,0 +1,4 @@
+.local
+/node_modules/**
+/miniprogram/miniprogram_npm/**
+/miniprogram/utils/library/**
