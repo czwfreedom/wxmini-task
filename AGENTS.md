@@ -207,22 +207,28 @@ export namespace Order {
 
 ## 四、ViewModel 与 Adapter 规范
 
-因为 `setData` 是影响小程序性能的关键，**不要直接把 API 返回的原始数据当作 ViewModel 使用**。需要定义一个轻量的 Adapter 层做转换。
+因为 `setData` 是影响小程序性能的关键，**不要直接把 API 返回的原始数据当作 ViewModel 使用**。需要通过 Adapter 层做数据加载和转换。
 
 ### 核心原则
 
 - ViewModel 使用 `Entity.Record`,`Entity.Label`,`Entity.Image` 或其派生子类表示，**仅包含 UI 渲染需要的字段**
-- 每个 SubUI 页面搭配一个**同名的 Adapter**（如 `RoutineUI` ↔ `RoutineAdapter`），负责将 Server 的 `Info` 转为 ViewModel
+- **VM 接口定义在 `namespace XxxUI` 中**，不单独放在 Adapter 文件
+- 每个 SubUI 搭配一个**同名的 Adapter 类**（如 `RoutineUI` ↔ `RoutineAdapter`），负责两件事：
+  - `async load(): Promise<number>` — 加载数据，返回错误码
+  - `adapt()` — 将加载到的数据转换为 VM
 - UI 无关的字段（`userId`、`transaction`、`createTime` 等）**不得**出现在 VM 中
 
 ### 示例
 
 ```typescript
-// pages/routineAdapter.ts
+// pages/routineUI.ts — VM 定义在 XxxUI namespace 中
 import { Entity } from '../model/entity';
-import { Routine } from '../server/routine';
 
-export namespace RoutineAdapter {
+export namespace RoutineUI {
+  export interface Data extends SubUI.Data {
+    records: Record[];
+  }
+
   /** ViewModel，仅包含 UI 渲染需要的字段 */
   export interface Record extends Entity.Label {
     /** 任务详情 */
@@ -236,10 +242,29 @@ export namespace RoutineAdapter {
     /** 反馈内容 */
     remark?: string;
   }
+}
+```
 
-  /** 将 Server Info 转为 ViewModel */
-  export function toRecord(info: Routine.Info): Record {
-    return {
+```typescript
+// pages/routineAdapter.ts
+import { Err } from '../constant/error';
+import { Routine } from '../server/routine';
+import { RoutineUI } from './routineUI';
+
+export class RoutineAdapter {
+  private infos: Routine.Info[] = [];
+
+  /** 加载数据，返回错误码 */
+  async load(date: number): Promise<number> {
+    const result = await Routine.list(date);
+    if (typeof result === 'number') return result;
+    this.infos = result;
+    return Err.Code.OK;
+  }
+
+  /** 将加载到的数据转换为 ViewModel */
+  adapt(): RoutineUI.Record[] {
+    return this.infos.map(info => ({
       id: info.id,
       name: info.name,
       detail: info.detail,
@@ -247,7 +272,7 @@ export namespace RoutineAdapter {
       status: info.status,
       finishTime: info.finishTime,
       remark: info.remark,
-    };
+    }));
   }
 }
 ```
@@ -257,15 +282,15 @@ export namespace RoutineAdapter {
 import { RoutineAdapter } from './routineAdapter';
 
 export class RoutineUI extends SubUI<RoutineUI.Data> {
+  private adapter = new RoutineAdapter();
+
   public async loadData() {
-    const result = await Routine.list(today);
-    if (typeof result === 'number') {
-      this.abort(result);
+    const errcode = await this.adapter.load(today);
+    if (errcode !== Err.Code.OK) {
+      this.abort(errcode);
       return;
     }
-    // 通过 Adapter 转换后再 setData
-    const records = result.map(RoutineAdapter.toRecord);
-    this.setData({ records, loaded: true });
+    this.setData({ records: this.adapter.adapt(), loaded: true });
   }
 }
 ```
@@ -372,7 +397,7 @@ pages/
 ├── index.json
 ├── routine.ts            # 任务页（壳）
 ├── routineUI.ts          # 任务页（SubUI 业务逻辑）
-├── routineAdapter.ts     # 任务页 ViewModel 转换
+├── routineAdapter.ts     # 任务页数据加载与适配
 ├── routine.wxml
 ├── routine.scss
 ├── routine.json
@@ -411,19 +436,28 @@ Page({
 
 ```typescript
 import { SubUI } from '../core/subUI';
-import { Order } from '../server/order';
-import { OrderAdapter } from './orderAdapter';
+import { Err } from '../constant/error';
+import { Entity } from '../model/entity';
+import { XxxAdapter } from './xxxAdapter';
 import { Logger } from '../utils/logger';
 
 export namespace XxxUI {
   export interface Data extends SubUI.Data {
     /** ViewModel，不直接使用 Order.Info */
-    items: OrderAdapter.Record[];
+    items: Record[];
     keyword: string;
+  }
+
+  /** ViewModel，仅包含 UI 渲染需要的字段 */
+  export interface Record extends Entity.Label {
+    detail: string;
+    status: number;
   }
 }
 
 export class XxxUI extends SubUI<XxxUI.Data> {
+  private adapter = new XxxAdapter();
+
   public constructor(component: any) {
     super(component);
 
@@ -442,14 +476,12 @@ export class XxxUI extends SubUI<XxxUI.Data> {
 
   public async loadData() {
     this.showLoading();
-    const result = await Order.list(1);
-    if (typeof result === 'number') {
-      this.abort(result);
+    const errcode = await this.adapter.load();
+    if (errcode !== Err.Code.OK) {
+      this.abort(errcode);
       return;
     }
-    // 通过 Adapter 转换为 ViewModel
-    const items = result.map(OrderAdapter.toRecord);
-    this.setData({ items, loaded: true });
+    this.setData({ items: this.adapter.adapt(), loaded: true });
     this.hideLoading();
   }
 
@@ -479,8 +511,8 @@ export class XxxUI extends SubUI<XxxUI.Data> {
 
 - **所有函数包在 namespace/class 中**：Page 层不写裸函数，SubUI 层不写裸工具函数
 - **Data 接口在 namespace 内定义**：`XxxUI.Data extends SubUI.Data`，配合 `static getDefaultData()` 提供初始值
-- **ViewModel 不直接使用 Server Info**：通过同名 Adapter（`XxxAdapter`）转换，只保留 UI 需要的字段，减少 setData 开销
-- **API 返回值先判错再使用**：`typeof result === 'number'` 区分错误码和数据
+- **ViewModel 定义在 `namespace XxxUI` 中**，Adapter 类负责 `load()` 加载数据 + `adapt()` 转换为 VM，只保留 UI 需要的字段，减少 setData 开销
+- **API 错误码由 Adapter 处理**：`adapter.load()` 返回错误码，SubUI 中 `errcode !== Err.Code.OK` 判错
 - **`bindEvent` 直接传函数名**：`this.bindEvent('onXxx', this.onXxx)`，无需 `.bind(this)`，框架在 `fn.call(this, e)` 中自动绑定上下文
 - **`_` 前缀 key**：直接设置到 data 根节点，不添加 subDataKey 前缀
 - **多 Tab 场景**：同一页面多个 SubUI 实例，通过不同 `subDataKey` 隔离数据
