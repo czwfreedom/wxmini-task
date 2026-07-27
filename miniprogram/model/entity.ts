@@ -15,6 +15,7 @@ export namespace Entity {
 
   export interface Info extends Id {
     name: string;
+    nickname?: string;
     deleted?: boolean | number; // 是否已删除。
   }
 

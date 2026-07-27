@@ -7,12 +7,28 @@ export namespace Err {
     Timeout = -3,
     Network = -2,
     OK = 0,
+
+    InvalidToken = 10001,
+    InvalidParam = 10002,
+    NoPermission = 10003,
+    DuplicateOperate = 10004,
+    WxAPIFailed = 10005,
+    WXLoginFailed = 30001,
+    ServerFailed = 40001,
   }
 
   const sMessages: Record<number, string> = {
     [Code.OK]: '成功',
     [Code.Network]: '当前网络状态不稳定，请检查网络后重试！',
     [Code.Timeout]: '请求已超时，请重试！',
+
+    [Code.InvalidToken]: '登陆信息已失效，请重新登陆',
+    [Code.InvalidParam]: '当前请求参数错误，请重试！',
+    [Code.NoPermission]: '无权限',
+    [Code.DuplicateOperate]: '重复操作',
+
+    [Code.WXLoginFailed]: '微信登录失败',
+    [Code.ServerFailed]: '服务器异常',
   };
 
   export function getMessage(errno: Code) {

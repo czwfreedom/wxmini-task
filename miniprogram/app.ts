@@ -1,23 +1,19 @@
-// app.ts
-App<IAppOption>({
-  globalData: {},
-  onLaunch() {
-    // 展示本地存储能力
-    const logs: number[] = wx.getStorageSync('logs') || [];
-    logs.unshift(Date.now());
-    wx.setStorageSync('logs', logs);
+import { Constants } from './constant/common';
+import { Context } from './core/context';
+import { Login } from './core/login';
+import { Logger } from './utils/logger';
 
-    // 登录
-    wx.login({
-      success: (_res) => {
-        console.log('登录成功');
-      },
-    });
-  },
-  onShow() {
-    console.log('App Show');
-  },
-  onHide() {
-    console.log('App Hide');
+// app.ts
+App<Global.App>({
+  systemInfo: {} as WechatMiniprogram.SystemInfo,
+  accountInfo: {} as WechatMiniprogram.AccountInfo,
+  intent: {}, // 尝试用于页面间传递数据。
+  context: {} as Context.Info,
+  onLaunch() {
+    this.systemInfo = wx.getSystemInfoSync();
+    this.accountInfo = wx.getAccountInfoSync();
+
+    Logger.warn('Starting the world...', Constants.sConfig.version);
+    Login.login().then((user) => {});
   },
 });
