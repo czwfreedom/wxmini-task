@@ -1,24 +1,13 @@
-<!--pages/index/index.wxml-->
-<view class="container">
-  <view class="userinfo">
-    <block wx:if="{{hasUserInfo}}">
-      <image
-        class="userinfo-avatar"
-        src="{{userInfo.avatarUrl}}"
-        mode="cover"
-      />
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </block>
-    <button
-      wx:else
-      class="userinfo-btn"
-      open-type="getUserInfo"
-      bindtap="getUserInfo"
-    >
-      获取头像昵称
-    </button>
-  </view>
-  <view class="motto">
-    <text class="motto-text">{{motto}}</text>
+<import src="../templates/abort.wxml"></import>
+
+<view class="entry">
+  <view wx:if="{{ loaded }}" class="entry_content">
+    <view class="entry_content_tip" catch:tap="onMenuTap" data-button="hello">Hello world</view>
   </view>
 </view>
+
+<template
+  wx:if="{{ !loaded }}"
+  is="abort"
+  data="{{message: '加载中..', iconInvisible: true }}"
+></template>

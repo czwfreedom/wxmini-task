@@ -1,0 +1,5 @@
+<template name="abort">
+  <view class="abort {{ style || '' }}">
+    <view class="abort_text">{{ message }}</view>
+  </view>
+</template>

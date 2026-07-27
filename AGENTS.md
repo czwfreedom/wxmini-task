@@ -14,7 +14,7 @@ miniprogram/
 ├── constant/           # 常量：API路径、错误码、配置、国际化文案
 ├── core/               # 框架层：SubUI 基类、Network、EventBus、Intent、Login、Context
 ├── model/              # 数据模型：Entity 实体接口定义
-├── pages/              # 页面（每个页面一个目录）
+├── pages/              # 页面（平铺，不建子目录）
 ├── server/             # 服务层：按业务域划分 namespace，结构与 CRUD 放一起
 ├── storage/            # 本地存储 Key
 └── utils/              # 通用工具
@@ -24,7 +24,9 @@ miniprogram/
 
 ## 一、Entity 实体体系
 
-所有新增的数据结构**必须**基于 `Entity` 命名空间派生的接口，位于 `miniprogram/model/entity.ts`。
+`miniprogram/model/entity.ts` 提供基础接口层级，**只读，不要改动**，避免出现兼容性问题。
+
+所有新增的数据结构**必须**基于 `Entity` 命名空间派生的接口，但**不要在 `model/entity.ts` 中新增**，而是在各自的 Server namespace 中通过 `extends` 派生。
 
 ### 基础接口层级
 
@@ -41,12 +43,15 @@ Entity.Option      → Image
 
 ### 新增实体规范
 
+新实体在各自 Server namespace 中定义，派生于 Entity 基础接口，**不修改 entity.ts**：
+
 ```typescript
-// 在 model/entity.ts 中扩展
-export namespace Entity {
-  // 新实体应派生于已有基础接口
-  export interface NewEntity extends Entity.Info, Entity.Selectable {
-    // 业务字段
+// miniprogram/server/order.ts
+import { Entity } from '../model/entity';
+
+export namespace Order {
+  // 新实体派生于已有基础接口
+  export interface Info extends Entity.Info, Entity.Selectable {
     category: string;
     sortOrder?: number;
   }
@@ -81,10 +86,16 @@ import { Network } from '../core/network';
 import { Entity } from '../model/entity';
 
 export namespace Order {
+  export const enum Status {
+    Pending = 0,
+    Done = 100,
+    Cancelled = 200,
+  }
+
   // 数据结构：派生于 Entity 体系
   export interface Info extends Entity.Info {
     amount: number;
-    status: string;
+    status: Order.Status;
   }
 
   // CRUD 方法
@@ -110,13 +121,43 @@ export const Api = {
 
 ---
 
-## 三、SCSS 样式规范
+## 三、枚举规范
+
+状态、常量等枚举值放在对应 Entity 所在的 namespace 中，使用 `const enum` 实现，**大写开头、驼峰命名**。
+
+```typescript
+// miniprogram/server/order.ts
+export namespace Order {
+  export const enum Priority {
+    Low = 1,
+    Normal = 2,
+    High = 3,
+    Urgent = 4,
+    Critical = 5,
+  }
+
+  export interface Info extends Entity.Info {
+    amount: number;
+    priority: Order.Priority;
+  }
+}
+```
+
+**要点**：
+
+- `const enum` 编译时内联，零运行时开销
+- 枚举成员**大写开头、驼峰命名**（如 `Pending`、`Processing`）
+- 放在接口所属的 namespace 内，通过 `Order.Status`、`Order.Priority` 访问
+
+---
+
+## 四、SCSS 样式规范
 
 **每个页面的 `.scss` 文件必须引用全局样式变量和 Mixin**，不得硬编码颜色、尺寸等。
 
 ```scss
-@import '../../assets/style/var.scss';
-@import '../../assets/style/mixin.scss';
+@import '../assets/style/var.scss';
+@import '../assets/style/mixin.scss';
 ```
 
 ### var.scss 可用变量
@@ -151,8 +192,8 @@ export const Api = {
 ### 示例
 
 ```scss
-@import '../../assets/style/var.scss';
-@import '../../assets/style/mixin.scss';
+@import '../assets/style/var.scss';
+@import '../assets/style/mixin.scss';
 
 .my-page {
   @include flex-container($background-white);
@@ -175,7 +216,7 @@ export const Api = {
 
 ---
 
-## 四、Page 页面封装规范（SubUI 模式）
+## 五、Page 页面封装规范（SubUI 模式）
 
 **所有新增页面必须将主体逻辑封装在一个继承 `SubUI` 的类中**。Page 自身只作为壳层委托给 SubUI 实例，这样写代码时基本不用考虑特殊的 wx 上下文。
 
@@ -197,12 +238,29 @@ export const Api = {
 | 宿主标识    | `setHostId(id)`                                                | 绑定宿主                                          |
 | 向上通信    | `setEventListener(fn)`                                         | 传出事件给外层                                    |
 
+### 文件组织
+
+**页面不建子目录**，所有相关文件平铺在 `pages/` 下，避免同名文件难以定位：
+
+```
+pages/
+├── index.ts              # 入口页面（壳）
+├── index.wxml
+├── index.scss
+├── index.json
+├── routine.ts            # 任务页（壳）
+├── routineUI.ts          # 任务页（SubUI 业务逻辑）
+├── routine.wxml
+├── routine.scss
+├── routine.json
+```
+
 ### 标准页面模板
 
-**Page 层** (`pages/xxx/index.ts`):
+**Page 层** (`pages/xxx.ts`):
 
 ```typescript
-import { Intent } from '../../core/intent';
+import { Intent } from '../core/intent';
 import { XxxUI } from './xxxUI';
 
 Page({
@@ -229,12 +287,12 @@ Page({
 });
 ```
 
-**SubUI 层** (`pages/xxx/xxxUI.ts`):
+**SubUI 层** (`pages/xxxUI.ts`):
 
 ```typescript
-import { SubUI } from '../../core/subUI';
-import { Order } from '../../server/order';
-import { Entity } from '../../model/entity';
+import { SubUI } from '../core/subUI';
+import { Order } from '../server/order';
+import { Entity } from '../model/entity';
 
 export class XxxUI extends SubUI<XxxUI.Data> {
   // 定义 Intent 入参接口
@@ -258,7 +316,7 @@ export class XxxUI extends SubUI<XxxUI.Data> {
 }
 ```
 
-**WXML 模板** (`pages/xxx/index.wxml`):
+**WXML 模板** (`pages/xxx.wxml`):
 
 ```xml
 <view class="container">
@@ -282,7 +340,7 @@ export class XxxUI extends SubUI<XxxUI.Data> {
 
 ---
 
-## 五、其他约定
+## 六、其他约定
 
 ### 命名空间风格
 
