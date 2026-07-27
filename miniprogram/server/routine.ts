@@ -3,23 +3,83 @@ import { Err } from '../constant/error';
 import { Network } from '../core/network';
 import { Entity } from '../model/entity';
 import { Logger } from '../utils/logger';
+import { Utils } from '../utils/utils';
 
 export namespace Routine {
-  export interface Info extends Entity.Info {
-    status: number; // 状态，包括 0-未开始，100-进行中，200-已完成。
-    category: number; // 分类
-    subcategory?: number; // 子分类，预留。
-    userId: string; // 归属，目前就是自己。
-    date: number; // 日期，精确到天。
-    transaction: string; // 创建时用于排重，32位uuid
-    detail: string; // 内容
-    medias?: string; // 图片或者视频，预留。
-    remark?: string; // 完成时提交的内容
-    mediaRemark?: string; // 完成时提交的图片或者视频
-    createTime: number;
-    finishTime?: number; // 完成时间
+  /** 任务状态 */
+  export const enum Status {
+    /** 未开始 */
+    Pending = 0,
+    /** 进行中 */
+    Working = 100,
+    /** 已完成 */
+    Done = 200,
   }
 
+  /** 任务分类 */
+  export const enum Category {
+    /** 阅读 */
+    Reading = 1,
+    /** 作业 */
+    Homework = 2,
+    /** 运动 */
+    Exercise = 3,
+    /** 家务 */
+    Chores = 4,
+    /** 游戏 */
+    Game = 5,
+    /** 练字 */
+    Handwriting = 6,
+    /** 乐器 */
+    Instrument = 7,
+    /** 绘画 */
+    Drawing = 8,
+    /** 编程 */
+    Coding = 9,
+  }
+
+  export interface Info extends Entity.Info {
+    /** 任务状态 */
+    status: number;
+    /** 任务分类 */
+    category: number;
+    /** 子分类，预留 */
+    subcategory?: number;
+    /** 归属用户 */
+    userId: string;
+    /** 日期，精确到天，如 20260727 */
+    date: number;
+    /** 创建时排重用，32 位 uuid */
+    transaction: string;
+    /** 任务内容 */
+    detail: string;
+    /** 图片或视频，预留 */
+    medias?: string;
+    /** 完成时提交的反馈内容（JSON） */
+    remark?: string;
+    /** 完成时提交的图片或视频 */
+    mediaRemark?: string;
+    /** 创建时间 */
+    createTime: number;
+    /** 完成时间 */
+    finishTime?: number;
+  }
+
+  /**
+   * 获取指定日期的任务列表
+   */
+  export async function list(date: number): Promise<number | Info[]> {
+    const res = await Network.post<Info[]>(Api.ListRoutine, { date });
+    if (res?.errcode !== 0) {
+      Logger.warn('List routine failed', res);
+      return res?.errcode || Err.Code.Network;
+    }
+    return res.data ?? [];
+  }
+
+  /**
+   * 创建新任务
+   */
   export async function create(data: Partial<Info>): Promise<number | Info> {
     const res = await Network.post<Info[]>(Api.CreateRoutine, { data: [data] });
     if (res?.errcode !== 0 || res.data?.length !== 1) {
@@ -27,5 +87,24 @@ export namespace Routine {
       return res?.errcode || Err.Code.Network;
     }
     return res.data[0];
+  }
+
+  /**
+   * 更新任务（状态切换、内容编辑、保存反馈）
+   */
+  export async function update(id: string, patch: Partial<Info>): Promise<number> {
+    const res = await Network.post<Info>(Api.UpdateRoutine, { id, ...patch });
+    if (res.errcode !== 0) {
+      Logger.info('Update routine failed', res);
+      return res.errcode || Err.Code.Network;
+    }
+    return Err.Code.OK;
+  }
+
+  /**
+   * 生成排重用 transaction id
+   */
+  export function newTransaction(): string {
+    return Utils.shortUuid();
   }
 }
