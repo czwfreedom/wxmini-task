@@ -65,10 +65,13 @@ export namespace Routine {
     finishTime?: number;
   }
 
+  const sMock = true;
+
   /**
    * 获取指定日期的任务列表
    */
   export async function list(date: number): Promise<number | Info[]> {
+    if (sMock) return [];
     const res = await Network.post<Info[]>(Api.ListRoutine, { date });
     if (res?.errcode !== 0) {
       Logger.warn('List routine failed', res);

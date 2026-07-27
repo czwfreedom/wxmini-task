@@ -6,6 +6,9 @@ declare namespace Global {
     accountInfo: WechatMiniprogram.AccountInfo;
     intent: any;
     context: any;
+    logout: () => void;
+    login: () => void;
+    onLogin?: () => void;
   }
 
   interface Config {

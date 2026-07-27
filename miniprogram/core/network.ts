@@ -41,7 +41,7 @@ export namespace Network {
 
           // 如果是token错误，则强制重登录。
           if (data.errcode === Err.Code.InvalidToken) {
-            getApp().forceLogout();
+            getApp().logout();
           }
           resolve(data);
         }

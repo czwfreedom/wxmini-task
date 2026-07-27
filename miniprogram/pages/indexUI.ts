@@ -26,5 +26,8 @@ export class IndexUI extends SubUI<IndexUI.Data> {
   protected onMenuTap(e: WechatMiniprogram.TouchEvent) {
     const { button } = e.currentTarget.dataset;
     Logger.info('onMenuTap', button);
+    if (button === 'routine') {
+      wx.navigateTo({ url: '/pages/routine' });
+    }
   }
 }

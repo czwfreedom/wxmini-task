@@ -14,7 +14,7 @@ miniprogram/
 ├── constant/           # 常量：API路径、错误码、配置、国际化文案
 ├── core/               # 框架层：SubUI 基类、Network、EventBus、Intent、Login、Context
 ├── model/              # 数据模型：Entity 实体接口定义
-├── pages/              # 页面（平铺，不建子目录）
+├── pages/              # 页面（平铺，不建子目录）：{name}.ts/.wxml/.scss/.json/.UI.ts/Adapter.ts
 ├── server/             # 服务层：按业务域划分 namespace，结构与 CRUD 放一起
 ├── storage/            # 本地存储 Key
 └── utils/              # 通用工具
@@ -330,17 +330,22 @@ SubUI 中使用方式参见 [六、标准页面模板](#六page-页面封装规�
 
 ```
 pages/
-├── index.ts              # 入口页面（壳）
+├── index.ts              # 入口页面（壳，初始化后 redirectTo routine）
 ├── indexUI.ts            # 入口页 SubUI
 ├── index.wxml
 ├── index.scss
 ├── index.json
-├── routine.ts            # 任务页（壳）
-├── routineUI.ts          # 任务页（SubUI 业务逻辑）
-├── routineAdapter.ts     # 任务页数据加载与适配
+├── routine.ts            # 今天页 Page 壳
+├── routineUI.ts          # 今天页 SubUI（业务逻辑 + VM 定义）
+├── routineAdapter.ts     # 今天页数据加载与适配
 ├── routine.wxml
 ├── routine.scss
 ├── routine.json
+├── feedback.ts           # 反馈页 Page 壳
+├── feedbackUI.ts         # 反馈页 SubUI（费曼输出）
+├── feedback.wxml
+├── feedback.scss
+├── feedback.json
 ```
 
 ### 标准页面模板

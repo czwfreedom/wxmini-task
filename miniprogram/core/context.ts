@@ -24,4 +24,20 @@ export namespace Context {
   export function isLogined(): boolean {
     return !!getUserId();
   }
+
+  /**
+   * 文档说，app.ts的onLaunch()和第一个页面的 onLoad()有可能是同时进行的，
+   * 而登录是放在app.ts里的，所以第一个页面初始化时，还没有登录成功。
+   * 而所有多数逻辑都需要登录之后才能正常运行，所以在app上加一个回调，在登录成功之后调用。
+   */
+  export function bindLogin(fn: () => void) {
+    if (Context.isLogined()) {
+      fn();
+    } else {
+      const app = getApp();
+      app.onLogin = () => {
+        fn();
+      };
+    }
+  }
 }

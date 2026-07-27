@@ -1,3 +1,4 @@
+import { Context } from '../core/context';
 import { IndexUI } from './indexUI';
 
 // pages/index/index.ts
@@ -9,8 +10,10 @@ Page({
   ui: undefined as IndexUI | undefined,
 
   onLoad() {
-    this.ui = new IndexUI(this);
-    this.ui.loadData();
+    Context.bindLogin(() => {
+      this.ui = new IndexUI(this);
+      this.ui.loadData();
+    });
   },
 
   onUnload() {

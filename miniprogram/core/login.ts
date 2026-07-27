@@ -2,24 +2,18 @@ import { Err } from '../constant/error';
 import { User } from '../server/user';
 import { Storage } from '../storage/storage';
 import { Logger } from '../utils/logger';
-import { Context } from './context';
 
 export namespace Login {
-  export async function login(): Promise<number> {
+  export async function login(): Promise<number | User.Info> {
     const cache = getCache();
-    if (cache) {
-      Context.setUser(cache);
-      return 0;
-    }
+    if (cache) return cache;
     const code = await wxLogin();
     if (!code) return Err.Code.WXLoginFailed;
     Logger.info('Login code', code);
     const user = await User.login(code);
     if ('number' === typeof user) return user;
-
-    Context.setUser(user);
     setCache(user);
-    return 0;
+    return user;
   }
 
   export async function wxLogin(): Promise<string> {
@@ -52,5 +46,9 @@ export namespace Login {
   export function setCache(user: User.Info) {
     user.loginTime = Date.now();
     wx.setStorageSync(Storage.Key.User, user);
+  }
+
+  export function clear() {
+    wx.removeStorageSync(Storage.Key.User);
   }
 }
