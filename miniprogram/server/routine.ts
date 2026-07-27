@@ -1,5 +1,6 @@
 import { Api } from '../constant/api';
 import { Err } from '../constant/error';
+import { Context } from '../core/context';
 import { Network } from '../core/network';
 import { Entity } from '../model/entity';
 import { Logger } from '../utils/logger';
@@ -84,7 +85,53 @@ export namespace Routine {
    * 获取指定日期的任务列表
    */
   export async function list(date: number): Promise<number | Info[]> {
-    if (sMock) return [];
+    if (sMock)
+      return [
+        {
+          id: '1',
+          name: '读书',
+          detail: '老人与海 45-50页',
+          status: Status.Pending,
+          category: Category.Reading,
+          userId: Context.getUserId(),
+          date: date,
+          transaction: Utils.shortUuid(),
+          createTime: Date.now(),
+        },
+        {
+          id: '2',
+          name: '作业',
+          detail: '暑假作业第三周语文',
+          status: Status.Pending,
+          category: Category.Homework,
+          userId: Context.getUserId(),
+          date: date,
+          transaction: Utils.shortUuid(),
+          createTime: Date.now(),
+        },
+        {
+          id: '3',
+          name: '运动',
+          detail: '跳绳1500个',
+          status: Status.Pending,
+          category: Category.Exercise,
+          userId: Context.getUserId(),
+          date: date,
+          transaction: Utils.shortUuid(),
+          createTime: Date.now(),
+        },
+        {
+          id: '4',
+          name: '练字',
+          detail: '练字摘抄陈、李、苏、王、颜、张',
+          status: Status.Pending,
+          category: Category.Handwriting,
+          userId: Context.getUserId(),
+          date: date,
+          transaction: Utils.shortUuid(),
+          createTime: Date.now(),
+        },
+      ];
     const res = await Network.post<Info[]>(Api.ListRoutine, { date });
     if (res?.errcode !== 0) {
       Logger.warn('List routine failed', res);
