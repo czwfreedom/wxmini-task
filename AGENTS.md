@@ -36,9 +36,8 @@ Entity.Selectable  → { selected?: boolean }
 Entity.SelectableId → Id + Selectable
 Entity.Info        → Id + { name, nickname?, deleted? }
 Entity.Record      → Id + { selected?, invisible?, letterIndex? }
-Entity.Label       → Record + Info + { desc?, hint?, style? }
-Entity.Image       → Label + { avatar?, avatarStyle? }
-Entity.Option      → Image
+Entity.Label       → Record + Info + { desc?, hint?, style? } // 文本类型VM
+Entity.Image       → Label + { avatar?, avatarStyle? } // 带图片VM
 ```
 
 ### 新增实体规范
@@ -77,38 +76,10 @@ export namespace Order {
 - 接口命名：`{Namespace}.Info`、`{Namespace}.Record` 等
 - CRUD 方法直接在 namespace 内 export
 
-### CRUD 参数规范
+### CRUD 参数与返回值规范
 
-增删改接口的参数**不要为参数单独定义 interface**，直接用 `Partial<Info>` 代替：
-
-```typescript
-// ✅ 正确：用 Partial<Info>
-export async function create(data: Partial<Info>): Promise<number | Info> { ... }
-export async function update(data: Partial<Info>): Promise<number> { ... } // 要指定ID
-
-// ❌ 错误：不要为参数单独定义 interface
-export interface CreateParams { name: string; category: number; }
-export async function create(data: CreateParams): Promise<Info> { ... }
-```
-
-### API 返回值规范
-
-**所有 API 函数，如果有返回数据，返回类型统一为 `number | Data`**。出现错误时返回错误码（`number`），由业务调用方自行判断处理。
-
-```typescript
-// ✅ 正确：number | Data，错误码由业务方处理
-export async function list(date: number): Promise<number | Info[]> { ... }
-export async function create(data: Partial<Info>): Promise<number | Info> { ... }
-// 无数据返回时只返回 number（错误码或 OK）
-export async function update(id: string, patch: Partial<Info>): Promise<number> { ... }
-
-// ❌ 错误：吞掉错误码，调用方无法区分是空列表还是网络错误
-export async function list(date: number): Promise<Info[]> {
-  const res = await Network.post(...);
-  if (res.errcode !== 0) return [];  // 错误码丢失了
-  return res.data ?? [];
-}
-```
+- **参数**：增删改接口不单独定义 interface，直接用 `Partial<Info>`
+- **返回值**：有数据返回 `number | Data`，无数据返回 `number`；错误码由业务调用方判断，严禁吞掉错误码（如 `return []`）
 
 ### 标准模板
 
@@ -181,12 +152,6 @@ export namespace Order {
     Low = 1,
     /** 普通 */
     Normal = 2,
-    /** 高优先级 */
-    High = 3,
-    /** 紧急 */
-    Urgent = 4,
-    /** 极其紧急 */
-    Critical = 5,
   }
 
   export interface Info extends Entity.Info {
@@ -235,12 +200,6 @@ export namespace RoutineUI {
     detail: string;
     /** 任务分类 */
     category: number;
-    /** 任务状态 */
-    status: number;
-    /** 完成时间 */
-    finishTime?: number;
-    /** 反馈内容 */
-    remark?: string;
   }
 }
 ```
@@ -264,36 +223,17 @@ export class RoutineAdapter {
 
   /** 将加载到的数据转换为 ViewModel */
   adapt(): RoutineUI.Record[] {
-    return this.infos.map(info => ({
+    return this.infos.map((info) => ({
       id: info.id,
       name: info.name,
       detail: info.detail,
       category: info.category,
-      status: info.status,
-      finishTime: info.finishTime,
-      remark: info.remark,
     }));
   }
 }
 ```
 
-```typescript
-// SubUI 中使用
-import { RoutineAdapter } from './routineAdapter';
-
-export class RoutineUI extends SubUI<RoutineUI.Data> {
-  private adapter = new RoutineAdapter();
-
-  public async loadData() {
-    const errcode = await this.adapter.load(today);
-    if (errcode !== Err.Code.OK) {
-      this.abort(errcode);
-      return;
-    }
-    this.setData({ records: this.adapter.adapt(), loaded: true });
-  }
-}
-```
+SubUI 中使用方式参见 [六、标准页面模板](#六page-页面封装规范subui-模式) 中的 `loadData` 示例。
 
 ---
 
@@ -511,8 +451,6 @@ export class XxxUI extends SubUI<XxxUI.Data> {
 
 - **所有函数包在 namespace/class 中**：Page 层不写裸函数，SubUI 层不写裸工具函数
 - **Data 接口在 namespace 内定义**：`XxxUI.Data extends SubUI.Data`，配合 `static getDefaultData()` 提供初始值
-- **ViewModel 定义在 `namespace XxxUI` 中**，Adapter 类负责 `load()` 加载数据 + `adapt()` 转换为 VM，只保留 UI 需要的字段，减少 setData 开销
-- **API 错误码由 Adapter 处理**：`adapter.load()` 返回错误码，SubUI 中 `errcode !== Err.Code.OK` 判错
 - **`bindEvent` 直接传函数名**：`this.bindEvent('onXxx', this.onXxx)`，无需 `.bind(this)`，框架在 `fn.call(this, e)` 中自动绑定上下文
 - **`_` 前缀 key**：直接设置到 data 根节点，不添加 subDataKey 前缀
 - **多 Tab 场景**：同一页面多个 SubUI 实例，通过不同 `subDataKey` 隔离数据
@@ -522,22 +460,8 @@ export class XxxUI extends SubUI<XxxUI.Data> {
 
 ## 七、其他约定
 
-### 命名空间风格
-
-项目使用 TypeScript `namespace` 组织代码，所有核心模块均为 namespace export（`Entity`、`Network`、`SubUI`、`Intent`、`Err`、`Logger` 等）。
-
-### 网络请求
-
-统一使用 `Network.post<T>(url, data, errorToast?)`，返回 `BaseResponse<T>`。网络层自动注入用户认证头、处理 Token 过期。
-
-### 页面间传参
-
-使用 `Intent` 机制（通过 `getApp().intent`），避免 URL 参数过长。
-
-### 日志
-
-使用 `Logger.info/warn/error()` 替代 `console.log`，会自动上报微信 LogManager。
-
-### 错误码
-
-在 `constant/error.ts` 的 `Err.Code` 和 `Err.getMessage()` 中统一管理。
+- **命名空间风格**：项目使用 TypeScript `namespace` 组织代码，所有核心模块均为 namespace export
+- **网络请求**：统一使用 `Network.post<T>(url, data, errorToast?)`，返回 `BaseResponse<T>`。网络层自动注入用户认证头、处理 Token 过期
+- **页面间传参**：使用 `Intent` 机制（通过 `getApp().intent`），避免 URL 参数过长
+- **日志**：使用 `Logger.info/warn/error()` 替代 `console.log`，会自动上报微信 LogManager
+- **错误码**：在 `constant/error.ts` 的 `Err.Code` 和 `Err.getMessage()` 中统一管理
