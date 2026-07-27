@@ -1,4 +1,4 @@
-import { User } from '../model/user';
+import { User } from '../server/user';
 
 export namespace Context {
   export interface Info {

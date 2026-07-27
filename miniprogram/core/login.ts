@@ -1,10 +1,8 @@
-import { Api } from '../constant/api';
 import { Err } from '../constant/error';
-import { User } from '../model/user';
+import { User } from '../server/user';
 import { Storage } from '../storage/storage';
 import { Logger } from '../utils/logger';
 import { Context } from './context';
-import { Network } from './network';
 
 export namespace Login {
   export async function login(): Promise<number> {
@@ -16,25 +14,12 @@ export namespace Login {
     const code = await wxLogin();
     if (!code) return Err.Code.WXLoginFailed;
     Logger.info('Login code', code);
-    const user = await web(code);
+    const user = await User.login(code);
     if ('number' === typeof user) return user;
 
     Context.setUser(user);
     setCache(user);
     return 0;
-  }
-
-  export async function web(code: string): Promise<number | User.Info> {
-    if (true) return { id: '10174646050143', token: "97dc1e45e74149cd96c054f78f7ec645'" } as any;
-    const res = await Network.post<User.Info[]>(Api.Login, { code });
-    if (!res || res.errcode !== 0) {
-      Logger.warn('Web login failed.', res);
-      return res?.errcode || Err.Code.Network;
-    }
-    if (res.data?.length !== 1) {
-      return Err.Code.ServerFailed;
-    }
-    return res.data[0];
   }
 
   export async function wxLogin(): Promise<string> {

@@ -1,0 +1,305 @@
+# Task 小程序项目架构指南
+
+## 技术栈
+
+- 微信小程序原生开发
+- TypeScript（严格模式）
+- SCSS（全局变量 + Mixin）
+
+## 目录结构
+
+```
+miniprogram/
+├── assets/style/       # 全局样式：var.scss（变量）、mixin.scss（混入）
+├── constant/           # 常量：API路径、错误码、配置、国际化文案
+├── core/               # 框架层：SubUI 基类、Network、EventBus、Intent、Login、Context
+├── model/              # 数据模型：Entity 实体接口定义
+├── pages/              # 页面（每个页面一个目录）
+├── server/             # 服务层：按业务域划分 namespace，结构与 CRUD 放一起
+├── storage/            # 本地存储 Key
+└── utils/              # 通用工具
+```
+
+---
+
+## 一、Entity 实体体系
+
+所有新增的数据结构**必须**基于 `Entity` 命名空间派生的接口，位于 `miniprogram/model/entity.ts`。
+
+### 基础接口层级
+
+```
+Entity.Id          → { id: string }
+Entity.Selectable  → { selected?: boolean }
+Entity.SelectableId → Id + Selectable
+Entity.Info        → Id + { name, nickname?, deleted? }
+Entity.Record      → Id + { selected?, invisible?, letterIndex? }
+Entity.Label       → Record + Info + { desc?, hint?, style? }
+Entity.Image       → Label + { avatar?, avatarStyle? }
+Entity.Option      → Image
+```
+
+### 新增实体规范
+
+```typescript
+// 在 model/entity.ts 中扩展
+export namespace Entity {
+  // 新实体应派生于已有基础接口
+  export interface NewEntity extends Entity.Info, Entity.Selectable {
+    // 业务字段
+    category: string;
+    sortOrder?: number;
+  }
+}
+```
+
+### 工具方法
+
+- `Entity.toMap(items, key?)` — 数组转 Map
+- `Entity.group(items, key?, isKeyArray?)` — 分组
+- `Entity.find(items, id, key?)` — 按 ID 查找
+- `Entity.getIds(items)` — 提取 ID 列表
+
+---
+
+## 二、Server 服务层规范
+
+服务层代码放在 `miniprogram/server/` 目录下，**按业务域划分文件**，每个文件内定义独立的 namespace，将**数据结构定义与 CRUD 操作放在同一 namespace 内**。
+
+### 命名规范
+
+- namespace 名与文件名一致（首字母大写驼峰）
+- 接口命名：`{Namespace}.Info`、`{Namespace}.Record` 等
+- CRUD 方法直接在 namespace 内 export
+
+### 标准模板
+
+```typescript
+// miniprogram/server/order.ts
+import { Api } from '../constant/api';
+import { Network } from '../core/network';
+import { Entity } from '../model/entity';
+
+export namespace Order {
+  // 数据结构：派生于 Entity 体系
+  export interface Info extends Entity.Info {
+    amount: number;
+    status: string;
+  }
+
+  // CRUD 方法
+  export async function list(page: number, size = 20): Promise<Order.Info[]> {
+    const res = await Network.post<Order.Info[]>(Api.OrderList, { page, size });
+    if (res.errcode !== 0) return [];
+    return res.data ?? [];
+  }
+}
+```
+
+### API 路径常量
+
+在 `miniprogram/constant/api.ts` 中统一管理：
+
+```typescript
+export const Api = {
+  // 按模块分组
+  OrderList: '/v1/order/list',
+  OrderDetail: '/v1/order/detail',
+};
+```
+
+---
+
+## 三、SCSS 样式规范
+
+**每个页面的 `.scss` 文件必须引用全局样式变量和 Mixin**，不得硬编码颜色、尺寸等。
+
+```scss
+@import '../../assets/style/var.scss';
+@import '../../assets/style/mixin.scss';
+```
+
+### var.scss 可用变量
+
+| 变量                    | 值                    | 用途          |
+| ----------------------- | --------------------- | ------------- |
+| `$main`                 | `#5599f7`             | 主色调        |
+| `$foreground-dark`      | `#2d3142`             | 标题/重要文字 |
+| `$foreground-sub`       | `#5c6178`             | 次要文字      |
+| `$foreground-gray`      | `#949aae`             | 占位符/提示   |
+| `$foreground-orange`    | `#ffb74d`             | 待完成/添加   |
+| `$foreground-red`       | `#ef5350`             | 高优先级/删除 |
+| `$background-white`     | `#fbfcfe`             | 全局暖白背景  |
+| `$background-gradient`  | linear-gradient(...)  | 渐变背景      |
+| `$border` / `$border2`  | `#e5e6eb` / `#d9d9d9` | 边框          |
+| `$background-mask` 系列 | rgba 值               | 遮罩层        |
+
+### mixin.scss 可用 Mixin
+
+| Mixin                                 | 用途                               |
+| ------------------------------------- | ---------------------------------- |
+| `flex-layout($dir, $justify, $align)` | Flex 居中布局                      |
+| `flex-container($color)`              | 全屏纵向 Flex 容器                 |
+| `flex-container-inner($color)`        | 全尺寸纵向 Flex 容器               |
+| `flex-scaleable-content`              | 可伸缩中间区域（配合 scroll-view） |
+| `flex-scaleable-scroll-view`          | 配合可伸缩区域的 scroll-view       |
+| `mask($color)`                        | 全屏遮罩                           |
+| `clear-button`                        | 清除 button 默认样式               |
+| `ellipsis` / `ellipsis-layout`        | 文字溢出省略                       |
+| `throttle`                            | CSS animation 节流                 |
+
+### 示例
+
+```scss
+@import '../../assets/style/var.scss';
+@import '../../assets/style/mixin.scss';
+
+.my-page {
+  @include flex-container($background-white);
+
+  &_header {
+    padding: 20rpx 30rpx;
+    color: $foreground-dark;
+  }
+
+  &_content {
+    @include flex-scaleable-content;
+
+    &_item {
+      border-bottom: 1rpx solid $border;
+      @include ellipsis;
+    }
+  }
+}
+```
+
+---
+
+## 四、Page 页面封装规范（SubUI 模式）
+
+**所有新增页面必须将主体逻辑封装在一个继承 `SubUI` 的类中**。Page 自身只作为壳层委托给 SubUI 实例，这样写代码时基本不用考虑特殊的 wx 上下文。
+
+### SubUI 基类能力一览
+
+`miniprogram/core/subUI.ts` 提供 `abstract class SubUI<D>`：
+
+| 能力        | 方法                                                           | 说明                                              |
+| ----------- | -------------------------------------------------------------- | ------------------------------------------------- |
+| 数据读写    | `setData(data)`, `getData()`                                   | 自动添加 subDataKey 前缀；`_` 开头的 key 为根节点 |
+| 快捷设值    | `setKvData(key, v)`, `setKvDatas(...)`                         | 单键或多键设值                                    |
+| 事件绑定    | `bindEvent(name, fn)`, `unbindEvent(name)`                     | 动态绑定 WXML 事件到 Page                         |
+| 事件总线    | `registerEventBus(ev, fn)`, `postEvent(ev, data)`              | 跨组件/跨页通信                                   |
+| 生命周期    | `onShow()`, `onHide()`                                         | 页面显隐感知                                      |
+| 资源释放    | `release()`                                                    | 解绑事件、恢复截屏                                |
+| UI 交互     | `showLoading()`, `hideLoading()`, `showToast()`, `showModal()` | 快捷 UI                                           |
+| 错误处理    | `abort(errcode)`, `abortWith(msg)`                             | 统一错误提示                                      |
+| Intent 传参 | `setIntent()`, `getIntent()`                                   | 页面间传参                                        |
+| 宿主标识    | `setHostId(id)`                                                | 绑定宿主                                          |
+| 向上通信    | `setEventListener(fn)`                                         | 传出事件给外层                                    |
+
+### 标准页面模板
+
+**Page 层** (`pages/xxx/index.ts`):
+
+```typescript
+import { Intent } from '../../core/intent';
+import { XxxUI } from './xxxUI';
+
+Page({
+  onLoad() {
+    // 获取 Intent 传参
+    Intent.get<Intent.Base>('xxx');
+
+    // 创建 SubUI 实例，传入 Page 自身作为 component
+    const ui = new XxxUI(this);
+
+    // 处理 Intent
+    ui.setIntent(Intent.get<XxxUI.Intent>('xxx'));
+
+    // 加载数据
+    ui.loadData();
+  },
+  onShow() {
+    // 触发 SubUI 的 onShow
+    this.ui?.onShow();
+  },
+  onUnload() {
+    this.ui?.release();
+  },
+});
+```
+
+**SubUI 层** (`pages/xxx/xxxUI.ts`):
+
+```typescript
+import { SubUI } from '../../core/subUI';
+import { Order } from '../../server/order';
+import { Entity } from '../../model/entity';
+
+export class XxxUI extends SubUI<XxxUI.Data> {
+  // 定义 Intent 入参接口
+  static Intent extends Intent.Base {
+    id: string;
+    name: string;
+  }
+
+  // 定义该 SubUI 对应的 data
+  static Data extends SubUI.Data {
+    items: Order.Record[];
+    keyword: string;
+  }
+
+  async loadData() {
+    this.showLoading();
+    const items = await Order.list(1);
+    this.setData({ items, loaded: true });
+    this.hideLoading();
+  }
+}
+```
+
+**WXML 模板** (`pages/xxx/index.wxml`):
+
+```xml
+<view class="container">
+  <block wx:if="{{loaded}}">
+    <view wx:for="{{items}}" wx:key="id" class="item">
+      <text>{{item.name}}</text>
+    </view>
+  </block>
+  <view wx:else>
+    <text>{{abortMessage}}</text>
+  </view>
+</view>
+```
+
+### 要点
+
+- **`_` 前缀 key**：直接设置到 data 根节点，不添加 subDataKey 前缀
+- **多 Tab 场景**：同一页面多个 SubUI 实例，通过不同 `subDataKey` 隔离数据
+- **事件绑定**：使用 `bindEvent()` 而不是直接写在 Page 上，框架自动管理生命周期
+- **释放顺序**：页面 `onUnload` 时调用 `ui.release()` 清理事件绑定和资源
+
+---
+
+## 五、其他约定
+
+### 命名空间风格
+
+项目使用 TypeScript `namespace` 组织代码，所有核心模块均为 namespace export（`Entity`、`Network`、`SubUI`、`Intent`、`Err`、`Logger` 等）。
+
+### 网络请求
+
+统一使用 `Network.post<T>(url, data, errorToast?)`，返回 `BaseResponse<T>`。网络层自动注入用户认证头、处理 Token 过期。
+
+### 页面间传参
+
+使用 `Intent` 机制（通过 `getApp().intent`），避免 URL 参数过长。
+
+### 日志
+
+使用 `Logger.info/warn/error()` 替代 `console.log`，会自动上报微信 LogManager。
+
+### 错误码
+
+在 `constant/error.ts` 的 `Err.Code` 和 `Err.getMessage()` 中统一管理。

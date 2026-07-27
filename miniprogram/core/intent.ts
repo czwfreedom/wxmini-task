@@ -20,12 +20,12 @@ export namespace Intent {
   }
 
   export function navigateTo(target: string, params?: any) {
-    !!params && putIntent(params);
+    !!params && put(params);
     wx.navigateTo({ url: target });
   }
 
   export function redirectTo(target: string, params?: any): void {
-    !!params && putIntent(params);
+    !!params && put(params);
     wx.redirectTo({ url: target });
   }
 
@@ -34,7 +34,7 @@ export namespace Intent {
     if (res.length <= 1) {
       wx.exitMiniProgram();
     } else {
-      !!params && putIntent(params);
+      !!params && put(params);
       wx.navigateBack();
     }
   }
@@ -53,13 +53,13 @@ export namespace Intent {
     }
   }
 
-  export function putIntent(params: any) {
+  export function put(params: any) {
     const app = getApp();
     app.intent = params;
   }
 
   // 取出来之后，将App的清空？免得有不可预期的内存泄露。
-  export function getIntent<T>(): T {
+  export function get<T>(): T {
     const app = getApp();
     let intent = app.intent;
     app.intent = null;

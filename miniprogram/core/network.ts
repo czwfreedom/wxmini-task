@@ -6,21 +6,17 @@ import { WxUtils } from '../utils/wxUtils';
 
 /**
  * 封装 wx.request.
- * 原来也有一个，但看着很绕。
  */
 export namespace Network {
-  type AnyMaps<T extends any, U = NonNullable<T>> = {
-    [propKey: string]: U;
-  };
-
-  export interface BaseResponse<T = AnyMaps<any>> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export interface BaseResponse<T = Record<string, any>> {
     errcode?: number;
     errmsg?: string;
     data?: T;
     [otherProps: string]: any;
   }
 
-  export async function post<T extends any>(
+  export async function post<T = Record<string, any>>(
     url: string,
     data: any = undefined,
     errorToast = false
@@ -36,11 +32,11 @@ export namespace Network {
           WxUtils.showToast(Err.getMessage(Err.Code.Network));
           resolve({ errcode: Err.Code.Network });
         } else {
-          const data: BaseResponse<T> = res.data as any;
+          const data = res.data as BaseResponse<T>;
           // 如果错误，则打出错误日志。
           if (data.errcode !== Err.Code.OK) {
             Logger.warn('Request result.', url, res.statusCode, data.errcode, data.errmsg);
-            errorToast && WxUtils.showToast(Err.getMessage(data.errcode || Err.Code.Network));
+            if (errorToast) WxUtils.showToast(Err.getMessage(data.errcode || Err.Code.Network));
           }
 
           // 如果是token错误，则强制重登录。
@@ -51,14 +47,13 @@ export namespace Network {
         }
       };
       option.fail = (err) => {
-        debugger;
         Logger.warn('Request failed.', err);
-        let errcode =
-          err.errMsg.replace(/\s*/g, '') === 'request:failtimeout'
+        const errcode =
+          err.errMsg.replace(/\s+/g, '') === 'request:failtimeout'
             ? Err.Code.Timeout
             : Err.Code.Network;
         WxUtils.showToast(Err.getMessage(errcode));
-        resolve({ errcode: errcode });
+        resolve({ errcode });
       };
       wx.request(option);
     });
@@ -71,27 +66,30 @@ export namespace Network {
   function buildPostRequest(url: string, data: any = undefined): WechatMiniprogram.RequestOption {
     if (url.startsWith('http')) {
       return {
-        url: url,
-        data: data,
+        url,
+        data,
         method: 'POST',
+        header: {
+          'content-type': 'application/json',
+        },
       };
     }
 
     const user = Context.getUser();
+    const header: Record<string, string | number> = {
+      'content-type': 'application/json',
+      'user-ctype': 3,
+    };
+    if (user?.id && user?.token) {
+      header['user-id'] = user.id;
+      header['user-token'] = user.token;
+    }
+
     return {
       url: getBaseUrl() + url,
-      data: data,
+      data,
       method: 'POST',
-      header:
-        user?.id && user?.token
-          ? {
-              'user-ctype': 3,
-              'user-id': user.id,
-              'user-token': user.token,
-            }
-          : {
-              'user-ctype': 3,
-            },
+      header,
     };
   }
 }
