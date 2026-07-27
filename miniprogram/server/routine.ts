@@ -38,6 +38,19 @@ export namespace Routine {
     Coding = 9,
   }
 
+  /** 分类名称映射 */
+  export const sCategories: Record<number, string> = {
+    [Category.Reading]: '阅读',
+    [Category.Homework]: '作业',
+    [Category.Exercise]: '运动',
+    [Category.Chores]: '家务',
+    [Category.Game]: '游戏',
+    [Category.Handwriting]: '练字',
+    [Category.Instrument]: '乐器',
+    [Category.Drawing]: '绘画',
+    [Category.Coding]: '编程',
+  };
+
   export interface Info extends Entity.Info {
     /** 任务状态 */
     status: number;
