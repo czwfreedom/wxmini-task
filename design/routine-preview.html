@@ -183,7 +183,7 @@ body {
 .mascot-ribbon {
   position: absolute;
   top: 0; left: 0;
-  width: 52px; height: 52px;
+  width: 40px; height: 40px;
   pointer-events: none;
 }
 
@@ -405,57 +405,157 @@ body {
   color: #B0B6C0;
 }
 
-/* --- Done --- */
-.card-done {
-  background: #F9FDF6;
-  opacity: 0.92;
-  border: 1.5px solid rgba(198, 230, 180, 0.5);
-  box-shadow:
-    0 1px 0 rgba(0,0,0,0.02),
-    0 6px 18px rgba(139, 195, 74, 0.1);
-}
-.card-done .card-accent {
-  background: linear-gradient(180deg, #F4B942, #FFD54F) !important;
-  border-radius: 0 4px 4px 0;
-}
-.card-done .card-icon-wrap {
-  opacity: 0.65;
-  filter: saturate(0.7);
-}
-.card-done .card-title {
-  color: #5A6B3A;
-  font-weight: 700;
-}
-.card-done .card-title::before {
-  content: '★';
-  color: #F4B942;
-  font-size: 16px;
-  margin-right: 6px;
-  text-shadow: 0 1px 2px rgba(200, 150, 50, 0.3);
-}
-.card-done .card-subtitle { color: #9DB08A; }
+/* ================================================================
+   Done Card Variants — 4 种完成卡设计风格
+   ================================================================ */
 
-/* Gold Medal Badge */
-.medal-badge {
-  position: absolute;
-  right: 6px;
-  bottom: 6px;
-  width: 60px;
-  height: 60px;
-  transform: rotate(-8deg);
-  filter: drop-shadow(0 4px 8px rgba(180, 140, 30, 0.5));
-}
-
+/* ---- Shared: 费曼反馈引用区域 ---- */
 .card-done .feedback-quote {
   font-size: 12px;
-  color: #8BA878;
-  margin-top: 6px;
+  color: #6B9A5E;
+  margin-top: 8px;
   padding: 6px 10px;
-  background: rgba(139, 195, 74, 0.08);
+  background: rgba(129, 199, 132, 0.12);
   border-radius: 8px;
   font-style: italic;
   line-height: 1.5;
-  border-left: 2px solid rgba(139, 195, 74, 0.25);
+  border-left: 3px solid rgba(129, 199, 132, 0.4);
+}
+
+/* ========== Variant A: 绿色调 + 圆形章 ========== */
+.done-v-a {
+  background: linear-gradient(135deg, #F3FAF0 0%, #EDF7E7 100%);
+  border: 2px solid rgba(165, 214, 134, 0.5);
+  box-shadow:
+    0 2px 0 rgba(129, 199, 132, 0.08),
+    0 8px 24px rgba(129, 199, 132, 0.15);
+}
+.done-v-a .card-accent {
+  background: linear-gradient(180deg, #81C784, #66BB6A) !important;
+  box-shadow: 2px 0 8px rgba(129, 199, 132, 0.3);
+}
+.done-v-a .card-icon-wrap {
+  opacity: 0.75;
+  position: relative;
+}
+.done-v-a .card-icon-wrap::after {
+  content: '✓';
+  position: absolute;
+  right: 6px; bottom: 4px;
+  width: 20px; height: 20px;
+  background: #66BB6A; color: #fff;
+  font-size: 13px; font-weight: 900;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(76, 175, 80, 0.35);
+}
+.done-v-a .card-title { color: #3E5E2F; font-weight: 700; }
+.done-v-a .card-subtitle { color: #7DA86A; }
+
+/* ========== Variant B: 红环印章 ========== */
+.done-v-b {
+  background: #FFFDF8;
+  border: 2px solid rgba(200, 180, 150, 0.4);
+}
+.done-v-b .card-accent {
+  background: linear-gradient(180deg, #81C784, #66BB6A) !important;
+}
+.done-v-b .card-body {
+  position: relative;
+}
+/* 红环「完成」印章 — 较小的环形章，放到右上角，参照 hero logo 风格 */
+.done-v-b .stamp-overlay {
+  position: absolute;
+  top: 0px;
+  right: 4px;
+  width: 40px; height: 40px;
+  transform: rotate(8deg);
+  pointer-events: none;
+  z-index: 3;
+  filter: drop-shadow(0 2px 5px rgba(180, 40, 40, 0.35));
+}
+.done-v-b .card-title { color: #3A3D4A; }
+.done-v-b .card-icon-wrap { opacity: 0.75; }
+
+/* ========== Variant C: 删除线 + 完成勾 ========== */
+.done-v-c {
+  background: #FAFBFC;
+  border: 1.5px solid rgba(180, 190, 200, 0.4);
+}
+.done-v-c .card-accent {
+  background: linear-gradient(180deg, #A5D6A7, #81C784) !important;
+}
+.done-v-c .card-title {
+  position: relative;
+  display: inline-block;
+  color: #949AAE;
+}
+/* 删除线 — 从文字中央穿过 */
+.done-v-c .card-title .strike-line {
+  position: absolute;
+  left: -4px; right: -4px;
+  top: 50%;
+  height: 2.5px;
+  background: rgba(180, 190, 200, 0.7);
+  border-radius: 2px;
+  transform: translateY(-50%);
+}
+.done-v-c .card-subtitle { color: #BCC3CE; }
+/* 图标区替换为大绿色勾 */
+.done-v-c .card-icon-wrap { opacity: 1; }
+.done-v-c .check-icon-big {
+  width: 44px; height: 44px;
+}
+.done-v-c .card-icon-wrap svg.icon { display: none; }
+
+/* ========== Variant D: 金色庆祝 ========== */
+.done-v-d {
+  background: linear-gradient(135deg, #FFFDE7 0%, #FFF8E1 40%, #FFF3E0 100%);
+  border: 2px solid rgba(255, 183, 77, 0.4);
+  box-shadow:
+    0 2px 0 rgba(244, 185, 66, 0.08),
+    0 8px 24px rgba(244, 185, 66, 0.12);
+}
+.done-v-d .card-accent {
+  background: linear-gradient(180deg, #FFD54F, #F4B942) !important;
+  box-shadow: 2px 0 8px rgba(244, 185, 66, 0.35);
+}
+.done-v-d .card-title { color: #8B6914; font-weight: 700; }
+.done-v-d .card-subtitle { color: #B8962E; }
+/* 标题前加金色星星 */
+.done-v-d .card-title::before {
+  content: '✦ ';
+  color: #F4B942;
+  font-size: 16px;
+  text-shadow: 0 1px 3px rgba(200, 150, 30, 0.4);
+}
+/* 图标区叠加小星星 */
+.done-v-d .card-icon-wrap {
+  opacity: 0.85;
+  position: relative;
+}
+.done-v-d .card-icon-wrap::after {
+  content: '✦';
+  position: absolute;
+  right: 4px; bottom: 2px;
+  width: 22px; height: 22px;
+  background: #F4B942;
+  color: #fff;
+  font-size: 14px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(244, 185, 66, 0.4);
+  animation: sparklePulse 1.8s ease-in-out infinite;
+}
+@keyframes sparklePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+.done-v-d .feedback-quote {
+  background: rgba(255, 183, 77, 0.1);
+  border-left-color: rgba(255, 183, 77, 0.35);
+  color: #A08030;
 }
 
 /* ========== Add More Card ========== */
@@ -486,172 +586,60 @@ body {
   color: #8B95A4;
 }
 
-/* ========== Floating Pencil Button (3D) ========== */
+/* ========== Floating Button (半透明底 + Logo) ========== */
 .float-btn-wrap {
   position: absolute;
-  bottom: 24px;
+  bottom: 28px;
   left: 50%;
   transform: translateX(-50%);
-  width: 64px;
-  height: 100px;
   z-index: 10;
 }
 .float-btn {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 56px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 4px 20px rgba(74, 144, 226, 0.12),
+    0 1px 0 rgba(255,255,255,0.6) inset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
+  animation: floatBtnDrift 3s ease-in-out infinite;
 }
-.float-btn:hover {
-  transform: translateX(-50%) translateY(-6px) scale(1.06);
+.float-btn:hover { transform: scale(1.08); }
+.float-btn:active { transform: scale(0.92); }
+
+@keyframes floatBtnDrift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
-.float-btn:active {
-  transform: translateX(-50%) translateY(4px) scale(0.94);
-}
-/* Ground shadow */
-.float-ground-shadow {
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 36px; height: 14px;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.06) 40%, transparent 70%);
-  border-radius: 50%;
-}
-/* 3D Pencil body */
-.float-pencil-body {
-  width: 26px; height: 52px;
-  margin: 0 auto;
-  border-radius: 3px 3px 0 0;
-  position: relative;
-  background:
-    linear-gradient(90deg,
-      #C89818 0%,
-      #E0A820 10%,
-      #F4B942 25%,
-      #FFD54F 45%,
-      #FFE082 60%,
-      #F4B942 80%,
-      #D4A020 100%
-    );
-  box-shadow:
-    inset 2px 0 6px rgba(255,255,255,0.35),
-    inset -3px 0 8px rgba(0,0,0,0.15),
-    0 5px 0 rgba(160,120,20,0.45),
-    0 8px 16px rgba(0,0,0,0.12);
-}
-.float-pencil-body::after {
-  content: '';
-  position: absolute;
-  left: 4px; top: 6px; bottom: 6px;
-  width: 3px;
-  background: rgba(255,255,255,0.5);
-  border-radius: 2px;
-}
-.float-pencil-body::before {
-  content: '';
-  position: absolute;
-  right: 2px; top: 8px; bottom: 8px;
-  width: 2px;
-  background: rgba(0,0,0,0.1);
-  border-radius: 1px;
-}
-/* Tip with lead */
-.float-pencil-tip {
-  width: 0; height: 0;
-  border-left: 13px solid transparent;
-  border-right: 13px solid transparent;
-  border-top: 20px solid #FFE0B2;
-  margin: 0 auto;
-  position: relative;
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.08));
-}
-.float-pencil-tip::after {
-  content: '';
-  width: 0; height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 7px solid #666;
-  position: absolute;
-  top: -23px; left: 50%;
-  transform: translateX(-50%);
-}
-/* 3D Eraser */
-.float-pencil-eraser {
-  width: 26px; height: 12px;
-  background:
-    linear-gradient(90deg,
-      #B5302A 0%,
-      #D44E40 15%,
-      #E85D4E 35%,
-      #F07070 55%,
-      #E85D4E 75%,
-      #C0392B 100%
-    );
-  margin: 0 auto;
-  border-radius: 3px 3px 0 0;
-  box-shadow:
-    inset 2px 0 4px rgba(255,255,255,0.25),
-    inset -2px 0 4px rgba(0,0,0,0.15);
-}
-/* 3D Metal ferrule */
-.float-pencil-metal {
-  width: 26px; height: 5px;
-  background:
-    linear-gradient(90deg,
-      #607D8B 0%,
-      #90A4AE 10%,
-      #B0BEC5 25%,
-      #ECEFF1 40%,
-      #CFD8DC 55%,
-      #90A4AE 85%,
-      #78909C 100%
-    );
-  margin: 0 auto;
-  box-shadow:
-    inset 0 1px 2px rgba(255,255,255,0.3),
-    inset 0 -1px 2px rgba(0,0,0,0.15);
-}
-.float-pencil-metal-grooves {
-  width: 26px; height: 0;
-  margin: 0 auto;
-  position: relative;
-}
-.float-pencil-metal-grooves::before,
-.float-pencil-metal-grooves::after {
-  content: '';
-  position: absolute;
-  left: 1px; right: 1px;
-  height: 0.5px;
-  background: rgba(0,0,0,0.2);
-}
-.float-pencil-metal-grooves::before { top: -2px; }
-.float-pencil-metal-grooves::after { top: 0px; }
-/* Ribbon */
-.float-ribbon {
-  position: absolute;
-  top: -6px; left: -18px;
-  width: 78px; height: 40px;
-  pointer-events: none;
-  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.15));
+.float-btn-logo {
+  width: 44px;
+  height: 44px;
 }
 
 /* ========== Misc ========== */
 svg.icon { display: block; }
 .page::-webkit-scrollbar { width: 0; }
-.corner-fold {
+
+/* ========== Hero Badge (完成印章) ========== */
+.hero-badge {
   position: absolute;
-  top: 0; right: 0;
-  width: 24px; height: 24px;
-  background: linear-gradient(135deg,
-    transparent 50%,
-    rgba(0,0,0,0.04) 50%
-  );
-  border-radius: 0 0 0 8px;
+  right: 8px;
+  bottom: 8px;
+  width: 56px;
+  height: 56px;
+  transform: rotate(-6deg);
+  filter: drop-shadow(0 3px 8px rgba(180, 140, 30, 0.5));
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+.hero-badge:hover {
+  transform: rotate(0deg) scale(1.1);
 }
 </style>
 </head>
@@ -676,13 +664,13 @@ svg.icon { display: block; }
 
       <div class="hero-status-bar">
         <div class="hero-status-item">
-          <span class="hero-status-dot planned"></span> 已规划 2
+          <span class="hero-status-dot planned"></span> 已规划 23
         </div>
         <div class="hero-status-item">
-          <span class="hero-status-dot feedback"></span> 待反馈 1
+          <span class="hero-status-dot feedback"></span> 待反馈 0
         </div>
         <div class="hero-status-item">
-          <span class="hero-status-dot done"></span> 已完成 1
+          <span class="hero-status-dot done"></span> 已完成 4
         </div>
       </div>
 
@@ -850,12 +838,12 @@ svg.icon { display: block; }
       </div>
     </div>
 
-    <!-- ===== Task List ===== -->
-    <div class="section-title">今日任务</div>
+    <!-- ===== 全部分类展示 ===== -->
+    <div class="section-title">今日任务（9大分类）</div>
 
     <div class="card-list">
 
-      <!-- Card 1: 阅读 - 已规划 -->
+      <!-- 1. 阅读 Reading #FFB74D -->
       <div class="task-card card-planned">
         <div class="card-accent" style="background:#FFB74D;"></div>
         <div class="card-icon-wrap">
@@ -873,10 +861,9 @@ svg.icon { display: block; }
         <div class="card-action">
           <div class="card-action-btn">去完成 →</div>
         </div>
-        <div class="corner-fold"></div>
       </div>
 
-      <!-- Card 2: 作业 - 已规划 -->
+      <!-- 2. 作业 Homework #64B5F6 -->
       <div class="task-card card-planned">
         <div class="card-accent" style="background:#64B5F6;"></div>
         <div class="card-icon-wrap">
@@ -898,87 +885,203 @@ svg.icon { display: block; }
         <div class="card-action">
           <div class="card-action-btn">去完成 →</div>
         </div>
-        <div class="corner-fold"></div>
       </div>
 
-      <!-- Card 3: 运动 - 未规划 -->
-      <div class="task-card card-unplanned">
+      <!-- 3. 运动 Exercise #81C784 -->
+      <div class="task-card card-planned">
         <div class="card-accent" style="background:#81C784;"></div>
         <div class="card-icon-wrap">
           <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
             <circle cx="24" cy="24" r="22" fill="#E8F5E9"/>
-            <path d="M14 28 Q10 28 10 24 L10 20 Q12 18 16 18 L28 16 L34 18 L36 26 Q36 30 32 30 L14 28Z"
-                  fill="#fff" stroke="#2E7D32" stroke-width="1.5"/>
-            <path d="M28 16 L30 10 Q32 8 34 10 L34 18" fill="none" stroke="#2E7D32" stroke-width="1.5"/>
-            <path d="M22 20 L23 22 L25 22 L23.5 23.5 L24 25.5 L22 24.5 L20 25.5 L20.5 23.5 L19 22 L21 22Z"
-                  fill="#F4B942" stroke="#F9A825" stroke-width="0.5"/>
+            <circle cx="26" cy="13" r="4.5" fill="#43A047" stroke="#2E7D32" stroke-width="0.8"/>
+            <line x1="26" y1="17.5" x2="24" y2="29" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="25" y1="21" x2="32" y2="17" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="25" y1="22" x2="18" y2="20" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="24" y1="29" x2="33" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="24" y1="29" x2="18" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="10" y1="14" x2="14" y2="12" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="8" y1="20" x2="14" y2="19" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="10" y1="26" x2="13" y2="25" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
           </svg>
         </div>
         <div class="card-body">
-          <div class="card-title">今天要运动多久？</div>
-          <div class="card-subtitle">点击规划今日运动任务</div>
+          <div class="card-title">跳绳500个</div>
+          <div class="card-subtitle">运动 · 约15分钟</div>
         </div>
         <div class="card-action">
-          <div class="card-action-btn">去规划 →</div>
+          <div class="card-action-btn">去完成 →</div>
         </div>
       </div>
 
-      <!-- Card 4: 练字 - 已完成 -->
-      <div class="task-card card-done">
+      <!-- 4. 家务 Chores #BA68C8 -->
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#BA68C8;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#F3E5F5"/>
+            <!-- 水桶提手 -->
+            <path d="M13 17 Q24 7 35 17" fill="none" stroke="#90A4AE" stroke-width="2" stroke-linecap="round"/>
+            <!-- 水桶桶身 -->
+            <path d="M11 19 L11 36 Q11 41 17 41 L31 41 Q37 41 37 36 L37 19 Z" fill="#64B5F6" stroke="#1E88E5" stroke-width="1.2"/>
+            <!-- 水面 -->
+            <path d="M13 27 Q18 23 24 27 Q30 31 35 27" fill="none" stroke="#42A5F5" stroke-width="1.5"/>
+            <!-- 拖把杆 -->
+            <line x1="38" y1="10" x2="25" y2="32" stroke="#A1887F" stroke-width="3" stroke-linecap="round"/>
+            <!-- 拖把头 -->
+            <line x1="21" y1="32" x2="19" y2="39" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="24" y1="31" x2="23" y2="40" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="27" y1="31" x2="27" y2="39" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="30" y1="33" x2="30" y2="38" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <!-- 肥皂泡 -->
+            <circle cx="36" cy="15" r="2.5" fill="none" stroke="#81D4FA" stroke-width="1.2"/>
+            <circle cx="15" cy="13" r="1.8" fill="none" stroke="#B3E5FC" stroke-width="1"/>
+            <circle cx="8" cy="22" r="1.5" fill="none" stroke="#E1F5FE" stroke-width="0.8"/>
+            <!-- 洁净星光 -->
+            <polygon points="37,7 37.8,9.5 40.5,9.5 38.3,11 39,13.5 37,11.8 35,13.5 35.7,11 33.5,9.5 36.2,9.5" fill="#F4B942"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">收拾书桌+叠衣服</div>
+          <div class="card-subtitle">家务 · 约20分钟</div>
+        </div>
+        <div class="card-action">
+          <div class="card-action-btn">去完成 →</div>
+        </div>
+      </div>
+
+      <!-- 5. 游戏 Game #F06292 -->
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#F06292;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#FCE4EC"/>
+            <rect x="10" y="16" width="28" height="16" rx="8" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/>
+            <rect x="8" y="24" width="8" height="10" rx="4" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/>
+            <rect x="32" y="24" width="8" height="10" rx="4" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/>
+            <rect x="15" y="20" width="8" height="2" rx="1" fill="#fff" opacity="0.7"/>
+            <rect x="18" y="17" width="2" height="8" rx="1" fill="#fff" opacity="0.7"/>
+            <circle cx="33" cy="22" r="2.5" fill="#FFD54F"/>
+            <circle cx="37" cy="26" r="2.5" fill="#81C784"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Minecraft 建造城堡</div>
+          <div class="card-subtitle">游戏 · 约30分钟</div>
+        </div>
+        <div class="card-action">
+          <div class="card-action-btn">去完成 →</div>
+        </div>
+      </div>
+
+      <!-- 6. 练字 Handwriting #4DB6AC -->
+      <div class="task-card card-planned">
         <div class="card-accent" style="background:#4DB6AC;"></div>
-        <div class="card-icon-wrap" style="opacity:0.55;">
+        <div class="card-icon-wrap">
           <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
             <circle cx="24" cy="24" r="22" fill="#E0F2F1"/>
-            <rect x="14" y="14" width="20" height="20" rx="2" fill="#fff" stroke="#00695C" stroke-width="1.2"/>
-            <line x1="14" y1="22" x2="34" y2="22" stroke="#B2DFDB" stroke-width="0.8"/>
-            <line x1="14" y1="28" x2="34" y2="28" stroke="#B2DFDB" stroke-width="0.8"/>
-            <line x1="24" y1="14" x2="24" y2="34" stroke="#B2DFDB" stroke-width="0.8"/>
-            <line x1="32" y1="10" x2="22" y2="20" stroke="#4DB6AC" stroke-width="2.5" stroke-linecap="round"/>
-            <ellipse cx="14" cy="26" rx="3" ry="4" fill="#4DB6AC" transform="rotate(-30 14 26)"/>
+            <!-- 田字格练字纸 -->
+            <rect x="10" y="18" width="20" height="18" rx="1.5" fill="#FFFEF9" stroke="#B2DFDB" stroke-width="0.8"/>
+            <!-- 田字格十字线 -->
+            <line x1="20" y1="18" x2="20" y2="36" stroke="#D7CCC8" stroke-width="0.5"/>
+            <line x1="10" y1="27" x2="30" y2="27" stroke="#D7CCC8" stroke-width="0.5"/>
+            <!-- 纸上笔迹（半个"永"字） -->
+            <path d="M14 21 L18 27 L22 23" fill="none" stroke="#455A64" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18 27 L18 34" fill="none" stroke="#455A64" stroke-width="1.4" stroke-linecap="round"/>
+            <!-- 毛笔杆 -->
+            <rect x="30" y="6" width="4" height="16" rx="2" fill="#8D6E63"/>
+            <rect x="31" y="7" width="1.5" height="14" rx="0.5" fill="#A1887F" opacity="0.5"/>
+            <!-- 毛笔尖 -->
+            <polygon points="30,22 34,22 32,30" fill="#37474F" stroke="#263238" stroke-width="0.5"/>
+            <line x1="31.3" y1="25" x2="31.8" y2="30" stroke="#455A64" stroke-width="0.4"/>
+            <line x1="32.7" y1="25" x2="32.2" y2="30" stroke="#455A64" stroke-width="0.4"/>
+            <!-- 墨砚 -->
+            <rect x="34" y="34" width="10" height="5" rx="1.5" fill="#37474F"/>
+            <rect x="36" y="35" width="6" height="3" rx="1" fill="#263238"/>
+            <circle cx="40" cy="36.5" r="0.8" fill="#1a1a1a"/>
           </svg>
         </div>
         <div class="card-body">
           <div class="card-title">描红《静夜思》</div>
           <div class="card-subtitle">练字 · 约15分钟</div>
-          <div class="feedback-quote">"笔画比昨天平整，心也静下来了"</div>
         </div>
-        <!-- Gold Medal Badge -->
-        <svg class="medal-badge" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="medalGold" cx="35%" cy="30%">
-              <stop offset="0%" stop-color="#FFF176"/>
-              <stop offset="40%" stop-color="#FFD54F"/>
-              <stop offset="70%" stop-color="#F4B942"/>
-              <stop offset="100%" stop-color="#D4A020"/>
-            </radialGradient>
-            <radialGradient id="medalRed" cx="40%" cy="30%">
-              <stop offset="0%" stop-color="#FF7B6E"/>
-              <stop offset="60%" stop-color="#E85D4E"/>
-              <stop offset="100%" stop-color="#C0392B"/>
-            </radialGradient>
-          </defs>
-          <g opacity="0.7">
-            <polygon points="30,4 32,16 34,4 38,16 38,4 42,16 42,4 46,16 44,4 48,18 46,6 50,20 48,8 52,24 48,12 52,28 48,18 50,32 46,24 48,38 44,30 46,42 42,36 44,46 38,40 42,48 34,44 40,50 30,46 38,50 26,46 34,48 22,44 30,46 18,40 26,42 16,36 22,38 16,32 18,34 18,28 16,30 20,24 16,26 24,20 18,20 28,16 20,14 32,12 22,8 34,8 24,4 34,4 26,2"
-                  fill="url(#medalGold)"/>
-          </g>
-          <circle cx="30" cy="30" r="23" fill="url(#medalGold)" stroke="#C89818" stroke-width="1.5"/>
-          <circle cx="30" cy="30" r="23" fill="none" stroke="#FFE082" stroke-width="0.8" opacity="0.4" stroke-dasharray="8 12"/>
-          <circle cx="30" cy="30" r="17" fill="#FFFDE7" stroke="#F4B942" stroke-width="1"/>
-          <circle cx="30" cy="30" r="12" fill="url(#medalRed)" stroke="#C0392B" stroke-width="1"/>
-          <circle cx="28" cy="27" r="5" fill="#fff" opacity="0.12"/>
-          <polygon points="30,22 31.8,26.5 36.7,26.5 32.9,29.4 34.3,34 30,31.1 25.7,34 27.1,29.4 23.3,26.5 28.2,26.5"
-                   fill="#FFD54F" stroke="#F4B942" stroke-width="0.6"/>
-          <polygon points="30,22 31.8,26.5 36.7,26.5 32.9,29.4 30,31.1"
-                   fill="#FFF176" opacity="0.6"/>
-          <text x="30" y="44" text-anchor="middle" font-size="7.5" font-weight="900" fill="#fff"
-                letter-spacing="1.5" font-family="-apple-system, 'PingFang SC', sans-serif">完成</text>
-          <path d="M10 32 L8 50 L14 50 Z" fill="#E85D4E" stroke="#C0392B" stroke-width="0.6"/>
-          <path d="M50 32 L52 50 L46 50 Z" fill="#D44E40" stroke="#C0392B" stroke-width="0.6"/>
-        </svg>
-        <div class="corner-fold"></div>
+        <div class="card-action">
+          <div class="card-action-btn">去完成 →</div>
+        </div>
       </div>
 
-    </div>
+      <!-- 7. 乐器 Instrument #A1887F -->
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#A1887F;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#EFEBE9"/>
+            <path d="M28 12 Q34 14 32 19 Q30 24 26 20 L28 38 Q28 40 24 40 Q20 40 20 38 L22 28 Q23 24 26 26 Q30 28 28 24 Q26 20 24 16 Q22 12 28 12Z" fill="none" stroke="#8D6E63" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="16" cy="30" r="3" fill="#A1887F"/>
+            <line x1="19" y1="30" x2="19" y2="16" stroke="#A1887F" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="36" cy="24" r="2.5" fill="#A1887F"/>
+            <line x1="38.5" y1="24" x2="38.5" y2="12" stroke="#A1887F" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">练习《小星星》3遍</div>
+          <div class="card-subtitle">乐器 · 约20分钟</div>
+        </div>
+        <div class="card-action">
+          <div class="card-action-btn">去完成 →</div>
+        </div>
+      </div>
+
+      <!-- 8. 绘画 Drawing #FFD54F -->
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#FFD54F;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#FFF8E1"/>
+            <ellipse cx="24" cy="27" rx="13" ry="11" fill="#FFD54F" stroke="#F9A825" stroke-width="1"/>
+            <circle cx="24" cy="30" r="4" fill="#FFF8E1" stroke="#F9A825" stroke-width="0.8"/>
+            <circle cx="16" cy="22" r="3" fill="#F06292"/>
+            <circle cx="22" cy="18" r="2.5" fill="#64B5F6"/>
+            <circle cx="29" cy="19" r="2.5" fill="#81C784"/>
+            <circle cx="34" cy="24" r="3" fill="#BA68C8"/>
+            <circle cx="32" cy="30" r="2.5" fill="#FFB74D"/>
+            <line x1="30" y1="17" x2="38" y2="9" stroke="#8D6E63" stroke-width="2.5" stroke-linecap="round"/>
+            <polygon points="38,7 40,9 38,11 36,9" fill="#F06292"/>
+            <line x1="36" y1="9" x2="38" y2="8" stroke="#E85D4E" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">画一幅《我的家》</div>
+          <div class="card-subtitle">绘画 · 约30分钟</div>
+        </div>
+        <div class="card-action">
+          <div class="card-action-btn">去完成 →</div>
+        </div>
+      </div>
+
+      <!-- 9. 编程 Coding #4FC3F7 -->
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#4FC3F7;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E1F5FE"/>
+            <rect x="14" y="14" width="20" height="20" rx="2" fill="#fff" stroke="#0288D1" stroke-width="1.2"/>
+            <path d="M18 20 L22 24 L18 28" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M26 20 L22 24 L26 28" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="14" y="14" width="20" height="4" rx="1" fill="#4FC3F7"/>
+            <circle cx="24" cy="8" r="2.5" fill="#4FC3F7" stroke="#0288D1" stroke-width="0.8"/>
+            <line x1="24" y1="10.5" x2="24" y2="14" stroke="#0288D1" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Scratch 发射子弹</div>
+          <div class="card-subtitle">编程 · 约45分钟</div>
+        </div>
+        <div class="card-action">
+          <div class="card-action-btn">去完成 →</div>
+        </div>
+      </div>
+
+    </div> <!-- /card-list -->
 
     <!-- ===== Add More ===== -->
     <div class="card-add-more" style="margin-top:14px;">
@@ -986,34 +1089,523 @@ svg.icon { display: block; }
       添加更多任务
     </div>
 
+    <!-- ===== 已完成示例 ===== -->
+    <div class="section-title" style="margin-top:32px;">已完成卡片（红环印章风格）</div>
+
+    <div class="card-list">
+
+      <!-- Done: 运动 -->
+      <div class="task-card card-done done-v-b">
+        <div class="card-accent" style="background:#81C784;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E8F5E9"/>
+            <circle cx="26" cy="13" r="4.5" fill="#43A047" stroke="#2E7D32" stroke-width="0.8"/>
+            <line x1="26" y1="17.5" x2="24" y2="29" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="25" y1="21" x2="32" y2="17" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="25" y1="22" x2="18" y2="20" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="24" y1="29" x2="33" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="24" y1="29" x2="18" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="10" y1="14" x2="14" y2="12" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="8" y1="20" x2="14" y2="19" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="10" y1="26" x2="13" y2="25" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">跳绳500个</div>
+          <div class="card-subtitle">运动 · 约15分钟</div>
+          <div class="feedback-quote">"今天比昨天多跳了30个，喘但很爽！"</div>
+          <svg class="stamp-overlay" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="26" cy="26" r="23" fill="none" stroke="#D84035" stroke-width="5"/>
+            <circle cx="26" cy="26" r="15" fill="none" stroke="#D84035" stroke-width="1.2"/>
+            <circle cx="26" cy="3" r="2.5" fill="#F4B942"/>
+            <circle cx="26" cy="49" r="2" fill="#F4B942"/>
+            <circle cx="3" cy="26" r="2" fill="#F4B942"/>
+            <circle cx="49" cy="26" r="2" fill="#F4B942"/>
+            <text x="26" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#D84035" letter-spacing="2">完成</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Done: 练字 -->
+      <div class="task-card card-done done-v-b">
+        <div class="card-accent" style="background:#4DB6AC;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E0F2F1"/>
+            <!-- 田字格练字纸 -->
+            <rect x="10" y="18" width="20" height="18" rx="1.5" fill="#FFFEF9" stroke="#B2DFDB" stroke-width="0.8"/>
+            <!-- 田字格十字线 -->
+            <line x1="20" y1="18" x2="20" y2="36" stroke="#D7CCC8" stroke-width="0.5"/>
+            <line x1="10" y1="27" x2="30" y2="27" stroke="#D7CCC8" stroke-width="0.5"/>
+            <!-- 纸上笔迹（半个"永"字） -->
+            <path d="M14 21 L18 27 L22 23" fill="none" stroke="#455A64" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18 27 L18 34" fill="none" stroke="#455A64" stroke-width="1.4" stroke-linecap="round"/>
+            <!-- 毛笔杆 -->
+            <rect x="30" y="6" width="4" height="16" rx="2" fill="#8D6E63"/>
+            <rect x="31" y="7" width="1.5" height="14" rx="0.5" fill="#A1887F" opacity="0.5"/>
+            <!-- 毛笔尖 -->
+            <polygon points="30,22 34,22 32,30" fill="#37474F" stroke="#263238" stroke-width="0.5"/>
+            <line x1="31.3" y1="25" x2="31.8" y2="30" stroke="#455A64" stroke-width="0.4"/>
+            <line x1="32.7" y1="25" x2="32.2" y2="30" stroke="#455A64" stroke-width="0.4"/>
+            <!-- 墨砚 -->
+            <rect x="34" y="34" width="10" height="5" rx="1.5" fill="#37474F"/>
+            <rect x="36" y="35" width="6" height="3" rx="1" fill="#263238"/>
+            <circle cx="40" cy="36.5" r="0.8" fill="#1a1a1a"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">描红《静夜思》</div>
+          <div class="card-subtitle">练字 · 约15分钟</div>
+          <div class="feedback-quote">"笔画比昨天平整，心也静下来了"</div>
+          <svg class="stamp-overlay" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="26" cy="26" r="23" fill="none" stroke="#D84035" stroke-width="5"/>
+            <circle cx="26" cy="26" r="15" fill="none" stroke="#D84035" stroke-width="1.2"/>
+            <circle cx="26" cy="3" r="2.5" fill="#F4B942"/>
+            <circle cx="26" cy="49" r="2" fill="#F4B942"/>
+            <circle cx="3" cy="26" r="2" fill="#F4B942"/>
+            <circle cx="49" cy="26" r="2" fill="#F4B942"/>
+            <text x="26" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#D84035" letter-spacing="2">完成</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Done: 家务 -->
+      <div class="task-card card-done done-v-b">
+        <div class="card-accent" style="background:#BA68C8;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#F3E5F5"/>
+            <!-- 水桶提手 -->
+            <path d="M13 17 Q24 7 35 17" fill="none" stroke="#90A4AE" stroke-width="2" stroke-linecap="round"/>
+            <!-- 水桶桶身 -->
+            <path d="M11 19 L11 36 Q11 41 17 41 L31 41 Q37 41 37 36 L37 19 Z" fill="#64B5F6" stroke="#1E88E5" stroke-width="1.2"/>
+            <!-- 水面 -->
+            <path d="M13 27 Q18 23 24 27 Q30 31 35 27" fill="none" stroke="#42A5F5" stroke-width="1.5"/>
+            <!-- 拖把杆 -->
+            <line x1="38" y1="10" x2="25" y2="32" stroke="#A1887F" stroke-width="3" stroke-linecap="round"/>
+            <!-- 拖把头 -->
+            <line x1="21" y1="32" x2="19" y2="39" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="24" y1="31" x2="23" y2="40" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="27" y1="31" x2="27" y2="39" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="30" y1="33" x2="30" y2="38" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <!-- 肥皂泡 -->
+            <circle cx="36" cy="15" r="2.5" fill="none" stroke="#81D4FA" stroke-width="1.2"/>
+            <circle cx="15" cy="13" r="1.8" fill="none" stroke="#B3E5FC" stroke-width="1"/>
+            <circle cx="8" cy="22" r="1.5" fill="none" stroke="#E1F5FE" stroke-width="0.8"/>
+            <!-- 洁净星光 -->
+            <polygon points="37,7 37.8,9.5 40.5,9.5 38.3,11 39,13.5 37,11.8 35,13.5 35.7,11 33.5,9.5 36.2,9.5" fill="#F4B942"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">收拾书桌+叠衣服</div>
+          <div class="card-subtitle">家务 · 约20分钟</div>
+          <div class="feedback-quote">"房间看着整齐，心情也好了"</div>
+          <svg class="stamp-overlay" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="26" cy="26" r="23" fill="none" stroke="#D84035" stroke-width="5"/>
+            <circle cx="26" cy="26" r="15" fill="none" stroke="#D84035" stroke-width="1.2"/>
+            <circle cx="26" cy="3" r="2.5" fill="#F4B942"/>
+            <circle cx="26" cy="49" r="2" fill="#F4B942"/>
+            <circle cx="3" cy="26" r="2" fill="#F4B942"/>
+            <circle cx="49" cy="26" r="2" fill="#F4B942"/>
+            <text x="26" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#D84035" letter-spacing="2">完成</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Done: 编程 -->
+      <div class="task-card card-done done-v-b">
+        <div class="card-accent" style="background:#4FC3F7;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E1F5FE"/>
+            <rect x="14" y="14" width="20" height="20" rx="2" fill="#fff" stroke="#0288D1" stroke-width="1.2"/>
+            <path d="M18 20 L22 24 L18 28" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M26 20 L22 24 L26 28" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="14" y="14" width="20" height="4" rx="1" fill="#4FC3F7"/>
+            <circle cx="24" cy="8" r="2.5" fill="#4FC3F7" stroke="#0288D1" stroke-width="0.8"/>
+            <line x1="24" y1="10.5" x2="24" y2="14" stroke="#0288D1" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Scratch 发射子弹</div>
+          <div class="card-subtitle">编程 · 约45分钟</div>
+          <div class="feedback-quote">"角色会发射子弹了，超有成就感！"</div>
+          <svg class="stamp-overlay" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="26" cy="26" r="23" fill="none" stroke="#D84035" stroke-width="5"/>
+            <circle cx="26" cy="26" r="15" fill="none" stroke="#D84035" stroke-width="1.2"/>
+            <circle cx="26" cy="3" r="2.5" fill="#F4B942"/>
+            <circle cx="26" cy="49" r="2" fill="#F4B942"/>
+            <circle cx="3" cy="26" r="2" fill="#F4B942"/>
+            <circle cx="49" cy="26" r="2" fill="#F4B942"/>
+            <text x="26" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#D84035" letter-spacing="2">完成</text>
+          </svg>
+        </div>
+      </div>
+
+    </div> <!-- /card-list -->
+
+    <!-- ===== 更多日常任务参考（头脑风暴） ===== -->
+    <div class="section-title" style="margin-top:32px;">更多日常任务参考</div>
+
+    <div class="card-list">
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#FFB74D;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#FFF3E0"/>
+            <rect x="14" y="12" width="20" height="24" rx="2" fill="#FFB74D" stroke="#E65100" stroke-width="1.5"/>
+            <line x1="24" y1="12" x2="24" y2="36" stroke="#E65100" stroke-width="1.2"/>
+            <path d="M24 30 L24 20 L34 20 L24 30Z" fill="#E85D4E" stroke="#C62828" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">睡前阅读《小王子》</div>
+          <div class="card-subtitle">阅读 · 约20分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#FFB74D;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#FFF3E0"/>
+            <rect x="14" y="12" width="20" height="24" rx="2" fill="#FFB74D" stroke="#E65100" stroke-width="1.5"/>
+            <line x1="24" y1="12" x2="24" y2="36" stroke="#E65100" stroke-width="1.2"/>
+            <path d="M24 30 L24 20 L34 20 L24 30Z" fill="#E85D4E" stroke="#C62828" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">跟读英文绘本《Brown Bear》</div>
+          <div class="card-subtitle">阅读 · 约15分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#FFB74D;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#FFF3E0"/>
+            <rect x="14" y="12" width="20" height="24" rx="2" fill="#FFB74D" stroke="#E65100" stroke-width="1.5"/>
+            <line x1="24" y1="12" x2="24" y2="36" stroke="#E65100" stroke-width="1.2"/>
+            <path d="M24 30 L24 20 L34 20 L24 30Z" fill="#E85D4E" stroke="#C62828" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">背诵古诗《望庐山瀑布》</div>
+          <div class="card-subtitle">阅读 · 约10分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#64B5F6;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E3F2FD"/>
+            <rect x="12" y="15" width="16" height="20" rx="2" fill="#fff" stroke="#1565C0" stroke-width="1.5"/>
+            <line x1="16" y1="21" x2="24" y2="21" stroke="#64B5F6" stroke-width="1.2"/>
+            <line x1="16" y1="25" x2="24" y2="25" stroke="#64B5F6" stroke-width="1.2"/>
+            <line x1="16" y1="29" x2="22" y2="29" stroke="#64B5F6" stroke-width="1.2"/>
+            <rect x="30" y="16" width="5" height="18" rx="1.5" fill="#FFD54F" stroke="#F9A825" stroke-width="1"/>
+            <polygon points="30,34 35,34 32.5,40" fill="#FFE0B2" stroke="#F9A825" stroke-width="0.8"/>
+            <rect x="30" y="14" width="5" height="4" rx="1" fill="#E85D4E"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">口算打卡100题</div>
+          <div class="card-subtitle">作业 · 约10分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#64B5F6;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E3F2FD"/>
+            <rect x="12" y="15" width="16" height="20" rx="2" fill="#fff" stroke="#1565C0" stroke-width="1.5"/>
+            <line x1="16" y1="21" x2="24" y2="21" stroke="#64B5F6" stroke-width="1.2"/>
+            <line x1="16" y1="25" x2="24" y2="25" stroke="#64B5F6" stroke-width="1.2"/>
+            <line x1="16" y1="29" x2="22" y2="29" stroke="#64B5F6" stroke-width="1.2"/>
+            <rect x="30" y="16" width="5" height="18" rx="1.5" fill="#FFD54F" stroke="#F9A825" stroke-width="1"/>
+            <polygon points="30,34 35,34 32.5,40" fill="#FFE0B2" stroke="#F9A825" stroke-width="0.8"/>
+            <rect x="30" y="14" width="5" height="4" rx="1" fill="#E85D4E"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">英语听力练习15分钟</div>
+          <div class="card-subtitle">作业 · 约15分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#64B5F6;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E3F2FD"/>
+            <rect x="12" y="15" width="16" height="20" rx="2" fill="#fff" stroke="#1565C0" stroke-width="1.5"/>
+            <line x1="16" y1="21" x2="24" y2="21" stroke="#64B5F6" stroke-width="1.2"/>
+            <line x1="16" y1="25" x2="24" y2="25" stroke="#64B5F6" stroke-width="1.2"/>
+            <line x1="16" y1="29" x2="22" y2="29" stroke="#64B5F6" stroke-width="1.2"/>
+            <rect x="30" y="16" width="5" height="18" rx="1.5" fill="#FFD54F" stroke="#F9A825" stroke-width="1"/>
+            <polygon points="30,34 35,34 32.5,40" fill="#FFE0B2" stroke="#F9A825" stroke-width="0.8"/>
+            <rect x="30" y="14" width="5" height="4" rx="1" fill="#E85D4E"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">写一篇观察日记</div>
+          <div class="card-subtitle">作业 · 约20分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#81C784;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E8F5E9"/>
+            <circle cx="26" cy="13" r="4.5" fill="#43A047" stroke="#2E7D32" stroke-width="0.8"/>
+            <line x1="26" y1="17.5" x2="24" y2="29" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="25" y1="21" x2="32" y2="17" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="25" y1="22" x2="18" y2="20" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="24" y1="29" x2="33" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="24" y1="29" x2="18" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="10" y1="14" x2="14" y2="12" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="8" y1="20" x2="14" y2="19" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="10" y1="26" x2="13" y2="25" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">小区跑步2圈</div>
+          <div class="card-subtitle">运动 · 约10分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#81C784;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E8F5E9"/>
+            <circle cx="26" cy="13" r="4.5" fill="#43A047" stroke="#2E7D32" stroke-width="0.8"/>
+            <line x1="26" y1="17.5" x2="24" y2="29" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="25" y1="21" x2="32" y2="17" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="25" y1="22" x2="18" y2="20" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="24" y1="29" x2="33" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="24" y1="29" x2="18" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="10" y1="14" x2="14" y2="12" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="8" y1="20" x2="14" y2="19" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="10" y1="26" x2="13" y2="25" stroke="#81C784" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">仰卧起坐30个</div>
+          <div class="card-subtitle">运动 · 约5分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#BA68C8;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#F3E5F5"/>
+            <!-- 水桶提手 -->
+            <path d="M13 17 Q24 7 35 17" fill="none" stroke="#90A4AE" stroke-width="2" stroke-linecap="round"/>
+            <!-- 水桶桶身 -->
+            <path d="M11 19 L11 36 Q11 41 17 41 L31 41 Q37 41 37 36 L37 19 Z" fill="#64B5F6" stroke="#1E88E5" stroke-width="1.2"/>
+            <!-- 水面 -->
+            <path d="M13 27 Q18 23 24 27 Q30 31 35 27" fill="none" stroke="#42A5F5" stroke-width="1.5"/>
+            <!-- 拖把杆 -->
+            <line x1="38" y1="10" x2="25" y2="32" stroke="#A1887F" stroke-width="3" stroke-linecap="round"/>
+            <!-- 拖把头 -->
+            <line x1="21" y1="32" x2="19" y2="39" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="24" y1="31" x2="23" y2="40" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="27" y1="31" x2="27" y2="39" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="30" y1="33" x2="30" y2="38" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <!-- 肥皂泡 -->
+            <circle cx="36" cy="15" r="2.5" fill="none" stroke="#81D4FA" stroke-width="1.2"/>
+            <circle cx="15" cy="13" r="1.8" fill="none" stroke="#B3E5FC" stroke-width="1"/>
+            <circle cx="8" cy="22" r="1.5" fill="none" stroke="#E1F5FE" stroke-width="0.8"/>
+            <!-- 洁净星光 -->
+            <polygon points="37,7 37.8,9.5 40.5,9.5 38.3,11 39,13.5 37,11.8 35,13.5 35.7,11 33.5,9.5 36.2,9.5" fill="#F4B942"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">给绿植浇水</div>
+          <div class="card-subtitle">家务 · 约5分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#BA68C8;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#F3E5F5"/>
+            <!-- 水桶提手 -->
+            <path d="M13 17 Q24 7 35 17" fill="none" stroke="#90A4AE" stroke-width="2" stroke-linecap="round"/>
+            <!-- 水桶桶身 -->
+            <path d="M11 19 L11 36 Q11 41 17 41 L31 41 Q37 41 37 36 L37 19 Z" fill="#64B5F6" stroke="#1E88E5" stroke-width="1.2"/>
+            <!-- 水面 -->
+            <path d="M13 27 Q18 23 24 27 Q30 31 35 27" fill="none" stroke="#42A5F5" stroke-width="1.5"/>
+            <!-- 拖把杆 -->
+            <line x1="38" y1="10" x2="25" y2="32" stroke="#A1887F" stroke-width="3" stroke-linecap="round"/>
+            <!-- 拖把头 -->
+            <line x1="21" y1="32" x2="19" y2="39" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="24" y1="31" x2="23" y2="40" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="27" y1="31" x2="27" y2="39" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="30" y1="33" x2="30" y2="38" stroke="#BDBDBD" stroke-width="1.3" stroke-linecap="round"/>
+            <!-- 肥皂泡 -->
+            <circle cx="36" cy="15" r="2.5" fill="none" stroke="#81D4FA" stroke-width="1.2"/>
+            <circle cx="15" cy="13" r="1.8" fill="none" stroke="#B3E5FC" stroke-width="1"/>
+            <circle cx="8" cy="22" r="1.5" fill="none" stroke="#E1F5FE" stroke-width="0.8"/>
+            <!-- 洁净星光 -->
+            <polygon points="37,7 37.8,9.5 40.5,9.5 38.3,11 39,13.5 37,11.8 35,13.5 35.7,11 33.5,9.5 36.2,9.5" fill="#F4B942"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">饭后洗碗</div>
+          <div class="card-subtitle">家务 · 约10分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#F06292;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#FCE4EC"/>
+            <rect x="10" y="16" width="28" height="16" rx="8" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/>
+            <rect x="8" y="24" width="8" height="10" rx="4" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/>
+            <rect x="32" y="24" width="8" height="10" rx="4" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/>
+            <rect x="15" y="20" width="8" height="2" rx="1" fill="#fff" opacity="0.7"/>
+            <rect x="18" y="17" width="2" height="8" rx="1" fill="#fff" opacity="0.7"/>
+            <circle cx="33" cy="22" r="2.5" fill="#FFD54F"/>
+            <circle cx="37" cy="26" r="2.5" fill="#81C784"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">玩一盘国际象棋</div>
+          <div class="card-subtitle">游戏 · 约25分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#F06292;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#FCE4EC"/>
+            <rect x="10" y="16" width="28" height="16" rx="8" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/>
+            <rect x="8" y="24" width="8" height="10" rx="4" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/>
+            <rect x="32" y="24" width="8" height="10" rx="4" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/>
+            <rect x="15" y="20" width="8" height="2" rx="1" fill="#fff" opacity="0.7"/>
+            <rect x="18" y="17" width="2" height="8" rx="1" fill="#fff" opacity="0.7"/>
+            <circle cx="33" cy="22" r="2.5" fill="#FFD54F"/>
+            <circle cx="37" cy="26" r="2.5" fill="#81C784"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">乐高搭一艘飞船</div>
+          <div class="card-subtitle">游戏 · 约40分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#A1887F;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#EFEBE9"/>
+            <path d="M28 12 Q34 14 32 19 Q30 24 26 20 L28 38 Q28 40 24 40 Q20 40 20 38 L22 28 Q23 24 26 26 Q30 28 28 24 Q26 20 24 16 Q22 12 28 12Z" fill="none" stroke="#8D6E63" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="16" cy="30" r="3" fill="#A1887F"/>
+            <line x1="19" y1="30" x2="19" y2="16" stroke="#A1887F" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="36" cy="24" r="2.5" fill="#A1887F"/>
+            <line x1="38.5" y1="24" x2="38.5" y2="12" stroke="#A1887F" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">练钢琴音阶10分钟</div>
+          <div class="card-subtitle">乐器 · 约10分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#FFD54F;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#FFF8E1"/>
+            <ellipse cx="24" cy="27" rx="13" ry="11" fill="#FFD54F" stroke="#F9A825" stroke-width="1"/>
+            <circle cx="24" cy="30" r="4" fill="#FFF8E1" stroke="#F9A825" stroke-width="0.8"/>
+            <circle cx="16" cy="22" r="3" fill="#F06292"/>
+            <circle cx="22" cy="18" r="2.5" fill="#64B5F6"/>
+            <circle cx="29" cy="19" r="2.5" fill="#81C784"/>
+            <circle cx="34" cy="24" r="3" fill="#BA68C8"/>
+            <circle cx="32" cy="30" r="2.5" fill="#FFB74D"/>
+            <line x1="30" y1="17" x2="38" y2="9" stroke="#8D6E63" stroke-width="2.5" stroke-linecap="round"/>
+            <polygon points="38,7 40,9 38,11 36,9" fill="#F06292"/>
+            <line x1="36" y1="9" x2="38" y2="8" stroke="#E85D4E" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">用黏土捏小动物</div>
+          <div class="card-subtitle">绘画 · 约30分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#4FC3F7;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E1F5FE"/>
+            <rect x="14" y="14" width="20" height="20" rx="2" fill="#fff" stroke="#0288D1" stroke-width="1.2"/>
+            <path d="M18 20 L22 24 L18 28" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M26 20 L22 24 L26 28" stroke="#4FC3F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="14" y="14" width="20" height="4" rx="1" fill="#4FC3F7"/>
+            <circle cx="24" cy="8" r="2.5" fill="#4FC3F7" stroke="#0288D1" stroke-width="0.8"/>
+            <line x1="24" y1="10.5" x2="24" y2="14" stroke="#0288D1" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">用Python画一个五角星</div>
+          <div class="card-subtitle">编程 · 约20分钟</div>
+        </div>
+        <div class="card-action"><div class="card-action-btn">去完成 →</div></div>
+      </div>
+
+    </div> <!-- /card-list -->
+
     <!-- ===== Spacer ===== -->
     <div style="height:20px;"></div>
 
-    <!-- ===== Floating Pencil Button (3D) ===== -->
+    <!-- ===== Floating Button (半透明底 + Logo) ===== -->
     <div class="float-btn-wrap">
       <div class="float-btn">
-        <div class="float-ground-shadow"></div>
-        <div class="float-pencil-eraser"></div>
-        <div class="float-pencil-metal"></div>
-        <div class="float-pencil-metal-grooves"></div>
-        <div class="float-pencil-body"></div>
-        <div class="float-pencil-tip"></div>
-        <!-- Award Ribbon SVG -->
-        <svg class="float-ribbon" viewBox="0 0 78 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6 6 L22 24 L16 40 L2 22 Z" fill="#D44E40"/>
-          <path d="M6 6 L8 24 L4 40 L2 22 Z" fill="#B5302A" opacity="0.4"/>
-          <path d="M72 6 L56 24 L62 40 L76 22 Z" fill="#E85D4E"/>
-          <path d="M72 6 L70 24 L74 40 L76 22 Z" fill="#C0392B" opacity="0.3"/>
-          <circle cx="39" cy="18" r="12" fill="#E85D4E"/>
-          <circle cx="39" cy="18" r="12" fill="none" stroke="#C0392B" stroke-width="1.5"/>
-          <line x1="27" y1="18" x2="51" y2="18" stroke="#D44E40" stroke-width="1.5"/>
-          <line x1="39" y1="6" x2="39" y2="30" stroke="#D44E40" stroke-width="1.5"/>
-          <line x1="30" y1="9" x2="48" y2="27" stroke="#D44E40" stroke-width="1.2"/>
-          <line x1="48" y1="9" x2="30" y2="27" stroke="#D44E40" stroke-width="1.2"/>
-          <line x1="28" y1="18" x2="50" y2="18" stroke="#FF9580" stroke-width="0.6" opacity="0.5"/>
-          <circle cx="39" cy="18" r="5" fill="#F4B942" stroke="#E8A830" stroke-width="0.8"/>
-          <circle cx="39" cy="18" r="5" fill="none" stroke="#FFE082" stroke-width="0.5" opacity="0.5"/>
-          <polygon points="39,14.5 40.3,17.2 43.3,17.2 41.1,18.9 41.9,21.5 39,19.8 36.1,21.5 36.9,18.9 34.7,17.2 37.7,17.2"
+        <svg class="float-btn-logo" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- 铅笔主体 -->
+          <rect x="21" y="3" width="14" height="32" rx="2" fill="#FFD54F" stroke="#E8A830" stroke-width="0.8"/>
+          <rect x="22.5" y="5" width="3" height="28" rx="1" fill="#fff" opacity="0.35"/>
+          <!-- 笔尖 -->
+          <polygon points="22,35 34,35 28,44" fill="#FFE0B2" stroke="#E8A830" stroke-width="0.5"/>
+          <!-- 金属箍 -->
+          <rect x="21" y="0" width="14" height="3" rx="1" fill="#B0BEC5"/>
+          <!-- 橡皮擦 -->
+          <rect x="21" y="-3" width="14" height="4" rx="1.5" fill="#E85D4E"/>
+          <!-- 绶带 -->
+          <path d="M13 18 L19 38 L16 48 L10 34 Z" fill="#D44E40" stroke="#C0392B" stroke-width="0.5"/>
+          <path d="M43 18 L37 38 L40 48 L46 34 Z" fill="#E85D4E" stroke="#C0392B" stroke-width="0.5"/>
+          <!-- 徽章 -->
+          <circle cx="28" cy="22" r="9" fill="#E85D4E"/>
+          <circle cx="28" cy="22" r="9" fill="none" stroke="#C0392B" stroke-width="0.8"/>
+          <circle cx="28" cy="22" r="4" fill="#F4B942" stroke="#E8A830" stroke-width="0.6"/>
+          <polygon points="28,19 29.2,21.5 31.9,21.5 30,23.2 30.7,25.7 28,24 25.3,25.7 26,23.2 24.1,21.5 26.8,21.5"
                    fill="#fff" opacity="0.9"/>
         </svg>
       </div>

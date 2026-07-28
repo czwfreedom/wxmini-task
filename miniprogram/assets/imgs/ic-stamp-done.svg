@@ -1,0 +1,13 @@
+<svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 外红环 -->
+  <circle cx="26" cy="26" r="23" fill="none" stroke="#D84035" stroke-width="5"/>
+  <!-- 内环（红色环的内边界） -->
+  <circle cx="26" cy="26" r="15" fill="none" stroke="#D84035" stroke-width="1.2"/>
+  <!-- 金色装饰点 -->
+  <circle cx="26" cy="3" r="2.5" fill="#F4B942"/>
+  <circle cx="26" cy="49" r="2" fill="#F4B942"/>
+  <circle cx="3" cy="26" r="2" fill="#F4B942"/>
+  <circle cx="49" cy="26" r="2" fill="#F4B942"/>
+  <!-- 完成二字，居中 -->
+  <text x="26" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#D84035" letter-spacing="2">完成</text>
+</svg>

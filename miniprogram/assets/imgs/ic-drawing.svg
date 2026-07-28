@@ -1,0 +1,17 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="24" cy="24" r="22" fill="#FFF8E1"/>
+  <!-- 调色板 -->
+  <ellipse cx="24" cy="27" rx="13" ry="11" fill="#FFD54F" stroke="#F9A825" stroke-width="1"/>
+  <!-- 拇指孔 -->
+  <circle cx="24" cy="30" r="4" fill="#FFF8E1" stroke="#F9A825" stroke-width="0.8"/>
+  <!-- 颜料点 -->
+  <circle cx="16" cy="22" r="3" fill="#F06292"/>
+  <circle cx="22" cy="18" r="2.5" fill="#64B5F6"/>
+  <circle cx="29" cy="19" r="2.5" fill="#81C784"/>
+  <circle cx="34" cy="24" r="3" fill="#BA68C8"/>
+  <circle cx="32" cy="30" r="2.5" fill="#FFB74D"/>
+  <!-- 画笔 -->
+  <line x1="30" y1="17" x2="38" y2="9" stroke="#8D6E63" stroke-width="2.5" stroke-linecap="round"/>
+  <polygon points="38,7 40,9 38,11 36,9" fill="#F06292"/>
+  <line x1="36" y1="9" x2="38" y2="8" stroke="#E85D4E" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

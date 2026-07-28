@@ -300,6 +300,55 @@ SubUI 中使用方式参见 [六、标准页面模板](#六page-页面封装规�
 }
 ```
 
+### 数据驱动样式
+
+写 UI 时，**尽量不写死样式，而由数据驱动**。`Entity.Label` 中有一个 `style` 字段（`style?: string`），一般用来承载特殊的样式类名。在 Adapter 层或 SubUI 数据中赋值，WXML 中通过 `{{ style }}` 动态拼接 class，SCSS 中为对应 class 定义样式变体。
+
+**核心思路**：样式变化由数据控制，而非在 WXML 中写 `wx:if` 条件分支或硬编码 class。
+
+**示例**（参考 `index.wxml` / `index.scss` / `indexUI.ts`）：
+
+Data / ViewModel 层 — 在数据中提供 `style` 值：
+
+```typescript
+// indexUI.ts — SubUI 的 Data 中包含 style
+export namespace IndexUI {
+  export interface Data extends SubUI.Data {
+    style?: string;
+  }
+}
+
+// loadData 中通过数据控制样式
+this.setData({ loaded: true, style: 'h' });
+```
+
+WXML — 动态拼接 class：
+
+```xml
+<view class="entry_content_tip {{ style || '' }}">今日任务</view>
+<!-- 当 style === 'h' 时，渲染为 class="entry_content_tip h" -->
+```
+
+SCSS — 以 BEM 修饰符方式定义变体样式：
+
+```scss
+.entry_content_tip {
+  font-size: 30rpx;
+  color: $foreground-dark;
+
+  &.h {
+    color: $foreground-red;
+  }
+}
+```
+
+**要点**：
+
+- `style` 的值就是一个 CSS class 名字符串，在 WXML 中直接拼入 `class` 属性
+- SCSS 中用 `&.{style值}` 定义对应变体，保持 BEM 风格
+- 对于列表项，如果 VM 是 `Entity.Label` 的子类，可直接使用 VM 自带的 `style` 字段，无需额外定义
+- 避免在 WXML 中用 `wx:if` 根据状态切换不同 class，改为由数据层决定 `style` 值
+
 ---
 
 ## 六、Page 页面封装规范（SubUI 模式）

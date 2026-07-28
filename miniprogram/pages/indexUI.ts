@@ -2,7 +2,9 @@ import { SubUI } from '../core/subUI';
 import { Logger } from '../utils/logger';
 
 export namespace IndexUI {
-  export interface Data extends SubUI.Data {}
+  export interface Data extends SubUI.Data {
+    style?: string;
+  }
 }
 
 export class IndexUI extends SubUI<IndexUI.Data> {
@@ -20,7 +22,7 @@ export class IndexUI extends SubUI<IndexUI.Data> {
   }
 
   public loadData() {
-    this.setData({ loaded: true });
+    this.setData({ loaded: true, style: 'h' });
   }
 
   protected onMenuTap(e: WechatMiniprogram.TouchEvent) {

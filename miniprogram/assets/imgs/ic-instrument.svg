@@ -1,0 +1,12 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="24" cy="24" r="22" fill="#EFEBE9"/>
+  <!-- 高音谱号 -->
+  <path d="M28 12 Q34 14 32 19 Q30 24 26 20 L28 38 Q28 40 24 40 Q20 40 20 38 L22 28 Q23 24 26 26 Q30 28 28 24 Q26 20 24 16 Q22 12 28 12Z"
+        fill="none" stroke="#8D6E63" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- 音符 -->
+  <circle cx="16" cy="30" r="3" fill="#A1887F"/>
+  <line x1="19" y1="30" x2="19" y2="16" stroke="#A1887F" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- 第二个音符 -->
+  <circle cx="36" cy="24" r="2.5" fill="#A1887F"/>
+  <line x1="38.5" y1="24" x2="38.5" y2="12" stroke="#A1887F" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

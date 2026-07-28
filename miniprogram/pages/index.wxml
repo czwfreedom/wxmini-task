@@ -2,7 +2,9 @@
 
 <view class="entry">
   <view wx:if="{{ loaded }}" class="entry_content">
-    <view class="entry_content_tip" catch:tap="onMenuTap" data-button="routine">今日任务</view>
+    <view class="entry_content_tip {{ style || '' }}" catch:tap="onMenuTap" data-button="routine">
+      今日任务
+    </view>
   </view>
 </view>
 

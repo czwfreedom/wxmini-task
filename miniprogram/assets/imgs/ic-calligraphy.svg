@@ -1,0 +1,24 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="24" cy="24" r="22" fill="#E0F2F1"/>
+  <!-- 田字格练字纸 -->
+  <rect x="10" y="18" width="20" height="18" rx="1.5" fill="#FFFEF9" stroke="#B2DFDB" stroke-width="0.8"/>
+  <!-- 田字格十字线 -->
+  <line x1="20" y1="18" x2="20" y2="36" stroke="#D7CCC8" stroke-width="0.5"/>
+  <line x1="10" y1="27" x2="30" y2="27" stroke="#D7CCC8" stroke-width="0.5"/>
+  <!-- 纸上的笔迹（半个“永”字） -->
+  <path d="M14 21 L18 27 L22 23" fill="none" stroke="#455A64" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M18 27 L18 34" fill="none" stroke="#455A64" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- 毛笔杆（粗） -->
+  <rect x="30" y="6" width="4" height="16" rx="2" fill="#8D6E63"/>
+  <!-- 毛笔杆渐变纹理 -->
+  <rect x="31" y="7" width="1.5" height="14" rx="0.5" fill="#A1887F" opacity="0.5"/>
+  <!-- 毛笔尖（由粗到细） -->
+  <polygon points="30,22 34,22 32,30" fill="#37474F" stroke="#263238" stroke-width="0.5"/>
+  <!-- 笔尖细节（毫毛纹理） -->
+  <line x1="31.3" y1="25" x2="31.8" y2="30" stroke="#455A64" stroke-width="0.4"/>
+  <line x1="32.7" y1="25" x2="32.2" y2="30" stroke="#455A64" stroke-width="0.4"/>
+  <!-- 墨砚 -->
+  <rect x="34" y="34" width="10" height="5" rx="1.5" fill="#37474F"/>
+  <rect x="36" y="35" width="6" height="3" rx="1" fill="#263238"/>
+  <circle cx="40" cy="36.5" r="0.8" fill="#1a1a1a"/>
+</svg>
