@@ -9,7 +9,7 @@ import { Utils } from '../utils/utils';
 export namespace Routine {
   /** 任务状态 */
   export const enum Status {
-    /** 未开始 */
+    /** 未开始，预留 */
     Pending = 0,
     /** 进行中 */
     Working = 100,
@@ -89,12 +89,75 @@ export namespace Routine {
       const uid = Context.getUserId();
       const tx = () => Utils.shortUuid();
       sMockItems = [
-        { id: '1', name: '《三体》第3章', detail: '约30分钟', status: Status.Pending, category: Category.Reading, userId: uid, date, transaction: tx(), createTime: now },
-        { id: '2', name: '数学练习册 P20-25', detail: '约30分钟', status: Status.Pending, category: Category.Homework, userId: uid, date, transaction: tx(), createTime: now },
-        { id: '3', name: '跳绳500个', detail: '约15分钟', status: Status.Pending, category: Category.Exercise, userId: uid, date, transaction: tx(), createTime: now },
-        { id: '4', name: 'Minecraft 建造城堡', detail: '约30分钟', status: Status.Working, category: Category.Game, userId: uid, date, transaction: tx(), createTime: now },
-        { id: '5', name: '描红《静夜思》', detail: '约15分钟', status: Status.Done, category: Category.Handwriting, userId: uid, date, transaction: tx(), createTime: now, finishTime: now, remark: '笔画比昨天平整，心也静下来了' },
-        { id: '6', name: 'Scratch 发射子弹', detail: '约45分钟', status: Status.Done, category: Category.Coding, userId: uid, date, transaction: tx(), createTime: now, finishTime: now },
+        {
+          id: '1',
+          name: '《三体》第3章',
+          detail: '约30分钟',
+          status: Status.Working,
+          category: Category.Reading,
+          userId: uid,
+          date,
+          transaction: tx(),
+          createTime: now,
+        },
+        {
+          id: '2',
+          name: '数学练习册 P20-25',
+          detail: '约30分钟',
+          status: Status.Working,
+          category: Category.Homework,
+          userId: uid,
+          date,
+          transaction: tx(),
+          createTime: now,
+        },
+        {
+          id: '3',
+          name: '跳绳500个',
+          detail: '约15分钟',
+          status: Status.Working,
+          category: Category.Exercise,
+          userId: uid,
+          date,
+          transaction: tx(),
+          createTime: now,
+        },
+        {
+          id: '4',
+          name: 'Minecraft 建造城堡',
+          detail: '约30分钟',
+          status: Status.Working,
+          category: Category.Game,
+          userId: uid,
+          date,
+          transaction: tx(),
+          createTime: now,
+        },
+        {
+          id: '5',
+          name: '描红《静夜思》',
+          detail: '约15分钟',
+          status: Status.Done,
+          category: Category.Handwriting,
+          userId: uid,
+          date,
+          transaction: tx(),
+          createTime: now,
+          finishTime: now,
+          remark: '笔画比昨天平整，心也静下来了',
+        },
+        {
+          id: '6',
+          name: 'Scratch 发射子弹',
+          detail: '约45分钟',
+          status: Status.Done,
+          category: Category.Coding,
+          userId: uid,
+          date,
+          transaction: tx(),
+          createTime: now,
+          finishTime: now,
+        },
       ];
     }
     return sMockItems;

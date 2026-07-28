@@ -8,11 +8,11 @@ $foreground-sub: #5c6178;
 $foreground-gray: #949aae;
 
 // 暖橙（铅笔色）	待完成任务、添加任务按钮
-$foreground-orange: #ffb74d;
+$background-orange: #f4b942;
 // 柔红（绶带色）	高优先级任务、奖励按钮
 $foreground-red: #ef5350;
 
-$background-gradient: linear-gradient(141.36deg, #ffb74d 0%, #ef5350 100%);
+$gradient: linear-gradient(135deg, $background-orange, #ffd54f);
 
 // 全局背景，比纯白暖 2 度，和微信原生浅灰背景自然衔接
 $background-white: #fbfcfe;

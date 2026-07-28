@@ -85,15 +85,11 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
     this.hideLoading();
   }
 
-  /** 切换任务状态：未开始 → 进行中 → 已完成 */
+  /** 切换任务状态：进行中 ↔ 已完成 */
   protected async onTaskTap(e: WechatMiniprogram.TouchEvent) {
     const { id, status } = e.currentTarget.dataset;
     const nextStatus =
-      status === Routine.Status.Pending
-        ? Routine.Status.Working
-        : status === Routine.Status.Working
-          ? Routine.Status.Done
-          : Routine.Status.Pending;
+      status === Routine.Status.Done ? Routine.Status.Working : Routine.Status.Done;
 
     Logger.info('onTaskTap', id, status, '->', nextStatus);
 

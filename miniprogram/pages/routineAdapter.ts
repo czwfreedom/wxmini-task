@@ -4,7 +4,7 @@ import { RoutineUI } from './routineUI';
 
 /** 分类颜色映射 */
 const sCategoryColors: Record<number, string> = {
-  [Routine.Category.Reading]: '#FFB74D',
+  [Routine.Category.Reading]: '#f4b942',
   [Routine.Category.Homework]: '#64B5F6',
   [Routine.Category.Exercise]: '#81C784',
   [Routine.Category.Chores]: '#BA68C8',
@@ -39,33 +39,27 @@ export class RoutineAdapter {
     return Err.Code.OK;
   }
 
-  /** 将加载到的数据转换为 ViewModel，按状态排序：进行中 > 未开始 > 已完成 */
+  /** 将加载到的数据转换为 ViewModel，按状态排序：进行中 > 已完成 */
   adapt(): RoutineUI.Record[] {
     const records = this.infos.map((info) => {
       const done = info.status === Routine.Status.Done;
-      const working = info.status === Routine.Status.Working;
       return {
         id: info.id,
         name: info.name,
         detail: info.detail,
         category: info.category,
         categoryName: Routine.sCategories[info.category] || '',
-        color: sCategoryColors[info.category] || '#FFB74D',
+        color: sCategoryColors[info.category] || '#f4b942',
         icon: sCategoryIcons[info.category] || '',
         status: info.status,
         finishTime: info.finishTime,
         remark: info.remark,
-        style: done ? 'done' : working ? 'working' : '',
+        style: done ? 'done' : '',
       };
     });
     records.sort((a, b) => {
-      if (a.status !== b.status) {
-        if (a.status === Routine.Status.Working) return -1;
-        if (b.status === Routine.Status.Working) return 1;
-        if (a.status === Routine.Status.Pending) return -1;
-        if (b.status === Routine.Status.Pending) return 1;
-      }
-      return 0;
+      if (a.status === b.status) return 0;
+      return a.status === Routine.Status.Working ? -1 : 1;
     });
     return records;
   }

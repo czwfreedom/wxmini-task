@@ -1,136 +1,205 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ribbon Orbit - 绶带轨道动画</title>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; -webkit-font-smoothing: antialiased; }
-body {
-  background: #f0f3f7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
-}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ribbon Orbit - 绶带轨道动画</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        font-size: 16px;
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        background: #f0f3f7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+      }
 
-.stage {
-  width: 320px;
-  height: 360px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+      .stage {
+        width: 320px;
+        height: 360px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-.icon-wrap {
-  width: 240px;
-  height: 280px;
-  perspective: 500px;
-}
+      .icon-wrap {
+        width: 240px;
+        height: 280px;
+        perspective: 500px;
+      }
 
-svg {
-  transform-style: preserve-3d;
-}
+      svg {
+        transform-style: preserve-3d;
+      }
 
-/* === 公转：rotateY 绕铅笔纵轴 (x=27, 笔尖→橡皮擦) === */
-.orbit-left {
-  transform-origin: 27px 30px;
-  animation: orbitLeft 5s linear infinite;
-}
-@keyframes orbitLeft {
-  from { transform: rotateY(0deg); }
-  to   { transform: rotateY(360deg); }
-}
+      /* === 公转：rotateY 绕铅笔纵轴 (x=27, 笔尖→橡皮擦) === */
+      .orbit-left {
+        transform-origin: 27px 30px;
+        animation: orbitLeft 5s linear infinite;
+      }
+      @keyframes orbitLeft {
+        from {
+          transform: rotateY(0deg);
+        }
+        to {
+          transform: rotateY(360deg);
+        }
+      }
 
-.orbit-right {
-  transform-origin: 27px 30px;
-  animation: orbitRight 5s linear infinite;
-}
-@keyframes orbitRight {
-  from { transform: rotateY(0deg); }
-  to   { transform: rotateY(-360deg); }
-}
+      .orbit-right {
+        transform-origin: 27px 30px;
+        animation: orbitRight 5s linear infinite;
+      }
+      @keyframes orbitRight {
+        from {
+          transform: rotateY(0deg);
+        }
+        to {
+          transform: rotateY(-360deg);
+        }
+      }
 
-/* 背面副本：偏移半圈 */
-.orbit-back-left  { animation: orbitLeftBack  5s linear infinite; }
-.orbit-back-right { animation: orbitRightBack 5s linear infinite; }
-@keyframes orbitLeftBack  { from { transform: rotateY(180deg); } to { transform: rotateY(540deg); } }
-@keyframes orbitRightBack { from { transform: rotateY(180deg); } to { transform: rotateY(-180deg); } }
+      /* 背面副本：偏移半圈 */
+      .orbit-back-left {
+        animation: orbitLeftBack 5s linear infinite;
+      }
+      .orbit-back-right {
+        animation: orbitRightBack 5s linear infinite;
+      }
+      @keyframes orbitLeftBack {
+        from {
+          transform: rotateY(180deg);
+        }
+        to {
+          transform: rotateY(540deg);
+        }
+      }
+      @keyframes orbitRightBack {
+        from {
+          transform: rotateY(180deg);
+        }
+        to {
+          transform: rotateY(-180deg);
+        }
+      }
 
-/* === 自转：rotateY 绕各自纵轴 === */
-.self-spin-left {
-  transform-origin: 14px 36px;
-  animation: spinLeft 3.5s linear infinite;
-  backface-visibility: hidden;
-}
-@keyframes spinLeft {
-  from { transform: rotateY(0deg); }
-  to   { transform: rotateY(360deg); }
-}
-.self-spin-right {
-  transform-origin: 38px 36px;
-  animation: spinRight 2.8s linear infinite;
-  backface-visibility: hidden;
-}
-@keyframes spinRight {
-  from { transform: rotateY(0deg); }
-  to   { transform: rotateY(360deg); }
-}
-</style>
-</head>
-<body>
+      /* === 自转：rotateY 绕各自纵轴 === */
+      .self-spin-left {
+        transform-origin: 14px 36px;
+        animation: spinLeft 3.5s linear infinite;
+        backface-visibility: hidden;
+      }
+      @keyframes spinLeft {
+        from {
+          transform: rotateY(0deg);
+        }
+        to {
+          transform: rotateY(360deg);
+        }
+      }
+      .self-spin-right {
+        transform-origin: 38px 36px;
+        animation: spinRight 2.8s linear infinite;
+        backface-visibility: hidden;
+      }
+      @keyframes spinRight {
+        from {
+          transform: rotateY(0deg);
+        }
+        to {
+          transform: rotateY(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="icon-wrap">
+        <svg viewBox="0 0 56 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Layer 1: 背面副本 (DOM 最先，被铅笔遮挡) -->
+          <g class="orbit-back-left">
+            <g class="self-spin-left">
+              <path
+                d="M13 21 L21 39 L17 51 L9 37 Z"
+                fill="#D44E40"
+                stroke="#C0392B"
+                stroke-width="0.5"
+                opacity="0.5"
+              />
+            </g>
+          </g>
+          <g class="orbit-back-right">
+            <g class="self-spin-right">
+              <path
+                d="M41 21 L33 39 L37 51 L45 37 Z"
+                fill="#E85D4E"
+                stroke="#C0392B"
+                stroke-width="0.5"
+                opacity="0.5"
+              />
+            </g>
+          </g>
 
-<div class="stage">
-  <div class="icon-wrap">
-    <svg viewBox="0 0 56 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Layer 2: 铅笔 + 徽章 -->
+          <rect x="20" y="1" width="14" height="5" rx="2" fill="#E85D4E" />
+          <rect x="21" y="2" width="3" height="3" rx="1" fill="#F07070" opacity="0.4" />
+          <rect x="20" y="6" width="14" height="3" rx="1" fill="#B0BEC5" />
+          <rect
+            x="20"
+            y="9"
+            width="14"
+            height="32"
+            rx="2"
+            fill="#FFD54F"
+            stroke="#E8A830"
+            stroke-width="0.8"
+          />
+          <rect x="21.5" y="11" width="3" height="28" rx="1" fill="#fff" opacity="0.3" />
+          <polygon points="21,41 33,41 27,52" fill="#FFE0B2" stroke="#E8A830" stroke-width="0.5" />
 
-      <!-- Layer 1: 背面副本 (DOM 最先，被铅笔遮挡) -->
-      <g class="orbit-back-left">
-        <g class="self-spin-left">
-          <path d="M13 21 L21 39 L17 51 L9 37 Z"
-                fill="#D44E40" stroke="#C0392B" stroke-width="0.5" opacity="0.5"/>
-        </g>
-      </g>
-      <g class="orbit-back-right">
-        <g class="self-spin-right">
-          <path d="M41 21 L33 39 L37 51 L45 37 Z"
-                fill="#E85D4E" stroke="#C0392B" stroke-width="0.5" opacity="0.5"/>
-        </g>
-      </g>
+          <circle cx="27" cy="23" r="11" fill="#E85D4E" />
+          <circle cx="27" cy="23" r="11" fill="none" stroke="#C0392B" stroke-width="0.8" />
+          <circle cx="27" cy="23" r="4.5" fill="#f4b942" stroke="#E8A830" stroke-width="0.6" />
+          <polygon
+            points="27,19 28.3,21.8 31.3,21.8 29.1,23.5 29.9,26.2 27,24.5 24.1,26.2 24.9,23.5 22.7,21.8 25.7,21.8"
+            fill="#fff"
+            opacity="0.9"
+          />
 
-      <!-- Layer 2: 铅笔 + 徽章 -->
-      <rect x="20" y="1" width="14" height="5" rx="2" fill="#E85D4E"/>
-      <rect x="21" y="2" width="3" height="3" rx="1" fill="#F07070" opacity="0.4"/>
-      <rect x="20" y="6" width="14" height="3" rx="1" fill="#B0BEC5"/>
-      <rect x="20" y="9" width="14" height="32" rx="2" fill="#FFD54F" stroke="#E8A830" stroke-width="0.8"/>
-      <rect x="21.5" y="11" width="3" height="28" rx="1" fill="#fff" opacity="0.3"/>
-      <polygon points="21,41 33,41 27,52" fill="#FFE0B2" stroke="#E8A830" stroke-width="0.5"/>
-
-      <circle cx="27" cy="23" r="11" fill="#E85D4E"/>
-      <circle cx="27" cy="23" r="11" fill="none" stroke="#C0392B" stroke-width="0.8"/>
-      <circle cx="27" cy="23" r="4.5" fill="#F4B942" stroke="#E8A830" stroke-width="0.6"/>
-      <polygon points="27,19 28.3,21.8 31.3,21.8 29.1,23.5 29.9,26.2 27,24.5 24.1,26.2 24.9,23.5 22.7,21.8 25.7,21.8"
-               fill="#fff" opacity="0.9"/>
-
-      <!-- Layer 3: 正面副本 (DOM 最后，覆盖铅笔上方) -->
-      <g class="orbit-left">
-        <g class="self-spin-left">
-          <path d="M13 21 L21 39 L17 51 L9 37 Z"
-                fill="#D44E40" stroke="#C0392B" stroke-width="0.5"/>
-        </g>
-      </g>
-      <g class="orbit-right">
-        <g class="self-spin-right">
-          <path d="M41 21 L33 39 L37 51 L45 37 Z"
-                fill="#E85D4E" stroke="#C0392B" stroke-width="0.5"/>
-        </g>
-      </g>
-
-    </svg>
-  </div>
-</div>
-
-</body>
+          <!-- Layer 3: 正面副本 (DOM 最后，覆盖铅笔上方) -->
+          <g class="orbit-left">
+            <g class="self-spin-left">
+              <path
+                d="M13 21 L21 39 L17 51 L9 37 Z"
+                fill="#D44E40"
+                stroke="#C0392B"
+                stroke-width="0.5"
+              />
+            </g>
+          </g>
+          <g class="orbit-right">
+            <g class="self-spin-right">
+              <path
+                d="M41 21 L33 39 L37 51 L45 37 Z"
+                fill="#E85D4E"
+                stroke="#C0392B"
+                stroke-width="0.5"
+              />
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </body>
 </html>

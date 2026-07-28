@@ -26,15 +26,15 @@ miniprogram/
 
 ### 基础接口层级
 
-| 接口 | 继承 | 附加字段 |
-|------|------|----------|
-| `Entity.Id` | - | `id: string` |
-| `Entity.Selectable` | - | `selected?: boolean` |
-| `Entity.SelectableId` | Id + Selectable | - |
-| `Entity.Info` | Id | `name, nickname?, deleted?` |
-| `Entity.Record` | Id | `selected?, invisible?, letterIndex?` |
-| `Entity.Label` | Record + Info | `desc?, hint?, style?` (文本VM) |
-| `Entity.Image` | Label | `avatar?, avatarStyle?` (带图VM) |
+| 接口                  | 继承            | 附加字段                              |
+| --------------------- | --------------- | ------------------------------------- |
+| `Entity.Id`           | -               | `id: string`                          |
+| `Entity.Selectable`   | -               | `selected?: boolean`                  |
+| `Entity.SelectableId` | Id + Selectable | -                                     |
+| `Entity.Info`         | Id              | `name, nickname?, deleted?`           |
+| `Entity.Record`       | Id              | `selected?, invisible?, letterIndex?` |
+| `Entity.Label`        | Record + Info   | `desc?, hint?, style?` (文本VM)       |
+| `Entity.Image`        | Label           | `avatar?, avatarStyle?` (带图VM)      |
 
 ### 工具方法
 
@@ -113,8 +113,13 @@ export namespace Order {
 import { Entity } from '../model/entity';
 
 export namespace RoutineUI {
-  export interface Data extends SubUI.Data { items: Record[] }
-  export interface Record extends Entity.Label { detail: string; category: number }
+  export interface Data extends SubUI.Data {
+    items: Record[];
+  }
+  export interface Record extends Entity.Label {
+    detail: string;
+    category: number;
+  }
 }
 
 // pages/routineAdapter.ts
@@ -129,8 +134,11 @@ export class RoutineAdapter {
   }
 
   adapt(): RoutineUI.Record[] {
-    return this.infos.map(info => ({
-      id: info.id, name: info.name, detail: info.detail, category: info.category,
+    return this.infos.map((info) => ({
+      id: info.id,
+      name: info.name,
+      detail: info.detail,
+      category: info.category,
     }));
   }
 }
@@ -149,17 +157,17 @@ export class RoutineAdapter {
 
 ### 变量速查
 
-| 变量 | 值 | 用途 |
-|------|------|------|
-| `$main` | `#5599f7` | 主色调 |
-| `$foreground-dark` | `#2d3142` | 标题/重要文字 |
-| `$foreground-sub` | `#5c6178` | 次要文字 |
-| `$foreground-gray` | `#949aae` | 占位符/提示 |
-| `$foreground-orange` | `#ffb74d` | 待完成/添加 |
-| `$foreground-red` | `#ef5350` | 高优先级/删除 |
-| `$background-white` | `#fbfcfe` | 暖白背景 |
-| `$border / $border2` | `#e5e6eb / #d9d9d9` | 边框 |
-| `$background-mask*` | rgba 系列 | 遮罩 |
+| 变量                 | 值                  | 用途          |
+| -------------------- | ------------------- | ------------- |
+| `$main`              | `#5599f7`           | 主色调        |
+| `$foreground-dark`   | `#2d3142`           | 标题/重要文字 |
+| `$foreground-sub`    | `#5c6178`           | 次要文字      |
+| `$foreground-gray`   | `#949aae`           | 占位符/提示   |
+| `$background-orange` | `#f4b942`           | 待完成/添加   |
+| `$foreground-red`    | `#ef5350`           | 高优先级/删除 |
+| `$background-white`  | `#fbfcfe`           | 暖白背景      |
+| `$border / $border2` | `#e5e6eb / #d9d9d9` | 边框          |
+| `$background-mask*`  | rgba 系列           | 遮罩          |
 
 ### Mixin 速查
 
@@ -178,7 +186,9 @@ export class RoutineAdapter {
 // SCSS: BEM 修饰符
 .entry_content_tip {
   color: $foreground-dark;
-  &.h { color: $foreground-red; }
+  &.h {
+    color: $foreground-red;
+  }
 }
 ```
 
@@ -197,16 +207,16 @@ this.setData({ style: 'h' });
 
 ### SubUI 核心 API
 
-| 能力 | 方法 | 说明 |
-|------|------|------|
-| 数据 | `setData/getData` / `setKvData/setKvDatas` | `_`前缀key为根节点 |
-| 事件 | `bindEvent/unbindEvent` | 动态绑定 WXML 事件 |
-| 通信 | `registerEventBus/postEvent` | 跨组件/跨页 |
-| 生命周期 | `onShow/onHide` / `release` | 页面显隐 / 资源释放 |
-| 交互 | `showLoading/hideLoading/showToast/showModal` | 快捷 UI |
-| 错误 | `abort(errcode)/abortWith(msg)` | 统一错误提示 |
-| 传参 | `setIntent/getIntent` | 页面间传参 |
-| 宿主 | `setHostId/setEventListener` | 绑定宿主 / 向上通信 |
+| 能力     | 方法                                          | 说明                |
+| -------- | --------------------------------------------- | ------------------- |
+| 数据     | `setData/getData` / `setKvData/setKvDatas`    | `_`前缀key为根节点  |
+| 事件     | `bindEvent/unbindEvent`                       | 动态绑定 WXML 事件  |
+| 通信     | `registerEventBus/postEvent`                  | 跨组件/跨页         |
+| 生命周期 | `onShow/onHide` / `release`                   | 页面显隐 / 资源释放 |
+| 交互     | `showLoading/hideLoading/showToast/showModal` | 快捷 UI             |
+| 错误     | `abort(errcode)/abortWith(msg)`               | 统一错误提示        |
+| 传参     | `setIntent/getIntent`                         | 页面间传参          |
+| 宿主     | `setHostId/setEventListener`                  | 绑定宿主 / 向上通信 |
 
 ### 页面文件（平铺，不建子目录,避免同名文件难以定位）
 
@@ -221,8 +231,13 @@ import { XxxUI } from './xxxUI';
 Page({
   data: { ...XxxUI.getDefaultData() },
   ui: undefined as XxxUI | undefined,
-  onLoad() { this.ui = new XxxUI(this); this.ui.loadData(); },
-  onUnload() { this.ui?.release(); },
+  onLoad() {
+    this.ui = new XxxUI(this);
+    this.ui.loadData();
+  },
+  onUnload() {
+    this.ui?.release();
+  },
 });
 
 // pages/xxxUI.ts — SubUI + VM
@@ -232,14 +247,23 @@ import { Entity } from '../model/entity';
 import { XxxAdapter } from './xxxAdapter';
 
 export namespace XxxUI {
-  export interface Data extends SubUI.Data { items: Record[]; keyword: string }
-  export interface Record extends Entity.Label { detail: string; status: number }
+  export interface Data extends SubUI.Data {
+    items: Record[];
+    keyword: string;
+  }
+  export interface Record extends Entity.Label {
+    detail: string;
+    status: number;
+  }
 }
 
 export class XxxUI extends SubUI<XxxUI.Data> {
   private adapter = new XxxAdapter();
 
-  constructor(component: any) { super(component); this.bindEvent('onItemTap', this.onItemTap); }
+  constructor(component: any) {
+    super(component);
+    this.bindEvent('onItemTap', this.onItemTap);
+  }
 
   static getDefaultData(): XxxUI.Data {
     return { loaded: false, abortMessage: '', items: [], keyword: '' };
@@ -248,7 +272,10 @@ export class XxxUI extends SubUI<XxxUI.Data> {
   async loadData() {
     this.showLoading();
     const errcode = await this.adapter.load();
-    if (errcode !== Err.Code.OK) { this.abort(errcode); return; }
+    if (errcode !== Err.Code.OK) {
+      this.abort(errcode);
+      return;
+    }
     this.setData({ items: this.adapter.adapt(), loaded: true });
     this.hideLoading();
   }

@@ -198,15 +198,10 @@
       font-weight: 600;
       padding: 16rpx 32rpx;
       border-radius: 40rpx;
-      background: linear-gradient(135deg, #f4b942, #ffd54f);
+      background: $gradient;
       color: #fff;
       box-shadow: 0 6rpx 20rpx rgba(244, 185, 66, 0.3);
       letter-spacing: 1rpx;
-
-      &.working {
-        background: linear-gradient(135deg, #5b9bd5, #64b5f6);
-        box-shadow: 0 6rpx 20rpx rgba(91, 155, 213, 0.3);
-      }
     }
 
     &_stamp {

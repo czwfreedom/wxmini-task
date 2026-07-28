@@ -57,8 +57,7 @@
               <view wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</view>
             </view>
             <view class="routine_card_action">
-              <view wx:if="{{ item.status === 0 }}" class="routine_card_btn">去完成 →</view>
-              <view wx:elif="{{ item.status === 100 }}" class="routine_card_btn working">进行中</view>
+              <view wx:if="{{ item.status === 100 }}" class="routine_card_btn">去完成 →</view>
             </view>
             <image
               wx:if="{{ item.style === 'done' }}"
