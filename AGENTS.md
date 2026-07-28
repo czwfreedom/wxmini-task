@@ -2,111 +2,74 @@
 
 ## 技术栈
 
-- 微信小程序原生开发
-- TypeScript（严格模式）
-- SCSS（全局变量 + Mixin）
+微信小程序原生 + TypeScript（严格模式）+ SCSS（全局变量 + Mixin）
 
 ## 目录结构
 
 ```
 miniprogram/
-├── assets/style/       # 全局样式：var.scss（变量）、mixin.scss（混入）
-├── constant/           # 常量：API路径、错误码、配置、国际化文案
-├── core/               # 框架层：SubUI 基类、Network、EventBus、Intent、Login、Context
-├── model/              # 数据模型：Entity 实体接口定义
-├── pages/              # 页面（平铺，不建子目录）：{name}.ts/.wxml/.scss/.json/.UI.ts/Adapter.ts
-├── server/             # 服务层：按业务域划分 namespace，结构与 CRUD 放一起
-├── storage/            # 本地存储 Key
-└── utils/              # 通用工具
+├── assets/style/     # 全局样式 var.scss / mixin.scss
+├── constant/         # API路径、错误码、配置
+├── core/             # SubUI基类、Network、EventBus、Intent、Login、Context
+├── model/            # Entity实体接口（只读勿改）
+├── pages/            # 页面平铺，不建子目录：{name}.ts/.wxml/.scss/.json/.UI.ts/Adapter.ts
+├── server/           # 按业务域分 namespace，结构+CRUD 放一起
+├── storage/          # 本地存储 Key
+└── utils/            # 通用工具
 ```
 
 ---
 
 ## 一、Entity 实体体系
 
-`miniprogram/model/entity.ts` 提供基础接口层级，**只读，不要改动**，避免出现兼容性问题。
-
-所有新增的数据结构**必须**基于 `Entity` 命名空间派生的接口，但**不要在 `model/entity.ts` 中新增**，而是在各自的 Server namespace 中通过 `extends` 派生。
+`model/entity.ts` **只读勿改**。新增接口在各自 Server namespace 中 `extends` 派生。
 
 ### 基础接口层级
 
-```
-Entity.Id          → { id: string }
-Entity.Selectable  → { selected?: boolean }
-Entity.SelectableId → Id + Selectable
-Entity.Info        → Id + { name, nickname?, deleted? }
-Entity.Record      → Id + { selected?, invisible?, letterIndex? }
-Entity.Label       → Record + Info + { desc?, hint?, style? } // 文本类型VM
-Entity.Image       → Label + { avatar?, avatarStyle? } // 带图片VM
-```
-
-### 新增实体规范
-
-新实体在各自 Server namespace 中定义，派生于 Entity 基础接口，**不修改 entity.ts**：
-
-```typescript
-// miniprogram/server/order.ts
-import { Entity } from '../model/entity';
-
-export namespace Order {
-  // 新实体派生于已有基础接口
-  export interface Info extends Entity.Info, Entity.Selectable {
-    category: string;
-    sortOrder?: number;
-  }
-}
-```
+| 接口 | 继承 | 附加字段 |
+|------|------|----------|
+| `Entity.Id` | - | `id: string` |
+| `Entity.Selectable` | - | `selected?: boolean` |
+| `Entity.SelectableId` | Id + Selectable | - |
+| `Entity.Info` | Id | `name, nickname?, deleted?` |
+| `Entity.Record` | Id | `selected?, invisible?, letterIndex?` |
+| `Entity.Label` | Record + Info | `desc?, hint?, style?` (文本VM) |
+| `Entity.Image` | Label | `avatar?, avatarStyle?` (带图VM) |
 
 ### 工具方法
 
-- `Entity.toMap(items, key?)` — 数组转 Map
-- `Entity.group(items, key?, isKeyArray?)` — 分组
-- `Entity.find(items, id, key?)` — 按 ID 查找
-- `Entity.getIds(items)` — 提取 ID 列表
+`toMap`(数组→Map) · `group`(分组) · `find`(按ID查找) · `getIds`(提取ID列表)
 
 ---
 
-## 二、Server 服务层规范
+## 二、Server 服务层
 
-服务层代码放在 `miniprogram/server/` 目录下，**按业务域划分文件**，每个文件内定义独立的 namespace，将**数据结构定义与 CRUD 操作放在同一 namespace 内**。
+按业务域分文件，namespace 同名（首字母大写驼峰），数据结构 + CRUD 放同一 namespace。
 
-### 命名规范
+### CRUD 规范
 
-- namespace 名与文件名一致（首字母大写驼峰）
-- 接口命名：`{Namespace}.Info`、`{Namespace}.Record` 等
-- CRUD 方法直接在 namespace 内 export
-
-### CRUD 参数与返回值规范
-
-- **参数**：增删改接口不单独定义 interface，直接用 `Partial<Info>`
-- **返回值**：有数据返回 `number | Data`，无数据返回 `number`；错误码由业务调用方判断，严禁吞掉错误码（如 `return []`）
+- **参数**：直接用 `Partial<Info>`，不单独定义 interface
+- **返回值**：`number | Data` 或 `number`，**严禁吞错误码**
+- **API 路径**：在 `constant/api.ts` 统一管理
 
 ### 标准模板
 
 ```typescript
 // miniprogram/server/order.ts
-import { Api } from '../constant/api';
-import { Err } from '../constant/error';
-import { Network } from '../core/network';
 import { Entity } from '../model/entity';
 
 export namespace Order {
   export const enum Status {
-    /** 未开始 */
-    Pending = 0,
-    /** 已完成 */
-    Done = 100,
-    /** 已取消 */
-    Cancelled = 200,
+    /** 未开始 */ Pending = 0,
+    /** 已完成 */ Done = 100,
+    /** 已取消 */ Cancelled = 200,
   }
 
-  // 数据结构：派生于 Entity 体系
   export interface Info extends Entity.Info {
     amount: number;
     status: Order.Status;
   }
 
-  // CRUD 方法
   export async function list(page: number, size = 20): Promise<number | Order.Info[]> {
     const res = await Network.post<Order.Info[]>(Api.OrderList, { page, size });
     if (res.errcode !== 0) return res.errcode || Err.Code.Network;
@@ -126,94 +89,38 @@ export namespace Order {
 }
 ```
 
-### API 路径常量
-
-在 `miniprogram/constant/api.ts` 中统一管理：
-
-```typescript
-export const Api = {
-  // 按模块分组
-  OrderList: '/v1/order/list',
-  OrderDetail: '/v1/order/detail',
-};
-```
-
 ---
 
 ## 三、枚举规范
 
-状态、常量等枚举值放在对应 Entity 所在的 namespace 中，使用 `const enum` 实现，**大写开头、驼峰命名**。
+放在 Entity 所在 namespace 内，使用 `const enum`（编译时内联）。
 
-```typescript
-// miniprogram/server/order.ts
-export namespace Order {
-  export const enum Priority {
-    /** 低优先级 */
-    Low = 1,
-    /** 普通 */
-    Normal = 2,
-  }
-
-  export interface Info extends Entity.Info {
-    amount: number;
-    priority: Order.Priority;
-  }
-}
-```
-
-**要点**：
-
-- `const enum` 编译时内联，零运行时开销
-- 枚举成员**大写开头、驼峰命名**（如 `Pending`、`Processing`）
-- **每个枚举值必须有明确的中文注释**，说明其含义，用 JSDoc 风格（`/** 注释 */`）
-- 放在接口所属的 namespace 内，通过 `Order.Status`、`Order.Priority` 访问
+**要点**：大写驼峰 · 每值 `/** 中文注释 */` · 通过 `Namespace.Status` 访问
 
 ---
 
-## 四、ViewModel 与 Adapter 规范
+## 四、ViewModel 与 Adapter
 
-因为 `setData` 是影响小程序性能的关键，**不要直接把 API 返回的原始数据当作 ViewModel 使用**。需要通过 Adapter 层做数据加载和转换。
+**禁止把 API 原始数据直接当 ViewModel 使用**。通过 Adapter 加载 + 转换。
 
-### 核心原则
-
-- ViewModel 使用 `Entity.Record`,`Entity.Label`,`Entity.Image` 或其派生子类表示，**仅包含 UI 渲染需要的字段**
-- **VM 接口定义在 `namespace XxxUI` 中**，不单独放在 Adapter 文件
-- 每个 SubUI 搭配一个**同名的 Adapter 类**（如 `RoutineUI` ↔ `RoutineAdapter`），负责两件事：
-  - `async load(): Promise<number>` — 加载数据，返回错误码
-  - `adapt()` — 将加载到的数据转换为 VM
-- UI 无关的字段（`userId`、`transaction`、`createTime` 等）**不得**出现在 VM 中
-
-### 示例
+- VM 基于 `Entity.Label/Image/Record` 派生，**仅含 UI 渲染字段**
+- VM 接口定义在 `namespace XxxUI` 内（`XxxUI.Data extends SubUI.Data`）
+- 每个 SubUI 配同名 Adapter（`RoutineUI` ↔ `RoutineAdapter`）：`load()` 获取数据，`adapt()` 转 VM
+- UI 无关字段（`userId`、`transaction`、`createTime` 等）**禁止**出现在 VM
 
 ```typescript
-// pages/routineUI.ts — VM 定义在 XxxUI namespace 中
+// pages/routineUI.ts
 import { Entity } from '../model/entity';
 
 export namespace RoutineUI {
-  export interface Data extends SubUI.Data {
-    records: Record[];
-  }
-
-  /** ViewModel，仅包含 UI 渲染需要的字段 */
-  export interface Record extends Entity.Label {
-    /** 任务详情 */
-    detail: string;
-    /** 任务分类 */
-    category: number;
-  }
+  export interface Data extends SubUI.Data { items: Record[] }
+  export interface Record extends Entity.Label { detail: string; category: number }
 }
-```
 
-```typescript
 // pages/routineAdapter.ts
-import { Err } from '../constant/error';
-import { Routine } from '../server/routine';
-import { RoutineUI } from './routineUI';
-
 export class RoutineAdapter {
   private infos: Routine.Info[] = [];
 
-  /** 加载数据，返回错误码 */
   async load(date: number): Promise<number> {
     const result = await Routine.list(date);
     if (typeof result === 'number') return result;
@@ -221,260 +128,127 @@ export class RoutineAdapter {
     return Err.Code.OK;
   }
 
-  /** 将加载到的数据转换为 ViewModel */
   adapt(): RoutineUI.Record[] {
-    return this.infos.map((info) => ({
-      id: info.id,
-      name: info.name,
-      detail: info.detail,
-      category: info.category,
+    return this.infos.map(info => ({
+      id: info.id, name: info.name, detail: info.detail, category: info.category,
     }));
   }
 }
 ```
 
-SubUI 中使用方式参见 [六、标准页面模板](#六page-页面封装规范subui-模式) 中的 `loadData` 示例。
-
 ---
 
-## 五、SCSS 样式规范
+## 五、SCSS 样式
 
-**每个页面的 `.scss` 文件必须引用全局样式变量和 Mixin**，不得硬编码颜色、尺寸等。
+每个 `.scss` **必须**引用全局变量和 Mixin，禁止硬编码颜色/尺寸。
 
 ```scss
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
 ```
 
-### var.scss 可用变量
+### 变量速查
 
-| 变量                    | 值                    | 用途          |
-| ----------------------- | --------------------- | ------------- |
-| `$main`                 | `#5599f7`             | 主色调        |
-| `$foreground-dark`      | `#2d3142`             | 标题/重要文字 |
-| `$foreground-sub`       | `#5c6178`             | 次要文字      |
-| `$foreground-gray`      | `#949aae`             | 占位符/提示   |
-| `$foreground-orange`    | `#ffb74d`             | 待完成/添加   |
-| `$foreground-red`       | `#ef5350`             | 高优先级/删除 |
-| `$background-white`     | `#fbfcfe`             | 全局暖白背景  |
-| `$background-gradient`  | linear-gradient(...)  | 渐变背景      |
-| `$border` / `$border2`  | `#e5e6eb` / `#d9d9d9` | 边框          |
-| `$background-mask` 系列 | rgba 值               | 遮罩层        |
+| 变量 | 值 | 用途 |
+|------|------|------|
+| `$main` | `#5599f7` | 主色调 |
+| `$foreground-dark` | `#2d3142` | 标题/重要文字 |
+| `$foreground-sub` | `#5c6178` | 次要文字 |
+| `$foreground-gray` | `#949aae` | 占位符/提示 |
+| `$foreground-orange` | `#ffb74d` | 待完成/添加 |
+| `$foreground-red` | `#ef5350` | 高优先级/删除 |
+| `$background-white` | `#fbfcfe` | 暖白背景 |
+| `$border / $border2` | `#e5e6eb / #d9d9d9` | 边框 |
+| `$background-mask*` | rgba 系列 | 遮罩 |
 
-### mixin.scss 可用 Mixin
+### Mixin 速查
 
-| Mixin                                 | 用途                               |
-| ------------------------------------- | ---------------------------------- |
-| `flex-layout($dir, $justify, $align)` | Flex 居中布局                      |
-| `flex-container($color)`              | 全屏纵向 Flex 容器                 |
-| `flex-container-inner($color)`        | 全尺寸纵向 Flex 容器               |
-| `flex-scaleable-content`              | 可伸缩中间区域（配合 scroll-view） |
-| `flex-scaleable-scroll-view`          | 配合可伸缩区域的 scroll-view       |
-| `mask($color)`                        | 全屏遮罩                           |
-| `clear-button`                        | 清除 button 默认样式               |
-| `ellipsis` / `ellipsis-layout`        | 文字溢出省略                       |
-| `throttle`                            | CSS animation 节流                 |
-
-### 示例
-
-```scss
-@import '../assets/style/var.scss';
-@import '../assets/style/mixin.scss';
-
-.my-page {
-  @include flex-container($background-white);
-
-  &_header {
-    padding: 20rpx 30rpx;
-    color: $foreground-dark;
-  }
-
-  &_content {
-    @include flex-scaleable-content;
-
-    &_item {
-      border-bottom: 1rpx solid $border;
-      @include ellipsis;
-    }
-  }
-}
-```
+`flex-layout(dir,justify,align)` · `flex-container(color)` · `flex-container-inner(color)` · `flex-scaleable-content` · `flex-scaleable-scroll-view` · `mask(color)` · `clear-button` · `ellipsis` / `ellipsis-layout` · `throttle`
 
 ### 数据驱动样式
 
-写 UI 时，**尽量不写死样式，而由数据驱动**。`Entity.Label` 中有一个 `style` 字段（`style?: string`），一般用来承载特殊的样式类名。在 Adapter 层或 SubUI 数据中赋值，WXML 中通过 `{{ style }}` 动态拼接 class，SCSS 中为对应 class 定义样式变体。
-
-**核心思路**：样式变化由数据控制，而非在 WXML 中写 `wx:if` 条件分支或硬编码 class。
-
-**示例**（参考 `index.wxml` / `index.scss` / `indexUI.ts`）：
-
-Data / ViewModel 层 — 在数据中提供 `style` 值：
-
-```typescript
-// indexUI.ts — SubUI 的 Data 中包含 style
-export namespace IndexUI {
-  export interface Data extends SubUI.Data {
-    style?: string;
-  }
-}
-
-// loadData 中通过数据控制样式
-this.setData({ loaded: true, style: 'h' });
-```
-
-WXML — 动态拼接 class：
+**不写死样式，由数据驱动**。`Entity.Label.style`（`style?: string`）承载样式类名，WXML 动态拼接，SCSS 以 BEM 修饰符定义变体。样式变化由数据层决定，避免在 WXML 中写 `wx:if` 条件分支。
 
 ```xml
+<!-- WXML: 动态拼接 -->
 <view class="entry_content_tip {{ style || '' }}">今日任务</view>
-<!-- 当 style === 'h' 时，渲染为 class="entry_content_tip h" -->
 ```
 
-SCSS — 以 BEM 修饰符方式定义变体样式：
-
 ```scss
+// SCSS: BEM 修饰符
 .entry_content_tip {
-  font-size: 30rpx;
   color: $foreground-dark;
-
-  &.h {
-    color: $foreground-red;
-  }
+  &.h { color: $foreground-red; }
 }
 ```
 
-**要点**：
+```typescript
+// Data: 数据控制样式
+this.setData({ style: 'h' });
+```
 
-- `style` 的值就是一个 CSS class 名字符串，在 WXML 中直接拼入 `class` 属性
-- SCSS 中用 `&.{style值}` 定义对应变体，保持 BEM 风格
-- 对于列表项，如果 VM 是 `Entity.Label` 的子类，可直接使用 VM 自带的 `style` 字段，无需额外定义
-- 避免在 WXML 中用 `wx:if` 根据状态切换不同 class，改为由数据层决定 `style` 值
+- `style` 值即 CSS class 名字符串 · 列表项直接复用 VM 自带的 `style` 字段
 
 ---
 
-## 六、Page 页面封装规范（SubUI 模式）
+## 六、Page 页面封装（SubUI 模式）
 
-**所有新增页面必须将主体逻辑封装在一个继承 `SubUI` 的类中**。Page 自身只作为壳层委托给 SubUI 实例，这样写代码时基本不用考虑特殊的 wx 上下文。
+所有新增页面必须封装为继承 `SubUI` 的类，Page 只做壳层委托。
 
-### SubUI 基类能力一览
+### SubUI 核心 API
 
-`miniprogram/core/subUI.ts` 提供 `abstract class SubUI<D>`：
+| 能力 | 方法 | 说明 |
+|------|------|------|
+| 数据 | `setData/getData` / `setKvData/setKvDatas` | `_`前缀key为根节点 |
+| 事件 | `bindEvent/unbindEvent` | 动态绑定 WXML 事件 |
+| 通信 | `registerEventBus/postEvent` | 跨组件/跨页 |
+| 生命周期 | `onShow/onHide` / `release` | 页面显隐 / 资源释放 |
+| 交互 | `showLoading/hideLoading/showToast/showModal` | 快捷 UI |
+| 错误 | `abort(errcode)/abortWith(msg)` | 统一错误提示 |
+| 传参 | `setIntent/getIntent` | 页面间传参 |
+| 宿主 | `setHostId/setEventListener` | 绑定宿主 / 向上通信 |
 
-| 能力        | 方法                                                           | 说明                                              |
-| ----------- | -------------------------------------------------------------- | ------------------------------------------------- |
-| 数据读写    | `setData(data)`, `getData()`                                   | 自动添加 subDataKey 前缀；`_` 开头的 key 为根节点 |
-| 快捷设值    | `setKvData(key, v)`, `setKvDatas(...)`                         | 单键或多键设值                                    |
-| 事件绑定    | `bindEvent(name, fn)`, `unbindEvent(name)`                     | 动态绑定 WXML 事件到 Page                         |
-| 事件总线    | `registerEventBus(ev, fn)`, `postEvent(ev, data)`              | 跨组件/跨页通信                                   |
-| 生命周期    | `onShow()`, `onHide()`                                         | 页面显隐感知                                      |
-| 资源释放    | `release()`                                                    | 解绑事件、恢复截屏                                |
-| UI 交互     | `showLoading()`, `hideLoading()`, `showToast()`, `showModal()` | 快捷 UI                                           |
-| 错误处理    | `abort(errcode)`, `abortWith(msg)`                             | 统一错误提示                                      |
-| Intent 传参 | `setIntent()`, `getIntent()`                                   | 页面间传参                                        |
-| 宿主标识    | `setHostId(id)`                                                | 绑定宿主                                          |
-| 向上通信    | `setEventListener(fn)`                                         | 传出事件给外层                                    |
+### 页面文件（平铺，不建子目录,避免同名文件难以定位）
 
-### 文件组织
+`xxx.ts` (Page壳) · `xxxUI.ts` (SubUI + VM 定义) · `xxxAdapter.ts` (数据转换) · `xxx.wxml/scss/json`
 
-**页面不建子目录**，所有相关文件平铺在 `pages/` 下，避免同名文件难以定位：
-
-```
-pages/
-├── index.ts              # 入口页面（壳，初始化后 redirectTo routine）
-├── indexUI.ts            # 入口页 SubUI
-├── index.wxml
-├── index.scss
-├── index.json
-├── routine.ts            # 今天页 Page 壳
-├── routineUI.ts          # 今天页 SubUI（业务逻辑 + VM 定义）
-├── routineAdapter.ts     # 今天页数据加载与适配
-├── routine.wxml
-├── routine.scss
-├── routine.json
-├── feedback.ts           # 反馈页 Page 壳
-├── feedbackUI.ts         # 反馈页 SubUI（费曼输出）
-├── feedback.wxml
-├── feedback.scss
-├── feedback.json
-```
-
-### 标准页面模板
-
-**所有函数包在 namespace/class 中**，不在 Page 层或 SubUI 层裸露顶层函数。
-
-**Data 接口**：与 SubUI 类放在同一个文件中，定义在 namespace 内（如 `XxxUI.Data`），通过 `static getDefaultData()` 暴露默认值。
-
-**Page 层** (`pages/xxx.ts`):
+### 标准模板
 
 ```typescript
+// pages/xxx.ts — Page 壳
 import { XxxUI } from './xxxUI';
 
 Page({
-  data: {
-    ...XxxUI.getDefaultData(),
-  },
-
+  data: { ...XxxUI.getDefaultData() },
   ui: undefined as XxxUI | undefined,
-
-  onLoad() {
-    this.ui = new XxxUI(this);
-    this.ui.loadData();
-  },
-
-  onUnload() {
-    this.ui?.release();
-  },
+  onLoad() { this.ui = new XxxUI(this); this.ui.loadData(); },
+  onUnload() { this.ui?.release(); },
 });
-```
 
-**SubUI 层** (`pages/xxxUI.ts`):
-
-```typescript
+// pages/xxxUI.ts — SubUI + VM
 import { SubUI } from '../core/subUI';
 import { Err } from '../constant/error';
 import { Entity } from '../model/entity';
 import { XxxAdapter } from './xxxAdapter';
-import { Logger } from '../utils/logger';
 
 export namespace XxxUI {
-  export interface Data extends SubUI.Data {
-    /** ViewModel，不直接使用 Order.Info */
-    items: Record[];
-    keyword: string;
-  }
-
-  /** ViewModel，仅包含 UI 渲染需要的字段 */
-  export interface Record extends Entity.Label {
-    detail: string;
-    status: number;
-  }
+  export interface Data extends SubUI.Data { items: Record[]; keyword: string }
+  export interface Record extends Entity.Label { detail: string; status: number }
 }
 
 export class XxxUI extends SubUI<XxxUI.Data> {
   private adapter = new XxxAdapter();
 
-  public constructor(component: any) {
-    super(component);
+  constructor(component: any) { super(component); this.bindEvent('onItemTap', this.onItemTap); }
 
-    // bindEvent 直接传函数名，不需要 bind(this)
-    this.bindEvent('onItemTap', this.onItemTap);
+  static getDefaultData(): XxxUI.Data {
+    return { loaded: false, abortMessage: '', items: [], keyword: '' };
   }
 
-  public static getDefaultData(): XxxUI.Data {
-    return {
-      loaded: false,
-      abortMessage: '',
-      items: [],
-      keyword: '',
-    };
-  }
-
-  public async loadData() {
+  async loadData() {
     this.showLoading();
     const errcode = await this.adapter.load();
-    if (errcode !== Err.Code.OK) {
-      this.abort(errcode);
-      return;
-    }
+    if (errcode !== Err.Code.OK) { this.abort(errcode); return; }
     this.setData({ items: this.adapter.adapt(), loaded: true });
     this.hideLoading();
   }
@@ -486,36 +260,30 @@ export class XxxUI extends SubUI<XxxUI.Data> {
 }
 ```
 
-**WXML 模板** (`pages/xxx.wxml`):
-
 ```xml
+<!-- pages/xxx.wxml -->
 <view class="container">
   <block wx:if="{{loaded}}">
-    <view wx:for="{{items}}" wx:key="id" class="item">
-      <text>{{item.name}}</text>
-    </view>
+    <view wx:for="{{items}}" wx:key="id" class="item"><text>{{item.name}}</text></view>
   </block>
-  <view wx:else>
-    <text>{{abortMessage}}</text>
-  </view>
+  <view wx:else><text>{{abortMessage}}</text></view>
 </view>
 ```
 
 ### 要点
 
-- **所有函数包在 namespace/class 中**：Page 层不写裸函数，SubUI 层不写裸工具函数
-- **Data 接口在 namespace 内定义**：`XxxUI.Data extends SubUI.Data`，配合 `static getDefaultData()` 提供初始值
-- **`bindEvent` 直接传函数名**：`this.bindEvent('onXxx', this.onXxx)`，无需 `.bind(this)`，框架在 `fn.call(this, e)` 中自动绑定上下文
-- **`_` 前缀 key**：直接设置到 data 根节点，不添加 subDataKey 前缀
-- **多 Tab 场景**：同一页面多个 SubUI 实例，通过不同 `subDataKey` 隔离数据
-- **释放顺序**：页面 `onUnload` 时调用 `ui.release()` 清理事件绑定和资源
+- 所有函数包在 namespace/class 内，无裸函数
+- `bindEvent('onXxx', this.onXxx)` 无需 `.bind(this)`，框架自动绑定
+- `_` 前缀 key 绕过 subDataKey，直接设到 data 根节点
+- 多 Tab 用不同 `subDataKey` 隔离实例
+- `onUnload` 调用 `ui.release()` 释放资源
 
 ---
 
 ## 七、其他约定
 
-- **命名空间风格**：项目使用 TypeScript `namespace` 组织代码，所有核心模块均为 namespace export
-- **网络请求**：统一使用 `Network.post<T>(url, data, errorToast?)`，返回 `BaseResponse<T>`。网络层自动注入用户认证头、处理 Token 过期
-- **页面间传参**：使用 `Intent` 机制（通过 `getApp().intent`），避免 URL 参数过长
-- **日志**：使用 `Logger.info/warn/error()` 替代 `console.log`，会自动上报微信 LogManager
-- **错误码**：在 `constant/error.ts` 的 `Err.Code` 和 `Err.getMessage()` 中统一管理
+- TypeScript `namespace` 组织代码
+- 网络请求：`Network.post<T>(url, data, errorToast?)`，自动注入认证 + 处理 Token 过期
+- 页面传参：`Intent` 机制（`getApp().intent`），避免 URL 过长
+- 日志：`Logger.info/warn/error()` 替代 `console.log`
+- 错误码：`Err.Code` + `Err.getMessage()` 统一管理
