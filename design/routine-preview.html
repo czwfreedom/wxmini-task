@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日任务页 - 设计预览</title>
+<style>
+/* ========== Reset & Base ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  background: #E8EFF5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+}
+
+/* ========== Phone Frame ========== */
+.phone {
+  width: 375px;
+  height: 812px;
+  background: #F2F5F8;
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 3px #1a1a1a,
+    0 0 0 6px #2d2d2d,
+    0 20px 60px rgba(0,0,0,0.3);
+}
+.status-bar {
+  height: 44px;
+  background: #B8DAF5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  font-size: 12px;
+  color: #fff;
+  font-weight: 600;
+}
+.status-bar .time { font-size: 14px; font-weight: 700; }
+.status-bar .icons { display: flex; gap: 6px; }
+
+/* ========== Page Container ========== */
+.page {
+  height: calc(100% - 44px);
+  overflow-y: auto;
+  background: linear-gradient(180deg, #B8DAF5 0%, #F2F5F8 30%);
+  padding: 0 20px 140px;
+  position: relative;
+}
+
+/* ========== Hero Section ========== */
+.hero {
+  background: linear-gradient(160deg, #B5D9F8 0%, #A0CDF5 50%, #C5E3FA 100%);
+  border-radius: 0 0 32px 32px;
+  margin: 0 -20px 24px;
+  padding: 24px 28px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 12px; left: 50%;
+  transform: translateX(-50%);
+  width: 40px; height: 10px;
+  background: #F2F5F8;
+  border-radius: 5px;
+  box-shadow: inset 1px 2px 3px rgba(0,0,0,0.06);
+}
+.hero-ring-left, .hero-ring-right {
+  position: absolute;
+  top: 10px;
+  width: 12px; height: 12px;
+  background: #F2F5F8;
+  border-radius: 50%;
+  box-shadow: inset 1px 2px 3px rgba(0,0,0,0.08);
+}
+.hero-ring-left { left: calc(50% - 50px); }
+.hero-ring-right { right: calc(50% - 50px); }
+
+.hero-date-label {
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+  margin-top: 12px;
+  letter-spacing: 1px;
+}
+.hero-date-main {
+  font-size: 36px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+.hero-motto {
+  font-size: 13px;
+  color: rgba(255,255,255,0.78);
+  margin-top: 4px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.hero-status-bar {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+.hero-status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3A5A8C;
+  background: rgba(255,255,255,0.65);
+  padding: 6px 14px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+.hero-status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.hero-status-dot.planned { background: #5B9BD5; }
+.hero-status-dot.feedback { background: #F4B942; }
+.hero-status-dot.done { background: #81C784; }
+
+/* ========== Pencil Mascot (Hero) ========== */
+.hero-mascot {
+  position: absolute;
+  right: 18px;
+  bottom: 14px;
+  width: 64px;
+  height: 64px;
+}
+.mascot-pencil {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  transform: rotate(-15deg);
+}
+/* -- pencil body -- */
+.pencil-body {
+  width: 14px; height: 44px;
+  background: linear-gradient(180deg, #FFD54F 0%, #F4B942 100%);
+  position: absolute;
+  bottom: 8px; left: 19px;
+  border-radius: 2px 2px 0 0;
+  box-shadow: 1px 2px 6px rgba(0,0,0,0.12);
+}
+/* -- pencil tip -- */
+.pencil-tip {
+  width: 0; height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 10px solid #FFE0B2;
+  position: absolute;
+  bottom: 0; left: 19px;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+}
+/* -- eraser -- */
+.pencil-eraser {
+  width: 14px; height: 6px;
+  background: linear-gradient(180deg, #E85D4E 0%, #D44E40 100%);
+  position: absolute;
+  top: 0; left: 19px;
+  border-radius: 2px 2px 0 0;
+}
+/* -- metal ferrule -- */
+.pencil-eraser-metal {
+  width: 14px; height: 3px;
+  background: #B0BEC5;
+  position: absolute;
+  top: 6px; left: 19px;
+}
+/* -- ribbon overlay -- */
+.mascot-ribbon {
+  position: absolute;
+  top: 0; left: 0;
+  width: 52px; height: 52px;
+  pointer-events: none;
+}
+
+/* ========== Section Title ========== */
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #3A3D4A;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::before {
+  content: '';
+  width: 4px; height: 18px;
+  background: #F4B942;
+  border-radius: 2px;
+}
+
+/* ========== Mascot Pose Showcase ========== */
+.pose-showcase {
+  background: #fff;
+  border-radius: 20px;
+  padding: 18px 16px;
+  margin-bottom: 20px;
+  box-shadow:
+    0 2px 0 rgba(0,0,0,0.03),
+    0 8px 24px rgba(74, 144, 226, 0.06);
+}
+.pose-showcase-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #3A3D4A;
+  margin-bottom: 4px;
+}
+.pose-showcase-sub {
+  font-size: 11px;
+  color: #949AAE;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.pose-variants {
+  display: flex;
+  gap: 10px;
+  justify-content: space-around;
+}
+.pose-variant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.pose-variant-box {
+  width: 76px;
+  height: 76px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.pose-variant-box.tilted { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); }
+.pose-variant-box.bounce { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); }
+.pose-variant-box.celebrate { background: linear-gradient(135deg, #FCE4EC, #F8BBD0); }
+.pose-variant-box.laying { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); }
+.pose-variant-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #5C6178;
+  text-align: center;
+}
+.pose-variant-desc {
+  font-size: 9px;
+  color: #949AAE;
+  text-align: center;
+  line-height: 1.3;
+  max-width: 76px;
+}
+
+/* Pose specific animations inside showcase */
+.pose-bounce-anim {
+  animation: poseBounce 0.8s ease-in-out infinite alternate;
+}
+@keyframes poseBounce {
+  0% { transform: rotate(-15deg) translateY(0); }
+  100% { transform: rotate(-15deg) translateY(-10px); }
+}
+.pose-spin-anim {
+  animation: poseSpin 2s ease-in-out infinite;
+}
+@keyframes poseSpin {
+  0% { transform: rotate(-15deg); }
+  50% { transform: rotate(15deg); }
+  100% { transform: rotate(-15deg); }
+}
+.pose-celebrate-container {
+  position: relative;
+}
+.pose-sparkle {
+  position: absolute;
+  animation: sparklePop 0.6s ease-out infinite;
+}
+@keyframes sparklePop {
+  0% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1.4); }
+  100% { opacity: 0; transform: scale(0); }
+}
+.pose-sparkle:nth-child(1) { top: 4px; left: 16px; animation-delay: 0s; }
+.pose-sparkle:nth-child(2) { top: 2px; right: 14px; animation-delay: 0.2s; }
+.pose-sparkle:nth-child(3) { bottom: 8px; left: 6px; animation-delay: 0.4s; }
+.pose-sparkle:nth-child(4) { bottom: 4px; right: 8px; animation-delay: 0.3s; }
+
+/* ========== Task Cards ========== */
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.task-card {
+  position: relative;
+  background: #FDFBF7;
+  border-radius: 20px;
+  padding: 20px 20px 20px 0;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow:
+    0 2px 0 rgba(0,0,0,0.03),
+    0 8px 24px rgba(74, 144, 226, 0.06);
+  overflow: hidden;
+}
+.task-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.5), rgba(255,255,255,0.9), rgba(255,255,255,0.5));
+  border-radius: 1px;
+}
+.task-card .card-accent {
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 8px;
+  border-radius: 0 4px 4px 0;
+}
+
+.card-icon-wrap {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.card-icon-bg {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+}
+
+.card-body {
+  flex: 1;
+  min-width: 0;
+}
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #2D3142;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+.card-subtitle {
+  font-size: 13px;
+  color: #949AAE;
+  line-height: 1.4;
+}
+
+.card-action {
+  min-width: 64px;
+  text-align: center;
+  margin-right: 4px;
+}
+.card-action-btn {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+
+/* --- Planned --- */
+.card-planned .card-action-btn {
+  background: linear-gradient(135deg, #F4B942, #FFD54F);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(244, 185, 66, 0.3);
+}
+
+/* --- Unplanned --- */
+.card-unplanned {
+  background: #FAFAFA;
+  border: 1.5px dashed #D9DDE3;
+  box-shadow: none;
+  opacity: 0.85;
+}
+.card-unplanned .card-accent { opacity: 0.5; }
+.card-unplanned .card-icon-wrap { opacity: 0.45; }
+.card-unplanned .card-title { color: #B0B6C0; }
+.card-unplanned .card-subtitle { color: #C7CCD4; }
+.card-unplanned .card-action-btn {
+  background: #EEF0F4;
+  color: #B0B6C0;
+}
+
+/* --- Done --- */
+.card-done {
+  background: #F9FDF6;
+  opacity: 0.92;
+  border: 1.5px solid rgba(198, 230, 180, 0.5);
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.02),
+    0 6px 18px rgba(139, 195, 74, 0.1);
+}
+.card-done .card-accent {
+  background: linear-gradient(180deg, #F4B942, #FFD54F) !important;
+  border-radius: 0 4px 4px 0;
+}
+.card-done .card-icon-wrap {
+  opacity: 0.65;
+  filter: saturate(0.7);
+}
+.card-done .card-title {
+  color: #5A6B3A;
+  font-weight: 700;
+}
+.card-done .card-title::before {
+  content: '★';
+  color: #F4B942;
+  font-size: 16px;
+  margin-right: 6px;
+  text-shadow: 0 1px 2px rgba(200, 150, 50, 0.3);
+}
+.card-done .card-subtitle { color: #9DB08A; }
+
+/* Gold Medal Badge */
+.medal-badge {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 60px;
+  height: 60px;
+  transform: rotate(-8deg);
+  filter: drop-shadow(0 4px 8px rgba(180, 140, 30, 0.5));
+}
+
+.card-done .feedback-quote {
+  font-size: 12px;
+  color: #8BA878;
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: rgba(139, 195, 74, 0.08);
+  border-radius: 8px;
+  font-style: italic;
+  line-height: 1.5;
+  border-left: 2px solid rgba(139, 195, 74, 0.25);
+}
+
+/* ========== Add More Card ========== */
+.card-add-more {
+  background: transparent;
+  border: 1.8px dashed #C5CDD6;
+  border-radius: 20px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #9BA3AE;
+  font-size: 14px;
+  font-weight: 600;
+}
+.card-add-more::after { display: none; }
+.card-add-more .add-icon {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: #EAEEF3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #8B95A4;
+}
+
+/* ========== Floating Pencil Button (3D) ========== */
+.float-btn-wrap {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 100px;
+  z-index: 10;
+}
+.float-btn {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 80px;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
+}
+.float-btn:hover {
+  transform: translateX(-50%) translateY(-6px) scale(1.06);
+}
+.float-btn:active {
+  transform: translateX(-50%) translateY(4px) scale(0.94);
+}
+/* Ground shadow */
+.float-ground-shadow {
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px; height: 14px;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.06) 40%, transparent 70%);
+  border-radius: 50%;
+}
+/* 3D Pencil body */
+.float-pencil-body {
+  width: 26px; height: 52px;
+  margin: 0 auto;
+  border-radius: 3px 3px 0 0;
+  position: relative;
+  background:
+    linear-gradient(90deg,
+      #C89818 0%,
+      #E0A820 10%,
+      #F4B942 25%,
+      #FFD54F 45%,
+      #FFE082 60%,
+      #F4B942 80%,
+      #D4A020 100%
+    );
+  box-shadow:
+    inset 2px 0 6px rgba(255,255,255,0.35),
+    inset -3px 0 8px rgba(0,0,0,0.15),
+    0 5px 0 rgba(160,120,20,0.45),
+    0 8px 16px rgba(0,0,0,0.12);
+}
+.float-pencil-body::after {
+  content: '';
+  position: absolute;
+  left: 4px; top: 6px; bottom: 6px;
+  width: 3px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 2px;
+}
+.float-pencil-body::before {
+  content: '';
+  position: absolute;
+  right: 2px; top: 8px; bottom: 8px;
+  width: 2px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 1px;
+}
+/* Tip with lead */
+.float-pencil-tip {
+  width: 0; height: 0;
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  border-top: 20px solid #FFE0B2;
+  margin: 0 auto;
+  position: relative;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.08));
+}
+.float-pencil-tip::after {
+  content: '';
+  width: 0; height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 7px solid #666;
+  position: absolute;
+  top: -23px; left: 50%;
+  transform: translateX(-50%);
+}
+/* 3D Eraser */
+.float-pencil-eraser {
+  width: 26px; height: 12px;
+  background:
+    linear-gradient(90deg,
+      #B5302A 0%,
+      #D44E40 15%,
+      #E85D4E 35%,
+      #F07070 55%,
+      #E85D4E 75%,
+      #C0392B 100%
+    );
+  margin: 0 auto;
+  border-radius: 3px 3px 0 0;
+  box-shadow:
+    inset 2px 0 4px rgba(255,255,255,0.25),
+    inset -2px 0 4px rgba(0,0,0,0.15);
+}
+/* 3D Metal ferrule */
+.float-pencil-metal {
+  width: 26px; height: 5px;
+  background:
+    linear-gradient(90deg,
+      #607D8B 0%,
+      #90A4AE 10%,
+      #B0BEC5 25%,
+      #ECEFF1 40%,
+      #CFD8DC 55%,
+      #90A4AE 85%,
+      #78909C 100%
+    );
+  margin: 0 auto;
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.3),
+    inset 0 -1px 2px rgba(0,0,0,0.15);
+}
+.float-pencil-metal-grooves {
+  width: 26px; height: 0;
+  margin: 0 auto;
+  position: relative;
+}
+.float-pencil-metal-grooves::before,
+.float-pencil-metal-grooves::after {
+  content: '';
+  position: absolute;
+  left: 1px; right: 1px;
+  height: 0.5px;
+  background: rgba(0,0,0,0.2);
+}
+.float-pencil-metal-grooves::before { top: -2px; }
+.float-pencil-metal-grooves::after { top: 0px; }
+/* Ribbon */
+.float-ribbon {
+  position: absolute;
+  top: -6px; left: -18px;
+  width: 78px; height: 40px;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.15));
+}
+
+/* ========== Misc ========== */
+svg.icon { display: block; }
+.page::-webkit-scrollbar { width: 0; }
+.corner-fold {
+  position: absolute;
+  top: 0; right: 0;
+  width: 24px; height: 24px;
+  background: linear-gradient(135deg,
+    transparent 50%,
+    rgba(0,0,0,0.04) 50%
+  );
+  border-radius: 0 0 0 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">●●●● Wi-Fi 🔋</span>
+  </div>
+
+  <div class="page" id="page">
+
+    <!-- ===== Hero Top ===== -->
+    <div class="hero">
+      <div class="hero-ring-left"></div>
+      <div class="hero-ring-right"></div>
+
+      <div class="hero-date-label">今天是</div>
+      <div class="hero-date-main">7月28日 周二</div>
+      <div class="hero-motto">✦ 好的规划，带来好的结果</div>
+
+      <div class="hero-status-bar">
+        <div class="hero-status-item">
+          <span class="hero-status-dot planned"></span> 已规划 2
+        </div>
+        <div class="hero-status-item">
+          <span class="hero-status-dot feedback"></span> 待反馈 1
+        </div>
+        <div class="hero-status-item">
+          <span class="hero-status-dot done"></span> 已完成 1
+        </div>
+      </div>
+
+      <!-- Pencil Mascot -->
+      <div class="hero-mascot">
+        <div class="mascot-pencil">
+          <div class="pencil-eraser"></div>
+          <div class="pencil-eraser-metal"></div>
+          <div class="pencil-body"></div>
+          <div class="pencil-tip"></div>
+          <!-- Award Ribbon SVG -->
+          <svg class="mascot-ribbon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 20 L20 38 L16 50 L8 36 Z" fill="#D44E40" stroke="#C0392B" stroke-width="0.5"/>
+            <path d="M40 20 L32 38 L36 50 L44 36 Z" fill="#E85D4E" stroke="#C0392B" stroke-width="0.5"/>
+            <circle cx="26" cy="22" r="12" fill="#E85D4E"/>
+            <path d="M14 22 L38 22" stroke="#D44E40" stroke-width="1.5"/>
+            <path d="M26 10 L26 34" stroke="#D44E40" stroke-width="1.5"/>
+            <path d="M17.5 13.5 L34.5 30.5" stroke="#D44E40" stroke-width="1.2"/>
+            <path d="M34.5 13.5 L17.5 30.5" stroke="#D44E40" stroke-width="1.2"/>
+            <path d="M15 22 L37 22" stroke="#FF9580" stroke-width="0.6"/>
+            <circle cx="26" cy="22" r="5" fill="#F4B942" stroke="#E8A830" stroke-width="0.8"/>
+            <polygon points="26,18 27.4,20.9 30.6,20.9 28.3,22.8 29.1,25.7 26,23.9 22.9,25.7 23.7,22.8 21.4,20.9 24.6,20.9"
+                     fill="#fff" opacity="0.9"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Mascot Pose Showcase ===== -->
+    <div class="pose-showcase">
+      <div class="pose-showcase-title">吉祥物动作变种</div>
+      <div class="pose-showcase-sub">铅笔+奖章绶带组合，适配不同场景的姿态变化</div>
+      <div class="pose-variants">
+
+        <!-- Pose 1: Standard (Logo) -->
+        <div class="pose-variant">
+          <div class="pose-variant-box badge">
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Pencil body -->
+              <rect x="22" y="10" width="12" height="34" rx="2" fill="#FFD54F" stroke="#E8A830" stroke-width="0.8"/>
+              <rect x="23.5" y="12" width="2.5" height="30" rx="1" fill="#fff" opacity="0.35"/>
+              <!-- Ribbon -->
+              <path d="M10 26 L16 42 L14 52 L8 38 Z" fill="#E85D4E" stroke="#C0392B" stroke-width="0.5"/>
+              <path d="M46 26 L40 42 L42 52 L48 38 Z" fill="#D44E40" stroke="#C0392B" stroke-width="0.5"/>
+              <circle cx="28" cy="30" r="10" fill="#E85D4E"/>
+              <circle cx="28" cy="30" r="10" fill="none" stroke="#C0392B" stroke-width="0.8"/>
+              <circle cx="28" cy="30" r="4" fill="#F4B942" stroke="#E8A830" stroke-width="0.6"/>
+              <!-- Tip -->
+              <polygon points="23,44 33,44 28,54" fill="#FFE0B2" stroke="#E8A830" stroke-width="0.5"/>
+              <!-- Metal -->
+              <rect x="22" y="6" width="12" height="4" rx="1" fill="#B0BEC5"/>
+              <!-- Eraser -->
+              <rect x="22" y="2" width="12" height="4" rx="1.5" fill="#E85D4E"/>
+            </svg>
+          </div>
+          <div class="pose-variant-label">标准态</div>
+          <div class="pose-variant-desc">0° 垂直 · 奖章居中<br>Logo / 应用图标</div>
+        </div>
+
+        <!-- Pose 2: Tilted (Hero) -->
+        <div class="pose-variant">
+          <div class="pose-variant-box tilted">
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g transform="rotate(-15, 28, 28)">
+                <rect x="20" y="8" width="14" height="38" rx="2" fill="#FFD54F" stroke="#E8A830" stroke-width="0.8"/>
+                <rect x="21.5" y="10" width="3" height="34" rx="1" fill="#fff" opacity="0.3"/>
+                <path d="M6 24 L14 44 L11 56 L6 40 Z" fill="#E85D4E" stroke="#C0392B" stroke-width="0.5"/>
+                <path d="M46 24 L38 44 L41 56 L46 40 Z" fill="#D44E40" stroke="#C0392B" stroke-width="0.5"/>
+                <circle cx="27" cy="28" r="11" fill="#E85D4E"/>
+                <circle cx="27" cy="28" r="11" fill="none" stroke="#C0392B" stroke-width="0.8"/>
+                <path d="M16 28 L38 28" stroke="#D44E40" stroke-width="1.2"/>
+                <path d="M27 17 L27 39" stroke="#D44E40" stroke-width="1.2"/>
+                <circle cx="27" cy="28" r="4.5" fill="#F4B942" stroke="#E8A830" stroke-width="0.6"/>
+                <polygon points="21,46 33,46 27,58" fill="#FFE0B2" stroke="#E8A830" stroke-width="0.5"/>
+                <rect x="20" y="4" width="14" height="4.5" rx="1" fill="#B0BEC5"/>
+                <rect x="20" y="0" width="14" height="4.5" rx="1.5" fill="#E85D4E"/>
+              </g>
+            </svg>
+          </div>
+          <div class="pose-variant-label">倾斜态</div>
+          <div class="pose-variant-desc">-15° 微倾 · 活泼动感<br>Hero 页 / 动画</div>
+        </div>
+
+        <!-- Pose 3: Bouncing -->
+        <div class="pose-variant">
+          <div class="pose-variant-box bounce">
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g class="pose-bounce-anim">
+                <rect x="20" y="6" width="14" height="38" rx="2" fill="#FFD54F" stroke="#E8A830" stroke-width="0.8"/>
+                <rect x="21.5" y="8" width="3" height="34" rx="1" fill="#fff" opacity="0.3"/>
+                <path d="M6 24 L14 44 L11 56 L6 40 Z" fill="#E85D4E" stroke="#C0392B" stroke-width="0.5"/>
+                <path d="M46 24 L38 44 L41 56 L46 40 Z" fill="#D44E40" stroke="#C0392B" stroke-width="0.5"/>
+                <circle cx="27" cy="28" r="11" fill="#E85D4E"/>
+                <circle cx="27" cy="28" r="4.5" fill="#F4B942" stroke="#E8A830" stroke-width="0.6"/>
+                <polygon points="21,44 33,44 27,56" fill="#FFE0B2" stroke="#E8A830" stroke-width="0.5"/>
+                <rect x="20" y="2" width="14" height="4.5" rx="1" fill="#B0BEC5"/>
+                <rect x="20" y="-2" width="14" height="4.5" rx="1.5" fill="#E85D4E"/>
+              </g>
+              <!-- Ground line -->
+              <line x1="8" y1="54" x2="48" y2="54" stroke="#ddd" stroke-width="1" stroke-dasharray="3 3"/>
+            </svg>
+          </div>
+          <div class="pose-variant-label">弹跳态</div>
+          <div class="pose-variant-desc">上下弹性跳跃<br>按钮交互反馈</div>
+        </div>
+
+        <!-- Pose 4: Celebrating -->
+        <div class="pose-variant">
+          <div class="pose-variant-box celebrate">
+            <div class="pose-celebrate-container" style="position:relative;">
+              <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g transform="rotate(-20, 28, 28)">
+                  <rect x="20" y="10" width="14" height="36" rx="2" fill="#FFD54F" stroke="#E8A830" stroke-width="0.8"/>
+                  <rect x="21.5" y="12" width="3" height="32" rx="1" fill="#fff" opacity="0.3"/>
+                  <path d="M6 26 L14 46 L11 58 L6 42 Z" fill="#E85D4E" stroke="#C0392B" stroke-width="0.5"/>
+                  <path d="M46 26 L38 46 L41 58 L46 42 Z" fill="#D44E40" stroke="#C0392B" stroke-width="0.5"/>
+                  <circle cx="27" cy="30" r="11" fill="#E85D4E"/>
+                  <circle cx="27" cy="30" r="4.5" fill="#F4B942" stroke="#E8A830" stroke-width="0.6"/>
+                  <polygon points="21,46 33,46 27,58" fill="#FFE0B2" stroke="#E8A830" stroke-width="0.5"/>
+                  <rect x="20" y="6" width="14" height="4" rx="1" fill="#B0BEC5"/>
+                  <rect x="20" y="2" width="14" height="4" rx="1.5" fill="#E85D4E"/>
+                </g>
+              </svg>
+              <!-- Sparkles -->
+              <svg class="pose-sparkle" width="10" height="10" viewBox="0 0 10 10"><polygon points="5,0 6.2,3.8 10,5 6.2,6.2 5,10 3.8,6.2 0,5 3.8,3.8" fill="#FFD54F"/></svg>
+              <svg class="pose-sparkle" width="8" height="8" viewBox="0 0 8 8"><polygon points="4,0 5,3 8,4 5,5 4,8 3,5 0,4 3,3" fill="#F4B942"/></svg>
+              <svg class="pose-sparkle" width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="2.5" fill="#FFE082"/></svg>
+              <svg class="pose-sparkle" width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3" fill="#FFF176"/></svg>
+            </div>
+          </div>
+          <div class="pose-variant-label">庆祝态</div>
+          <div class="pose-variant-desc">大角度倾斜 + 星星<br>任务完成庆祝</div>
+        </div>
+
+        <!-- Pose 5: Idle Laying -->
+        <div class="pose-variant">
+          <div class="pose-variant-box laying">
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Tablet/paper underneath -->
+              <rect x="4" y="38" width="48" height="14" rx="3" fill="#E3F2FD" stroke="#90CAF9" stroke-width="0.8"/>
+              <line x1="10" y1="43" x2="38" y2="43" stroke="#BBDEFB" stroke-width="1"/>
+              <line x1="10" y1="47" x2="32" y2="47" stroke="#BBDEFB" stroke-width="1"/>
+              <!-- Pencil laying on paper, rotated 90 -->
+              <g transform="rotate(95, 28, 28)">
+                <rect x="4" y="12" width="48" height="12" rx="2" fill="#FFD54F" stroke="#E8A830" stroke-width="0.8"/>
+                <rect x="6" y="14" width="3" height="8" rx="1" fill="#fff" opacity="0.3"/>
+                <polygon points="52,12 52,24 64,18" fill="#FFE0B2" stroke="#E8A830" stroke-width="0.5"/>
+                <polygon points="56,16 60,18 56,20" fill="#555"/>
+                <rect x="0" y="12" width="4.5" height="12" rx="1" fill="#B0BEC5"/>
+                <rect x="-4.5" y="12" width="4.5" height="12" rx="1.5" fill="#E85D4E"/>
+              </g>
+              <!-- Small ribbon resting beside -->
+              <g transform="translate(44, 24) scale(0.4)">
+                <path d="M10 20 L16 38 L14 48 L8 34 Z" fill="#E85D4E"/>
+                <path d="M40 20 L34 38 L36 48 L42 34 Z" fill="#D44E40"/>
+                <circle cx="25" cy="24" r="9" fill="#E85D4E"/>
+                <circle cx="25" cy="24" r="3.5" fill="#F4B942"/>
+              </g>
+            </svg>
+          </div>
+          <div class="pose-variant-label">休息态</div>
+          <div class="pose-variant-desc">横卧书写台面<br>未激活 / 闲置状态</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== Task List ===== -->
+    <div class="section-title">今日任务</div>
+
+    <div class="card-list">
+
+      <!-- Card 1: 阅读 - 已规划 -->
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#FFB74D;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#FFF3E0"/>
+            <rect x="14" y="12" width="20" height="24" rx="2" fill="#FFB74D" stroke="#E65100" stroke-width="1.5"/>
+            <line x1="24" y1="12" x2="24" y2="36" stroke="#E65100" stroke-width="1.2"/>
+            <path d="M24 30 L24 20 L34 20 L24 30Z" fill="#E85D4E" stroke="#C62828" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">《三体》第3章</div>
+          <div class="card-subtitle">阅读 · 约30分钟</div>
+        </div>
+        <div class="card-action">
+          <div class="card-action-btn">去完成 →</div>
+        </div>
+        <div class="corner-fold"></div>
+      </div>
+
+      <!-- Card 2: 作业 - 已规划 -->
+      <div class="task-card card-planned">
+        <div class="card-accent" style="background:#64B5F6;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E3F2FD"/>
+            <rect x="12" y="15" width="16" height="20" rx="2" fill="#fff" stroke="#1565C0" stroke-width="1.5"/>
+            <line x1="16" y1="21" x2="24" y2="21" stroke="#64B5F6" stroke-width="1.2"/>
+            <line x1="16" y1="25" x2="24" y2="25" stroke="#64B5F6" stroke-width="1.2"/>
+            <line x1="16" y1="29" x2="22" y2="29" stroke="#64B5F6" stroke-width="1.2"/>
+            <rect x="30" y="16" width="5" height="18" rx="1.5" fill="#FFD54F" stroke="#F9A825" stroke-width="1"/>
+            <polygon points="30,34 35,34 32.5,40" fill="#FFE0B2" stroke="#F9A825" stroke-width="0.8"/>
+            <rect x="30" y="14" width="5" height="4" rx="1" fill="#E85D4E"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">数学练习册 P20-25</div>
+          <div class="card-subtitle">作业 · 约30分钟</div>
+        </div>
+        <div class="card-action">
+          <div class="card-action-btn">去完成 →</div>
+        </div>
+        <div class="corner-fold"></div>
+      </div>
+
+      <!-- Card 3: 运动 - 未规划 -->
+      <div class="task-card card-unplanned">
+        <div class="card-accent" style="background:#81C784;"></div>
+        <div class="card-icon-wrap">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E8F5E9"/>
+            <path d="M14 28 Q10 28 10 24 L10 20 Q12 18 16 18 L28 16 L34 18 L36 26 Q36 30 32 30 L14 28Z"
+                  fill="#fff" stroke="#2E7D32" stroke-width="1.5"/>
+            <path d="M28 16 L30 10 Q32 8 34 10 L34 18" fill="none" stroke="#2E7D32" stroke-width="1.5"/>
+            <path d="M22 20 L23 22 L25 22 L23.5 23.5 L24 25.5 L22 24.5 L20 25.5 L20.5 23.5 L19 22 L21 22Z"
+                  fill="#F4B942" stroke="#F9A825" stroke-width="0.5"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">今天要运动多久？</div>
+          <div class="card-subtitle">点击规划今日运动任务</div>
+        </div>
+        <div class="card-action">
+          <div class="card-action-btn">去规划 →</div>
+        </div>
+      </div>
+
+      <!-- Card 4: 练字 - 已完成 -->
+      <div class="task-card card-done">
+        <div class="card-accent" style="background:#4DB6AC;"></div>
+        <div class="card-icon-wrap" style="opacity:0.55;">
+          <svg class="icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" fill="#E0F2F1"/>
+            <rect x="14" y="14" width="20" height="20" rx="2" fill="#fff" stroke="#00695C" stroke-width="1.2"/>
+            <line x1="14" y1="22" x2="34" y2="22" stroke="#B2DFDB" stroke-width="0.8"/>
+            <line x1="14" y1="28" x2="34" y2="28" stroke="#B2DFDB" stroke-width="0.8"/>
+            <line x1="24" y1="14" x2="24" y2="34" stroke="#B2DFDB" stroke-width="0.8"/>
+            <line x1="32" y1="10" x2="22" y2="20" stroke="#4DB6AC" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="14" cy="26" rx="3" ry="4" fill="#4DB6AC" transform="rotate(-30 14 26)"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title">描红《静夜思》</div>
+          <div class="card-subtitle">练字 · 约15分钟</div>
+          <div class="feedback-quote">"笔画比昨天平整，心也静下来了"</div>
+        </div>
+        <!-- Gold Medal Badge -->
+        <svg class="medal-badge" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="medalGold" cx="35%" cy="30%">
+              <stop offset="0%" stop-color="#FFF176"/>
+              <stop offset="40%" stop-color="#FFD54F"/>
+              <stop offset="70%" stop-color="#F4B942"/>
+              <stop offset="100%" stop-color="#D4A020"/>
+            </radialGradient>
+            <radialGradient id="medalRed" cx="40%" cy="30%">
+              <stop offset="0%" stop-color="#FF7B6E"/>
+              <stop offset="60%" stop-color="#E85D4E"/>
+              <stop offset="100%" stop-color="#C0392B"/>
+            </radialGradient>
+          </defs>
+          <g opacity="0.7">
+            <polygon points="30,4 32,16 34,4 38,16 38,4 42,16 42,4 46,16 44,4 48,18 46,6 50,20 48,8 52,24 48,12 52,28 48,18 50,32 46,24 48,38 44,30 46,42 42,36 44,46 38,40 42,48 34,44 40,50 30,46 38,50 26,46 34,48 22,44 30,46 18,40 26,42 16,36 22,38 16,32 18,34 18,28 16,30 20,24 16,26 24,20 18,20 28,16 20,14 32,12 22,8 34,8 24,4 34,4 26,2"
+                  fill="url(#medalGold)"/>
+          </g>
+          <circle cx="30" cy="30" r="23" fill="url(#medalGold)" stroke="#C89818" stroke-width="1.5"/>
+          <circle cx="30" cy="30" r="23" fill="none" stroke="#FFE082" stroke-width="0.8" opacity="0.4" stroke-dasharray="8 12"/>
+          <circle cx="30" cy="30" r="17" fill="#FFFDE7" stroke="#F4B942" stroke-width="1"/>
+          <circle cx="30" cy="30" r="12" fill="url(#medalRed)" stroke="#C0392B" stroke-width="1"/>
+          <circle cx="28" cy="27" r="5" fill="#fff" opacity="0.12"/>
+          <polygon points="30,22 31.8,26.5 36.7,26.5 32.9,29.4 34.3,34 30,31.1 25.7,34 27.1,29.4 23.3,26.5 28.2,26.5"
+                   fill="#FFD54F" stroke="#F4B942" stroke-width="0.6"/>
+          <polygon points="30,22 31.8,26.5 36.7,26.5 32.9,29.4 30,31.1"
+                   fill="#FFF176" opacity="0.6"/>
+          <text x="30" y="44" text-anchor="middle" font-size="7.5" font-weight="900" fill="#fff"
+                letter-spacing="1.5" font-family="-apple-system, 'PingFang SC', sans-serif">完成</text>
+          <path d="M10 32 L8 50 L14 50 Z" fill="#E85D4E" stroke="#C0392B" stroke-width="0.6"/>
+          <path d="M50 32 L52 50 L46 50 Z" fill="#D44E40" stroke="#C0392B" stroke-width="0.6"/>
+        </svg>
+        <div class="corner-fold"></div>
+      </div>
+
+    </div>
+
+    <!-- ===== Add More ===== -->
+    <div class="card-add-more" style="margin-top:14px;">
+      <span class="add-icon">+</span>
+      添加更多任务
+    </div>
+
+    <!-- ===== Spacer ===== -->
+    <div style="height:20px;"></div>
+
+    <!-- ===== Floating Pencil Button (3D) ===== -->
+    <div class="float-btn-wrap">
+      <div class="float-btn">
+        <div class="float-ground-shadow"></div>
+        <div class="float-pencil-eraser"></div>
+        <div class="float-pencil-metal"></div>
+        <div class="float-pencil-metal-grooves"></div>
+        <div class="float-pencil-body"></div>
+        <div class="float-pencil-tip"></div>
+        <!-- Award Ribbon SVG -->
+        <svg class="float-ribbon" viewBox="0 0 78 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 6 L22 24 L16 40 L2 22 Z" fill="#D44E40"/>
+          <path d="M6 6 L8 24 L4 40 L2 22 Z" fill="#B5302A" opacity="0.4"/>
+          <path d="M72 6 L56 24 L62 40 L76 22 Z" fill="#E85D4E"/>
+          <path d="M72 6 L70 24 L74 40 L76 22 Z" fill="#C0392B" opacity="0.3"/>
+          <circle cx="39" cy="18" r="12" fill="#E85D4E"/>
+          <circle cx="39" cy="18" r="12" fill="none" stroke="#C0392B" stroke-width="1.5"/>
+          <line x1="27" y1="18" x2="51" y2="18" stroke="#D44E40" stroke-width="1.5"/>
+          <line x1="39" y1="6" x2="39" y2="30" stroke="#D44E40" stroke-width="1.5"/>
+          <line x1="30" y1="9" x2="48" y2="27" stroke="#D44E40" stroke-width="1.2"/>
+          <line x1="48" y1="9" x2="30" y2="27" stroke="#D44E40" stroke-width="1.2"/>
+          <line x1="28" y1="18" x2="50" y2="18" stroke="#FF9580" stroke-width="0.6" opacity="0.5"/>
+          <circle cx="39" cy="18" r="5" fill="#F4B942" stroke="#E8A830" stroke-width="0.8"/>
+          <circle cx="39" cy="18" r="5" fill="none" stroke="#FFE082" stroke-width="0.5" opacity="0.5"/>
+          <polygon points="39,14.5 40.3,17.2 43.3,17.2 41.1,18.9 41.9,21.5 39,19.8 36.1,21.5 36.9,18.9 34.7,17.2 37.7,17.2"
+                   fill="#fff" opacity="0.9"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
