@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- Eraser gradient -->
+    <linearGradient id="eraserGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E85D4E"/>
+      <stop offset="100%" stop-color="#D44E40"/>
+    </linearGradient>
+    <!-- Pencil body gradient with 3D lighting -->
+    <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E8A830"/>
+      <stop offset="20%" stop-color="#F4B942"/>
+      <stop offset="45%" stop-color="#FFD54F"/>
+      <stop offset="70%" stop-color="#FFE082"/>
+      <stop offset="90%" stop-color="#F4B942"/>
+      <stop offset="100%" stop-color="#D4A020"/>
+    </linearGradient>
+    <!-- Body vertical gradient overlay -->
+    <linearGradient id="bodyVertGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.25"/>
+      <stop offset="10%" stop-color="#fff" stop-opacity="0.05"/>
+      <stop offset="80%" stop-color="#000" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.15"/>
+    </linearGradient>
+    <!-- Tip gradient -->
+    <linearGradient id="tipGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFF8E1"/>
+      <stop offset="100%" stop-color="#FFE0B2"/>
+    </linearGradient>
+    <!-- Metal ferrule -->
+    <linearGradient id="metalGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#90A4AE"/>
+      <stop offset="30%" stop-color="#CFD8DC"/>
+      <stop offset="50%" stop-color="#ECEFF1"/>
+      <stop offset="70%" stop-color="#CFD8DC"/>
+      <stop offset="100%" stop-color="#78909C"/>
+    </linearGradient>
+    <!-- Drop shadow filter -->
+    <filter id="dropShadow" x="-20%" y="-10%" width="140%" height="130%">
+      <feDropShadow dx="1" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.15"/>
+    </filter>
+    <filter id="softShadow" x="-30%" y="-10%" width="160%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Rotated pencil group centered at (64, 64) -->
+  <g transform="rotate(-15, 64, 64)" filter="url(#dropShadow)">
+    <!-- Pencil body -->
+    <rect x="37" y="10" width="22" height="70" rx="2" fill="url(#bodyGrad)"/>
+    <rect x="37" y="10" width="22" height="70" rx="2" fill="url(#bodyVertGrad)"/>
+
+    <!-- Pencil body highlight stripe -->
+    <rect x="40" y="12" width="4" height="66" rx="1" fill="#fff" opacity="0.35"/>
+
+    <!-- Pencil body dark edge stripe -->
+    <rect x="55" y="12" width="2" height="66" rx="1" fill="#000" opacity="0.12"/>
+
+    <!-- Metal ferrule -->
+    <rect x="37" y="6" width="22" height="4" rx="1" fill="url(#metalGrad)"/>
+
+    <!-- Metal horizontal grooves -->
+    <line x1="38" y1="7" x2="58" y2="7" stroke="#78909C" stroke-width="0.5" opacity="0.5"/>
+    <line x1="38" y1="9" x2="58" y2="9" stroke="#78909C" stroke-width="0.5" opacity="0.5"/>
+
+    <!-- Eraser -->
+    <rect x="37" y="0" width="22" height="6" rx="1.5" fill="url(#eraserGrad)"/>
+    <rect x="39" y="0.5" width="5" height="5" rx="1" fill="#fff" opacity="0.25"/>
+
+    <!-- Pencil tip -->
+    <polygon points="37,80 59,80 48,96" fill="url(#tipGrad)" filter="url(#softShadow)"/>
+
+    <!-- Tip center ridge -->
+    <line x1="48" y1="80" x2="48" y2="96" stroke="#E0C090" stroke-width="0.8" opacity="0.4"/>
+
+    <!-- Lead point -->
+    <polygon points="46,93 50,93 48,98" fill="#4A4A4A" opacity="0.6"/>
+    <polygon points="47,94 49,94 48,97.5" fill="#333"/>
+  </g>
+
+  <!-- Award Ribbon (not rotated, positioned to drape over the pencil) -->
+  <g transform="rotate(-15, 64, 64)">
+    <!-- Left ribbon tail -->
+    <path d="M18 36 L30 62 L24 82 L10 62 Z" fill="#D44E40" stroke="#C0392B" stroke-width="0.8"/>
+    <path d="M18 36 L20 62 L16 82 L12 62 Z" fill="#C0392B" opacity="0.4"/>
+    <!-- Right ribbon tail -->
+    <path d="M78 36 L66 62 L72 82 L86 62 Z" fill="#E85D4E" stroke="#C0392B" stroke-width="0.8"/>
+    <path d="M78 36 L76 62 L80 82 L84 62 Z" fill="#C0392B" opacity="0.3"/>
+
+    <!-- Rosette body -->
+    <circle cx="48" cy="38" r="20" fill="#E85D4E" filter="url(#softShadow)"/>
+
+    <!-- Rosette outer ring -->
+    <circle cx="48" cy="38" r="20" fill="none" stroke="#C0392B" stroke-width="1.5"/>
+
+    <!-- Rosette fold lines -->
+    <line x1="28" y1="38" x2="68" y2="38" stroke="#D44E40" stroke-width="2"/>
+    <line x1="48" y1="18" x2="48" y2="58" stroke="#D44E40" stroke-width="2"/>
+    <line x1="34" y1="24" x2="62" y2="52" stroke="#D44E40" stroke-width="1.5"/>
+    <line x1="62" y1="24" x2="34" y2="52" stroke="#D44E40" stroke-width="1.5"/>
+
+    <!-- Fold highlight lines -->
+    <line x1="29" y1="38" x2="67" y2="38" stroke="#FF9580" stroke-width="0.8" opacity="0.5"/>
+    <line x1="48" y1="19" x2="48" y2="57" stroke="#FF9580" stroke-width="0.8" opacity="0.5"/>
+
+    <!-- Rosette inner ring -->
+    <circle cx="48" cy="38" r="8" fill="#F4B942" stroke="#E8A830" stroke-width="1.2"/>
+
+    <!-- Gold inner ring highlight -->
+    <circle cx="48" cy="38" r="8" fill="none" stroke="#FFE082" stroke-width="0.5" opacity="0.5"/>
+
+    <!-- Star in center -->
+    <polygon points="48,32 50.2,36.5 55.1,36.5 51.5,39.4 52.8,43.8 48,41.1 43.2,43.8 44.5,39.4 40.9,36.5 45.8,36.5"
+             fill="#fff" opacity="0.9"/>
+  </g>
+</svg>
