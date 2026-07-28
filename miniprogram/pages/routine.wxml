@@ -1,0 +1,105 @@
+<import src="../templates/abort.wxml"></import>
+
+<view class="routine">
+  <block wx:if="{{ loaded }}">
+    <view class="routine_content">
+      <scroll-view class="routine_scroll" scroll-y="true" enhanced="{{ true }}">
+        <!-- Hero 顶部 -->
+        <view class="routine_hero">
+          <view class="routine_hero_info">
+            <view class="routine_hero_label">今天是</view>
+            <view class="routine_hero_date">{{ dateMain }}</view>
+            <view class="routine_hero_motto">✦ 好的规划，带来好的结果</view>
+            <view class="routine_hero_stats">
+              <view class="routine_hero_stat">
+                <view class="routine_hero_stat_dot planned"></view>
+                <text>已规划 {{ plannedCount }}</text>
+              </view>
+              <view class="routine_hero_stat">
+                <view class="routine_hero_stat_dot feedback"></view>
+                <text>待反馈 {{ feedbackCount }}</text>
+              </view>
+              <view class="routine_hero_stat">
+                <view class="routine_hero_stat_dot done"></view>
+                <text>已完成 {{ doneCount }}</text>
+              </view>
+            </view>
+          </view>
+          <view class="routine_hero_mascot">
+            <view class="pencil">
+              <view class="pencil_eraser"></view>
+              <view class="pencil_ferrule"></view>
+              <view class="pencil_body"></view>
+              <view class="pencil_tip"></view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 任务列表 -->
+        <view class="routine_section">今日任务</view>
+
+        <view class="routine_cards">
+          <view
+            wx:for="{{ records }}"
+            wx:key="id"
+            class="routine_card {{ item.style || '' }}"
+            catch:tap="onTaskTap"
+            data-id="{{ item.id }}"
+            data-status="{{ item.status }}"
+          >
+            <view class="routine_card_accent" style="background:{{ item.color }};"></view>
+            <view class="routine_card_icon">
+              <image src="{{ item.icon }}" class="routine_card_icon_img" mode="aspectFit" />
+            </view>
+            <view class="routine_card_body">
+              <view class="routine_card_title">{{ item.name }}</view>
+              <view class="routine_card_sub">{{ item.categoryName }} · {{ item.detail }}</view>
+              <view wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</view>
+            </view>
+            <view class="routine_card_action">
+              <view wx:if="{{ item.status === 0 }}" class="routine_card_btn">去完成 →</view>
+              <view wx:elif="{{ item.status === 100 }}" class="routine_card_btn working">进行中</view>
+            </view>
+            <image
+              wx:if="{{ item.style === 'done' }}"
+              class="routine_card_stamp"
+              src="/assets/imgs/ic-stamp-done.svg"
+              mode="aspectFit"
+            />
+          </view>
+
+          <!-- 空状态 -->
+          <view wx:if="{{ records.length === 0 }}" class="routine_empty">
+            <text class="routine_empty_text">今天还没有任务，去创建吧 🎉</text>
+          </view>
+
+          <!-- 添加更多 -->
+          <view class="routine_card_add" catch:tap="onAddTap">
+            <view class="routine_card_add_icon">+</view>
+            <text class="routine_card_add_text">添加更多任务</text>
+          </view>
+        </view>
+
+        <view class="routine_spacer"></view>
+      </scroll-view>
+
+      <!-- 浮动按钮 -->
+      <view class="routine_float">
+        <view class="routine_float_btn">
+          <view class="pencil small">
+            <view class="pencil_eraser"></view>
+            <view class="pencil_ferrule"></view>
+            <view class="pencil_body"></view>
+            <view class="pencil_tip"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <template
+    wx:else
+    is="abort"
+    data="{{ message: abortMessage || '加载中..', iconInvisible: true }}"
+  ></template>
+</view>

@@ -81,57 +81,30 @@ export namespace Routine {
 
   const sMock = true;
 
+  let sMockItems: Info[] | null = null;
+
+  function getMockItems(date: number): Info[] {
+    if (!sMockItems) {
+      const now = Date.now();
+      const uid = Context.getUserId();
+      const tx = () => Utils.shortUuid();
+      sMockItems = [
+        { id: '1', name: '《三体》第3章', detail: '约30分钟', status: Status.Pending, category: Category.Reading, userId: uid, date, transaction: tx(), createTime: now },
+        { id: '2', name: '数学练习册 P20-25', detail: '约30分钟', status: Status.Pending, category: Category.Homework, userId: uid, date, transaction: tx(), createTime: now },
+        { id: '3', name: '跳绳500个', detail: '约15分钟', status: Status.Pending, category: Category.Exercise, userId: uid, date, transaction: tx(), createTime: now },
+        { id: '4', name: 'Minecraft 建造城堡', detail: '约30分钟', status: Status.Working, category: Category.Game, userId: uid, date, transaction: tx(), createTime: now },
+        { id: '5', name: '描红《静夜思》', detail: '约15分钟', status: Status.Done, category: Category.Handwriting, userId: uid, date, transaction: tx(), createTime: now, finishTime: now, remark: '笔画比昨天平整，心也静下来了' },
+        { id: '6', name: 'Scratch 发射子弹', detail: '约45分钟', status: Status.Done, category: Category.Coding, userId: uid, date, transaction: tx(), createTime: now, finishTime: now },
+      ];
+    }
+    return sMockItems;
+  }
+
   /**
    * 获取指定日期的任务列表
    */
   export async function list(date: number): Promise<number | Info[]> {
-    if (sMock)
-      return [
-        {
-          id: '1',
-          name: '读书',
-          detail: '老人与海 45-50页',
-          status: Status.Pending,
-          category: Category.Reading,
-          userId: Context.getUserId(),
-          date: date,
-          transaction: Utils.shortUuid(),
-          createTime: Date.now(),
-        },
-        {
-          id: '2',
-          name: '作业',
-          detail: '暑假作业第三周语文',
-          status: Status.Pending,
-          category: Category.Homework,
-          userId: Context.getUserId(),
-          date: date,
-          transaction: Utils.shortUuid(),
-          createTime: Date.now(),
-        },
-        {
-          id: '3',
-          name: '运动',
-          detail: '跳绳1500个',
-          status: Status.Pending,
-          category: Category.Exercise,
-          userId: Context.getUserId(),
-          date: date,
-          transaction: Utils.shortUuid(),
-          createTime: Date.now(),
-        },
-        {
-          id: '4',
-          name: '练字',
-          detail: '练字摘抄陈、李、苏、王、颜、张',
-          status: Status.Pending,
-          category: Category.Handwriting,
-          userId: Context.getUserId(),
-          date: date,
-          transaction: Utils.shortUuid(),
-          createTime: Date.now(),
-        },
-      ];
+    if (sMock) return getMockItems(date);
     const res = await Network.post<Info[]>(Api.ListRoutine, { date });
     if (res?.errcode !== 0) {
       Logger.warn('List routine failed', res);
@@ -156,6 +129,11 @@ export namespace Routine {
    * 更新任务（状态切换、内容编辑、保存反馈）
    */
   export async function update(id: string, patch: Partial<Info>): Promise<number> {
+    if (sMock) {
+      const item = sMockItems?.find((i) => i.id === id);
+      if (item) Object.assign(item, patch);
+      return Err.Code.OK;
+    }
     const res = await Network.post<Info>(Api.UpdateRoutine, { id, ...patch });
     if (res.errcode !== 0) {
       Logger.info('Update routine failed', res);
