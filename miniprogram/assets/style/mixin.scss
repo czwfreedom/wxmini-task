@@ -74,6 +74,25 @@
   min-width: 0;
 }
 
+@mixin card {
+  background: #fdfbf7;
+  border-radius: 32rpx;
+  box-shadow:
+    0 4rpx 0 rgba(0, 0, 0, 0.03),
+    0 16rpx 48rpx rgba(74, 144, 226, 0.06);
+}
+
+@mixin float {
+  width: 144rpx;
+  height: 144rpx;
+  border-radius: 50%;
+  background: $white5;
+  box-shadow:
+    0 8rpx 40rpx rgba(74, 144, 226, 0.12),
+    0 2rpx 0 $white6 inset;
+  animation: floatDrift 3s ease-in-out infinite;
+}
+
 // 在公众号文章上看到的实现节流的方法。测试是有效的。
 // https://mp.weixin.qq.com/s/iZS0wUdPxOHbsNx5pz3G_A
 @mixin throttle {
@@ -87,5 +106,15 @@
   }
   to {
     pointer-events: all;
+  }
+}
+
+@keyframes floatDrift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12rpx);
   }
 }

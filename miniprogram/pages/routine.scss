@@ -67,7 +67,7 @@
       gap: 12rpx;
       font-size: 24rpx;
       font-weight: 600;
-      color: $foreground-dark;
+      color: $gray-33;
       background: $white6;
       padding: 12rpx 28rpx;
       border-radius: 40rpx;
@@ -126,14 +126,10 @@
 
   &_card {
     position: relative;
-    background: #fdfbf7;
-    border-radius: 32rpx;
+    @include card;
     padding: 32rpx 32rpx 32rpx 0;
     display: flex;
     align-items: center;
-    box-shadow:
-      0 4rpx 0 rgba(0, 0, 0, 0.03),
-      0 16rpx 48rpx rgba(74, 144, 226, 0.06);
     overflow: hidden;
 
     &_accent {
@@ -165,7 +161,7 @@
     &_title {
       font-size: 34rpx;
       font-weight: 600;
-      color: $foreground-dark;
+      color: $gray-33;
       line-height: 1.4;
       margin-bottom: 8rpx;
     }
@@ -221,7 +217,7 @@
       border: 4rpx solid rgba(200, 180, 150, 0.4);
 
       .routine_card_title {
-        color: #3a3d4a;
+        color: $gray-44;
       }
       .routine_card_icon {
         opacity: 0.75;
@@ -276,86 +272,19 @@
   // ===== 浮动按钮 =====
   &_float {
     position: fixed;
-    bottom: 56rpx;
+    bottom: 16rpx;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
 
     &_btn {
-      width: 144rpx;
-      height: 144rpx;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.55);
-      box-shadow:
-        0 8rpx 40rpx rgba(74, 144, 226, 0.12),
-        0 2rpx 0 rgba(255, 255, 255, 0.6) inset;
+      @include float;
       @include flex-layout;
-      animation: floatDrift 3s ease-in-out infinite;
     }
-  }
-}
 
-// ===== Pencil Mascot =====
-.pencil {
-  position: relative;
-  width: 104rpx;
-  height: 104rpx;
-  transform: rotate(-15deg);
-
-  &_body {
-    width: 28rpx;
-    height: 88rpx;
-    background: linear-gradient(180deg, #ffd54f 0%, #f4b942 100%);
-    position: absolute;
-    bottom: 16rpx;
-    left: 38rpx;
-    border-radius: 4rpx 4rpx 0 0;
-    box-shadow: 2rpx 4rpx 12rpx rgba(0, 0, 0, 0.12);
-  }
-
-  &_tip {
-    width: 0;
-    height: 0;
-    border-left: 14rpx solid transparent;
-    border-right: 14rpx solid transparent;
-    border-top: 20rpx solid #ffe0b2;
-    position: absolute;
-    bottom: 0;
-    left: 38rpx;
-  }
-
-  &_eraser {
-    width: 28rpx;
-    height: 12rpx;
-    background: linear-gradient(180deg, #e85d4e 0%, #d44e40 100%);
-    position: absolute;
-    top: 0;
-    left: 38rpx;
-    border-radius: 4rpx 4rpx 0 0;
-  }
-
-  &_ferrule {
-    width: 28rpx;
-    height: 6rpx;
-    background: #b0bec5;
-    position: absolute;
-    top: 12rpx;
-    left: 38rpx;
-  }
-
-  &.small {
-    width: 88rpx;
-    height: 88rpx;
-    transform: rotate(-15deg) scale(0.85);
-  }
-}
-
-@keyframes floatDrift {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12rpx);
+    &_icon {
+      width: 100rpx;
+      height: 100rpx;
+    }
   }
 }

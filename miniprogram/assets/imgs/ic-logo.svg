@@ -1,0 +1,19 @@
+<svg viewBox="9 -4 38 53" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 铅笔主体 -->
+  <rect x="21" y="3" width="14" height="32" rx="2" fill="#FFD54F" stroke="#E8A830" stroke-width="0.8"/>
+  <rect x="22.5" y="5" width="3" height="28" rx="1" fill="#fff" opacity="0.35"/>
+  <!-- 笔尖 -->
+  <polygon points="22,35 34,35 28,44" fill="#FFE0B2" stroke="#E8A830" stroke-width="0.5"/>
+  <!-- 金属箍 -->
+  <rect x="21" y="0" width="14" height="3" rx="1" fill="#B0BEC5"/>
+  <!-- 橡皮擦 -->
+  <rect x="21" y="-3" width="14" height="4" rx="1.5" fill="#E85D4E"/>
+  <!-- 绶带 -->
+  <path d="M13 18 L19 38 L16 48 L10 34 Z" fill="#D44E40" stroke="#C0392B" stroke-width="0.5"/>
+  <path d="M43 18 L37 38 L40 48 L46 34 Z" fill="#E85D4E" stroke="#C0392B" stroke-width="0.5"/>
+  <!-- 徽章 -->
+  <circle cx="28" cy="22" r="9" fill="#E85D4E"/>
+  <circle cx="28" cy="22" r="9" fill="none" stroke="#C0392B" stroke-width="0.8"/>
+  <circle cx="28" cy="22" r="4" fill="#F4B942" stroke="#E8A830" stroke-width="0.6"/>
+  <polygon points="28,19 29.2,21.5 31.9,21.5 30,23.2 30.7,25.7 28,24 25.3,25.7 26,23.2 24.1,21.5 26.8,21.5" fill="#fff" opacity="0.9"/>
+</svg>

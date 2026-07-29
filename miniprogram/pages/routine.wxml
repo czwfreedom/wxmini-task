@@ -77,12 +77,7 @@
       <!-- 浮动按钮 -->
       <view class="routine_float">
         <view class="routine_float_btn">
-          <view class="pencil small">
-            <view class="pencil_eraser"></view>
-            <view class="pencil_ferrule"></view>
-            <view class="pencil_body"></view>
-            <view class="pencil_tip"></view>
-          </view>
+          <image class="routine_float_icon" src="../assets/imgs/ic-logo.svg" />
         </view>
       </view>
     </view>
