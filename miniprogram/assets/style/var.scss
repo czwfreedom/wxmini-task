@@ -1,28 +1,29 @@
 // 核心按钮、选中态图标、重点点缀，比 App 版本稍浅，适配微信浅生态不刺眼
-$main: #5599f7;
+$main: #f4b942;
 // 标题、任务名称、按钮文字，比纯黑柔和护眼，符合儿童视力标准
 $foreground-dark: #2d3142;
 // 次文字、说明文字
 $foreground-sub: #5c6178;
-// 占位符、提示文字
-$foreground-gray: #949aae;
 
-// 暖橙（铅笔色）	待完成任务、添加任务按钮
-$background-orange: #f4b942;
+$gray-ee: #eee;
+$gray-e5: #e5e5e5;
+$gray-d9: #d9d9d9;
+$gray-c5: #c5c5c5;
+// 占位符、提示文字
+$gray-99: #999;
+
 // 柔红（绶带色）	高优先级任务、奖励按钮
 $foreground-red: #ef5350;
 
-$gradient: linear-gradient(135deg, $background-orange, #ffd54f);
+$gradient: linear-gradient(135deg, $main, #ffd54f);
 
 // 全局背景，比纯白暖 2 度，和微信原生浅灰背景自然衔接
 $background-white: #fbfcfe;
 
-$background-mask: rgba(0, 0, 0, 0.4);
-$background-mask3: rgba(0, 0, 0, 0.3);
-$background-mask2: rgba(0, 0, 0, 0.2);
-$background-mask1: rgba(0, 0, 0, 0.1);
-$background-mask-white2: rgba(255, 255, 255, 0.2);
+$black4: rgba(0, 0, 0, 0.4);
+$black3: rgba(0, 0, 0, 0.3);
+$black2: rgba(0, 0, 0, 0.2);
+$black1: rgba(0, 0, 0, 0.1);
+$white2: rgba(255, 255, 255, 0.2);
+$white6: rgba(255, 255, 255, 0.6);
 $transparent: rgba(255, 255, 255, 0);
-
-$border: #e5e6eb;
-$border2: #d9d9d9;

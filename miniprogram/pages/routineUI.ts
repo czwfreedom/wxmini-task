@@ -12,12 +12,8 @@ export namespace RoutineUI {
     records: Record[];
     /** 日期主文本，如「7月28日 周二」 */
     dateMain: string;
-    /** 已规划数量 */
-    plannedCount: number;
-    /** 待反馈数量 */
-    feedbackCount: number;
-    /** 已完成数量 */
-    doneCount: number;
+
+    stats: Entity.Label[];
   }
 
   /** ViewModel，仅包含 UI 渲染需要的字段 */
@@ -57,32 +53,23 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
       abortMessage: '',
       records: [],
       dateMain: '',
-      plannedCount: 0,
-      feedbackCount: 0,
-      doneCount: 0,
+      stats: [],
     };
   }
 
-  public async loadData() {
-    this.showLoading();
+  public async loadData(): Promise<number> {
     const now = Date.now();
-    this.setData({ dateMain: DateUtils.formatDate(now, 'M月d日 周E') });
-
     const errcode = await this.adapter.load(DateUtils.getStartMillisOfDay(now));
-    if (errcode !== Err.Code.OK) {
-      this.abort(errcode);
-      return;
-    }
+    if (errcode !== Err.Code.OK) return this.abort(errcode);
 
     const records = this.adapter.adapt();
     this.setData({
       records,
       loaded: true,
-      plannedCount: records.filter((r) => r.status !== Routine.Status.Done).length,
-      doneCount: records.filter((r) => r.status === Routine.Status.Done).length,
-      feedbackCount: records.filter((r) => r.status === Routine.Status.Done && !r.remark).length,
+      dateMain: DateUtils.formatDate(now, 'M月d日 周E'),
+      ...records,
     });
-    this.hideLoading();
+    return 0;
   }
 
   /** 切换任务状态：进行中 ↔ 已完成 */

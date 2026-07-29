@@ -9,30 +9,22 @@
           <view class="routine_hero_info">
             <view class="routine_hero_label">今天是</view>
             <view class="routine_hero_date">{{ dateMain }}</view>
-            <view class="routine_hero_motto">✦ 好的规划，带来好的结果</view>
-            <view class="routine_hero_stats">
-              <view class="routine_hero_stat">
-                <view class="routine_hero_stat_dot planned"></view>
-                <text>已规划 {{ plannedCount }}</text>
-              </view>
-              <view class="routine_hero_stat">
-                <view class="routine_hero_stat_dot feedback"></view>
-                <text>待反馈 {{ feedbackCount }}</text>
-              </view>
-              <view class="routine_hero_stat">
-                <view class="routine_hero_stat_dot done"></view>
-                <text>已完成 {{ doneCount }}</text>
+            <view class="routine_hero_motto">✦ 苟日新，日日新，又日新</view>
+            <view wx:if="{{ stats && stats.length}}" class="routine_hero_stats">
+              <view
+                wx:for="{{ stats }}"
+                wx:for-item="stat"
+                wx:for-index="sindex"
+                wx:key="sindex"
+                class="routine_hero_stat"
+              >
+                <view class="routine_hero_stat_dot {{ stat.style || '' }}"></view>
+                <text>{{ stat.name }}</text>
               </view>
             </view>
           </view>
-          <view class="routine_hero_mascot">
-            <view class="pencil">
-              <view class="pencil_eraser"></view>
-              <view class="pencil_ferrule"></view>
-              <view class="pencil_body"></view>
-              <view class="pencil_tip"></view>
-            </view>
-          </view>
+
+          <image class="routine_hero_logo" src="../assets/imgs/ic-pencil.svg" />
         </view>
 
         <!-- 任务列表 -->

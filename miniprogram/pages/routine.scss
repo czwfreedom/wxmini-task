@@ -16,11 +16,11 @@
 
   // ===== Hero =====
   &_hero {
-    background: linear-gradient(160deg, #b5d9f8 0%, #a0cdf5 50%, #c5e3fa 100%);
-    border-radius: 0 0 64rpx 64rpx;
-    margin-bottom: 48rpx;
-    padding: 48rpx 56rpx 56rpx;
     position: relative;
+    background: linear-gradient(160deg, #b5d9f8 0%, #a0cdf5 50%, #c5e3fa 100%);
+    border-radius: 0 0 32rpx 32rpx;
+    margin-bottom: 48rpx;
+    padding: 32rpx 32rpx;
     overflow: hidden;
     display: flex;
     justify-content: space-between;
@@ -67,8 +67,8 @@
       gap: 12rpx;
       font-size: 24rpx;
       font-weight: 600;
-      color: #3a5a8c;
-      background: rgba(255, 255, 255, 0.65);
+      color: $foreground-dark;
+      background: $white6;
       padding: 12rpx 28rpx;
       border-radius: 40rpx;
 
@@ -76,22 +76,24 @@
         width: 16rpx;
         height: 16rpx;
         border-radius: 50%;
+        background: #5b9bd5;
 
-        &.planned {
-          background: #5b9bd5;
-        }
-        &.feedback {
+        &.pending {
           background: #f4b942;
         }
+
         &.done {
           background: #81c784;
         }
       }
     }
 
-    &_mascot {
-      flex-shrink: 0;
-      margin-top: 20rpx;
+    &_logo {
+      position: absolute;
+      right: 16rpx;
+      bottom: 32rpx;
+      width: 128rpx;
+      height: 128rpx;
     }
   }
 
@@ -119,14 +121,14 @@
     display: flex;
     flex-direction: column;
     gap: 28rpx;
-    padding: 0 40rpx;
+    padding: 0 32rpx;
   }
 
   &_card {
     position: relative;
     background: #fdfbf7;
-    border-radius: 40rpx;
-    padding: 40rpx 40rpx 40rpx 0;
+    border-radius: 32rpx;
+    padding: 32rpx 32rpx 32rpx 0;
     display: flex;
     align-items: center;
     box-shadow:
@@ -170,7 +172,7 @@
 
     &_sub {
       font-size: 26rpx;
-      color: $foreground-gray;
+      color: $gray-99;
       line-height: 1.4;
     }
 
@@ -189,7 +191,6 @@
     &_action {
       min-width: 128rpx;
       text-align: center;
-      margin-right: 8rpx;
     }
 
     &_btn {
@@ -206,8 +207,8 @@
 
     &_stamp {
       position: absolute;
-      top: 0;
-      right: 8rpx;
+      top: 32rpx;
+      right: 32rpx;
       width: 80rpx;
       height: 80rpx;
       transform: rotate(8deg);
@@ -235,16 +236,16 @@
 
     &_text {
       font-size: 28rpx;
-      color: $foreground-gray;
+      color: $gray-99;
     }
   }
 
   // ===== 添加更多 =====
   &_card_add {
     background: transparent;
-    border: 4rpx dashed #c5cdd6;
-    border-radius: 40rpx;
-    padding: 36rpx;
+    border: 4rpx dashed $gray-c5;
+    border-radius: 32rpx;
+    padding: 32rpx;
     @include flex-layout;
     gap: 20rpx;
 
@@ -252,16 +253,18 @@
       width: 56rpx;
       height: 56rpx;
       border-radius: 50%;
-      background: #eaeef3;
+      background: $gray-ee;
       @include flex-layout;
       font-size: 36rpx;
-      color: #8b95a4;
+      // 如果是 52，看起来有点偏下。
+      line-height: 52rpx;
+      color: $gray-99;
     }
 
     &_text {
       font-size: 28rpx;
       font-weight: 600;
-      color: #9ba3ae;
+      color: $gray-99;
     }
   }
 

@@ -157,17 +157,17 @@ export class RoutineAdapter {
 
 ### 变量速查
 
-| 变量                 | 值                  | 用途          |
-| -------------------- | ------------------- | ------------- |
-| `$main`              | `#5599f7`           | 主色调        |
-| `$foreground-dark`   | `#2d3142`           | 标题/重要文字 |
-| `$foreground-sub`    | `#5c6178`           | 次要文字      |
-| `$foreground-gray`   | `#949aae`           | 占位符/提示   |
-| `$background-orange` | `#f4b942`           | 待完成/添加   |
-| `$foreground-red`    | `#ef5350`           | 高优先级/删除 |
-| `$background-white`  | `#fbfcfe`           | 暖白背景      |
-| `$border / $border2` | `#e5e6eb / #d9d9d9` | 边框          |
-| `$background-mask*`  | rgba 系列           | 遮罩          |
+| 变量                             | 值                            | 用途          |
+| -------------------------------- | ----------------------------- | ------------- |
+| `$main`                          | `#5599f7`                     | 主色调        |
+| `$foreground-dark`               | `#2d3142`                     | 标题/重要文字 |
+| `$foreground-sub`                | `#5c6178`                     | 次要文字      |
+| `$gray-99`                       | `#999999`                     | 占位符/提示   |
+| `$background-orange`             | `#f4b942`                     | 待完成/添加   |
+| `$foreground-red`                | `#ef5350`                     | 高优先级/删除 |
+| `$background-white`              | `#fbfcfe`                     | 暖白背景      |
+| `$gray-e5 / $gray-d9 / $gray-c5` | `#e5e5e5 / #d9d9d9 / #c5c5c5` | 边框          |
+| `$black*`              | rgba 系列                     | 遮罩          |
 
 ### Mixin 速查
 
