@@ -1,10 +1,9 @@
 // 核心按钮、选中态图标、重点点缀，比 App 版本稍浅，适配微信浅生态不刺眼
 $main: #f4b942;
-// 标题、任务名称、按钮文字，比纯黑柔和护眼，符合儿童视力标准
-$foreground-dark: #2d3142;
-// 次文字、说明文字
-$foreground-sub: #5c6178;
+$blue: #5b9bd5;
+$green: #81c784;
 
+// 标题、任务名称、按钮文字，比纯黑柔和护眼，符合儿童视力标准
 $gray-33: #333;
 $gray-44: #444;
 $gray-ee: #eee;
@@ -16,8 +15,14 @@ $gray-99: #999;
 
 // 柔红（绶带色）	高优先级任务、奖励按钮
 $foreground-red: #ef5350;
+// 次文字、说明文字
+$foreground-sub: #5c6178;
+
+$background-green-light: rgba(129, 199, 132, 0.12);
 
 $gradient: linear-gradient(135deg, $main, #ffd54f);
+// 页面的淡色背景。
+$background-gradient: linear-gradient(180deg, #b8daf5 0%, #f2f5f8 30%);
 
 // 全局背景，比纯白暖 2 度，和微信原生浅灰背景自然衔接
 $background-white: #fbfcfe;
@@ -29,4 +34,5 @@ $black1: rgba(0, 0, 0, 0.1);
 $white2: rgba(255, 255, 255, 0.2);
 $white5: rgba(255, 255, 255, 0.5);
 $white6: rgba(255, 255, 255, 0.6);
+$white85: rgba(255, 255, 255, 0.85);
 $transparent: rgba(255, 255, 255, 0);
