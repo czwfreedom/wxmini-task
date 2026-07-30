@@ -1,10 +1,16 @@
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="24" cy="24" r="22" fill="#FFF8E1"/>
-  <rect x="16" y="14" width="16" height="20" rx="2" fill="#fff" stroke="#F9A825" stroke-width="1.2"/>
-  <path d="M16 20 L32 20" stroke="#FFE082" stroke-width="3"/>
-  <path d="M16 24 L28 24" stroke="#FFE082" stroke-width="3"/>
-  <path d="M16 28 L22 28" stroke="#FFE082" stroke-width="3"/>
-  <rect x="16" y="14" width="16" height="4" rx="1" fill="#FFD54F"/>
-  <line x1="24" y1="14" x2="24" y2="10" stroke="#F9A825" stroke-width="1.5"/>
-  <circle cx="24" cy="9" r="2.5" fill="#FFD54F" stroke="#F9A825" stroke-width="0.8"/>
+  <circle cx="24" cy="24" r="22" fill="#E1F5FE"/>
+  <!-- 终端窗口 -->
+  <rect x="9" y="14" width="30" height="21" rx="3" fill="#263238" stroke="#0288D1" stroke-width="1.2"/>
+  <!-- 标题栏 -->
+  <rect x="9" y="14" width="30" height="6" rx="3" fill="#37474F"/>
+  <rect x="9" y="17" width="30" height="3" fill="#37474F"/>
+  <!-- macOS 三色点 -->
+  <circle cx="13.5" cy="17" r="1.5" fill="#EF5350"/>
+  <circle cx="17.5" cy="17" r="1.5" fill="#FFD54F"/>
+  <circle cx="21.5" cy="17" r="1.5" fill="#81C784"/>
+  <!-- 命令提示符 > -->
+  <polyline points="14,24.5 17.5,28 14,31.5" stroke="#4FC3F7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 光标 _ -->
+  <line x1="20.5" y1="31" x2="25.5" y2="31" stroke="#4FC3F7" stroke-width="2.2" stroke-linecap="round"/>
 </svg>

@@ -73,6 +73,10 @@ export namespace Routine {
     remark?: string;
     /** 完成时提交的图片或视频 */
     mediaRemark?: string;
+    // 任务计划开始时间
+    planTime?: number;
+    // 任务持续时间
+    duration?: number;
     /** 创建时间 */
     createTime: number;
     /** 完成时间 */
