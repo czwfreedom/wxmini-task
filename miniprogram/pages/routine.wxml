@@ -7,7 +7,6 @@
         <!-- Hero 顶部 -->
         <view class="routine_hero">
           <view class="routine_hero_info">
-            <view class="routine_hero_label">今天是</view>
             <view class="routine_hero_date">{{ dateMain }}</view>
             <view class="routine_hero_motto">✦ 苟日新，日日新，又日新</view>
             <view wx:if="{{ stats && stats.length}}" class="routine_hero_stats">
@@ -28,7 +27,7 @@
         </view>
 
         <!-- 任务列表 -->
-        <view class="routine_section">今日任务</view>
+        <view class="routine_section">当日任务</view>
 
         <view class="routine_cards">
           <view
@@ -45,11 +44,14 @@
             </view>
             <view class="routine_card_body">
               <view class="routine_card_title">{{ item.name }}</view>
-              <view class="routine_card_sub">{{ item.categoryName }} · {{ item.detail }}</view>
+              <view wx:if="{{ !item.holder }}" class="routine_card_sub">
+                {{ item.categoryName }} · {{ item.detail }}
+              </view>
               <view wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</view>
             </view>
             <view class="routine_card_action">
-              <view wx:if="{{ item.status === 100 }}" class="routine_card_btn">去完成 →</view>
+              <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加 →</view>
+              <view wx:elif="{{ item.status === 100 }}" class="routine_card_btn">去完成 →</view>
             </view>
             <image
               wx:if="{{ item.style === 'done' }}"
@@ -61,11 +63,13 @@
 
           <!-- 空状态 -->
           <view wx:if="{{ records.length === 0 }}" class="routine_empty">
-            <text class="routine_empty_text">今天还没有任务，去创建吧 🎉</text>
+            <text class="routine_empty_text">
+              {{ addable? '还没有任务，去创建吧 🎉' : '无任务'}}
+            </text>
           </view>
 
           <!-- 添加更多 -->
-          <view class="routine_card_add" catch:tap="onAddTap">
+          <view wx:if="{{ addable }}" class="routine_card_add" catch:tap="onAddTap">
             <view class="routine_card_add_icon">+</view>
             <text class="routine_card_add_text">添加更多任务</text>
           </view>
@@ -75,7 +79,7 @@
       </scroll-view>
 
       <!-- 浮动按钮 -->
-      <view class="routine_float">
+      <view wx:if="{{ addable }}" class="routine_float">
         <view class="routine_float_btn">
           <image class="routine_float_icon" src="../assets/imgs/ic-logo.svg" />
         </view>

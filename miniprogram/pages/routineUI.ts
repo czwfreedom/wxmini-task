@@ -8,6 +8,8 @@ import { Logger } from '../utils/logger';
 
 export namespace RoutineUI {
   export interface Data extends SubUI.Data {
+    updateable: boolean;
+    addable: boolean;
     /** 任务列表 */
     records: Record[];
     /** 日期主文本，如「7月28日 周二」 */
@@ -18,6 +20,7 @@ export namespace RoutineUI {
 
   /** ViewModel，仅包含 UI 渲染需要的字段 */
   export interface Record extends Entity.Label {
+    holder?: boolean;
     /** 任务详情 */
     detail: string;
     /** 任务分类 */
@@ -51,6 +54,8 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
     return {
       loaded: false,
       abortMessage: '',
+      updateable: false,
+      addable: false,
       records: [],
       dateMain: '',
       stats: [],

@@ -130,6 +130,11 @@
     align-items: center;
     overflow: hidden;
 
+    &.holder {
+      border: 4rpx dashed $gray-c5;
+      opacity: 0.75;
+    }
+
     &_accent {
       position: absolute;
       left: 0;
@@ -161,13 +166,13 @@
       font-weight: 600;
       color: $gray-33;
       line-height: 1.4;
-      margin-bottom: 8rpx;
     }
 
     &_sub {
       font-size: 26rpx;
       color: $gray-99;
       line-height: 1.4;
+      margin-top: 8rpx;
     }
 
     &_remark {
@@ -197,6 +202,10 @@
       color: white;
       box-shadow: 0 6rpx 20rpx rgba(244, 185, 66, 0.3);
       letter-spacing: 1rpx;
+
+      &.holder {
+        background: $gradient-sub;
+      }
     }
 
     &_stamp {

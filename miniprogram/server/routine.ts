@@ -166,9 +166,10 @@ export namespace Routine {
   /**
    * 获取指定日期的任务列表
    */
-  export async function list(date: number): Promise<number | Info[]> {
-    if (sMock) return getMockItems(date);
-    const res = await Network.post<Info[]>(Api.ListRoutine, { date });
+  export async function list(date: number, userId?: string): Promise<number | Info[]> {
+    // if (sMock) return getMockItems(date);
+    if (sMock) return [];
+    const res = await Network.post<Info[]>(Api.ListRoutine, { date, userId });
     if (res?.errcode !== 0) {
       Logger.warn('List routine failed', res);
       return res?.errcode || Err.Code.Network;

@@ -1,13 +1,28 @@
 import { Err } from '../constant/error';
+import { Context } from '../core/context';
 import { Routine } from '../server/routine';
+import { DateUtils } from '../utils/dateUtils';
 import { RoutineUI } from './routineUI';
 
 export class RoutineAdapter {
   protected infos: Routine.Info[] = [];
+  protected updateable = false;
+  protected addable = false;
+
+  protected date = 0;
+
+  protected defaults = [
+    Routine.Category.Reading,
+    Routine.Category.Homework,
+    Routine.Category.Exercise,
+  ];
 
   /** 加载指定日期的任务数据，返回错误码 */
-  public async load(date: number): Promise<number> {
-    const result = await Routine.list(date);
+  public async load(date: number, userId?: string): Promise<number> {
+    this.date = date;
+    this.updateable = !userId || userId === Context.getUserId();
+    this.addable = this.updateable && date === DateUtils.getStartMillisOfDay(Date.now());
+    const result = await Routine.list(date, userId);
     if (typeof result === 'number') return result;
     this.infos = result;
     return Err.Code.OK;
@@ -20,7 +35,9 @@ export class RoutineAdapter {
     let doneCount = 0;
     let pendingCount = 0;
 
-    for (const info of this.infos || []) {
+    const infos = this.fillHolders();
+    for (const info of infos) {
+      const holder = info.id.startsWith('holder');
       const done = info.status === Routine.Status.Done;
       const config = RoutineAdapter.sConfigs[info.category];
       count++;
@@ -41,7 +58,8 @@ export class RoutineAdapter {
         status: info.status,
         finishTime: info.finishTime,
         remark: info.remark,
-        style: done ? 'done' : '',
+        holder: holder,
+        style: done ? 'done' : holder ? 'holder' : '',
       };
       records.push(record);
     }
@@ -54,6 +72,8 @@ export class RoutineAdapter {
     }
 
     return {
+      updateable: this.updateable,
+      addable: this.addable,
       records,
       stats: [
         { id: 'count', name: `已规划 ${count}` },
@@ -61,6 +81,35 @@ export class RoutineAdapter {
         { id: 'done', name: `已完成 ${doneCount}`, style: 'done' },
       ],
     };
+  }
+
+  protected getHolder(category: Routine.Category): Routine.Info {
+    return {
+      id: 'holder' + category,
+      name: Routine.sCategories[category],
+      detail: '',
+      status: Routine.Status.Working,
+      category: category,
+      userId: '',
+      date: this.date,
+      transaction: '',
+      createTime: Date.now(),
+    };
+  }
+
+  protected fillHolders(): Routine.Info[] {
+    const result = [...this.infos];
+    if (!this.addable) return result;
+    // 也不非要默认的不可，超过3个以上，就当作有数据了
+    if (result.length >= 3) return result;
+
+    const exists = result.map((item) => item.category);
+    for (const category of this.defaults) {
+      if (!exists.includes(category)) {
+        result.push(this.getHolder(category));
+      }
+    }
+    return result;
   }
 }
 
