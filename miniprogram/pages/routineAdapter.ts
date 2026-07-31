@@ -11,7 +11,7 @@ export class RoutineAdapter {
 
   protected date = 0;
 
-  protected defaults = RoutineAdapter.getDefaultCategoryIds();
+  protected defaults = RoutineAdapter.getDefaults();
 
   /** 加载指定日期的任务数据，返回错误码 */
   public async load(date: number, userId?: string): Promise<number> {
@@ -48,7 +48,7 @@ export class RoutineAdapter {
         name: info.name,
         detail: info.detail,
         category: info.category,
-        categoryName: Routine.sCategories[info.category] || '',
+        categoryName: config.name,
         color: config.color || '#f4b942',
         icon: config.icon || '/assets/imgs/ic-reading.svg',
         status: info.status,
@@ -80,9 +80,10 @@ export class RoutineAdapter {
   }
 
   protected getHolder(category: Routine.Category): Routine.Info {
+    const config = RoutineAdapter.findConfig(category);
     return {
       id: 'holder' + category,
-      name: Routine.sCategories[category],
+      name: config.name,
       detail: '',
       status: Routine.Status.Working,
       category: category,
@@ -113,6 +114,7 @@ export namespace RoutineAdapter {
   export interface Config {
     /** 分类枚举值 */
     category: number;
+    name: string;
     color: string;
     icon: string;
     /** 是否为默认/常用分类，true 的展示在创建页常用区域 */
@@ -126,6 +128,7 @@ export namespace RoutineAdapter {
   export const sConfigs: Config[] = [
     {
       category: Routine.Category.Reading,
+      name: '阅读',
       color: '#f4b942',
       icon: '/assets/imgs/ic-reading.svg',
       default: true,
@@ -133,6 +136,7 @@ export namespace RoutineAdapter {
     },
     {
       category: Routine.Category.Homework,
+      name: '作业',
       color: '#64B5F6',
       icon: '/assets/imgs/ic-homework.svg',
       default: true,
@@ -140,6 +144,7 @@ export namespace RoutineAdapter {
     },
     {
       category: Routine.Category.Exercise,
+      name: '运动',
       color: '#81C784',
       icon: '/assets/imgs/ic-sport.svg',
       default: true,
@@ -147,36 +152,49 @@ export namespace RoutineAdapter {
     },
     {
       category: Routine.Category.Chores,
+      name: '家务',
       color: '#BA68C8',
       icon: '/assets/imgs/ic-housework.svg',
       examples: ['整理书桌', '扫地拖地', '浇花'],
     },
     {
       category: Routine.Category.Game,
+      name: '游戏',
       color: '#F06292',
       icon: '/assets/imgs/ic-game.svg',
       examples: ['Minecraft 建造', '拼图100片', '数独一局'],
     },
     {
       category: Routine.Category.Handwriting,
+      name: '练字',
       color: '#4DB6AC',
       icon: '/assets/imgs/ic-calligraphy.svg',
       examples: ['描红一页', '临摹《兰亭序》', '硬笔字帖'],
     },
     {
       category: Routine.Category.Instrument,
+      name: '音乐',
       color: '#A1887F',
       icon: '/assets/imgs/ic-instrument.svg',
       examples: ['音阶练习10遍', '练习曲第3首', '复习和弦'],
     },
     {
       category: Routine.Category.Drawing,
+      name: '绘画',
       color: '#FFD54F',
       icon: '/assets/imgs/ic-drawing.svg',
       examples: ['素描静物', '水彩风景', '卡通人物'],
     },
     {
+      category: Routine.Category.Practice,
+      name: '社会实践',
+      color: '#4FC3F7',
+      icon: '/assets/imgs/ic-coding.svg',
+      examples: ['摆摊'],
+    },
+    {
       category: Routine.Category.Coding,
+      name: '编程',
       color: '#4FC3F7',
       icon: '/assets/imgs/ic-coding.svg',
       examples: ['Scratch 发射子弹', 'Python 小游戏', '网页制作'],
@@ -184,13 +202,20 @@ export namespace RoutineAdapter {
   ];
 
   /** 按分类枚举值查找配置 */
-  export function findConfig(category: number): Config | undefined {
-    return sConfigs.find((c) => c.category === category);
+  export function findConfig(category: number): Config {
+    const r = sConfigs.find((c) => c.category == category);
+    if (r) return r;
+    return {
+      category: category,
+      name: '任务',
+      color: '#f4b942',
+      icon: '/assets/imgs/ic-reading.svg',
+    };
   }
 
   /** 获取所有默认/常用分类 ID */
-  export function getDefaultCategoryIds(): Routine.Category[] {
-    return sConfigs.filter((c) => c.default).map((c) => c.category);
+  export function getDefaults(v = true): Routine.Category[] {
+    return sConfigs.filter((c) => !!c.default === v).map((c) => c.category);
   }
 
   /** 获取所有非默认/更多分类 ID */

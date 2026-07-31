@@ -15,16 +15,8 @@ export namespace CreateRoutineUI {
     selectedCategoryId: number;
     /** 常用分类列表（3 个） */
     categories: Category[];
-
-    /** 更多分类数量（用于"还有 X 个"） */
-    moreCategoryCount: number;
-
-    /** 当前选中分类是否来自「更多分类」 */
-    selectedCategoryIsMore: boolean;
-    /** 当前选中分类的展示信息 */
-    selectedCategoryName: string;
-    selectedCategoryIcon: string;
-    selectedCategoryColor: string;
+    /** 当前选中分类的展示信息，如果ID为空表示没有 */
+    moreCategory?: Category;
 
     /** 任务内容 */
     contentText: string;
@@ -32,7 +24,7 @@ export namespace CreateRoutineUI {
     contentCharCount: number;
 
     /** 示例提示词（数据驱动，可能为空） */
-    exampleChips: ExampleChipItem[];
+    exampleChips: Example[];
 
     /** 计划时长选项 */
     durationOptions: DurationItem[];
@@ -55,12 +47,10 @@ export namespace CreateRoutineUI {
   }
 
   export interface Category extends Entity.Image {
-    icon: string;
     color: string;
-    categoryId: number;
   }
 
-  export interface ExampleChipItem extends Entity.Label {}
+  export interface Example extends Entity.Label {}
 
   export interface DurationItem extends Entity.Label {
     desc?: string;
@@ -99,12 +89,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
       abortMessage: '',
       choices: ChoicesUI.defaultData(),
       categories: [],
-      moreCategoryCount: 0,
       selectedCategoryId: 0,
-      selectedCategoryIsMore: false,
-      selectedCategoryName: '',
-      selectedCategoryIcon: '',
-      selectedCategoryColor: '',
       contentText: '',
       contentMaxLength: CreateRoutineUI.sContentMaxLength,
       contentCharCount: 0,
@@ -125,13 +110,11 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     const now = new Date();
     const currentHour = now.getHours();
     const categories = this.adapter.adaptCategories();
-    const moreCount = this.adapter.getMoreCategoryCount();
     const durationOptions = this.adapter.adaptDurations(30);
     const timeOptions = this.adapter.adaptTimes(currentHour, 'now');
 
     this.setData({
       categories: categories,
-      moreCategoryCount: moreCount,
       durationOptions,
       durationSelectedMinutes: 30,
       timeOptions,
@@ -154,14 +137,12 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
   /** 打开更多分类弹窗（委托 ChoicesUI） */
   protected onMoreToggle() {
     Logger.info('onMoreToggle');
-    const moreCategories = this.adapter.adaptMoreCategories(
-      this.getData().selectedCategoryIsMore ? this.getData().selectedCategoryId : undefined
-    );
+    const categories = this.adapter.adaptMoreCategories(this.getData().selectedCategoryId);
     this.getChoices().show(
       {
         id: 'more-category',
         title: '更多分类',
-        items: moreCategories,
+        items: categories,
         limited: 1,
         grid: 3,
       },
@@ -344,21 +325,17 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
 
   /** 选择分类：更新选中态 + 刷新示例提示词 */
   private selectCategory(category: number) {
-    const info = this.adapter.getCategoryInfo(category);
     const isMore = this.adapter.isMoreCategory(category);
-    const categories = this.markSelected(
-      this.getData().categories,
-      isMore ? 0 : category // 更多分类时清空常用分类选中
-    );
+    const more = isMore
+      ? this.adapter.buildCategoryVM(category)
+      : ({ id: '' } as CreateRoutineUI.Category);
+    const categories = this.markSelected(this.getData().categories, category);
     const examples = this.adapter.adaptExamples(category);
 
     this.setData({
       selectedCategoryId: category,
-      selectedCategoryIsMore: isMore,
-      selectedCategoryName: info.name,
-      selectedCategoryIcon: info.icon,
-      selectedCategoryColor: info.color,
       categories: categories,
+      moreCategory: more,
       exampleChips: examples,
       _submittable: this.getData().contentText.trim().length > 0,
     });
@@ -373,10 +350,12 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
   }
 
   private markSelected<T extends Entity.Label>(items: T[], selectedId: number): T[] {
-    return items.map((item) => ({
-      ...item,
-      selected: Number(item.id?.replace('cat_', '')) === selectedId,
-      style: Number(item.id?.replace('cat_', '')) === selectedId ? 'selected' : '',
-    }));
+    const id = '' + selectedId;
+    for (const item of items) {
+      if (item.id === id) {
+        item.selected = true;
+      } else if (item.selected) item.selected = false;
+    }
+    return items;
   }
 }

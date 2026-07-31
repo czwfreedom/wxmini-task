@@ -41,32 +41,24 @@ export class CreateRoutineAdapter {
 
   /** 获取常用分类 VM 列表（从 sConfigs 中 default=true 的分类） */
   public adaptCategories(): CreateRoutineUI.Category[] {
-    return RoutineAdapter.getDefaultCategoryIds().map((id) => this.buildCategoryItem(id));
+    return RoutineAdapter.getDefaults().map((id) => this.buildCategoryVM(id));
   }
 
   /** 获取更多分类 VM 列表（从 sConfigs 中 default 不为 true 的分类），可传入已选 ID 预选 */
-  adaptMoreCategories(selectedId?: number): CreateRoutineUI.Category[] {
-    return RoutineAdapter.getMoreCategoryIds().map((id) => {
-      const item = this.buildCategoryItem(id);
-      if (selectedId && selectedId === id) {
-        item.selected = true;
-        item.style = 'selected';
-      }
+  public adaptMoreCategories(selectedId?: number): CreateRoutineUI.Category[] {
+    return RoutineAdapter.getDefaults(false).map((id) => {
+      const item = this.buildCategoryVM(id);
+      if (selectedId && selectedId === id) item.selected = true;
       return item;
     });
   }
 
-  /** 获取更多分类数量 */
-  getMoreCategoryCount(): number {
-    return RoutineAdapter.getMoreCategoryIds().length;
-  }
-
   /** 获取指定分类的示例提示词 VM 列表（从 sConfigs.examples 读取，空数组则不展示） */
-  adaptExamples(categoryId: number): CreateRoutineUI.ExampleChipItem[] {
-    const config = RoutineAdapter.findConfig(categoryId);
+  public adaptExamples(category: number): CreateRoutineUI.Example[] {
+    const config = RoutineAdapter.findConfig(category);
     const texts = config?.examples || [];
     return texts.map((text, i) => ({
-      id: `ex_${categoryId}_${i}`,
+      id: `ex_${category}_${i}`,
       name: text,
     }));
   }
@@ -127,30 +119,12 @@ export class CreateRoutineAdapter {
   }
 
   /** 判断分类 ID 是否属于「更多分类」 */
-  isMoreCategory(categoryId: number): boolean {
-    return RoutineAdapter.getMoreCategoryIds().includes(categoryId);
+  public isMoreCategory(category: number): boolean {
+    return !RoutineAdapter.findConfig(category).default;
   }
 
-  /** 根据分类 ID 获取展示信息（名称/颜色/图标） */
-  public getCategoryInfo(category: number): { name: string; color: string; icon: string } {
-    const config = RoutineAdapter.findConfig(category);
-    return {
-      name: Routine.sCategories[category] || '',
-      color: config?.color || '#f4b942',
-      icon: config?.icon || '/assets/imgs/ic-reading.svg',
-    };
-  }
-
-  // ---- 私有方法 ----
-
-  private buildCategoryItem(id: Routine.Category): CreateRoutineUI.Category {
-    const info = this.getCategoryInfo(id);
-    return {
-      id: '' + id,
-      name: info.name,
-      avatar: info.icon,
-      icon: info.icon,
-      color: info.color,
-    };
+  public buildCategoryVM(id: Routine.Category): CreateRoutineUI.Category {
+    const config = RoutineAdapter.findConfig(id);
+    return { id: '' + id, name: config.name, avatar: config.icon, color: config.color };
   }
 }
