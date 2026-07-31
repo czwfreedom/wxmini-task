@@ -40,14 +40,12 @@ export class CreateRoutineAdapter {
   // ---- 构建方法 ----
 
   /** 获取常用分类 VM 列表（从 sConfigs 中 default=true 的分类） */
-  adaptCommonCategories(): CreateRoutineUI.CategoryItem[] {
-    return RoutineAdapter.getDefaultCategoryIds().map((id) =>
-      this.buildCategoryItem(id),
-    );
+  public adaptCategories(): CreateRoutineUI.Category[] {
+    return RoutineAdapter.getDefaultCategoryIds().map((id) => this.buildCategoryItem(id));
   }
 
   /** 获取更多分类 VM 列表（从 sConfigs 中 default 不为 true 的分类），可传入已选 ID 预选 */
-  adaptMoreCategories(selectedId?: number): CreateRoutineUI.CategoryItem[] {
+  adaptMoreCategories(selectedId?: number): CreateRoutineUI.Category[] {
     return RoutineAdapter.getMoreCategoryIds().map((id) => {
       const item = this.buildCategoryItem(id);
       if (selectedId && selectedId === id) {
@@ -99,8 +97,10 @@ export class CreateRoutineAdapter {
     });
 
     // 判断选中值是否在预设列表内（含 'custom' 占位）
-    const isPreset = selected === 'now' || selected === 'custom'
-      || filtered.some((item) => item.timeValue === selected);
+    const isPreset =
+      selected === 'now' ||
+      selected === 'custom' ||
+      filtered.some((item) => item.timeValue === selected);
 
     // 自定义入口始终占最后一个位置，使用 timeValue='custom' 保持 picker 包裹
     // 当选中自定义时间时，name 显示时间值 + selected 样式；否则显示"其他" + custom 虚线
@@ -132,12 +132,10 @@ export class CreateRoutineAdapter {
   }
 
   /** 根据分类 ID 获取展示信息（名称/颜色/图标） */
-  getCategoryInfo(
-    categoryId: number,
-  ): { name: string; color: string; icon: string } {
-    const config = RoutineAdapter.findConfig(categoryId);
+  public getCategoryInfo(category: number): { name: string; color: string; icon: string } {
+    const config = RoutineAdapter.findConfig(category);
     return {
-      name: Routine.sCategories[categoryId] || '',
+      name: Routine.sCategories[category] || '',
       color: config?.color || '#f4b942',
       icon: config?.icon || '/assets/imgs/ic-reading.svg',
     };
@@ -145,15 +143,14 @@ export class CreateRoutineAdapter {
 
   // ---- 私有方法 ----
 
-  private buildCategoryItem(id: Routine.Category): CreateRoutineUI.CategoryItem {
+  private buildCategoryItem(id: Routine.Category): CreateRoutineUI.Category {
     const info = this.getCategoryInfo(id);
     return {
-      id: `cat_${id}`,
+      id: '' + id,
       name: info.name,
       avatar: info.icon,
       icon: info.icon,
       color: info.color,
-      categoryId: id,
     };
   }
 }

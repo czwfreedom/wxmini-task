@@ -99,6 +99,40 @@
   border-radius: 0 0 32rpx 32rpx;
 }
 
+@mixin section-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: $gray-33;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+
+  &::before {
+    content: '';
+    width: 8rpx;
+    height: 36rpx;
+    background: $main;
+    border-radius: 4rpx;
+  }
+}
+
+@mixin checked {
+  position: absolute;
+  top: -2rpx;
+  right: -2rpx;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: $gradient;
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
 // 在公众号文章上看到的实现节流的方法。测试是有效的。
 // https://mp.weixin.qq.com/s/iZS0wUdPxOHbsNx5pz3G_A
 @mixin throttle {

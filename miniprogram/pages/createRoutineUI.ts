@@ -9,13 +9,14 @@ import { ChoicesUI } from '../ui/choicesUI';
 
 export namespace CreateRoutineUI {
   export interface Data extends SubUI.Data {
+    /** 当前选中分类 ID */
+    selectedCategoryId: number;
     /** 常用分类列表（3 个） */
-    commonCategories: CategoryItem[];
+    categories: Category[];
+
     /** 更多分类数量（用于"还有 X 个"） */
     moreCategoryCount: number;
 
-    /** 当前选中分类 ID */
-    selectedCategoryId: number;
     /** 当前选中分类是否来自「更多分类」 */
     selectedCategoryIsMore: boolean;
     /** 当前选中分类的展示信息 */
@@ -51,7 +52,7 @@ export namespace CreateRoutineUI {
     submittable: boolean;
   }
 
-  export interface CategoryItem extends Entity.Image {
+  export interface Category extends Entity.Image {
     icon: string;
     color: string;
     categoryId: number;
@@ -75,7 +76,7 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
 
   public static readonly sContentMaxLength = 50;
 
-  constructor(component: any, choicesUI?: ChoicesUI) {
+  public constructor(component: any, choicesUI?: ChoicesUI) {
     super(component);
     this.choicesUI = choicesUI;
 
@@ -96,7 +97,7 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
     return {
       loaded: false,
       abortMessage: '',
-      commonCategories: [],
+      categories: [],
       moreCategoryCount: 0,
       selectedCategoryId: 0,
       selectedCategoryIsMore: false,
@@ -122,13 +123,13 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
   public loadData(): number {
     const now = new Date();
     const currentHour = now.getHours();
-    const commonCategories = this.adapter.adaptCommonCategories();
+    const categories = this.adapter.adaptCategories();
     const moreCount = this.adapter.getMoreCategoryCount();
     const durationOptions = this.adapter.adaptDurations(30);
     const timeOptions = this.adapter.adaptTimes(currentHour, 'now');
 
     this.setData({
-      commonCategories,
+      categories: categories,
       moreCategoryCount: moreCount,
       durationOptions,
       durationSelectedMinutes: 30,
@@ -144,12 +145,9 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
 
   /** 选择常用分类 */
   protected onCategoryTap(e: WechatMiniprogram.TouchEvent) {
-    const { categoryId } = e.currentTarget.dataset;
-    const id = Number(categoryId);
-    if (!id) return;
-
+    const { id } = e.currentTarget.dataset;
     Logger.info('onCategoryTap', id);
-    this.selectCategory(id);
+    this.selectCategory(Number(id));
   }
 
   /** 打开更多分类弹窗（委托 ChoicesUI） */
@@ -158,7 +156,7 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
     if (!this.choicesUI) return;
 
     const moreCategories = this.adapter.adaptMoreCategories(
-      this.getData().selectedCategoryIsMore ? this.getData().selectedCategoryId : undefined,
+      this.getData().selectedCategoryIsMore ? this.getData().selectedCategoryId : undefined
     );
     this.choicesUI.show(
       {
@@ -171,10 +169,9 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
       },
       {
         onChoicesDialogItemTap: (item) => {
-          Logger.info('moreCategory selected', item.id);
-          this.selectCategory((item as CreateRoutineUI.CategoryItem).categoryId);
+          this.selectCategory(Number(item.id));
         },
-      },
+      }
     );
   }
 
@@ -348,22 +345,22 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
   // ---- 私有方法 ----
 
   /** 选择分类：更新选中态 + 刷新示例提示词 */
-  private selectCategory(categoryId: number) {
-    const info = this.adapter.getCategoryInfo(categoryId);
-    const isMore = this.adapter.isMoreCategory(categoryId);
-    const commonCategories = this.markSelected(
-      this.getData().commonCategories,
-      isMore ? 0 : categoryId, // 更多分类时清空常用分类选中
+  private selectCategory(category: number) {
+    const info = this.adapter.getCategoryInfo(category);
+    const isMore = this.adapter.isMoreCategory(category);
+    const categories = this.markSelected(
+      this.getData().categories,
+      isMore ? 0 : category // 更多分类时清空常用分类选中
     );
-    const examples = this.adapter.adaptExamples(categoryId);
+    const examples = this.adapter.adaptExamples(category);
 
     this.setData({
-      selectedCategoryId: categoryId,
+      selectedCategoryId: category,
       selectedCategoryIsMore: isMore,
       selectedCategoryName: info.name,
       selectedCategoryIcon: info.icon,
       selectedCategoryColor: info.color,
-      commonCategories,
+      categories: categories,
       exampleChips: examples,
       _submittable: this.getData().contentText.trim().length > 0,
     });
@@ -377,10 +374,7 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
     return `约${minutes}分钟`;
   }
 
-  private markSelected<T extends Entity.Label>(
-    items: T[],
-    selectedId: number,
-  ): T[] {
+  private markSelected<T extends Entity.Label>(items: T[], selectedId: number): T[] {
     return items.map((item) => ({
       ...item,
       selected: Number(item.id?.replace('cat_', '')) === selectedId,

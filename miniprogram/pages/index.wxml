@@ -9,7 +9,7 @@
 </view>
 
 <template
-  wx:if="{{ !loaded }}"
+  wx:if="{{ !loaded || abortMessage }}"
   is="abort"
-  data="{{message: '加载中..', iconInvisible: true }}"
+  data="{{message: abortMessage || '加载中..' }}"
 ></template>

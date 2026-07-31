@@ -1,6 +1,5 @@
 import { CreateRoutineUI } from './createRoutineUI';
 import { ChoicesUI } from '../ui/choicesUI';
-import { Entity } from '../model/entity';
 
 Page({
   data: {
