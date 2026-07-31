@@ -190,37 +190,40 @@
   }
 
   // ===== 3. 计划时长 =====
-  &_duration_grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16rpx;
-  }
-
-  &_duration_cell {
-    @include card;
-    border-radius: 28rpx;
-    padding: 22rpx 8rpx;
-    text-align: center;
-    border: 3rpx solid $gray-e5;
-
-    &.selected {
-      border-color: $main;
-      background: #fffdf8;
+  &_duration {
+    &_grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16rpx;
     }
 
-    &.custom {
-      border-style: dashed;
-      color: $gray-99;
-      background: transparent;
-      border-color: $gray-c5;
-    }
+    &_cell {
+      @include card;
+      @include flex-layout(row, center, center);
+      gap: 4rpx;
+      border-radius: 28rpx;
+      text-align: center;
+      border: 3rpx solid $gray-e5;
 
+      &.selected {
+        border-color: $main;
+        background: #fffdf8;
+      }
+
+      &.custom {
+        border-style: dashed;
+        color: $gray-99;
+        background: transparent;
+        border-color: $gray-c5;
+      }
+    }
     &_value {
       font-size: 32rpx;
+      line-height: 80rpx;
       font-weight: 700;
       color: $foreground-sub;
 
-      .selected & {
+      &.selected {
         color: $gray-33;
       }
     }
@@ -228,38 +231,29 @@
     &_unit {
       font-size: 20rpx;
       color: $gray-99;
-      font-weight: 500;
       margin-left: 4rpx;
     }
-  }
 
-  // 自定义时长：cell 内联 input（点击"其他"原地变为输入框）
-  &_duration_cell.selected,
-  &_duration_cell.custom {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 4rpx;
-  }
+    &_custom {
+      &_input {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 32rpx;
+        line-height: 80rpx;
+        font-weight: 700;
+        color: $gray-33;
+        text-align: center;
+        min-width: 40rpx;
+        max-width: 120rpx;
+      }
 
-  &_duration_custom_input {
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 32rpx;
-    font-weight: 700;
-    color: $gray-33;
-    text-align: center;
-    min-width: 40rpx;
-    max-width: 120rpx;
-  }
-
-  &_duration_custom_inline_unit {
-    font-size: 20rpx;
-    color: $gray-99;
-    font-weight: 500;
-    flex-shrink: 0;
+      &_unit {
+        font-size: 20rpx;
+        color: $gray-99;
+        flex-shrink: 0;
+      }
+    }
   }
 
   // ===== 4. 计划时间 =====

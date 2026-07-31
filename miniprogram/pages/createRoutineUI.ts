@@ -26,13 +26,9 @@ export namespace CreateRoutineUI {
     contentExamples: Example[];
 
     /** 计划时长选项 */
-    durationOptions: Duration[];
-    /** 自定义时长输入是否可见 */
-    durationCustomVisible: boolean;
+    durations: Duration[];
     /** 自定义时长输入文本 */
     durationCustomText: string;
-    /** 当前选中的时长分钟数（含自定义） */
-    durationSelectedMinutes: number;
 
     /** 计划时间选项 */
     timeOptions: TimeItem[];
@@ -51,9 +47,7 @@ export namespace CreateRoutineUI {
 
   export interface Example extends Entity.Label {}
 
-  export interface Duration extends Entity.Label {
-    minutes: number;
-  }
+  export interface Duration extends Entity.Label {}
 
   export interface TimeItem extends Entity.Label {
     timeValue: string;
@@ -92,10 +86,10 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
       contentMaxLength: CreateRoutineUI.sContentMaxLength,
       contentCharCount: 0,
       contentExamples: [],
-      durationOptions: [],
-      durationCustomVisible: false,
+
+      durations: [],
       durationCustomText: '',
-      durationSelectedMinutes: 30,
+
       timeOptions: [],
       timeCustomValue: '',
       timeSelectedValue: 'now',
@@ -108,13 +102,12 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     const now = new Date();
     const currentHour = now.getHours();
     const categories = this.adapter.adaptCategories();
-    const durationOptions = this.adapter.adaptDurations(30);
+    const durations = this.adapter.adaptDurations(30);
     const timeOptions = this.adapter.adaptTimes(currentHour, 'now');
 
     this.setData({
       categories: categories,
-      durationOptions,
-      durationSelectedMinutes: 30,
+      durations,
       timeOptions,
       timeSelectedValue: 'now',
       loaded: true,
@@ -181,35 +174,17 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
 
   /** 选择计划时长 */
   protected onDurationTap(e: WechatMiniprogram.TouchEvent) {
-    const { minutes } = e.currentTarget.dataset;
-    const mins = Number(minutes);
-    if (!mins) return;
-
-    Logger.info('onDurationTap', mins);
-    const options = this.adapter.adaptDurations(mins);
-    this.setData({
-      durationOptions: options,
-      durationSelectedMinutes: mins,
-      durationCustomVisible: false,
-      durationCustomText: '',
-    });
-  }
-
-  /** 自定义时长入口（点击"其他"）→ 原地切换为输入框 */
-  protected onDurationCustomTap() {
-    if (this.getData().durationCustomVisible) return;
-    Logger.info('onDurationCustomTap');
-    const options = this.adapter.adaptDurations(CreateRoutineAdapter.kCustomDurationMinutes);
-    this.setData({
-      durationOptions: options,
-      durationCustomVisible: true,
-      durationCustomText: '',
-      durationSelectedMinutes: 0,
-    });
+    const { id } = e.currentTarget.dataset;
+    Logger.info('onDurationTap', id);
+    const options = this.getData().durations;
+    for (const item of options) {
+      item.selected = item.id === id;
+    }
+    this.setData({ durations: options });
   }
 
   /** 自定义时长输入 */
-  protected onDurationCustomInput(e: WechatMiniprogram.InputEvent) {
+  protected onDurationCustomInput(e: WechatMiniprogram.TouchEvent) {
     const text = (e.detail.value || '') as string;
     this.setData({ durationCustomText: text });
   }
@@ -224,12 +199,6 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
       this.setData({ durationCustomText: '' });
       return;
     }
-    Logger.info('durationCustom confirm', mins);
-    const options = this.adapter.adaptDurations(CreateRoutineAdapter.kCustomDurationMinutes);
-    this.setData({
-      durationOptions: options,
-      durationSelectedMinutes: mins,
-    });
   }
 
   /** 选择计划时间（整点快捷） */
@@ -276,7 +245,8 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
 
     this.showLoading();
 
-    const duration = data.durationSelectedMinutes || 30;
+    // const duration = data.durationSelectedMinutes || 30;
+    const duration = 30;
 
     const timeValue = data.timeSelectedValue || 'now';
     let planTime = Date.now();

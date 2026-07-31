@@ -12,13 +12,13 @@ export class CreateRoutineAdapter {
   public static readonly kCustomDurationMinutes = -1;
 
   // ---- 计划时长选项（10分钟 · 25番茄钟 · 30 · 45 · 1小时 · 其他） ----
-  private static sDurationOptions: CreateRoutineUI.Duration[] = [
-    { id: 'd10', name: '10', desc: '分钟', minutes: 10 },
-    { id: 'd25', name: '25', desc: '分钟', minutes: 25 },
-    { id: 'd30', name: '30', desc: '分钟', minutes: 30 },
-    { id: 'd45', name: '45', desc: '分钟', minutes: 45 },
-    { id: 'd60', name: '1', desc: '小时', minutes: 60 },
-    { id: 'custom', name: '其他', desc: '', minutes: CreateRoutineAdapter.kCustomDurationMinutes },
+  private static sDurations: CreateRoutineUI.Duration[] = [
+    { id: '10', name: '10', desc: '分钟' },
+    { id: '25', name: '25', desc: '分钟' },
+    { id: '30', name: '30', desc: '分钟', selected: true },
+    { id: '45', name: '45', desc: '分钟' },
+    { id: '60', name: '1', desc: '小时' },
+    { id: 'custom', name: '其他', desc: '' },
   ];
 
   /** 计划时间选项（整点快捷 + 自定义入口），构建时按当前小时过滤已过时间 */
@@ -64,18 +64,8 @@ export class CreateRoutineAdapter {
   }
 
   /** 获取计划时长选项 VM 列表（带选中态），末尾"其他"为虚线自定义入口 */
-  adaptDurations(selectedMinutes?: number): CreateRoutineUI.Duration[] {
-    const selected = selectedMinutes ?? 30;
-    return CreateRoutineAdapter.sDurationOptions.map((item) => ({
-      ...item,
-      selected: item.minutes === selected,
-      style:
-        item.minutes === selected
-          ? 'selected'
-          : item.minutes === CreateRoutineAdapter.kCustomDurationMinutes
-            ? 'custom'
-            : '',
-    }));
+  public adaptDurations(selectedMinutes?: number): CreateRoutineUI.Duration[] {
+    return CreateRoutineAdapter.sDurations.map((o) => Object.assign({}, o));
   }
 
   /** 获取计划时间选项 VM 列表（按当前小时过滤已过时间 + 带选中态），末尾为自定义入口 */
