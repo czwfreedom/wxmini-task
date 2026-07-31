@@ -13,6 +13,7 @@
 
   &_scroll {
     @include flex-scaleable-scroll-view;
+    bottom: 180rpx;
   }
 
   &_content {
@@ -128,12 +129,44 @@
     font-size: 26rpx;
     font-weight: 600;
     color: $gray-99;
+
+    // 选中态：横向 pill（图标 + 名称 + 更换提示）
+    &.selected {
+      @include card;
+      border-style: solid;
+      border-color: $main;
+      background: #fffdf8;
+      border-radius: 40rpx;
+      padding: 18rpx 28rpx;
+      position: relative;
+      flex-direction: row;
+      gap: 16rpx;
+      box-shadow: 0 2rpx 0 rgba(0,0,0,0.03), 0 12rpx 32rpx rgba(74,144,226,0.05);
+    }
+
+    // 选中态中图标缩小
+    &.selected .create-routine_category_icon {
+      width: 56rpx;
+      height: 56rpx;
+    }
+    &.selected .create-routine_category_icon_img {
+      width: 56rpx;
+      height: 56rpx;
+    }
   }
 
   &_more_count {
     font-size: 22rpx;
     color: $gray-99;
     font-weight: 500;
+  }
+
+  &_more_change_hint {
+    margin-left: auto;
+    font-size: 22rpx;
+    color: $gray-99;
+    font-weight: 500;
+    flex-shrink: 0;
   }
 
   // ===== 2. 任务内容卡片 =====
@@ -236,6 +269,13 @@
       background: #fffdf8;
     }
 
+    &.custom {
+      border-style: dashed;
+      color: $gray-99;
+      background: transparent;
+      border-color: $gray-c5;
+    }
+
     &_value {
       font-size: 32rpx;
       font-weight: 700;
@@ -252,6 +292,35 @@
       font-weight: 500;
       margin-left: 4rpx;
     }
+  }
+
+  // 自定义时长：cell 内联 input（点击"其他"原地变为输入框）
+  &_duration_cell.selected,
+  &_duration_cell.custom {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 4rpx;
+  }
+
+  &_duration_custom_input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 32rpx;
+    font-weight: 700;
+    color: $gray-33;
+    text-align: center;
+    min-width: 40rpx;
+    max-width: 120rpx;
+  }
+
+  &_duration_custom_inline_unit {
+    font-size: 20rpx;
+    color: $gray-99;
+    font-weight: 500;
+    flex-shrink: 0;
   }
 
   // ===== 4. 计划时间 =====
@@ -284,14 +353,16 @@
     }
   }
 
-  // ===== CTA 底部按钮 =====
+  // ===== CTA 底部按钮（固定底部，不随内容滚动） =====
   &_cta_wrap {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 32rpx 48rpx 68rpx;
-    background: linear-gradient(180deg, rgba(242, 245, 248, 0), #F2F5F8 38%);
+    padding: 20rpx 48rpx;
+    padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, transparent, #f2f5f8 30%);
+    z-index: 10;
   }
 
   &_cta_btn {
@@ -324,12 +395,12 @@
     text-align: center;
     font-size: 22rpx;
     color: $gray-99;
-    margin-top: 16rpx;
+    margin-top: 12rpx;
     font-weight: 500;
   }
 
-  // ===== 底部留白 =====
+  // ===== 底部留白（给固定 CTA 视觉呼吸空间） =====
   &_spacer {
-    height: 260rpx;
+    height: 40rpx;
   }
 }

@@ -16,6 +16,8 @@ export namespace CreateRoutineUI {
 
     /** 当前选中分类 ID */
     selectedCategoryId: number;
+    /** 当前选中分类是否来自「更多分类」 */
+    selectedCategoryIsMore: boolean;
     /** 当前选中分类的展示信息 */
     selectedCategoryName: string;
     selectedCategoryIcon: string;
@@ -31,9 +33,19 @@ export namespace CreateRoutineUI {
 
     /** 计划时长选项 */
     durationOptions: DurationItem[];
+    /** 自定义时长输入是否可见 */
+    durationCustomVisible: boolean;
+    /** 自定义时长输入文本 */
+    durationCustomText: string;
+    /** 当前选中的时长分钟数（含自定义） */
+    durationSelectedMinutes: number;
 
     /** 计划时间选项 */
     timeOptions: TimeItem[];
+    /** 自定义时间值（picker 回填） */
+    timeCustomValue: string;
+    /** 当前选中的时间值 */
+    timeSelectedValue: string;
 
     /** 是否可以提交 */
     submittable: boolean;
@@ -72,8 +84,11 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
     this.bindEvent('onContentInput', this.onContentInput);
     this.bindEvent('onExampleChipTap', this.onExampleChipTap);
     this.bindEvent('onDurationTap', this.onDurationTap);
+    this.bindEvent('onDurationCustomTap', this.onDurationCustomTap);
+    this.bindEvent('onDurationCustomInput', this.onDurationCustomInput);
+    this.bindEvent('onDurationCustomConfirm', this.onDurationCustomConfirm);
     this.bindEvent('onTimeTap', this.onTimeTap);
-    this.bindEvent('onTimeCustomTap', this.onTimeCustomTap);
+    this.bindEvent('onTimePicked', this.onTimePicked);
     this.bindEvent('onSubmitTap', this.onSubmitTap);
   }
 
@@ -84,6 +99,7 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
       commonCategories: [],
       moreCategoryCount: 0,
       selectedCategoryId: 0,
+      selectedCategoryIsMore: false,
       selectedCategoryName: '',
       selectedCategoryIcon: '',
       selectedCategoryColor: '',
@@ -92,23 +108,32 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
       contentCharCount: 0,
       exampleChips: [],
       durationOptions: [],
+      durationCustomVisible: false,
+      durationCustomText: '',
+      durationSelectedMinutes: 30,
       timeOptions: [],
+      timeCustomValue: '',
+      timeSelectedValue: 'now',
       submittable: false,
     };
   }
 
   /** 初始化页面数据（同步，无需网络请求） */
   public loadData(): number {
+    const now = new Date();
+    const currentHour = now.getHours();
     const commonCategories = this.adapter.adaptCommonCategories();
     const moreCount = this.adapter.getMoreCategoryCount();
-    const durationOptions = this.adapter.adaptDurations();
-    const timeOptions = this.adapter.adaptTimes();
+    const durationOptions = this.adapter.adaptDurations(30);
+    const timeOptions = this.adapter.adaptTimes(currentHour, 'now');
 
     this.setData({
       commonCategories,
       moreCategoryCount: moreCount,
       durationOptions,
+      durationSelectedMinutes: 30,
       timeOptions,
+      timeSelectedValue: 'now',
       loaded: true,
     });
 
@@ -132,7 +157,9 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
     Logger.info('onMoreToggle');
     if (!this.choicesUI) return;
 
-    const moreCategories = this.adapter.adaptMoreCategories();
+    const moreCategories = this.adapter.adaptMoreCategories(
+      this.getData().selectedCategoryIsMore ? this.getData().selectedCategoryId : undefined,
+    );
     this.choicesUI.show(
       {
         id: 'more-category',
@@ -186,7 +213,49 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
 
     Logger.info('onDurationTap', mins);
     const options = this.adapter.adaptDurations(mins);
-    this.setData({ durationOptions: options });
+    this.setData({
+      durationOptions: options,
+      durationSelectedMinutes: mins,
+      durationCustomVisible: false,
+      durationCustomText: '',
+    });
+  }
+
+  /** 自定义时长入口（点击"其他"）→ 原地切换为输入框 */
+  protected onDurationCustomTap() {
+    if (this.getData().durationCustomVisible) return;
+    Logger.info('onDurationCustomTap');
+    const options = this.adapter.adaptDurations(CreateRoutineAdapter.kCustomDurationMinutes);
+    this.setData({
+      durationOptions: options,
+      durationCustomVisible: true,
+      durationCustomText: '',
+      durationSelectedMinutes: 0,
+    });
+  }
+
+  /** 自定义时长输入 */
+  protected onDurationCustomInput(e: WechatMiniprogram.InputEvent) {
+    const text = (e.detail.value || '') as string;
+    this.setData({ durationCustomText: text });
+  }
+
+  /** 自定义时长确认（失焦后生效） */
+  protected onDurationCustomConfirm() {
+    const text = this.getData().durationCustomText.trim();
+    if (!text) return;
+    const mins = parseInt(text, 10);
+    if (isNaN(mins) || mins <= 0 || mins > 480) {
+      this.showToast('请输入 1-480 之间的分钟数');
+      this.setData({ durationCustomText: '' });
+      return;
+    }
+    Logger.info('durationCustom confirm', mins);
+    const options = this.adapter.adaptDurations(CreateRoutineAdapter.kCustomDurationMinutes);
+    this.setData({
+      durationOptions: options,
+      durationSelectedMinutes: mins,
+    });
   }
 
   /** 选择计划时间（整点快捷） */
@@ -195,16 +264,27 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
     if (!timeValue) return;
 
     Logger.info('onTimeTap', timeValue);
-    const options = this.adapter.adaptTimes(timeValue as string);
-    this.setData({ timeOptions: options });
+    const currentHour = new Date().getHours();
+    const options = this.adapter.adaptTimes(currentHour, timeValue as string);
+    this.setData({
+      timeOptions: options,
+      timeSelectedValue: timeValue as string,
+      timeCustomValue: '',
+    });
   }
 
-  /** 自定义时间 */
-  protected onTimeCustomTap() {
-    Logger.info('onTimeCustomTap');
-    const options = this.adapter.adaptTimes('custom');
-    this.setData({ timeOptions: options });
-    this.showToast('自定义时间功能即将上线');
+  /** 原生 picker 选择回调 */
+  protected onTimePicked(e: WechatMiniprogram.PickerChangeEvent) {
+    const timeValue = e.detail.value as string;
+    Logger.info('onTimePicked', timeValue);
+    if (!timeValue) return;
+    const currentHour = new Date().getHours();
+    const options = this.adapter.adaptTimes(currentHour, timeValue);
+    this.setData({
+      timeOptions: options,
+      timeSelectedValue: timeValue,
+      timeCustomValue: timeValue,
+    });
   }
 
   /** 提交创建任务 */
@@ -222,16 +302,17 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
 
     this.showLoading();
 
-    const duration =
-      data.durationOptions.find((d) => d.selected)?.minutes || 30;
+    const duration = data.durationSelectedMinutes || 30;
 
-    const timeItem = data.timeOptions.find((t) => t.selected);
+    const timeValue = data.timeSelectedValue || 'now';
     let planTime = Date.now();
-    if (timeItem && timeItem.timeValue !== 'now' && timeItem.timeValue !== 'custom') {
+    if (timeValue !== 'now') {
       const today = new Date();
-      const [h, m] = timeItem.timeValue.split(':').map(Number);
-      today.setHours(h, m, 0, 0);
-      planTime = today.getTime();
+      const [h, m] = timeValue.split(':').map(Number);
+      if (!isNaN(h) && !isNaN(m)) {
+        today.setHours(h, m, 0, 0);
+        planTime = today.getTime();
+      }
     }
 
     const now = Date.now();
@@ -269,14 +350,16 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
   /** 选择分类：更新选中态 + 刷新示例提示词 */
   private selectCategory(categoryId: number) {
     const info = this.adapter.getCategoryInfo(categoryId);
+    const isMore = this.adapter.isMoreCategory(categoryId);
     const commonCategories = this.markSelected(
       this.getData().commonCategories,
-      categoryId,
+      isMore ? 0 : categoryId, // 更多分类时清空常用分类选中
     );
     const examples = this.adapter.adaptExamples(categoryId);
 
     this.setData({
       selectedCategoryId: categoryId,
+      selectedCategoryIsMore: isMore,
       selectedCategoryName: info.name,
       selectedCategoryIcon: info.icon,
       selectedCategoryColor: info.color,

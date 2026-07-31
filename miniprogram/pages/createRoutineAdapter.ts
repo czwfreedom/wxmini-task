@@ -8,28 +8,33 @@ import { CreateRoutineUI } from './createRoutineUI';
  * 分类配置统一从 RoutineAdapter.sConfigs / findConfig 读取。
  */
 export class CreateRoutineAdapter {
-  // ---- 计划时长选项 ----
+  /** 自定义时长入口的 sentinel */
+  public static readonly kCustomDurationMinutes = -1;
+
+  // ---- 计划时长选项（10分钟 · 25番茄钟 · 30 · 45 · 1小时 · 其他） ----
   private static sDurationOptions: CreateRoutineUI.DurationItem[] = [
     { id: 'd10', name: '10', desc: '分钟', minutes: 10 },
-    { id: 'd15', name: '15', desc: '分钟', minutes: 15 },
-    { id: 'd20', name: '20', desc: '分钟', minutes: 20 },
+    { id: 'd25', name: '25', desc: '分钟', minutes: 25 },
     { id: 'd30', name: '30', desc: '分钟', minutes: 30 },
     { id: 'd45', name: '45', desc: '分钟', minutes: 45 },
     { id: 'd60', name: '1', desc: '小时', minutes: 60 },
+    { id: 'custom', name: '其他', desc: '', minutes: CreateRoutineAdapter.kCustomDurationMinutes },
   ];
 
-  /** 计划时间选项（整点快捷 + 自定义入口） */
-  private static sTimeOptions: CreateRoutineUI.TimeItem[] = [
+  /** 计划时间选项（整点快捷 + 自定义入口），构建时按当前小时过滤已过时间 */
+  private static readonly sTimeOptionsRaw: CreateRoutineUI.TimeItem[] = [
     { id: 'now', name: '现在', timeValue: 'now' },
     { id: 't08', name: '08:00', timeValue: '08:00' },
     { id: 't09', name: '09:00', timeValue: '09:00' },
     { id: 't10', name: '10:00', timeValue: '10:00' },
+    { id: 't11', name: '11:00', timeValue: '11:00' },
     { id: 't14', name: '14:00', timeValue: '14:00' },
     { id: 't15', name: '15:00', timeValue: '15:00' },
     { id: 't16', name: '16:00', timeValue: '16:00' },
+    { id: 't17', name: '17:00', timeValue: '17:00' },
     { id: 't19', name: '19:00', timeValue: '19:00' },
     { id: 't20', name: '20:00', timeValue: '20:00' },
-    { id: 'custom', name: '其他', timeValue: 'custom' },
+    { id: 't21', name: '21:00', timeValue: '21:00' },
   ];
 
   // ---- 构建方法 ----
@@ -41,11 +46,16 @@ export class CreateRoutineAdapter {
     );
   }
 
-  /** 获取更多分类 VM 列表（从 sConfigs 中 default 不为 true 的分类） */
-  adaptMoreCategories(): CreateRoutineUI.CategoryItem[] {
-    return RoutineAdapter.getMoreCategoryIds().map((id) =>
-      this.buildCategoryItem(id),
-    );
+  /** 获取更多分类 VM 列表（从 sConfigs 中 default 不为 true 的分类），可传入已选 ID 预选 */
+  adaptMoreCategories(selectedId?: number): CreateRoutineUI.CategoryItem[] {
+    return RoutineAdapter.getMoreCategoryIds().map((id) => {
+      const item = this.buildCategoryItem(id);
+      if (selectedId && selectedId === id) {
+        item.selected = true;
+        item.style = 'selected';
+      }
+      return item;
+    });
   }
 
   /** 获取更多分类数量 */
@@ -63,29 +73,62 @@ export class CreateRoutineAdapter {
     }));
   }
 
-  /** 获取计划时长选项 VM 列表（带选中态） */
+  /** 获取计划时长选项 VM 列表（带选中态），末尾"其他"为虚线自定义入口 */
   adaptDurations(selectedMinutes?: number): CreateRoutineUI.DurationItem[] {
     const selected = selectedMinutes ?? 30;
     return CreateRoutineAdapter.sDurationOptions.map((item) => ({
       ...item,
       selected: item.minutes === selected,
-      style: item.minutes === selected ? 'selected' : '',
-    }));
-  }
-
-  /** 获取计划时间选项 VM 列表（带选中态） */
-  adaptTimes(selectedTimeValue?: string): CreateRoutineUI.TimeItem[] {
-    const selected = selectedTimeValue || 'now';
-    return CreateRoutineAdapter.sTimeOptions.map((item) => ({
-      ...item,
-      selected: item.timeValue === selected,
       style:
-        item.timeValue === selected
+        item.minutes === selected
           ? 'selected'
-          : item.timeValue === 'custom'
+          : item.minutes === CreateRoutineAdapter.kCustomDurationMinutes
             ? 'custom'
             : '',
     }));
+  }
+
+  /** 获取计划时间选项 VM 列表（按当前小时过滤已过时间 + 带选中态），末尾为自定义入口 */
+  adaptTimes(nowHour?: number, selectedTimeValue?: string): CreateRoutineUI.TimeItem[] {
+    const selected = selectedTimeValue || 'now';
+    const hour = nowHour ?? new Date().getHours();
+    const filtered = CreateRoutineAdapter.sTimeOptionsRaw.filter((item) => {
+      if (item.timeValue === 'now') return true;
+      const itemHour = parseInt(item.timeValue.split(':')[0], 10);
+      return itemHour > hour;
+    });
+
+    // 判断选中值是否在预设列表内（含 'custom' 占位）
+    const isPreset = selected === 'now' || selected === 'custom'
+      || filtered.some((item) => item.timeValue === selected);
+
+    // 自定义入口始终占最后一个位置，使用 timeValue='custom' 保持 picker 包裹
+    // 当选中自定义时间时，name 显示时间值 + selected 样式；否则显示"其他" + custom 虚线
+    const customEntry: CreateRoutineUI.TimeItem = {
+      id: 'custom',
+      name: isPreset ? '其他 ›' : selected,
+      timeValue: 'custom',
+    };
+
+    const result = [...filtered, customEntry];
+
+    return result.map((item) => ({
+      ...item,
+      selected: item.timeValue === selected || (!isPreset && item.timeValue === 'custom'),
+      style:
+        item.timeValue === selected
+          ? 'selected'
+          : item.timeValue === 'custom' && !isPreset
+            ? 'selected'
+            : item.timeValue === 'custom'
+              ? 'custom'
+              : '',
+    }));
+  }
+
+  /** 判断分类 ID 是否属于「更多分类」 */
+  isMoreCategory(categoryId: number): boolean {
+    return RoutineAdapter.getMoreCategoryIds().includes(categoryId);
   }
 
   /** 根据分类 ID 获取展示信息（名称/颜色/图标） */
