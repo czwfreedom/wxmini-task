@@ -143,84 +143,50 @@
   }
 
   // ===== 2. 任务内容卡片 =====
-  &_content_card {
+  &_detail {
     @include card;
     border-radius: 32rpx;
     padding: 28rpx 36rpx 24rpx;
-  }
-
-  &_content_chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 12rpx;
-    background: $background-gradient; // #B8DAF5→#F2F5F8 背景色复用
-    border-radius: 28rpx;
-    padding: 10rpx 24rpx 10rpx 12rpx;
-    margin-bottom: 12rpx;
-
-    &_icon {
-      width: 44rpx;
-      height: 44rpx;
-
-      &_img {
-        width: 44rpx;
-        height: 44rpx;
-      }
+    &_input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 34rpx;
+      color: $gray-33;
+      line-height: 1.4;
+      min-height: 96rpx;
     }
-
-    &_name {
-      font-size: 24rpx;
-      font-weight: 600;
-      color: $foreground-sub;
+    &_footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-
-    &_hint {
-      font-size: 20rpx;
+    &_count {
+      font-size: 22rpx;
       color: $gray-99;
-      margin-left: 4rpx;
+      font-weight: 500;
     }
-  }
-
-  &_content_input {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 34rpx;
-    font-weight: 600;
-    color: $gray-33;
-    line-height: 1.4;
-    min-height: 96rpx;
-  }
-
-  &_content_footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  &_content_count {
-    font-size: 22rpx;
-    color: $gray-99;
-    font-weight: 500;
   }
 
   // ===== 示例提示词 =====
-  &_example_chips {
-    display: flex;
-    gap: 16rpx;
-    margin-top: 20rpx;
-    flex-wrap: wrap;
-  }
+  &_example {
+    &_items {
+      display: flex;
+      gap: 16rpx;
+      margin-top: 20rpx;
+      flex-wrap: wrap;
+    }
 
-  &_example_chip {
-    font-size: 24rpx;
-    font-weight: 500;
-    color: $foreground-sub;
-    background: $background-white;
-    padding: 14rpx 28rpx;
-    border-radius: 32rpx;
-    border: 2rpx solid $gray-e5;
+    &_item {
+      font-size: 24rpx;
+      font-weight: 500;
+      color: $foreground-sub;
+      background: $background-white;
+      padding: 14rpx 28rpx;
+      border-radius: 32rpx;
+      border: 2rpx solid $gray-e5;
+    }
   }
 
   // ===== 3. 计划时长 =====
@@ -327,55 +293,27 @@
   }
 
   // ===== CTA 底部按钮（固定底部，不随内容滚动） =====
-  &_cta_wrap {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+  &_cta {
     padding: 20rpx 48rpx;
     padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
     background: linear-gradient(180deg, transparent, #f2f5f8 30%);
-    z-index: 10;
-  }
 
-  &_cta_btn {
-    background: $gradient;
-    border-radius: 999rpx;
-    padding: 30rpx;
-    text-align: center;
-    font-size: 34rpx;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: 4rpx;
-    box-shadow:
-      0 16rpx 40rpx rgba(244, 185, 66, 0.35),
-      0 4rpx 0 rgba(255, 255, 255, 0.35) inset;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20rpx;
+    &_btn {
+      background: $gradient;
+      border-radius: 999rpx;
+      padding: 30rpx;
+      text-align: center;
+      font-size: 34rpx;
+      color: #fff;
+      letter-spacing: 4rpx;
+      box-shadow:
+        0 16rpx 40rpx rgba(244, 185, 66, 0.35),
+        0 4rpx 0 rgba(255, 255, 255, 0.35) inset;
+      gap: 20rpx;
 
-    &.disabled {
-      opacity: 0.5;
-      pointer-events: none;
+      &.disabled {
+        opacity: 0.5;
+      }
     }
-  }
-
-  &_cta_pencil {
-    width: 40rpx;
-    height: 40rpx;
-  }
-
-  &_cta_sub {
-    text-align: center;
-    font-size: 22rpx;
-    color: $gray-99;
-    margin-top: 12rpx;
-    font-weight: 500;
-  }
-
-  // ===== 底部留白（给固定 CTA 视觉呼吸空间） =====
-  &_spacer {
-    height: 40rpx;
   }
 }

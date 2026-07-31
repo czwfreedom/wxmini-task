@@ -12,7 +12,7 @@ export class CreateRoutineAdapter {
   public static readonly kCustomDurationMinutes = -1;
 
   // ---- 计划时长选项（10分钟 · 25番茄钟 · 30 · 45 · 1小时 · 其他） ----
-  private static sDurationOptions: CreateRoutineUI.DurationItem[] = [
+  private static sDurationOptions: CreateRoutineUI.Duration[] = [
     { id: 'd10', name: '10', desc: '分钟', minutes: 10 },
     { id: 'd25', name: '25', desc: '分钟', minutes: 25 },
     { id: 'd30', name: '30', desc: '分钟', minutes: 30 },
@@ -64,7 +64,7 @@ export class CreateRoutineAdapter {
   }
 
   /** 获取计划时长选项 VM 列表（带选中态），末尾"其他"为虚线自定义入口 */
-  adaptDurations(selectedMinutes?: number): CreateRoutineUI.DurationItem[] {
+  adaptDurations(selectedMinutes?: number): CreateRoutineUI.Duration[] {
     const selected = selectedMinutes ?? 30;
     return CreateRoutineAdapter.sDurationOptions.map((item) => ({
       ...item,

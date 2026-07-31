@@ -22,12 +22,11 @@ export namespace CreateRoutineUI {
     contentText: string;
     contentMaxLength: number;
     contentCharCount: number;
-
     /** 示例提示词（数据驱动，可能为空） */
-    exampleChips: Example[];
+    contentExamples: Example[];
 
     /** 计划时长选项 */
-    durationOptions: DurationItem[];
+    durationOptions: Duration[];
     /** 自定义时长输入是否可见 */
     durationCustomVisible: boolean;
     /** 自定义时长输入文本 */
@@ -52,8 +51,7 @@ export namespace CreateRoutineUI {
 
   export interface Example extends Entity.Label {}
 
-  export interface DurationItem extends Entity.Label {
-    desc?: string;
+  export interface Duration extends Entity.Label {
     minutes: number;
   }
 
@@ -73,7 +71,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     this.bindEvent('onCategoryTap', this.onCategoryTap);
     this.bindEvent('onMoreToggle', this.onMoreToggle);
     this.bindEvent('onContentInput', this.onContentInput);
-    this.bindEvent('onExampleChipTap', this.onExampleChipTap);
+    this.bindEvent('onContentExampleTap', this.onContentExampleTap);
     this.bindEvent('onDurationTap', this.onDurationTap);
     this.bindEvent('onDurationCustomTap', this.onDurationCustomTap);
     this.bindEvent('onDurationCustomInput', this.onDurationCustomInput);
@@ -93,7 +91,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
       contentText: '',
       contentMaxLength: CreateRoutineUI.sContentMaxLength,
       contentCharCount: 0,
-      exampleChips: [],
+      contentExamples: [],
       durationOptions: [],
       durationCustomVisible: false,
       durationCustomText: '',
@@ -167,11 +165,11 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
   }
 
   /** 点击示例提示词 chip，填充到输入框 */
-  protected onExampleChipTap(e: WechatMiniprogram.TouchEvent) {
+  protected onContentExampleTap(e: WechatMiniprogram.TouchEvent) {
     const { name } = e.currentTarget.dataset;
     if (!name) return;
 
-    Logger.info('onExampleChipTap', name);
+    Logger.info('onContentExampleTap', name);
     const count = (name as string).length;
 
     this.setData({
@@ -336,7 +334,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
       selectedCategoryId: category,
       categories: categories,
       moreCategory: more,
-      exampleChips: examples,
+      contentExamples: examples,
       _submittable: this.getData().contentText.trim().length > 0,
     });
   }
