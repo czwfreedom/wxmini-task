@@ -148,30 +148,51 @@ export class RoutineAdapter {
 
 ## 五、SCSS 样式
 
-每个 `.scss` **必须**引用全局变量和 Mixin，禁止硬编码颜色/尺寸。
+每个 `.scss` **必须**引用全局变量和 Mixin。
 
 ```scss
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
 ```
 
+### 配色铁律
+
+**所有颜色必须引用 `var.scss` 变量，严禁在 SCSS 中硬编码色值。** 设计稿中引用的色值也必须与 `var.scss` 保持一致。无对应变量时，优先使用语义最接近的已有变量，或在 `var.scss` 中新增变量后引用。
+
 ### 变量速查
 
-| 变量                             | 值                            | 用途          |
-| -------------------------------- | ----------------------------- | ------------- |
-| `$main`                          | `#5599f7`                     | 主色调        |
-| `$gray-33`                       | `#333`                        | 标题/重要文字 |
-| `$foreground-sub`                | `#5c6178`                     | 次要文字      |
-| `$gray-99`                       | `#999999`                     | 占位符/提示   |
-| `$background-orange`             | `#f4b942`                     | 待完成/添加   |
-| `$foreground-red`                | `#ef5350`                     | 高优先级/删除 |
-| `$background-white`              | `#fbfcfe`                     | 暖白背景      |
-| `$gray-e5 / $gray-d9 / $gray-c5` | `#e5e5e5 / #d9d9d9 / #c5c5c5` | 边框          |
-| `$black*`                        | rgba 系列                     | 遮罩          |
+| 变量 | 值 | 用途 |
+|------|-----|------|
+| `$main` | `#f4b942` | 主色调 / 选中描边 / 金色强调 |
+| `$blue` | `#5b9bd5` | 统计点蓝色 |
+| `$green` | `#81c784` | 完成点绿色 / 已完成文字 |
+| `$gray-33` | `#333` | 标题 / 重要文字 |
+| `$gray-44` | `#444` | done 卡片标题 |
+| `$gray-ee` | `#eee` | 浅灰底 / 装饰元素 |
+| `$gray-e5` | `#e5e5e5` | 边框 |
+| `$gray-d9` | `#d9d9d9` | 深色边框 |
+| `$gray-c5` | `#c5c5c5` | 虚线边框 / placeholder 占位 |
+| `$gray-99` | `#999` | 占位符 / 提示文字 / 次要灰 |
+| `$foreground-red` | `#ef5350` | 高优先级 / 删除 / 绶带 |
+| `$foreground-sub` | `#5c6178` | 次要文字 |
+| `$background-green-light` | `rgba(129,199,132,0.12)` | remark 底 |
+| `$gradient` | `linear-gradient(135deg, $main, #ffd54f)` | 主按钮 / 打勾徽章 |
+| `$gradient-sub` | `linear-gradient(160deg, #b5d9f8, #a0cdf5 50%, #c5e3fa)` | Hero 渐变 |
+| `$background-gradient` | `linear-gradient(180deg, #b8daf5, #f2f5f8 30%)` | 页面背景渐变 |
+| `$background-white` | `#fbfcfe` | 暖白背景 / 弹窗面板 |
+| `$black1~$black4` | `rgba(0,0,0,0.1~0.4)` | 阴影 / 遮罩 |
+| `$white2/$white5/$white6/$white85` | `rgba(255,255,255,0.x)` | 半透明白 / 毛玻璃 |
+
+**卡片专用色**（定义在 `mixin.scss` 和 `routine.scss`，非变量但为项目标准色）：
+
+| 色值 | 用途 | 定义位置 |
+|------|------|---------|
+| `#fdfbf7` | 卡片底色 | `@mixin card` |
+| `#fffdf8` | 已完成卡片底色 | `routine_card.done` |
 
 ### Mixin 速查
 
-`flex-layout(dir,justify,align)` · `flex-container(color)` · `flex-container-inner(color)` · `flex-scaleable-content` · `flex-scaleable-scroll-view` · `mask(color)` · `clear-button` · `ellipsis` / `ellipsis-layout` · `throttle`
+`flex-layout(dir,justify,align)` · `flex-container(color)` · `flex-container-inner(color)` · `flex-scaleable-content` · `flex-scaleable-scroll-view` · `mask(color)` · `clear-button` · `ellipsis` / `ellipsis-layout` · `throttle` · `card` · `float` · `hero`
 
 ### 数据驱动样式
 

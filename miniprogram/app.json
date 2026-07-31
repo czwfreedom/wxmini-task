@@ -1,7 +1,8 @@
 {
   "pages": [
     "pages/index",
-    "pages/routine"
+    "pages/routine",
+    "pages/createRoutine"
   ],
   "window": {
     "backgroundTextStyle": "light",

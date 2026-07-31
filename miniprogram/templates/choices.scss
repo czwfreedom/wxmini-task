@@ -1,5 +1,245 @@
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
 
+/* ==========================================================
+   Choices 通用底部弹窗
+   配色全部引用 var.scss 变量
+   统一选中态：.sel.selected → $main 描边 + #fffdf8 底 + $gradient 打勾
+   ========================================================== */
 .choices {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+
+  &_mask {
+    position: absolute;
+    inset: 0;
+    background: $black4;
+  }
+
+  &_sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: $background-white;
+    border-radius: 48rpx 48rpx 0 0;
+    padding: 20rpx 40rpx 68rpx;
+    box-shadow: 0 -16rpx 64rpx rgba(0, 0, 0, 0.12);
+    animation: choicesSlideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  &_sheet_handle {
+    width: 72rpx;
+    height: 8rpx;
+    border-radius: 4rpx;
+    background: $gray-e5;
+    margin: 0 auto 28rpx;
+  }
+
+  &_sheet_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28rpx;
+
+    &_title {
+      font-size: 34rpx;
+      font-weight: 700;
+      color: $gray-33;
+      text-align: center;
+      flex: 1;
+    }
+
+    &_cancel {
+      font-size: 30rpx;
+      color: $gray-99;
+    }
+
+    &_confirm {
+      font-size: 30rpx;
+      font-weight: 600;
+      color: $main;
+    }
+  }
+
+  /** 单选标题行（居中） */
+  &_sheet_title_row {
+    text-align: center;
+    margin-bottom: 28rpx;
+  }
+
+  &_sheet_title {
+    font-size: 34rpx;
+    font-weight: 700;
+    color: $gray-33;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 8rpx;
+      height: 36rpx;
+      background: $main;
+      border-radius: 4rpx;
+      margin-right: 16rpx;
+      vertical-align: middle;
+    }
+  }
+
+  /** 单选：底部取消按钮 */
+  &_sheet_cancel {
+    border-top: 1rpx solid rgba(0, 0, 0, 0.06);
+    padding: 28rpx;
+    text-align: center;
+    font-size: 32rpx;
+    font-weight: 500;
+    color: $gray-99;
+  }
+
+  // ===== Grid 布局 =====
+  &_grid {
+    padding-bottom: 16rpx;
+
+    // grid='2': 横向双列
+    &_2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20rpx;
+    }
+
+    // grid='3': 纵向三列（分类选择）
+    &_3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20rpx;
+    }
+
+    // grid='4': 纯文本列表（纵向单列）
+    &_4 {
+      display: flex;
+      flex-direction: column;
+      gap: 16rpx;
+    }
+  }
+
+  // ===== Item 单元 =====
+  &_item {
+    position: relative;
+
+    // grid='3' 模式：卡片样式
+    .choices_grid_3 & {
+      @include card;
+      border: 4rpx solid $gray-e5;
+      border-radius: 40rpx;
+      padding: 28rpx 12rpx 24rpx;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16rpx;
+      box-shadow: none;
+    }
+
+    // grid='2' 模式
+    .choices_grid_2 & {
+      @include card;
+      border: 3rpx solid $gray-e5;
+      border-radius: 28rpx;
+      padding: 20rpx 24rpx;
+      display: flex;
+      align-items: center;
+      gap: 16rpx;
+    }
+
+    // grid='4' 纯文本
+    .choices_grid_4 & {
+      padding: 24rpx 32rpx;
+      border-radius: 24rpx;
+      background: #FDFBF7;
+      border: 2rpx solid $gray-e5;
+    }
+
+    // 统一选中态
+    &.sel.selected {
+      border-color: $main;
+      background: #fffdf8;
+    }
+  }
+
+  // ---- 统一选中态打勾 ----
+  .sel_check {
+    position: absolute;
+    top: -12rpx;
+    right: -12rpx;
+    width: 44rpx;
+    height: 44rpx;
+    border-radius: 50%;
+    background: $gradient;
+    color: #fff;
+    font-size: 26rpx;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  // ---- Item 内部元素 ----
+  &_item_avatar_wrap {
+    width: 96rpx;
+    height: 96rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &_item_avatar_img {
+    width: 96rpx;
+    height: 96rpx;
+  }
+
+  &_item_avatar {
+    width: 64rpx;
+    height: 64rpx;
+    border-radius: 16rpx;
+  }
+
+  &_item_name {
+    font-size: 26rpx;
+    font-weight: 600;
+    color: $foreground-sub;
+
+    .selected & {
+      color: $gray-33;
+    }
+  }
+
+  &_item_desc {
+    font-size: 22rpx;
+    color: $gray-99;
+  }
+
+  // ===== tips =====
+  &_tips {
+    text-align: center;
+    font-size: 22rpx;
+    color: $gray-99;
+    margin-top: 8rpx;
+    margin-bottom: 12rpx;
+  }
+
+  &_sheet_tip {
+    text-align: center;
+    font-size: 22rpx;
+    color: $gray-99;
+    margin-top: 24rpx;
+  }
+}
+
+@keyframes choicesSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }

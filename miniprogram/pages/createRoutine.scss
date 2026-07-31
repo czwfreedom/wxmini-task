@@ -1,0 +1,335 @@
+@import '../assets/style/var.scss';
+@import '../assets/style/mixin.scss';
+@import '../templates/abort.scss';
+@import '../templates/choices.scss';
+
+/* ==========================================================
+   createRoutine 创建任务页
+   配色全部引用 var.scss 变量
+   ========================================================== */
+.create-routine {
+  @include flex-container;
+  background: $background-gradient;
+
+  &_scroll {
+    @include flex-scaleable-scroll-view;
+  }
+
+  &_content {
+    @include flex-container-inner(transparent);
+  }
+
+  // ===== Section Title（复用 routine_section 风格） =====
+  &_section {
+    margin: 40rpx 40rpx 0;
+
+    &_title {
+      font-size: 34rpx;
+      font-weight: 700;
+      color: $gray-33;
+      display: flex;
+      align-items: center;
+      gap: 16rpx;
+      margin-bottom: 28rpx;
+
+      &::before {
+        content: '';
+        width: 8rpx;
+        height: 36rpx;
+        background: $main;
+        border-radius: 4rpx;
+      }
+    }
+
+    &_tip {
+      font-size: 22rpx;
+      font-weight: 500;
+      color: $gray-99;
+      margin-left: auto;
+    }
+  }
+
+  // ===== 1. 分类网格 =====
+  &_category_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20rpx;
+
+    &.has-selected .create-routine_category_cell:not(.selected) .create-routine_category_icon {
+      opacity: 0.55;
+    }
+  }
+
+  &_category_cell {
+    @include card;
+    border: 4rpx solid transparent;
+    border-radius: 40rpx;
+    padding: 28rpx 12rpx 24rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16rpx;
+    position: relative;
+    box-sizing: border-box;
+
+    // 统一选中态：仅边框色 + 底色变化，尺寸不变
+    &.sel.selected {
+      border-color: $main;
+      background: #fffdf8;
+    }
+  }
+
+  // 统一选中角标（与 choices 共用 .sel_check）
+  .sel_check {
+    position: absolute;
+    top: -2rpx;
+    right: -2rpx;
+    width: 44rpx;
+    height: 44rpx;
+    border-radius: 50%;
+    background: $gradient;
+    color: #fff;
+    font-size: 26rpx;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  &_category_icon {
+    width: 96rpx;
+    height: 96rpx;
+    @include flex-layout;
+
+    &_img {
+      width: 96rpx;
+      height: 96rpx;
+    }
+  }
+
+  &_category_name {
+    font-size: 26rpx;
+    font-weight: 600;
+    color: $foreground-sub;
+  }
+
+  // ===== 更多分类入口 =====
+  &_more_toggle {
+    margin-top: 20rpx;
+    background: transparent;
+    border: 4rpx dashed $gray-c5;
+    border-radius: 40rpx;
+    padding: 24rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16rpx;
+    font-size: 26rpx;
+    font-weight: 600;
+    color: $gray-99;
+  }
+
+  &_more_count {
+    font-size: 22rpx;
+    color: $gray-99;
+    font-weight: 500;
+  }
+
+  // ===== 2. 任务内容卡片 =====
+  &_content_card {
+    @include card;
+    border-radius: 40rpx;
+    padding: 28rpx 36rpx 24rpx;
+  }
+
+  &_content_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 12rpx;
+    background: $background-gradient; // #B8DAF5→#F2F5F8 背景色复用
+    border-radius: 28rpx;
+    padding: 10rpx 24rpx 10rpx 12rpx;
+    margin-bottom: 12rpx;
+
+    &_icon {
+      width: 44rpx;
+      height: 44rpx;
+
+      &_img {
+        width: 44rpx;
+        height: 44rpx;
+      }
+    }
+
+    &_name {
+      font-size: 24rpx;
+      font-weight: 600;
+      color: $foreground-sub;
+    }
+
+    &_hint {
+      font-size: 20rpx;
+      color: $gray-99;
+      margin-left: 4rpx;
+    }
+  }
+
+  &_content_input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 34rpx;
+    font-weight: 600;
+    color: $gray-33;
+    line-height: 1.4;
+    min-height: 96rpx;
+  }
+
+  &_content_footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &_content_count {
+    font-size: 22rpx;
+    color: $gray-99;
+    font-weight: 500;
+  }
+
+  // ===== 示例提示词 =====
+  &_example_chips {
+    display: flex;
+    gap: 16rpx;
+    margin-top: 20rpx;
+    flex-wrap: wrap;
+  }
+
+  &_example_chip {
+    font-size: 24rpx;
+    font-weight: 500;
+    color: $foreground-sub;
+    background: $background-white;
+    padding: 14rpx 28rpx;
+    border-radius: 32rpx;
+    border: 2rpx solid $gray-e5;
+  }
+
+  // ===== 3. 计划时长 =====
+  &_duration_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16rpx;
+  }
+
+  &_duration_cell {
+    @include card;
+    border-radius: 28rpx;
+    padding: 22rpx 8rpx;
+    text-align: center;
+    border: 3rpx solid $gray-e5;
+
+    &.selected {
+      border-color: $main;
+      background: #fffdf8;
+    }
+
+    &_value {
+      font-size: 32rpx;
+      font-weight: 700;
+      color: $foreground-sub;
+
+      .selected & {
+        color: $gray-33;
+      }
+    }
+
+    &_unit {
+      font-size: 20rpx;
+      color: $gray-99;
+      font-weight: 500;
+      margin-left: 4rpx;
+    }
+  }
+
+  // ===== 4. 计划时间 =====
+  &_time_chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16rpx;
+  }
+
+  &_time_chip {
+    @include card;
+    border-radius: 32rpx;
+    padding: 18rpx 32rpx;
+    font-size: 26rpx;
+    font-weight: 600;
+    color: $foreground-sub;
+    border: 3rpx solid $gray-e5;
+
+    &.selected {
+      border-color: $main;
+      background: #fffdf8;
+      color: $gray-33;
+    }
+
+    &.custom {
+      border-style: dashed;
+      color: $gray-99;
+      background: transparent;
+      border-color: $gray-c5;
+    }
+  }
+
+  // ===== CTA 底部按钮 =====
+  &_cta_wrap {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 32rpx 48rpx 68rpx;
+    background: linear-gradient(180deg, rgba(242, 245, 248, 0), #F2F5F8 38%);
+  }
+
+  &_cta_btn {
+    background: $gradient;
+    border-radius: 999rpx;
+    padding: 30rpx;
+    text-align: center;
+    font-size: 34rpx;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 4rpx;
+    box-shadow: 0 16rpx 40rpx rgba(244, 185, 66, 0.35), 0 4rpx 0 rgba(255, 255, 255, 0.35) inset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20rpx;
+
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+
+  &_cta_pencil {
+    width: 40rpx;
+    height: 40rpx;
+  }
+
+  &_cta_sub {
+    text-align: center;
+    font-size: 22rpx;
+    color: $gray-99;
+    margin-top: 16rpx;
+    font-weight: 500;
+  }
+
+  // ===== 底部留白 =====
+  &_spacer {
+    height: 260rpx;
+  }
+}

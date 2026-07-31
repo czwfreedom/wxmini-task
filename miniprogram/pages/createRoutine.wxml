@@ -1,0 +1,147 @@
+<import src="../templates/abort.wxml"></import>
+<import src="../templates/choices.wxml"></import>
+
+<view class="create-routine">
+  <block wx:if="{{ loaded }}">
+    <scroll-view class="create-routine_scroll" scroll-y="true" enhanced="{{ true }}">
+      <view class="create-routine_content">
+
+        <!-- 1. 选择任务类型 -->
+        <view class="create-routine_section">
+          <view class="create-routine_section_title">选择任务类型</view>
+
+          <view class="create-routine_category_grid {{ selectedCategoryId ? 'has-selected' : '' }}">
+            <view
+              wx:for="{{ commonCategories }}"
+              wx:key="id"
+              class="create-routine_category_cell sel {{ item.style || '' }}"
+              catch:tap="onCategoryTap"
+              data-category-id="{{ item.categoryId }}"
+            >
+              <view wx:if="{{ item.style === 'selected' }}" class="sel_check">✓</view>
+              <view class="create-routine_category_icon">
+                <image src="{{ item.icon }}" mode="aspectFit" class="create-routine_category_icon_img" />
+              </view>
+              <view class="create-routine_category_name">{{ item.name }}</view>
+            </view>
+          </view>
+
+          <view class="create-routine_more_toggle" catch:tap="onMoreToggle">
+            <text>更多分类</text>
+            <text class="create-routine_more_count">还有 {{ moreCategoryCount }} 个</text>
+            <text>›</text>
+          </view>
+        </view>
+
+        <!-- 2. 任务内容 -->
+        <view class="create-routine_section">
+          <view class="create-routine_section_title">任务内容</view>
+
+          <view class="create-routine_content_card">
+            <view wx:if="{{ selectedCategoryId }}" class="create-routine_content_chip">
+              <view class="create-routine_content_chip_icon">
+                <image src="{{ selectedCategoryIcon }}" mode="aspectFit" class="create-routine_content_chip_icon_img" />
+              </view>
+              <text class="create-routine_content_chip_name">{{ selectedCategoryName }}</text>
+              <text class="create-routine_content_chip_hint">点击上方可更换 ›</text>
+            </view>
+
+            <textarea
+              class="create-routine_content_input"
+              placeholder="{{ selectedCategoryId ? '想做什么呢？' : '请先选择任务类型' }}"
+              maxlength="{{ contentMaxLength }}"
+              value="{{ contentText }}"
+              bindinput="onContentInput"
+              auto-height="{{ true }}"
+              disabled="{{ !selectedCategoryId }}"
+            />
+
+            <view class="create-routine_content_footer">
+              <view></view>
+              <view class="create-routine_content_count">{{ contentCharCount }}/{{ contentMaxLength }}</view>
+            </view>
+          </view>
+
+          <!-- 示例提示词（数据驱动，可能为空） -->
+          <view wx:if="{{ exampleChips.length }}" class="create-routine_example_chips">
+            <view
+              wx:for="{{ exampleChips }}"
+              wx:key="id"
+              class="create-routine_example_chip"
+              catch:tap="onExampleChipTap"
+              data-name="{{ item.name }}"
+            >{{ item.name }}</view>
+          </view>
+        </view>
+
+        <!-- 3. 计划时长 -->
+        <view class="create-routine_section">
+          <view class="create-routine_section_title">计划时长</view>
+
+          <view class="create-routine_duration_grid">
+            <view
+              wx:for="{{ durationOptions }}"
+              wx:key="id"
+              class="create-routine_duration_cell {{ item.style || '' }}"
+              catch:tap="onDurationTap"
+              data-minutes="{{ item.minutes }}"
+            >
+              <text class="create-routine_duration_value">{{ item.name }}</text>
+              <text class="create-routine_duration_unit">{{ item.desc }}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 4. 计划时间 -->
+        <view class="create-routine_section">
+          <view class="create-routine_section_title">
+            计划时间
+            <text class="create-routine_section_tip">可选，默认现在</text>
+          </view>
+
+          <view class="create-routine_time_chips">
+            <block wx:for="{{ timeOptions }}" wx:key="id">
+              <view
+                wx:if="{{ item.timeValue !== 'custom' }}"
+                class="create-routine_time_chip {{ item.style || '' }}"
+                catch:tap="onTimeTap"
+                data-time-value="{{ item.timeValue }}"
+              >{{ item.name }}</view>
+
+              <view
+                wx:else
+                class="create-routine_time_chip custom"
+                catch:tap="onTimeCustomTap"
+              >{{ item.name }} ›</view>
+            </block>
+          </view>
+        </view>
+
+        <view class="create-routine_spacer"></view>
+
+      </view>
+    </scroll-view>
+
+    <!-- CTA 底部按钮 -->
+    <view class="create-routine_cta_wrap">
+      <view
+        class="create-routine_cta_btn {{ submittable ? '' : 'disabled' }}"
+        catch:tap="onSubmitTap"
+      >
+        <image class="create-routine_cta_pencil" src="../assets/imgs/ic-pencil-white.svg" mode="aspectFit" />
+        <text>创建任务</text>
+      </view>
+      <view class="create-routine_cta_sub">创建即为「进行中」，宝贝随时可以完成</view>
+    </view>
+
+    <!-- Choices 通用弹窗（更多分类等） -->
+    <template is="choices" data="{{ id: choices.id, title: choices.title, confirm: choices.confirm, items: choices.items, limited: choices.limited, grid: choices.grid, modal: choices.modal, tips: choices.tips }}"></template>
+
+  </block>
+
+  <template
+    wx:else
+    is="abort"
+    data="{{ message: abortMessage || '加载中..', iconInvisible: true }}"
+  ></template>
+</view>

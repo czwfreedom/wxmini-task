@@ -8,18 +8,18 @@
 /* ==========================================================
    配色审计：全部取自 var.scss / 已实现 routine.scss
    ----------------------------------------------------------
-   $foreground-dark   #2D3142   标题/重要文字
+   $gray-33           #333      标题/重要文字
    $foreground-sub    #5C6178   次要文字
-   $foreground-gray   #949AAE   占位/提示
+   $gray-99           #999      占位/提示
    $gradient          135deg,#F4B942→#FFD54F   主按钮/选中打勾
-   $border            #E5E6EB
-   $background-mask   rgba(0,0,0,0.4)
+   $gray-e5           #e5e5e5   边框
+   $black4            rgba(0,0,0,0.4)   遮罩
    $background-white  #FBFCFE   弹窗面板
-   routine 页面渐变   #B8DAF5→#F2F5F8
+   $background-gradient  #B8DAF5→#F2F5F8   页面
    routine_card       #FDFBF7 / 阴影 rgba(74,144,226,0.06)
    routine_card done  #FFFDF8   → 复用为「选中态底色」
-   routine_card_add   #C5CDD6 虚线 / #9BA3AE 文字
-   选中描边           #F4B942（$gradient 起点色）
+   $gray-c5           #c5c5c5 虚线 / $gray-99 文字
+   $main              #F4B942   选中描边 / 强调
    ========================================================== */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -97,7 +97,7 @@ body {
 /* ========== Section（routine_section） ========== */
 .section { margin: 20px 20px 0; }
 .section-title {
-  font-size: 17px; font-weight: 700; color: #3A3D4A;
+  font-size: 17px; font-weight: 700; color: #333;
   margin-bottom: 14px;
   display: flex; align-items: center; gap: 8px;
 }
@@ -106,7 +106,7 @@ body {
   background: #F4B942; border-radius: 2px;
 }
 .section-title .section-tip {
-  font-size: 11px; font-weight: 500; color: #949AAE; margin-left: auto;
+  font-size: 11px; font-weight: 500; color: #999; margin-left: auto;
 }
 
 /* ==========================================================
@@ -147,7 +147,7 @@ body {
 .category-cell:active { transform: scale(0.94); }
 .category-cell .cat-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
 .category-cell .cat-name { font-size: 13px; font-weight: 600; color: #5C6178; }
-.category-cell.selected .cat-name { color: #2D3142; }
+.category-cell.selected .cat-name { color: #333; }
 .category-grid.has-selected .category-cell:not(.selected) .cat-icon {
   opacity: 0.55; filter: saturate(0.7);
 }
@@ -156,14 +156,14 @@ body {
 .more-toggle {
   margin-top: 10px;
   background: transparent;
-  border: 2px dashed #C5CDD6;
+  border: 2px dashed #c5c5c5;
   border-radius: 20px;
   padding: 12px;
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  font-size: 13px; font-weight: 600; color: #9BA3AE;
+  font-size: 13px; font-weight: 600; color: #999;
   cursor: pointer;
 }
-.more-toggle .more-count { font-size: 11px; color: #949AAE; font-weight: 500; }
+.more-toggle .more-count { font-size: 11px; color: #999; font-weight: 500; }
 
 /* ========== 任务内容卡片（分类 chip + 输入） ========== */
 .content-card {
@@ -181,27 +181,27 @@ body {
 }
 .content-cat-chip .chip-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
 .content-cat-chip .chip-name { font-size: 12px; font-weight: 600; color: #5C6178; }
-.content-cat-chip .chip-swap { font-size: 10px; color: #949AAE; margin-left: 2px; }
+.content-cat-chip .chip-swap { font-size: 10px; color: #999; margin-left: 2px; }
 .content-input {
   width: 100%; border: none; outline: none; resize: none;
   background: transparent;
-  font-size: 17px; font-weight: 600; color: #2D3142; line-height: 1.4;
+  font-size: 17px; font-weight: 600; color: #333; line-height: 1.4;
   min-height: 48px;
   font-family: inherit;
 }
-.content-input::placeholder { color: #949AAE; font-weight: 500; }
+.content-input::placeholder { color: #999; font-weight: 500; }
 .content-footer { display: flex; justify-content: space-between; align-items: center; }
-.content-count { font-size: 11px; color: #949AAE; font-weight: 500; }
+.content-count { font-size: 11px; color: #999; font-weight: 500; }
 
 .example-chips { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
 .example-chip {
   font-size: 12px; font-weight: 500; color: #5C6178;
   background: #FDFBF7;
   padding: 7px 14px; border-radius: 16px;
-  border: 1px solid #E5E6EB;
+  border: 1px solid #e5e5e5;
   cursor: pointer;
 }
-.example-chip::before { content: '✎ '; color: #949AAE; }
+.example-chip::before { content: '✎ '; color: #999; }
 
 /* ========== 计划时长（复用统一选中态） ========== */
 .duration-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -210,13 +210,13 @@ body {
   border-radius: 14px;
   padding: 11px 4px;
   text-align: center;
-  border: 1.5px solid #E5E6EB;
+  border: 1.5px solid #e5e5e5;
   cursor: pointer;
 }
 .duration-cell .dur-value { font-size: 16px; font-weight: 700; color: #5C6178; }
-.duration-cell .dur-unit { font-size: 10px; color: #949AAE; font-weight: 500; margin-left: 2px; }
+.duration-cell .dur-unit { font-size: 10px; color: #999; font-weight: 500; margin-left: 2px; }
 .duration-cell.selected { border-color: #F4B942; background: #FFFDF8; }
-.duration-cell.selected .dur-value { color: #2D3142; }
+.duration-cell.selected .dur-value { color: #333; }
 
 /* ========== 计划时间（复用统一选中态） ========== */
 .time-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -225,12 +225,12 @@ body {
   border-radius: 16px;
   padding: 9px 16px;
   font-size: 13px; font-weight: 600; color: #5C6178;
-  border: 1.5px solid #E5E6EB;
+  border: 1.5px solid #e5e5e5;
   cursor: pointer;
 }
-.time-chip.selected { border-color: #F4B942; background: #FFFDF8; color: #2D3142; }
+.time-chip.selected { border-color: #F4B942; background: #FFFDF8; color: #333; }
 .time-chip.more-opt {
-  border-style: dashed; color: #9BA3AE; background: transparent; border-color: #C5CDD6;
+  border-style: dashed; color: #999; background: transparent; border-color: #c5c5c5;
 }
 
 /* ========== CTA（$gradient） ========== */
@@ -250,7 +250,7 @@ body {
   display: flex; align-items: center; justify-content: center; gap: 10px;
 }
 .cta-btn .cta-pencil { width: 20px; height: 20px; }
-.cta-sub { text-align: center; font-size: 11px; color: #9BA3AE; margin-top: 8px; font-weight: 500; }
+.cta-sub { text-align: center; font-size: 11px; color: #999; margin-top: 8px; font-weight: 500; }
 
 /* ========== 底部弹窗（更多分类） ========== */
 .sheet-mask {
@@ -268,7 +268,7 @@ body {
 }
 .sheet-handle {
   width: 36px; height: 4px; border-radius: 2px;
-  background: #E5E6EB;                  /* $border */
+  background: #e5e5e5;                  /* $border */
   margin: 0 auto 14px;
 }
 .sheet-header {
@@ -279,19 +279,19 @@ body {
   content: ''; width: 4px; height: 18px;
   background: #F4B942; border-radius: 2px;
 }
-.sheet-header .sheet-title { font-size: 17px; font-weight: 700; color: #3A3D4A; }
+.sheet-header .sheet-title { font-size: 17px; font-weight: 700; color: #333; }
 .sheet-header .sheet-close {
   margin-left: auto;
   width: 28px; height: 28px; border-radius: 50%;
   background: #F2F5F8;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: #949AAE;
+  font-size: 14px; color: #999;
   cursor: pointer;
 }
-.sheet .category-cell { box-shadow: none; border: 1.5px solid #E5E6EB; }
+.sheet .category-cell { box-shadow: none; border: 1.5px solid #e5e5e5; }
 .sheet .category-cell.selected { border-color: #F4B942; background: #FFFDF8; }
 .sheet-tip {
-  text-align: center; font-size: 11px; color: #949AAE; margin-top: 12px;
+  text-align: center; font-size: 11px; color: #999; margin-top: 12px;
 }
 
 /* ========== 设计说明 ========== */
@@ -300,11 +300,11 @@ body {
   background: #FDFBF7;
   border-radius: 20px;
   padding: 16px 20px;
-  border: 2px dashed #C5CDD6;
+  border: 2px dashed #c5c5c5;
 }
-.design-notes .notes-title { font-size: 13px; font-weight: 700; color: #3A3D4A; margin-bottom: 8px; }
+.design-notes .notes-title { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 8px; }
 .design-notes .notes-item { font-size: 12px; color: #5C6178; line-height: 1.8; }
-.design-notes .notes-item b { color: #2D3142; }
+.design-notes .notes-item b { color: #333; }
 </style>
 </head>
 <body>
@@ -710,7 +710,7 @@ body {
   <div class="notes-item">· <b>更多分类</b>：点击虚线条 → 底部弹窗从下往上滑入（$background-mask 遮罩 + #FBFCFE 面板 + 顶部把手）；点遮罩/✕/选中后关闭；主页面保持短平</div>
   <div class="notes-item">· <b>分类 chip</b>：内容卡顶部 chip = 分类 SVG 图标 + 名称（图标即资源，不涉及配色管理）</div>
   <div class="notes-item">· <b>状态流</b>：创建即 Working，随时可完成；planTime 仅展示（默认「现在」）；新增 duration 字段，默认 30 分钟</div>
-  <div class="notes-item">· <b>色板</b>：渐变 #B8DAF5→#F2F5F8（页）· #FDFBF7（卡）· #FFFDF8（选中）· #F4B942（强调）· $gradient（按钮/打勾）· #2D3142/#5C6178/#949AAE（文字）· #E5E6EB/#C5CDD6（边框）· rgba(0,0,0,0.4)（遮罩）</div>
+  <div class="notes-item">· <b>色板</b>：渐变 #B8DAF5→#F2F5F8（页）· #FDFBF7（卡）· #FFFDF8（选中）· #F4B942（强调）· $gradient（按钮/打勾）· #333/#5C6178/#999（文字）· #e5e5e5/#c5c5c5（边框）· rgba(0,0,0,0.4)（遮罩）</div>
 </div>
 
 </body>

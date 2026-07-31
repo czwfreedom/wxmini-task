@@ -11,11 +11,7 @@ export class RoutineAdapter {
 
   protected date = 0;
 
-  protected defaults = [
-    Routine.Category.Reading,
-    Routine.Category.Homework,
-    Routine.Category.Exercise,
-  ];
+  protected defaults = RoutineAdapter.getDefaultCategoryIds();
 
   /** 加载指定日期的任务数据，返回错误码 */
   public async load(date: number, userId?: string): Promise<number> {
@@ -39,7 +35,7 @@ export class RoutineAdapter {
     for (const info of infos) {
       const holder = info.id.startsWith('holder');
       const done = info.status === Routine.Status.Done;
-      const config = RoutineAdapter.sConfigs[info.category];
+      const config = RoutineAdapter.findConfig(info.category)!;
       count++;
       if (done) {
         doneCount++;
@@ -115,47 +111,90 @@ export class RoutineAdapter {
 
 export namespace RoutineAdapter {
   export interface Config {
+    /** 分类枚举值 */
+    category: number;
     color: string;
     icon: string;
+    /** 是否为默认/常用分类，true 的展示在创建页常用区域 */
+    default?: boolean;
+    /** 各分类的快捷示例提示词 */
+    examples?: string[];
   }
 
+  /** 所有分类统一配置：分类枚举、颜色、图标、是否默认、示例提示词 */
   // 先放在这。未来多了，放到后台。小程序的空间有限。
-  export const sConfigs: Record<number, Config> = {
-    [Routine.Category.Reading]: {
+  export const sConfigs: Config[] = [
+    {
+      category: Routine.Category.Reading,
       color: '#f4b942',
       icon: '/assets/imgs/ic-reading.svg',
+      default: true,
+      examples: ['《三体》第3章', '英语绘本朗读', '读书笔记一页'],
     },
-    [Routine.Category.Homework]: {
+    {
+      category: Routine.Category.Homework,
       color: '#64B5F6',
       icon: '/assets/imgs/ic-homework.svg',
+      default: true,
+      examples: ['数学练习册 P20', '背诵古诗一首', '英语单词10个'],
     },
-    [Routine.Category.Exercise]: {
+    {
+      category: Routine.Category.Exercise,
       color: '#81C784',
       icon: '/assets/imgs/ic-sport.svg',
+      default: true,
+      examples: ['跳绳500个', '跑步15分钟', '仰卧起坐30个'],
     },
-    [Routine.Category.Chores]: {
+    {
+      category: Routine.Category.Chores,
       color: '#BA68C8',
       icon: '/assets/imgs/ic-housework.svg',
+      examples: ['整理书桌', '扫地拖地', '浇花'],
     },
-    [Routine.Category.Game]: {
+    {
+      category: Routine.Category.Game,
       color: '#F06292',
       icon: '/assets/imgs/ic-game.svg',
+      examples: ['Minecraft 建造', '拼图100片', '数独一局'],
     },
-    [Routine.Category.Handwriting]: {
+    {
+      category: Routine.Category.Handwriting,
       color: '#4DB6AC',
       icon: '/assets/imgs/ic-calligraphy.svg',
+      examples: ['描红一页', '临摹《兰亭序》', '硬笔字帖'],
     },
-    [Routine.Category.Instrument]: {
+    {
+      category: Routine.Category.Instrument,
       color: '#A1887F',
       icon: '/assets/imgs/ic-instrument.svg',
+      examples: ['音阶练习10遍', '练习曲第3首', '复习和弦'],
     },
-    [Routine.Category.Drawing]: {
+    {
+      category: Routine.Category.Drawing,
       color: '#FFD54F',
       icon: '/assets/imgs/ic-drawing.svg',
+      examples: ['素描静物', '水彩风景', '卡通人物'],
     },
-    [Routine.Category.Coding]: {
+    {
+      category: Routine.Category.Coding,
       color: '#4FC3F7',
       icon: '/assets/imgs/ic-coding.svg',
+      examples: ['Scratch 发射子弹', 'Python 小游戏', '网页制作'],
     },
-  };
+  ];
+
+  /** 按分类枚举值查找配置 */
+  export function findConfig(category: number): Config | undefined {
+    return sConfigs.find((c) => c.category === category);
+  }
+
+  /** 获取所有默认/常用分类 ID */
+  export function getDefaultCategoryIds(): Routine.Category[] {
+    return sConfigs.filter((c) => c.default).map((c) => c.category);
+  }
+
+  /** 获取所有非默认/更多分类 ID */
+  export function getMoreCategoryIds(): Routine.Category[] {
+    return sConfigs.filter((c) => !c.default).map((c) => c.category);
+  }
 }

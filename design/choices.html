@@ -8,6 +8,12 @@
 /* ==========================================================
    Choices 通用底部弹窗 · 形态预览
    配色全部来自 var.scss / 已实现 routine 页面
+   ----------------------------------------------------------
+   $gray-33=#333 标题 · $foreground-sub=#5C6178 次要文字
+   $gray-99=#999 占位 · $main=#F4B942 强调
+   $gradient 打勾 · $gray-e5=#e5e5e5 边框
+   $gray-c5=#c5c5c5 虚线 · $background-white=#FBFCFE 面板
+   $black4=rgba(0,0,0,0.4) 遮罩 · #FDFBF7 卡片底
    ========================================================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; -webkit-font-smoothing: antialiased; }
@@ -60,7 +66,7 @@ body {
   margin-top: 14px;
   box-shadow: 0 2px 0 rgba(0,0,0,0.03), 0 8px 24px rgba(74,144,226,0.06);
 }
-.host-card .line { height: 12px; border-radius: 6px; background: #EDF0F4; }
+.host-card .line { height: 12px; border-radius: 6px; background: #eee; }
 .host-card .line.w60 { width: 60%; }
 .host-card .line.w40 { width: 40%; margin-top: 10px; }
 .host-card .line.w80 { width: 80%; margin-top: 10px; }
@@ -85,7 +91,7 @@ body {
 }
 .sheet-handle {
   width: 36px; height: 4px; border-radius: 2px;
-  background: #E5E6EB;               /* $border */
+  background: #e5e5e5;               /* $border */
   margin: 10px auto 4px;
   flex-shrink: 0;
 }
@@ -93,12 +99,12 @@ body {
 /* ----- 单选：居中标题区 ----- */
 .sheet-title {
   text-align: center;
-  font-size: 16px; font-weight: 700; color: #2D3142;
+  font-size: 16px; font-weight: 700; color: #333;
   padding: 10px 20px 0;
 }
 .sheet-tips {
   text-align: center;
-  font-size: 11px; color: #949AAE;
+  font-size: 11px; color: #999;
   padding: 6px 20px 0;
 }
 .sheet-tips.left { text-align: left; padding-left: 24px; }
@@ -109,7 +115,7 @@ body {
   padding: 8px 20px 0;
 }
 .header-btn {
-  font-size: 15px; font-weight: 500; color: #949AAE;
+  font-size: 15px; font-weight: 500; color: #999;
   min-width: 56px;
   cursor: pointer;
 }
@@ -118,9 +124,9 @@ body {
   font-weight: 700;
   color: #F4B942;                    /* $gradient 起点色 */
 }
-.header-btn.confirm.disabled { color: #949AAE; }
+.header-btn.confirm.disabled { color: #999; }
 .header-title {
-  font-size: 17px; font-weight: 600; color: #2D3142;
+  font-size: 17px; font-weight: 600; color: #333;
 }
 
 /* ----- 选项网格 ----- */
@@ -137,7 +143,7 @@ body {
 /* ----- 单元项（纵向：图标上、名称下） ----- */
 .choice-cell {
   background: #FDFBF7;
-  border: 1.5px solid #E5E6EB;       /* $border */
+  border: 1.5px solid #e5e5e5;       /* $border */
   border-radius: 16px;
   padding: 12px 6px 10px;
   display: flex; flex-direction: column; align-items: center; gap: 7px;
@@ -148,7 +154,7 @@ body {
 .choice-cell:active { transform: scale(0.94); }
 .cell-avatar { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
 .cell-name { font-size: 13px; font-weight: 600; color: #5C6178; }
-.cell-desc { font-size: 10px; color: #949AAE; text-align: center; line-height: 1.4; }
+.cell-desc { font-size: 10px; color: #999; text-align: center; line-height: 1.4; }
 
 /* 横向单元项（grid=2 且含 desc：图标左、文字右） */
 .choice-cell.h {
@@ -160,7 +166,7 @@ body {
 }
 .choice-cell.h .cell-avatar { width: 40px; height: 40px; flex-shrink: 0; }
 .choice-cell.h .cell-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.choice-cell.h .cell-name { font-size: 14px; color: #2D3142; }
+.choice-cell.h .cell-name { font-size: 14px; color: #333; }
 .choice-cell.h .cell-desc { text-align: left; font-size: 11px; }
 
 /* 纯文本单元项（无 avatar） */
@@ -172,7 +178,7 @@ body {
   border-color: #F4B942;
   background: #FFFDF8;
 }
-.choice-cell.selected .cell-name { color: #2D3142; }
+.choice-cell.selected .cell-name { color: #333; }
 .cell-check {
   position: absolute; top: -6px; right: -6px;
   width: 20px; height: 20px; border-radius: 50%;
@@ -188,7 +194,7 @@ body {
   border-top: 0.5px solid rgba(0,0,0,0.06);
   padding: 14px;
   text-align: center;
-  font-size: 16px; font-weight: 500; color: #949AAE;
+  font-size: 16px; font-weight: 500; color: #999;
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -200,19 +206,19 @@ body {
   background: #FDFBF7;
   border-radius: 20px;
   padding: 18px 22px;
-  border: 2px dashed #C5CDD6;
+  border: 2px dashed #c5c5c5;
 }
-.design-notes .notes-title { font-size: 14px; font-weight: 700; color: #3A3D4A; margin-bottom: 10px; }
+.design-notes .notes-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 10px; }
 .design-notes table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .design-notes th, .design-notes td {
   text-align: left; padding: 6px 8px;
-  border-bottom: 1px solid #EDF0F4;
+  border-bottom: 1px solid #eee;
   color: #5C6178; line-height: 1.5;
 }
-.design-notes th { color: #2D3142; font-weight: 700; }
-.design-notes td b { color: #2D3142; }
+.design-notes th { color: #333; font-weight: 700; }
+.design-notes td b { color: #333; }
 .design-notes .notes-item { font-size: 12px; color: #5C6178; line-height: 1.8; margin-top: 6px; }
-.design-notes .notes-item b { color: #2D3142; }
+.design-notes .notes-item b { color: #333; }
 </style>
 </head>
 <body>

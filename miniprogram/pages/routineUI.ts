@@ -48,6 +48,8 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
 
     this.bindEvent('onTaskTap', this.onTaskTap);
     this.bindEvent('onAddTap', this.onAddTap);
+
+    this.registerEventBus('routineChanged', this.onRoutineChanged.bind(this));
   }
 
   public static getDefaultData(): RoutineUI.Data {
@@ -96,6 +98,12 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
   /** 添加新任务 */
   protected onAddTap() {
     Logger.info('onAddTap');
-    // TODO: 跳转到创建任务页
+    wx.navigateTo({ url: '/pages/createRoutine' });
+  }
+
+  /** 监听任务变更事件（创建成功后刷新列表） */
+  protected onRoutineChanged(_params: any) {
+    Logger.info('routineChanged received, reloading');
+    this.loadData();
   }
 }
