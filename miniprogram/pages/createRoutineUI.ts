@@ -6,9 +6,11 @@ import { CreateRoutineAdapter } from './createRoutineAdapter';
 import { Logger } from '../utils/logger';
 import { DateUtils } from '../utils/dateUtils';
 import { ChoicesUI } from '../ui/choicesUI';
+import { InteractUI } from '../core/interactUI';
 
 export namespace CreateRoutineUI {
   export interface Data extends SubUI.Data {
+    choices: ChoicesUI.Data;
     /** 当前选中分类 ID */
     selectedCategoryId: number;
     /** 常用分类列表（3 个） */
@@ -70,15 +72,13 @@ export namespace CreateRoutineUI {
   }
 }
 
-export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
+export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
   private adapter = new CreateRoutineAdapter();
-  private choicesUI?: ChoicesUI;
 
   public static readonly sContentMaxLength = 50;
 
-  public constructor(component: any, choicesUI?: ChoicesUI) {
+  public constructor(component: any) {
     super(component);
-    this.choicesUI = choicesUI;
 
     this.bindEvent('onCategoryTap', this.onCategoryTap);
     this.bindEvent('onMoreToggle', this.onMoreToggle);
@@ -93,10 +93,11 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
     this.bindEvent('onSubmitTap', this.onSubmitTap);
   }
 
-  public static getDefaultData(): CreateRoutineUI.Data {
+  public static defaultData(): CreateRoutineUI.Data {
     return {
       loaded: false,
       abortMessage: '',
+      choices: ChoicesUI.defaultData(),
       categories: [],
       moreCategoryCount: 0,
       selectedCategoryId: 0,
@@ -153,19 +154,16 @@ export class CreateRoutineUI extends SubUI<CreateRoutineUI.Data> {
   /** 打开更多分类弹窗（委托 ChoicesUI） */
   protected onMoreToggle() {
     Logger.info('onMoreToggle');
-    if (!this.choicesUI) return;
-
     const moreCategories = this.adapter.adaptMoreCategories(
       this.getData().selectedCategoryIsMore ? this.getData().selectedCategoryId : undefined
     );
-    this.choicesUI.show(
+    this.getChoices().show(
       {
         id: 'more-category',
         title: '更多分类',
         items: moreCategories,
         limited: 1,
-        grid: '3',
-        tips: '选中后自动关闭弹窗',
+        grid: 3,
       },
       {
         onChoicesDialogItemTap: (item) => {

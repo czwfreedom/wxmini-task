@@ -1,6 +1,5 @@
 import { SubUI } from '../core/subUI';
 import { Entity } from '../model/entity';
-import { Logger } from '../utils/logger';
 
 export namespace ChoicesUI {
   export interface Data {
@@ -18,8 +17,8 @@ export namespace ChoicesUI {
     tips?: string;
     /** 待选列表 */
     items: Entity.Option[];
-    /** 一行展示几个：'2' 横向 / '3' 纵向 / '4' 纯文本 */
-    grid?: string;
+    /** 一行展示几个: 默认是1个 */
+    grid?: number;
     /** 是否模态（不可取消） */
     modal?: boolean;
   }
@@ -51,31 +50,23 @@ export class ChoicesUI extends SubUI<ChoicesUI.WrapData> {
     this.bindEvent('onChoicesConfirmTap', this.onConfirmTap);
   }
 
+  public static defaultData(): ChoicesUI.Data {
+    return {
+      id: '',
+      title: '',
+      confirm: '',
+      limited: 1, // 默认是单选。
+      items: [],
+    };
+  }
+
   /** 展示弹窗 */
   public show(data: ChoicesUI.Data, listener: ChoicesUI.Listener) {
     this.listener = listener;
     this.selectedIds = [];
 
-    const limited = data.limited || 1;
-    const items = (data.items || []).map((item) => ({
-      ...item,
-      selected: false,
-      style: '',
-    }));
-
-    this.setData({
-      _choices: {
-        id: data.id || 'choices',
-        title: data.title,
-        confirm: data.confirm || '确定',
-        limited,
-        ordered: data.ordered,
-        tips: data.tips,
-        items,
-        grid: data.grid || '3',
-        modal: data.modal || false,
-      },
-    });
+    if (!data.limited) data.limited = 1;
+    this.setData({ _choices: data });
   }
 
   /** 隐藏弹窗 */
@@ -89,74 +80,50 @@ export class ChoicesUI extends SubUI<ChoicesUI.WrapData> {
 
   /** 获取当前选中的项 */
   public getSelectedItems(): Entity.Option[] {
-    const data = this.getData();
-    const items = data.choices?.items || [];
-    return items.filter((item) => this.selectedIds.includes(item.id));
+    return this.getData().choices.items.filter((o) => o.selected);
   }
 
-  // ---- 事件处理（public 供 Page 委托调用） ----
-
-  public onItemTap(e: WechatMiniprogram.TouchEvent) {
+  protected onItemTap(e: WechatMiniprogram.TouchEvent) {
     const { id } = e.currentTarget.dataset;
     if (!id) return;
 
-    const data = this.getData();
-    const choices = data.choices;
+    const choices = this.getData().choices;
     if (!choices || !choices.id) return;
+    const item = Entity.find(choices.items, id).item;
+    if (!item) return;
 
     const limited = choices.limited || 1;
-    const items = choices.items || [];
-
     if (limited === 1) {
-      // 单选：标记选中 → 回调 listener → 自动关闭
-      const newItems = items.map((item) => ({
-        ...item,
-        selected: item.id === id,
-        style: item.id === id ? 'selected' : '',
-      }));
-
-      this.setData({ _choices: { ...choices, items: newItems } });
-
-      const selected = items.find((item) => item.id === id);
-      if (selected && this.listener?.onChoicesDialogItemTap) {
-        this.listener.onChoicesDialogItemTap(selected, choices.id);
+      for (const item of choices.items) {
+        if (item.id === id) {
+          item.selected = true;
+        } else if (item.selected) {
+          item.selected = false;
+        }
       }
-
-      if (!choices.modal) {
-        setTimeout(() => this.hide(), 150);
+      this.setData({ _choices: choices });
+      if (item && this.listener?.onChoicesDialogItemTap) {
+        this.listener.onChoicesDialogItemTap(item, choices.id);
       }
+      setTimeout(() => this.hide(), 150);
     } else {
-      // 多选：toggle 选中态
-      const idx = this.selectedIds.indexOf(id as string);
-      if (idx >= 0) {
-        this.selectedIds.splice(idx, 1);
-      } else if (this.selectedIds.length < limited) {
-        this.selectedIds.push(id as string);
-      }
-
-      const newItems = items.map((item) => ({
-        ...item,
-        selected: this.selectedIds.includes(item.id),
-        style: this.selectedIds.includes(item.id) ? 'selected' : '',
-      }));
-
-      this.setData({ _choices: { ...choices, items: newItems } });
-      this.listener?.onSelectedChanged?.(this.selectedIds);
+      // TODO 如果超出限制？
+      item.selected = !item.selected;
+      this.setData({ _choices: choices });
+      this.listener?.onSelectedChanged?.(Entity.getSelectedIds(choices.items));
     }
   }
 
-  public onMaskTap() {
-    const data = this.getData();
-    if (!data.choices?.modal) {
-      this.hide();
-    }
+  protected onMaskTap() {
+    const data = this.getData().choices;
+    if (!data.modal) this.hide();
   }
 
-  public onCloseTap() {
+  protected onCloseTap() {
     this.hide();
   }
 
-  public onConfirmTap() {
+  protected onConfirmTap() {
     this.listener?.onChoicesDialogConfirmTap?.();
     this.hide();
   }

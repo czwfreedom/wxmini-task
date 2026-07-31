@@ -121,4 +121,14 @@ export namespace Entity {
     }
     return ids;
   }
+
+  export function getSelectedIds<T extends SelectableId>(items: T[]): string[] {
+    const ids: string[] = [];
+    for (const item of items || []) {
+      if (item.selected && !ids.includes(item.id)) {
+        ids.push(item.id);
+      }
+    }
+    return ids;
+  }
 }

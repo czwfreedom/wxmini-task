@@ -98,6 +98,7 @@
   // ===== Section Title =====
   &_section {
     @include section-title;
+    @include flex-layout(row, flex-start);
     margin: 0 40rpx 28rpx;
   }
 

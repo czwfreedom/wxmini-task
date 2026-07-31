@@ -99,12 +99,11 @@
   border-radius: 0 0 32rpx 32rpx;
 }
 
+// 分区头：前面带一个金色的竖线。
 @mixin section-title {
   font-size: 34rpx;
   font-weight: 700;
   color: $gray-33;
-  display: flex;
-  align-items: center;
   gap: 16rpx;
 
   &::before {
