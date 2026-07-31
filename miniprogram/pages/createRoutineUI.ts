@@ -31,11 +31,9 @@ export namespace CreateRoutineUI {
     durationCustomText: string;
 
     /** 计划时间选项 */
-    timeOptions: TimeItem[];
+    times: Time[];
     /** 自定义时间值（picker 回填） */
     timeCustomValue: string;
-    /** 当前选中的时间值 */
-    timeSelectedValue: string;
 
     /** 是否可以提交 */
     submittable: boolean;
@@ -49,9 +47,7 @@ export namespace CreateRoutineUI {
 
   export interface Duration extends Entity.Label {}
 
-  export interface TimeItem extends Entity.Label {
-    timeValue: string;
-  }
+  export interface Time extends Entity.Label {}
 }
 
 export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
@@ -67,7 +63,6 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     this.bindEvent('onContentInput', this.onContentInput);
     this.bindEvent('onContentExampleTap', this.onContentExampleTap);
     this.bindEvent('onDurationTap', this.onDurationTap);
-    this.bindEvent('onDurationCustomTap', this.onDurationCustomTap);
     this.bindEvent('onDurationCustomInput', this.onDurationCustomInput);
     this.bindEvent('onDurationCustomConfirm', this.onDurationCustomConfirm);
     this.bindEvent('onTimeTap', this.onTimeTap);
@@ -90,7 +85,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
       durations: [],
       durationCustomText: '',
 
-      timeOptions: [],
+      times: [],
       timeCustomValue: '',
       timeSelectedValue: 'now',
       submittable: false,
@@ -102,13 +97,13 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     const now = new Date();
     const currentHour = now.getHours();
     const categories = this.adapter.adaptCategories();
-    const durations = this.adapter.adaptDurations(30);
-    const timeOptions = this.adapter.adaptTimes(currentHour, 'now');
+    const durations = this.adapter.adaptDurations();
+    const times = this.adapter.adaptTimes(currentHour);
 
     this.setData({
       categories: categories,
       durations,
-      timeOptions,
+      times,
       timeSelectedValue: 'now',
       loaded: true,
     });
@@ -177,9 +172,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     const { id } = e.currentTarget.dataset;
     Logger.info('onDurationTap', id);
     const options = this.getData().durations;
-    for (const item of options) {
-      item.selected = item.id === id;
-    }
+    this.markSelected(options, id);
     this.setData({ durations: options });
   }
 
@@ -203,31 +196,23 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
 
   /** 选择计划时间（整点快捷） */
   protected onTimeTap(e: WechatMiniprogram.TouchEvent) {
-    const { timeValue } = e.currentTarget.dataset;
-    if (!timeValue) return;
+    const { id } = e.currentTarget.dataset;
 
-    Logger.info('onTimeTap', timeValue);
-    const currentHour = new Date().getHours();
-    const options = this.adapter.adaptTimes(currentHour, timeValue as string);
-    this.setData({
-      timeOptions: options,
-      timeSelectedValue: timeValue as string,
-      timeCustomValue: '',
-    });
+    Logger.info('onTimeTap', id);
+    const options = this.getData().times;
+    this.markSelected(options, id);
+    this.setData({ times: options });
   }
 
   /** 原生 picker 选择回调 */
-  protected onTimePicked(e: WechatMiniprogram.PickerChangeEvent) {
+  protected onTimePicked(e: WechatMiniprogram.TouchEvent) {
     const timeValue = e.detail.value as string;
     Logger.info('onTimePicked', timeValue);
     if (!timeValue) return;
-    const currentHour = new Date().getHours();
-    const options = this.adapter.adaptTimes(currentHour, timeValue);
-    this.setData({
-      timeOptions: options,
-      timeSelectedValue: timeValue,
-      timeCustomValue: timeValue,
-    });
+
+    const options = this.getData().times;
+    this.markSelected(options, 'custom');
+    this.setData({ times: options, timeCustomValue: timeValue });
   }
 
   /** 提交创建任务 */
@@ -317,7 +302,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     return `约${minutes}分钟`;
   }
 
-  private markSelected<T extends Entity.Label>(items: T[], selectedId: number): T[] {
+  private markSelected<T extends Entity.Label>(items: T[], selectedId: number | string): T[] {
     const id = '' + selectedId;
     for (const item of items) {
       if (item.id === id) {
