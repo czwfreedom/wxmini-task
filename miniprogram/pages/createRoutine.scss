@@ -49,25 +49,31 @@
 
     &_cell {
       @include card;
+      @include flex-layout(column, center, center);
       border: 4rpx solid transparent;
       border-radius: 32rpx;
       padding: 28rpx 12rpx 24rpx;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16rpx;
+      gap: 8rpx;
       position: relative;
       box-sizing: border-box;
 
+      &.other {
+        border: 4rpx dashed $gray-c5;
+      }
       // 统一选中态：仅边框色 + 底色变化，尺寸不变
       &.selected {
-        border-color: $main;
+        border: 4rpx solid $main;
         background: $background-white;
       }
     }
     &_icon {
       width: 96rpx;
       height: 96rpx;
+
+      &.other {
+        width: 56rpx;
+        height: 56rpx;
+      }
 
       &_img {
         width: 100%;
@@ -79,67 +85,20 @@
       font-size: 26rpx;
       font-weight: 600;
       color: $foreground-sub;
+
+      &.other {
+        color: $gray-99;
+      }
+    }
+
+    &_hint {
+      font-size: 22rpx;
+      color: $gray-99;
     }
   }
 
   &_checked {
     @include checked;
-  }
-
-  // ===== 更多分类入口 =====
-  &_more_toggle {
-    margin-top: 20rpx;
-    background: transparent;
-    border: 4rpx dashed $gray-c5;
-    border-radius: 32rpx;
-    padding: 24rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16rpx;
-    font-size: 26rpx;
-    font-weight: 600;
-    color: $gray-99;
-
-    // 选中态：横向 pill（图标 + 名称 + 更换提示）
-    &.selected {
-      @include card;
-      border-style: solid;
-      border-color: $main;
-      background: #fffdf8;
-      border-radius: 32rpx;
-      padding: 18rpx 28rpx;
-      position: relative;
-      flex-direction: row;
-      gap: 16rpx;
-      box-shadow:
-        0 2rpx 0 rgba(0, 0, 0, 0.03),
-        0 12rpx 32rpx rgba(74, 144, 226, 0.05);
-    }
-
-    // 选中态中图标缩小
-    &.selected .croutine_category_icon {
-      width: 56rpx;
-      height: 56rpx;
-    }
-    &.selected .croutine_category_icon_img {
-      width: 56rpx;
-      height: 56rpx;
-    }
-  }
-
-  &_more_count {
-    font-size: 22rpx;
-    color: $gray-99;
-    font-weight: 500;
-  }
-
-  &_more_change_hint {
-    margin-left: auto;
-    font-size: 22rpx;
-    color: $gray-99;
-    font-weight: 500;
-    flex-shrink: 0;
   }
 
   // ===== 2. 任务内容卡片 =====

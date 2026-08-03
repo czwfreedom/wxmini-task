@@ -41,6 +41,23 @@ export namespace Routine {
      * 社会实践
      */
     Practice = 10,
+    /**
+     * 问答
+     */
+    QA = 11,
+    /**
+     * 工作
+     */
+    Job = 12,
+    /**
+     * 拍摄
+     */
+    Shoot = 13,
+
+    /**
+     * 其他
+     */
+    Other = 255,
   }
 
   export interface Info extends Entity.Info {

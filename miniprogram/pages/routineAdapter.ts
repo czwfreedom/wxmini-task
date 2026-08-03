@@ -186,18 +186,47 @@ export namespace RoutineAdapter {
       examples: ['素描静物', '水彩风景', '卡通人物'],
     },
     {
-      category: Routine.Category.Practice,
-      name: '社会实践',
-      color: '#4FC3F7',
-      icon: '/assets/imgs/ic-coding.svg',
-      examples: ['摆摊'],
-    },
-    {
       category: Routine.Category.Coding,
       name: '编程',
       color: '#4FC3F7',
       icon: '/assets/imgs/ic-coding.svg',
       examples: ['Scratch 发射子弹', 'Python 小游戏', '网页制作'],
+    },
+    {
+      category: Routine.Category.Practice,
+      name: '社会实践',
+      color: '#FF8A65',
+      icon: '/assets/imgs/ic-practice.svg',
+      examples: ['摆摊体验', '社区志愿服务', '参观博物馆'],
+    },
+    {
+      category: Routine.Category.QA,
+      name: '问答',
+      color: '#7986CB',
+      icon: '/assets/imgs/ic-qa.svg',
+      default: true,
+      examples: ['每日一问', '百科知识问答', '成语接龙'],
+    },
+    {
+      category: Routine.Category.Job,
+      name: '工作',
+      color: '#26C6DA',
+      icon: '/assets/imgs/ic-job.svg',
+      examples: ['处理工作消息', '完成项目方案', '整理会议纪要'],
+    },
+    {
+      category: Routine.Category.Shoot,
+      name: '拍摄',
+      color: '#EF5350',
+      icon: '/assets/imgs/ic-shoot.svg',
+      examples: ['拍一段 Vlog', '录制朗读视频', '拍摄全家福'],
+    },
+    {
+      category: Routine.Category.Other,
+      name: '其他',
+      color: '#90A4AE',
+      icon: '/assets/imgs/ic-other.svg',
+      examples: ['帮妈妈一个忙', '整理书包', '自由探索'],
     },
   ];
 
@@ -207,9 +236,9 @@ export namespace RoutineAdapter {
     if (r) return r;
     return {
       category: category,
-      name: '任务',
-      color: '#f4b942',
-      icon: '/assets/imgs/ic-reading.svg',
+      name: '其他',
+      color: '#90A4AE',
+      icon: '/assets/imgs/ic-other.svg',
     };
   }
 

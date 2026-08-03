@@ -1,0 +1,15 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="24" cy="24" r="22" fill="#FFEBEE"/>
+  <!-- 相机顶部取景器突起 -->
+  <rect x="17" y="13" width="14" height="6" rx="2.5" fill="#EF5350" stroke="#C62828" stroke-width="1.4"/>
+  <!-- 相机机身 -->
+  <rect x="9" y="17" width="30" height="19" rx="4" fill="#EF5350" stroke="#C62828" stroke-width="1.4"/>
+  <!-- 镜头外圈 -->
+  <circle cx="24" cy="26.5" r="6.5" fill="#fff" stroke="#C62828" stroke-width="1.4"/>
+  <!-- 镜头内圈 -->
+  <circle cx="24" cy="26.5" r="3.2" fill="#37474F"/>
+  <!-- 镜头高光点 -->
+  <circle cx="22.6" cy="25" r="1" fill="#fff"/>
+  <!-- 闪光灯 -->
+  <circle cx="33.5" cy="21.5" r="1.6" fill="#FFD54F"/>
+</svg>

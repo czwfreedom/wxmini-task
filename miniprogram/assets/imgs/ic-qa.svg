@@ -1,0 +1,11 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="24" cy="24" r="22" fill="#E8EAF6"/>
+  <!-- 对话气泡 -->
+  <rect x="11" y="12" width="26" height="20" rx="7" fill="#fff" stroke="#7986CB" stroke-width="1.6"/>
+  <!-- 气泡小尾巴 -->
+  <path d="M17 31.5 L17 37 L23 31.5 Z" fill="#fff" stroke="#7986CB" stroke-width="1.6" stroke-linejoin="round"/>
+  <!-- 问号弯钩（路径绘制，避免字体兼容问题） -->
+  <path d="M20.5 19.5 C20.5 17.8 21.9 16.6 23.6 16.6 C25.4 16.6 26.7 17.9 26.7 19.4 C26.7 21.8 23.9 21.8 23.9 24.4" stroke="#5C6BC0" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <!-- 问号的点 -->
+  <circle cx="23.9" cy="27.3" r="1.4" fill="#5C6BC0"/>
+</svg>

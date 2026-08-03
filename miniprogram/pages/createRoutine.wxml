@@ -11,42 +11,22 @@
           <view
             wx:for="{{ categories }}"
             wx:key="id"
-            class="croutine_category_cell {{ item.selected? 'selected' : '' }}"
+            class="croutine_category_cell {{ item.other? 'other' : '' }} {{ item.selected? 'selected' : '' }}"
             catch:tap="onCategoryTap"
             data-id="{{ item.id }}"
           >
-            <view class="croutine_category_icon">
+            <view
+              wx:if="{{ item.avatar }}"
+              class="croutine_category_icon {{ item.other? 'other' : '' }}"
+            >
               <image src="{{ item.avatar }}" mode="aspectFit" class="croutine_category_icon_img" />
             </view>
-            <view class="croutine_category_name">{{ item.name }}</view>
+            <view class="croutine_category_name {{ item.other && !item.selected? 'other' : '' }}">
+              {{ item.name }}
+            </view>
+            <view wx:if="{{ item.other }}" class="croutine_category_hint">点击可选择</view>
             <view wx:if="{{ item.selected }}" class="croutine_checked">✓</view>
           </view>
-        </view>
-
-        <!-- 更多分类：未选中时虚线入口，选中后原地变为选中卡片 -->
-        <view
-          wx:if="{{ moreCategory && moreCategory.id }}"
-          class="croutine_more_toggle selected"
-          catch:tap="onMoreToggle"
-        >
-          <view class="croutine_category_icon">
-            <image
-              src="{{ moreCategory.avatar }}"
-              mode="aspectFit"
-              class="croutine_category_icon_img"
-            />
-          </view>
-          <view class="croutine_category_name">{{ moreCategory.name }}</view>
-          <text class="croutine_more_change_hint">点击可更换 ›</text>
-          <view class="croutine_checked">✓</view>
-        </view>
-        <view
-          wx:if="{{ !moreCategory || !moreCategory.id }}"
-          class="croutine_more_toggle"
-          catch:tap="onMoreToggle"
-        >
-          <text>更多分类</text>
-          <text class="croutine_more_count">点击可选择 ›</text>
         </view>
       </view>
 

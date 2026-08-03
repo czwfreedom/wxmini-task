@@ -1,0 +1,11 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="24" cy="24" r="22" fill="#ECEFF1"/>
+  <!-- 四宫格：更多/其他 -->
+  <rect x="14" y="14" width="9" height="9" rx="2.5" fill="#90A4AE" stroke="#607D8B" stroke-width="1.2"/>
+  <rect x="25" y="14" width="9" height="9" rx="2.5" fill="#90A4AE" stroke="#607D8B" stroke-width="1.2"/>
+  <rect x="14" y="25" width="9" height="9" rx="2.5" fill="#90A4AE" stroke="#607D8B" stroke-width="1.2"/>
+  <!-- 右下角为加号，表示可扩展 -->
+  <rect x="25" y="25" width="9" height="9" rx="2.5" fill="#fff" stroke="#607D8B" stroke-width="1.2"/>
+  <line x1="29.5" y1="27.5" x2="29.5" y2="31.5" stroke="#607D8B" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="27.5" y1="29.5" x2="31.5" y2="29.5" stroke="#607D8B" stroke-width="1.6" stroke-linecap="round"/>
+</svg>

@@ -13,10 +13,8 @@ export namespace CreateRoutineUI {
     choices: ChoicesUI.Data;
     /** 当前选中分类 ID */
     selectedCategoryId: number;
-    /** 常用分类列表（3 个） */
+    /** 常用分类列表，最后一个是“更多”选项 */
     categories: Category[];
-    /** 当前选中分类的展示信息，如果ID为空表示没有 */
-    moreCategory?: Category;
 
     /** 任务内容 */
     contentText: string;
@@ -41,6 +39,7 @@ export namespace CreateRoutineUI {
 
   export interface Category extends Entity.Image {
     color: string;
+    other?: boolean;
   }
 
   export interface Example extends Entity.Label {}
@@ -59,7 +58,6 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     super(component);
 
     this.bindEvent('onCategoryTap', this.onCategoryTap);
-    this.bindEvent('onMoreToggle', this.onMoreToggle);
     this.bindEvent('onContentInput', this.onContentInput);
     this.bindEvent('onContentExampleTap', this.onContentExampleTap);
     this.bindEvent('onDurationTap', this.onDurationTap);
@@ -87,7 +85,6 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
 
       times: [],
       timeCustomValue: '',
-      timeSelectedValue: 'now',
       submittable: false,
     };
   }
@@ -104,7 +101,6 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
       categories: categories,
       durations,
       times,
-      timeSelectedValue: 'now',
       loaded: true,
     });
 
@@ -117,12 +113,17 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
   protected onCategoryTap(e: WechatMiniprogram.TouchEvent) {
     const { id } = e.currentTarget.dataset;
     Logger.info('onCategoryTap', id);
-    this.selectCategory(Number(id));
+    const vm = Entity.find(this.getData().categories, id);
+    if (!vm.item) return;
+    if (vm.item.other) {
+      this.showMoreCategories();
+    } else {
+      this.selectCategory(Number(id), false);
+    }
   }
 
   /** 打开更多分类弹窗（委托 ChoicesUI） */
-  protected onMoreToggle() {
-    Logger.info('onMoreToggle');
+  protected showMoreCategories() {
     const categories = this.adapter.adaptMoreCategories(this.getData().selectedCategoryId);
     this.getChoices().show(
       {
@@ -134,7 +135,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
       },
       {
         onChoicesDialogItemTap: (item) => {
-          this.selectCategory(Number(item.id));
+          this.selectCategory(Number(item.id), true);
         },
       }
     );
@@ -277,18 +278,19 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
   // ---- 私有方法 ----
 
   /** 选择分类：更新选中态 + 刷新示例提示词 */
-  private selectCategory(category: number) {
-    const isMore = this.adapter.isMoreCategory(category);
-    const more = isMore
-      ? this.adapter.buildCategoryVM(category)
-      : ({ id: '' } as CreateRoutineUI.Category);
-    const categories = this.markSelected(this.getData().categories, category);
+  private selectCategory(category: number, isMore = false) {
+    const categories = this.getData().categories;
+    if (isMore) {
+      const more = this.adapter.buildCategoryVM(category);
+      more.other = true;
+      categories.splice(categories.length - 1, 1, more);
+    }
+    this.markSelected(categories, category);
     const examples = this.adapter.adaptExamples(category);
 
     this.setData({
       selectedCategoryId: category,
       categories: categories,
-      moreCategory: more,
       contentExamples: examples,
       _submittable: this.getData().contentText.trim().length > 0,
     });

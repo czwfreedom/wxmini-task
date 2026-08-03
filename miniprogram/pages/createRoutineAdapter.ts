@@ -42,7 +42,9 @@ export class CreateRoutineAdapter {
 
   /** 获取常用分类 VM 列表（从 sConfigs 中 default=true 的分类） */
   public adaptCategories(): CreateRoutineUI.Category[] {
-    return RoutineAdapter.getDefaults().map((id) => this.buildCategoryVM(id));
+    const result = RoutineAdapter.getDefaults().map((id) => this.buildCategoryVM(id));
+    result.push({ id: '', name: '更多分类', other: true } as any);
+    return result;
   }
 
   /** 获取更多分类 VM 列表（从 sConfigs 中 default 不为 true 的分类），可传入已选 ID 预选 */
