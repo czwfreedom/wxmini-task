@@ -48,4 +48,14 @@ export namespace Utils {
     }
     return def;
   }
+
+  // 转换字符串，做输入保护。
+  export function ZNumber(str?: string, def = 0): number {
+    if (!str) {
+      return def;
+    }
+    const num = Number(str);
+    const n = !isNaN(num) ? num : def;
+    return n;
+  }
 }

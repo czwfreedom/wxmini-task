@@ -4,9 +4,10 @@ import { Entity } from '../model/entity';
 import { Routine } from '../server/routine';
 import { CreateRoutineAdapter } from './createRoutineAdapter';
 import { Logger } from '../utils/logger';
-import { DateUtils } from '../utils/dateUtils';
 import { ChoicesUI } from '../ui/choicesUI';
 import { InteractUI } from '../core/interactUI';
+import { Utils } from '../utils/utils';
+import { DateUtils } from '../utils/dateUtils';
 
 export namespace CreateRoutineUI {
   export interface Data extends SubUI.Data {
@@ -98,10 +99,10 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     const times = this.adapter.adaptTimes(currentHour);
 
     this.setData({
+      loaded: true,
       categories: categories,
       durations,
       times,
-      loaded: true,
     });
 
     return Err.Code.OK;
@@ -142,15 +143,11 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
   }
 
   /** 任务内容输入 */
-  protected onContentInput(e: WechatMiniprogram.InputEvent) {
+  protected onContentInput(e: WechatMiniprogram.TouchEvent) {
     const text = (e.detail.value || '') as string;
     const count = text.length;
 
-    this.setData({
-      contentText: text,
-      contentCharCount: count,
-      _submittable: !!this.getData().selectedCategoryId && text.trim().length > 0,
-    });
+    this.updateData({ contentText: text, contentCharCount: count });
   }
 
   /** 点击示例提示词 chip，填充到输入框 */
@@ -161,10 +158,9 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     Logger.info('onContentExampleTap', name);
     const count = (name as string).length;
 
-    this.setData({
+    this.updateData({
       contentText: name,
       contentCharCount: count,
-      _submittable: !!this.getData().selectedCategoryId,
     });
   }
 
@@ -174,13 +170,13 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     Logger.info('onDurationTap', id);
     const options = this.getData().durations;
     this.markSelected(options, id);
-    this.setData({ durations: options });
+    this.updateData({ durations: options });
   }
 
   /** 自定义时长输入 */
   protected onDurationCustomInput(e: WechatMiniprogram.TouchEvent) {
     const text = (e.detail.value || '') as string;
-    this.setData({ durationCustomText: text });
+    this.updateData({ durationCustomText: text });
   }
 
   /** 自定义时长确认（失焦后生效） */
@@ -190,7 +186,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     const mins = parseInt(text, 10);
     if (isNaN(mins) || mins <= 0 || mins > 480) {
       this.showToast('请输入 1-480 之间的分钟数');
-      this.setData({ durationCustomText: '' });
+      this.updateData({ durationCustomText: '' });
       return;
     }
   }
@@ -202,7 +198,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     Logger.info('onTimeTap', id);
     const options = this.getData().times;
     this.markSelected(options, id);
-    this.setData({ times: options });
+    this.updateData({ times: options });
   }
 
   /** 原生 picker 选择回调 */
@@ -213,69 +209,93 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
 
     const options = this.getData().times;
     this.markSelected(options, 'custom');
-    this.setData({ times: options, timeCustomValue: timeValue });
+    this.updateData({ times: options, timeCustomValue: timeValue });
   }
 
   /** 提交创建任务 */
   protected async onSubmitTap() {
-    const data = this.getData();
-    if (!data.submittable) {
-      this.showToast('请选择分类并填写任务内容');
-      return;
-    }
+    const data = this.getCommitData(true);
+    if (!data) return;
 
-    Logger.info('onSubmitTap', {
-      category: data.selectedCategoryId,
-      content: data.contentText,
-    });
+    Logger.info('Commiting', data);
+
+    data.status = Routine.Status.Working;
+    data.date = DateUtils.getStartMillisOfDay(data.planTime!);
+    data.transaction = Routine.newTransaction();
 
     this.showLoading();
-
-    // const duration = data.durationSelectedMinutes || 30;
-    const duration = 30;
-
-    const timeValue = data.timeSelectedValue || 'now';
-    let planTime = Date.now();
-    if (timeValue !== 'now') {
-      const today = new Date();
-      const [h, m] = timeValue.split(':').map(Number);
-      if (!isNaN(h) && !isNaN(m)) {
-        today.setHours(h, m, 0, 0);
-        planTime = today.getTime();
-      }
-    }
-
-    const now = Date.now();
-    const info: Partial<Routine.Info> = {
-      name: data.contentText.trim(),
-      detail: this.buildDetail(duration),
-      category: data.selectedCategoryId,
-      status: Routine.Status.Working,
-      duration,
-      planTime,
-      date: DateUtils.getStartMillisOfDay(now),
-      userId: '',
-      transaction: Routine.newTransaction(),
-      createTime: now,
-    };
-
-    const result = await Routine.create(info);
+    const res = await Routine.create(data);
     this.hideLoading();
 
-    if (typeof result === 'number') {
-      this.showErrToast(result);
+    if ('number' === typeof res) {
+      this.showErrToast(res);
       return;
     }
 
-    this.showToast('创建成功');
-    this.postEvent('routineChanged', { action: 'created', id: result.id });
+    // this.showToast('创建成功');
+    // this.postEvent('routineChanged', { action: 'created', id: result.id });
 
-    setTimeout(() => {
-      wx.navigateBack();
-    }, 800);
+    // setTimeout(() => {
+    //   wx.navigateBack();
+    // }, 800);
   }
 
-  // ---- 私有方法 ----
+  protected updateData(data: Partial<CreateRoutineUI.Data>) {
+    this.setData(data, () => {
+      const commitData = this.getCommitData();
+      this.setData({ submittable: !!commitData });
+    });
+  }
+
+  protected getCommitData(showToast = false): Partial<Routine.Info> | undefined {
+    const data = this.getData();
+    if (!data.selectedCategoryId) {
+      if (showToast) this.showToast('请选择任务分类');
+      return undefined;
+    }
+
+    const content = data.contentText.trim();
+    if (!content) {
+      if (showToast) this.showToast('请填写任务内容');
+      return undefined;
+    }
+
+    const duration = data.durations.find((o) => o.selected);
+    if (!duration || (duration.id === 'custom' && !data.durationCustomText.trim())) {
+      if (showToast) this.showToast('请选择计划时长');
+      return undefined;
+    }
+
+    const mins = Utils.ZNumber(
+      duration.id === 'custom' ? data.durationCustomText.trim() : duration.id
+    );
+
+    const time = data.times.find((o) => o.selected);
+    if (!time || (time.id === 'custom' && !data.timeCustomValue.trim())) {
+      if (showToast) this.showToast('请选择计划时间');
+      return undefined;
+    }
+
+    return {
+      category: data.selectedCategoryId,
+      detail: content,
+      duration: mins * 60000,
+      planTime: this.formatPlanTime(time.id === 'custom' ? data.timeCustomValue.trim() : time.id),
+    };
+  }
+
+  private formatPlanTime(v: string): number {
+    const date = new Date(Date.now());
+    if (v === 'now') {
+      date.setSeconds(0, 0);
+    } else {
+      const arr = v.split(':');
+      const h = arr.length === 2 ? Utils.ZNumber(arr[0], 9) : 9;
+      const m = arr.length === 2 ? Utils.ZNumber(arr[1], 0) : 0;
+      date.setHours(h, m, 0, 0);
+    }
+    return date.getTime();
+  }
 
   /** 选择分类：更新选中态 + 刷新示例提示词 */
   private selectCategory(category: number, isMore = false) {
@@ -288,20 +308,11 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     this.markSelected(categories, category);
     const examples = this.adapter.adaptExamples(category);
 
-    this.setData({
+    this.updateData({
       selectedCategoryId: category,
       categories: categories,
       contentExamples: examples,
-      _submittable: this.getData().contentText.trim().length > 0,
     });
-  }
-
-  private buildDetail(minutes: number): string {
-    if (minutes >= 60) {
-      const hours = minutes / 60;
-      return `约${hours}小时`;
-    }
-    return `约${minutes}分钟`;
   }
 
   private markSelected<T extends Entity.Label>(items: T[], selectedId: number | string): T[] {
