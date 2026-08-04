@@ -45,16 +45,21 @@ export namespace RoutineUI {
 }
 
 export class RoutineUI extends SubUI<RoutineUI.Data> {
-  private adapter = new RoutineAdapter();
+  protected adapter = new RoutineAdapter();
+  protected date: number;
+  protected userId: string;
 
   public constructor(component: any) {
     super(component);
+
+    this.date = DateUtils.getStartMillisOfDay(Date.now());
+    this.userId = Context.getUserId();
 
     this.bindEvent('onItemTap', this.onItemTap);
     this.bindEvent('onAddTap', this.onAddTap);
 
     this.registerEventBus(Event.Name.RoutineUpdated, (ev: Routine.Info) => {
-      if (ev?.id && ev?.userId === Context.getUserId()) {
+      if (ev?.id && ev?.userId === this.userId && this.date === ev.date) {
         this.adapter.addInfo(ev);
         this.updateView();
       }
@@ -74,14 +79,13 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
   }
 
   public async loadData(): Promise<number> {
-    const now = Date.now();
-    const errcode = await this.adapter.load(DateUtils.getStartMillisOfDay(now));
+    const errcode = await this.adapter.load(this.date);
     if (errcode !== Err.Code.OK) return this.abort(errcode);
 
     const records = this.adapter.adapt();
     this.setData({
       loaded: true,
-      dateMain: DateUtils.formatDate(now, 'M月d日 周E'),
+      dateMain: DateUtils.formatDate(this.date, 'M月d日 周E'),
       ...records,
     });
     return 0;
