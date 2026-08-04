@@ -2,7 +2,7 @@ import { SubUI } from '../core/subUI';
 import { Err } from '../constant/error';
 import { Entity } from '../model/entity';
 import { Routine } from '../server/routine';
-import { CreateRoutineAdapter } from './createRoutineAdapter';
+import { RoutineEditorAdapter } from './routineEditorAdapter';
 import { Logger } from '../utils/logger';
 import { ChoicesUI } from '../ui/choicesUI';
 import { InteractUI } from '../core/interactUI';
@@ -11,7 +11,7 @@ import { DateUtils } from '../utils/dateUtils';
 import { Event } from '../core/event';
 import { Intent } from '../core/intent';
 
-export namespace CreateRoutineUI {
+export namespace RoutineEditorUI {
   export interface Data extends SubUI.Data {
     choices: ChoicesUI.Data;
     /** 当前选中分类 ID */
@@ -52,8 +52,8 @@ export namespace CreateRoutineUI {
   export interface Time extends Entity.Label {}
 }
 
-export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
-  private adapter = new CreateRoutineAdapter();
+export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
+  private adapter = new RoutineEditorAdapter();
   protected entry?: Partial<Routine.Info>;
 
   public static readonly sContentMaxLength = 100;
@@ -74,7 +74,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     this.bindEvent('onSubmitTap', this.onSubmitTap);
   }
 
-  public static defaultData(): CreateRoutineUI.Data {
+  public static defaultData(): RoutineEditorUI.Data {
     return {
       loaded: false,
       abortMessage: '',
@@ -82,7 +82,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
       categories: [],
       selectedCategoryId: 0,
       contentText: '',
-      contentMaxLength: CreateRoutineUI.sContentMaxLength,
+      contentMaxLength: RoutineEditorUI.sContentMaxLength,
       contentCharCount: 0,
       contentExamples: [],
 
@@ -252,7 +252,7 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     Intent.delayBack();
   }
 
-  protected updateData(data: Partial<CreateRoutineUI.Data>) {
+  protected updateData(data: Partial<RoutineEditorUI.Data>) {
     this.setData(data, () => {
       const commitData = this.getCommitData();
       this.setData({ submittable: !!commitData });
