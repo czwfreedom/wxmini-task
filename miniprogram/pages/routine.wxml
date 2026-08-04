@@ -3,11 +3,30 @@
 <view class="routine">
   <view class="routine_content">
     <scroll-view wx:if="{{ loaded }}" class="routine_scroll" scroll-y="true" enhanced="{{ true }}">
-      <!-- Hero 顶部 -->
-      <view class="routine_hero">
+      <!-- Hero 顶部（历史态加 past 褪色） -->
+      <view class="routine_hero {{ isToday ? '' : 'past' }}">
         <view class="routine_hero_info">
-          <view class="routine_hero_date">{{ dateMain }}</view>
-          <view class="routine_hero_motto">✦ 苟日新，日日新，又日新</view>
+          <!-- 日期导航：‹ 日期 › 三段式，点日期唤起系统选择器 -->
+          <view class="routine_hero_nav">
+            <view class="routine_hero_arrow" catch:tap="onPrevDay">‹</view>
+            <picker
+              class="routine_hero_datewrap"
+              mode="date"
+              value="{{ pickerValue }}"
+              start="2026-07-01"
+              end="{{ pickerEnd }}"
+              bindchange="onDatePicked"
+            >
+              <view class="routine_hero_label">{{ dateLabel }}</view>
+              <view class="routine_hero_date">{{ dateMain }}</view>
+            </picker>
+            <!-- prettier-ignore -->
+            <view class="routine_hero_arrow {{ isToday ? 'disabled' : '' }}" catch:tap="onNextDay">›</view>
+          </view>
+
+          <view class="routine_hero_motto">
+            ✦ {{ isToday ? '苟日新，日日新，又日新' : '每一步都算数' }}
+          </view>
           <view wx:if="{{ stats && stats.length}}" class="routine_hero_stats">
             <view
               wx:for="{{ stats }}"
@@ -56,7 +75,7 @@
         <!-- 空状态 -->
         <view wx:if="{{ records.length === 0 }}" class="routine_empty">
           <text class="routine_empty_text">
-            {{ addable? '还没有任务，去创建吧 🎉' : '无任务'}}
+            {{ addable ? '还没有任务，去创建吧 🎉' : '这一天还没有记录' }}
           </text>
         </view>
 
@@ -70,11 +89,17 @@
       <view class="routine_spacer"></view>
     </scroll-view>
 
-    <!-- 浮动按钮 -->
+    <!-- 浮动按钮（今天态：添加任务） -->
     <view wx:if="{{ addable }}" class="routine_float" catch:tap="onAddTap">
       <view class="routine_float_btn">
         <image class="routine_float_icon" src="../assets/imgs/ic-logo.svg" />
       </view>
+    </view>
+
+    <!-- 回到今天胶囊（历史态） -->
+    <view wx:if="{{ loaded && !isToday }}" class="routine_backtoday" catch:tap="onBackToday">
+      <view class="routine_backtoday_dot"></view>
+      <text class="routine_backtoday_text">回到今天</text>
     </view>
   </view>
 </view>

@@ -16,8 +16,16 @@ export namespace RoutineUI {
     addable: boolean;
     /** 任务列表 */
     records: Record[];
+    /** 是否今天（历史日期为 false，Hero 褪色 + 显示回到今天） */
+    isToday: boolean;
+    /** 日期标签：今天是 / 回顾那一天 */
+    dateLabel: string;
     /** 日期主文本，如「7月28日 周二」 */
     dateMain: string;
+    /** 日期选择器当前值，如「2026-08-03」 */
+    pickerValue: string;
+    /** 日期选择器上限（今天），禁选未来 */
+    pickerEnd: string;
 
     stats: Entity.Label[];
   }
@@ -57,6 +65,10 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
 
     this.bindEvent('onItemTap', this.onItemTap);
     this.bindEvent('onAddTap', this.onAddTap);
+    this.bindEvent('onPrevDay', this.onPrevDay);
+    this.bindEvent('onNextDay', this.onNextDay);
+    this.bindEvent('onDatePicked', this.onDatePicked);
+    this.bindEvent('onBackToday', this.onBackToday);
 
     this.registerEventBus(Event.Name.RoutineUpdated, (ev: Routine.Info) => {
       if (ev?.id && ev?.userId === this.userId && this.date === ev.date) {
@@ -73,22 +85,67 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
       updateable: false,
       addable: false,
       records: [],
+      isToday: true,
+      dateLabel: '',
       dateMain: '',
+      pickerValue: '',
+      pickerEnd: '',
       stats: [],
     };
   }
 
   public async loadData(): Promise<number> {
+    return this.loadDate(this.date);
+  }
+
+  /** 加载指定日期并刷新视图，供翻页/选择器/回到今天复用 */
+  protected async loadDate(date: number): Promise<number> {
+    this.date = date;
     const errcode = await this.adapter.load(this.date);
     if (errcode !== Err.Code.OK) return this.abort(errcode);
 
-    const records = this.adapter.adapt();
+    const today = DateUtils.getStartMillisOfDay(Date.now());
+    const isToday = this.date === today;
     this.setData({
       loaded: true,
+      isToday,
+      dateLabel: isToday ? '今天是' : '回顾',
       dateMain: DateUtils.formatDate(this.date, 'M月d日 周E'),
-      ...records,
+      pickerValue: DateUtils.formatDate(this.date, 'yyyy-MM-dd'),
+      pickerEnd: DateUtils.formatDate(today, 'yyyy-MM-dd'),
+      ...this.adapter.adapt(),
     });
     return 0;
+  }
+
+  /** 前一天 */
+  protected onPrevDay() {
+    Logger.info('onPrevDay');
+    this.loadDate(this.date - 24 * 3600 * 1000);
+  }
+
+  /** 后一天，今天已到上限则禁用（WXML 同步置灰） */
+  protected onNextDay() {
+    Logger.info('onNextDay');
+    const today = DateUtils.getStartMillisOfDay(Date.now());
+    const next = this.date + 24 * 3600 * 1000;
+    if (next > today) return;
+    this.loadDate(next);
+  }
+
+  /** 原生日期选择器（picker mode="date"），上限今天 */
+  protected onDatePicked(e: WechatMiniprogram.TouchEvent) {
+    const value = (e.detail.value as string) || '';
+    Logger.info('onDatePicked', value);
+    const millis = DateUtils.getStartMillisOfDay(new Date(value.replace(/-/g, '/')).getTime());
+    if (!millis || millis === this.date) return;
+    this.loadDate(millis);
+  }
+
+  /** 回到今天 */
+  protected onBackToday() {
+    Logger.info('onBackToday');
+    this.loadDate(DateUtils.getStartMillisOfDay(Date.now()));
   }
 
   protected updateView() {

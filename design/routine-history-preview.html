@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>历史日期查看 - 交互设计稿</title>
+<style>
+/* ========== Reset & Base ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  background: #E8EFF5;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+  padding: 40px 24px;
+  min-height: 100vh;
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  flex-wrap: wrap;
+}
+
+/* ========== Frame Wrapper ========== */
+.frame-col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.frame-label {
+  font-size: 14px; font-weight: 700; color: #3A5A8C;
+  background: #fff; padding: 8px 20px; border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(74,144,226,0.10);
+}
+.frame-label small { display: block; font-size: 11px; color: #999; font-weight: 500; text-align: center; margin-top: 2px; }
+
+/* ========== Phone Frame ========== */
+.phone {
+  width: 375px;
+  height: 720px;
+  background: #F2F5F8;
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 3px #1a1a1a,
+    0 0 0 6px #2d2d2d,
+    0 20px 60px rgba(0,0,0,0.3);
+}
+.status-bar {
+  height: 44px;
+  background: #B8DAF5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  font-size: 12px;
+  color: #fff;
+  font-weight: 600;
+}
+.status-bar .time { font-size: 14px; font-weight: 700; }
+
+/* ========== Page Container ========== */
+.page {
+  height: calc(100% - 44px);
+  overflow-y: auto;
+  background: linear-gradient(180deg, #B8DAF5 0%, #F2F5F8 30%);
+  padding: 0 20px 120px;
+  position: relative;
+}
+.page::-webkit-scrollbar { width: 0; }
+
+/* ========== Hero Section ========== */
+.hero {
+  background: linear-gradient(160deg, #B5D9F8 0%, #A0CDF5 50%, #C5E3FA 100%);
+  border-radius: 0 0 32px 32px;
+  margin: 0 -20px 24px;
+  padding: 24px 28px 28px;
+  position: relative;
+  overflow: hidden;
+  transition: filter .3s;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 12px; left: 50%;
+  transform: translateX(-50%);
+  width: 40px; height: 10px;
+  background: #F2F5F8;
+  border-radius: 5px;
+  box-shadow: inset 1px 2px 3px rgba(0,0,0,0.06);
+}
+
+/* ---- 日期导航行（新增） ---- */
+.hero-date-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+.date-arrow {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700; color: #fff;
+  box-shadow: 0 2px 6px rgba(58,90,140,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform .15s;
+}
+.date-arrow:active { transform: scale(0.9); }
+.date-arrow.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+.hero-date-center { flex: 1; min-width: 0; }
+.hero-date-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+  letter-spacing: 1px;
+  display: flex; align-items: center; gap: 8px;
+}
+.hero-date-main {
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+.hero-date-tap-hint {
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+  margin-top: 2px;
+}
+
+.hero-motto {
+  font-size: 13px;
+  color: rgba(255,255,255,0.78);
+  margin-top: 8px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.hero-status-bar {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.hero-status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3A5A8C;
+  background: rgba(255,255,255,0.65);
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+.hero-status-dot { width: 8px; height: 8px; border-radius: 50%; }
+.hero-status-dot.planned { background: #5B9BD5; }
+.hero-status-dot.feedback { background: #F4B942; }
+.hero-status-dot.done { background: #81C784; }
+
+/* ---- 历史态 Hero：同款蓝色 + 白色面纱褪色（前景元素零改动） ---- */
+.hero.past {
+  /* inset 内阴影渲染在背景之上、内容之下，只淡化渐变不动文字 */
+  box-shadow: inset 0 0 0 200px rgba(255,255,255,0.32);
+}
+
+/* ========== Section Title ========== */
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::before {
+  content: '';
+  width: 4px; height: 18px;
+  background: #F4B942;
+  border-radius: 2px;
+}
+
+/* ========== Task Cards ========== */
+.card-list { display: flex; flex-direction: column; gap: 14px; }
+.task-card {
+  position: relative;
+  background: #FDFBF7;
+  border-radius: 20px;
+  padding: 18px 18px 18px 0;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.03), 0 8px 24px rgba(74,144,226,0.06);
+  overflow: hidden;
+}
+.task-card .card-accent {
+  position: absolute;
+  left: 0; top: 12px; bottom: 12px;
+  width: 8px;
+  border-radius: 0 4px 4px 0;
+}
+.card-icon-wrap {
+  width: 60px; height: 60px; min-width: 60px;
+  display: flex; align-items: center; justify-content: center;
+}
+.card-body { flex: 1; min-width: 0; }
+.card-title { font-size: 16px; font-weight: 600; color: #333; line-height: 1.4; margin-bottom: 3px; }
+.card-subtitle { font-size: 12px; color: #999; }
+.card-action { min-width: 60px; text-align: center; margin-right: 4px; }
+.card-action-btn {
+  display: inline-block;
+  font-size: 12px; font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #F4B942, #FFD54F);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(244,185,66,0.3);
+}
+
+/* ---- 完成卡（印章风格，复用） ---- */
+.card-done { background: #FFFDF8; border: 2px solid rgba(200,180,150,0.4); }
+.card-done .card-body { position: relative; }
+.feedback-quote {
+  font-size: 11px;
+  color: #6B9A5E;
+  margin-top: 6px;
+  padding: 5px 9px;
+  background: rgba(129,199,132,0.12);
+  border-radius: 8px;
+  font-style: italic;
+  line-height: 1.5;
+  border-left: 3px solid rgba(129,199,132,0.4);
+}
+.stamp-overlay {
+  position: absolute;
+  top: -4px; right: 0;
+  width: 38px; height: 38px;
+  transform: rotate(8deg);
+  filter: drop-shadow(0 2px 5px rgba(180,40,40,0.35));
+}
+
+/* ---- 添加更多（今天态才有） ---- */
+.card-add-more {
+  background: transparent;
+  border: 1.8px dashed #c5c5c5;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  color: #999; font-size: 14px; font-weight: 600;
+  margin-top: 14px;
+}
+.card-add-more .add-icon {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #eee;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; color: #8B95A4;
+}
+
+/* ========== Floating Button（今天态） ========== */
+.float-btn-wrap {
+  position: absolute; bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+.float-btn {
+  width: 68px; height: 68px; border-radius: 50%;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(74,144,226,0.12), 0 1px 0 rgba(255,255,255,0.6) inset;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ---- 回到今天悬浮胶囊（历史态） ---- */
+.back-today-wrap {
+  position: absolute; bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+.back-today-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+  border-radius: 32px;
+  padding: 12px 24px;
+  font-size: 14px; font-weight: 700; color: #3A5A8C;
+  box-shadow: 0 4px 20px rgba(74,144,226,0.15), 0 1px 0 rgba(255,255,255,0.6) inset;
+  cursor: pointer;
+}
+.back-today-btn .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #F4B942;
+}
+
+/* ========== 原生日期 Picker（picker mode="date" 模拟样式） ========== */
+.picker-mask {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 20;
+}
+/* 原生面板：不可定制，样式跟随系统（此处模拟 iOS 风格示意） */
+.native-picker {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  background: #F7F7F8;
+  z-index: 21;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.12);
+}
+.native-picker-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px;
+  background: #fff;
+  border-bottom: 0.5px solid #E0E0E0;
+}
+.native-picker-toolbar .cancel { font-size: 15px; color: #8A8A8E; }
+.native-picker-toolbar .confirm { font-size: 15px; color: #0A84FF; font-weight: 600; }
+.native-picker-wheels {
+  display: flex; justify-content: center; gap: 4px;
+  padding: 14px 16px 22px;
+  position: relative;
+}
+/* 系统选中行：灰底横条，无描边 */
+.native-picker-wheels::before {
+  content: '';
+  position: absolute;
+  left: 12px; right: 12px; top: 50%;
+  transform: translateY(-50%);
+  height: 36px;
+  background: rgba(120,120,128,0.12);
+  border-radius: 8px;
+  pointer-events: none;
+}
+.native-col { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 10px; }
+.native-col span { font-size: 15px; color: #C7C7CC; font-weight: 400; height: 26px; line-height: 26px; }
+.native-col span.cur { font-size: 18px; color: #000; font-weight: 500; }
+.native-col span.adj { font-size: 16px; color: #8A8A8E; }
+.native-picker-note {
+  text-align: center;
+  font-size: 10px;
+  color: #C7C7CC;
+  padding-bottom: 12px;
+}
+
+/* ========== 交互规则说明卡 ========== */
+.spec-card {
+  width: 340px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(74,144,226,0.08);
+}
+.spec-card h3 {
+  font-size: 16px; color: #333; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.spec-card h3::before { content: ''; width: 4px; height: 16px; background: #F4B942; border-radius: 2px; }
+.spec-item {
+  display: flex; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #eee;
+  font-size: 13px; line-height: 1.6; color: #5C6178;
+}
+.spec-item:last-child { border-bottom: none; }
+.spec-item .num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: linear-gradient(135deg, #F4B942, #FFD54F);
+  color: #fff; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+}
+.spec-item b { color: #333; }
+.spec-item .demo-tag {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 1px 8px; border-radius: 8px; margin: 0 2px;
+  background: #FFF3E0; color: #8B6914;
+}
+.spec-item .demo-tag.gray { background: #EEF0F4; color: #999; }
+.spec-item .demo-tag.blue { background: #E3F2FD; color: #3A5A8C; }
+</style>
+</head>
+<body>
+
+<!-- ================= 框 1：今天态 ================= -->
+<div class="frame-col">
+  <div class="frame-label">A · 今天态<small>左右箭头翻日期 · 右箭头禁用（不可看未来）</small></div>
+  <div class="phone">
+    <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
+    <div class="page">
+
+      <div class="hero">
+        <div class="hero-date-nav">
+          <div class="date-arrow">‹</div>
+          <div class="hero-date-center">
+            <div class="hero-date-label">今天是</div>
+            <div class="hero-date-main">8月4日 周二</div>
+            <div class="hero-date-tap-hint">点击日期可跳转任意一天</div>
+          </div>
+          <div class="date-arrow disabled">›</div>
+        </div>
+        <div class="hero-motto">✦ 好的规划，带来好的结果</div>
+        <div class="hero-status-bar">
+          <div class="hero-status-item"><span class="hero-status-dot planned"></span>已规划 4</div>
+          <div class="hero-status-item"><span class="hero-status-dot feedback"></span>待反馈 2</div>
+          <div class="hero-status-item"><span class="hero-status-dot done"></span>已完成 2</div>
+        </div>
+      </div>
+
+      <div class="section-title">今日任务</div>
+      <div class="card-list">
+        <div class="task-card">
+          <div class="card-accent" style="background:#FFB74D;"></div>
+          <div class="card-icon-wrap">
+            <svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#FFF3E0"/><path d="M24 16 C20 13.5 15 13 11 13.5 L11 32 C15 31.5 20 32 24 34.5 C28 32 33 31.5 37 32 L37 13.5 C33 13 28 13.5 24 16 Z" fill="#f4b942" stroke="#E65100" stroke-width="1.2"/><path d="M24 18.5 C20.8 16.6 16.2 16.1 13 16.6 L13 30.4 C16.2 29.9 20.8 30.4 24 32.3 C27.2 30.4 31.8 29.9 35 30.4 L35 16.6 C31.8 16.1 27.2 16.6 24 18.5 Z" fill="#FFFEF9"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-title">《三体》第3章</div>
+            <div class="card-subtitle">阅读 · 约30分钟</div>
+          </div>
+          <div class="card-action"><div class="card-action-btn">去完成</div></div>
+        </div>
+
+        <div class="task-card">
+          <div class="card-accent" style="background:#64B5F6;"></div>
+          <div class="card-icon-wrap">
+            <svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#E3F2FD"/><rect x="12" y="15" width="16" height="20" rx="2" fill="#fff" stroke="#1565C0" stroke-width="1.5"/><line x1="16" y1="21" x2="24" y2="21" stroke="#64B5F6" stroke-width="1.2"/><line x1="16" y1="25" x2="24" y2="25" stroke="#64B5F6" stroke-width="1.2"/><line x1="16" y1="29" x2="22" y2="29" stroke="#64B5F6" stroke-width="1.2"/><rect x="30" y="16" width="5" height="18" rx="1.5" fill="#FFD54F" stroke="#F9A825" stroke-width="1"/><polygon points="30,34 35,34 32.5,40" fill="#FFE0B2" stroke="#F9A825" stroke-width="0.8"/><rect x="30" y="14" width="5" height="4" rx="1" fill="#E85D4E"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-title">数学练习册 P20-25</div>
+            <div class="card-subtitle">作业 · 约30分钟</div>
+          </div>
+          <div class="card-action"><div class="card-action-btn">去完成</div></div>
+        </div>
+
+        <div class="task-card card-done">
+          <div class="card-accent" style="background:#81C784;"></div>
+          <div class="card-icon-wrap">
+            <svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#E8F5E9"/><circle cx="26" cy="13" r="4.5" fill="#43A047" stroke="#2E7D32" stroke-width="0.8"/><line x1="26" y1="17.5" x2="24" y2="29" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="25" y1="21" x2="32" y2="17" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="25" y1="22" x2="18" y2="20" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="29" x2="33" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="29" x2="18" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-title">跳绳500个</div>
+            <div class="card-subtitle">运动 · 约15分钟</div>
+            <div class="feedback-quote">"今天比昨天多跳了30个！"</div>
+            <svg class="stamp-overlay" viewBox="0 0 52 52"><circle cx="26" cy="26" r="23" fill="none" stroke="#D84035" stroke-width="5"/><circle cx="26" cy="26" r="15" fill="none" stroke="#D84035" stroke-width="1.2"/><text x="26" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#D84035" letter-spacing="2">完成</text></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-add-more"><span class="add-icon">+</span>添加更多任务</div>
+
+      <div class="float-btn-wrap">
+        <div class="float-btn">
+          <svg width="40" height="40" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#FFD54F" stroke="#E8A830" stroke-width="0.8"/><polygon points="22,35 34,35 28,44" fill="#FFE0B2" stroke="#E8A830" stroke-width="0.5"/><rect x="21" y="0" width="14" height="3" rx="1" fill="#B0BEC5"/><rect x="21" y="-3" width="14" height="4" rx="1.5" fill="#E85D4E"/><path d="M13 18 L19 38 L16 48 L10 34 Z" fill="#D44E40"/><path d="M43 18 L37 38 L40 48 L46 34 Z" fill="#E85D4E"/><circle cx="28" cy="22" r="9" fill="#E85D4E"/><circle cx="28" cy="22" r="4" fill="#F4B942"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 框 2：历史只读态 ================= -->
+<div class="frame-col">
+  <div class="frame-label">B · 历史补录态<small>昨天及更早 · 不可新增 · 未完成可补完成 · 底部"回到今天"</small></div>
+  <div class="phone">
+    <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
+    <div class="page">
+
+      <div class="hero past">
+        <div class="hero-date-nav">
+          <div class="date-arrow">‹</div>
+          <div class="hero-date-center">
+            <div class="hero-date-label">回顾那一天</div>
+            <div class="hero-date-main">8月3日 周一</div>
+            <div class="hero-date-tap-hint">点击日期可跳转任意一天</div>
+          </div>
+          <div class="date-arrow">›</div>
+        </div>
+        <div class="hero-motto">✦ 每一步都算数</div>
+        <div class="hero-status-bar">
+          <div class="hero-status-item"><span class="hero-status-dot planned"></span>已规划 4</div>
+          <div class="hero-status-item"><span class="hero-status-dot feedback"></span>待反馈 1</div>
+          <div class="hero-status-item"><span class="hero-status-dot done"></span>已完成 3</div>
+        </div>
+      </div>
+
+      <div class="section-title">当日任务</div>
+      <div class="card-list">
+        <!-- 完成卡：正常展示印章+反馈 -->
+        <div class="task-card card-done">
+          <div class="card-accent" style="background:#4DB6AC;"></div>
+          <div class="card-icon-wrap">
+            <svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#E0F2F1"/><rect x="10" y="10" width="28" height="28" rx="2" fill="#FFFEF9" stroke="#4DB6AC" stroke-width="1.5"/><line x1="24" y1="10" x2="24" y2="38" stroke="#4DB6AC" stroke-width="0.8" opacity="0.25"/><line x1="10" y1="24" x2="38" y2="24" stroke="#4DB6AC" stroke-width="0.8" opacity="0.25"/><line x1="16" y1="20" x2="32" y2="20" stroke="#37474F" stroke-width="2.5" stroke-linecap="round"/><path d="M24 13 Q22 21.5 15 32" fill="none" stroke="#37474F" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-title">描红《静夜思》</div>
+            <div class="card-subtitle">练字 · 约15分钟</div>
+            <div class="feedback-quote">"笔画比昨天平整，心也静下来了"</div>
+            <svg class="stamp-overlay" viewBox="0 0 52 52"><circle cx="26" cy="26" r="23" fill="none" stroke="#D84035" stroke-width="5"/><circle cx="26" cy="26" r="15" fill="none" stroke="#D84035" stroke-width="1.2"/><text x="26" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#D84035" letter-spacing="2">完成</text></svg>
+          </div>
+        </div>
+
+        <!-- 未完成卡：保留"去完成"入口，可补完成+补反馈 -->
+        <div class="task-card">
+          <div class="card-accent" style="background:#F06292;"></div>
+          <div class="card-icon-wrap">
+            <svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#FCE4EC"/><rect x="10" y="16" width="28" height="16" rx="8" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/><rect x="8" y="24" width="8" height="10" rx="4" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/><rect x="32" y="24" width="8" height="10" rx="4" fill="#F06292" stroke="#C2185B" stroke-width="1.2"/><circle cx="33" cy="22" r="2.5" fill="#FFD54F"/><circle cx="37" cy="26" r="2.5" fill="#81C784"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Minecraft 建造城堡</div>
+            <div class="card-subtitle">游戏 · 约30分钟</div>
+          </div>
+          <div class="card-action"><div class="card-action-btn">去完成</div></div>
+        </div>
+
+        <!-- 完成卡 -->
+        <div class="task-card card-done">
+          <div class="card-accent" style="background:#4FC3F7;"></div>
+          <div class="card-icon-wrap">
+            <svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#E1F5FE"/><rect x="9" y="14" width="30" height="21" rx="3" fill="#263238" stroke="#0288D1" stroke-width="1.2"/><rect x="9" y="14" width="30" height="6" rx="3" fill="#37474F"/><rect x="9" y="17" width="30" height="3" fill="#37474F"/><circle cx="13.5" cy="17" r="1.5" fill="#EF5350"/><circle cx="17.5" cy="17" r="1.5" fill="#FFD54F"/><circle cx="21.5" cy="17" r="1.5" fill="#81C784"/><polyline points="14,24.5 17.5,28 14,31.5" stroke="#4FC3F7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="20.5" y1="31" x2="25.5" y2="31" stroke="#4FC3F7" stroke-width="2.2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Scratch 发射子弹</div>
+            <div class="card-subtitle">编程 · 约45分钟</div>
+            <div class="feedback-quote">"角色会发射子弹了，超有成就感！"</div>
+            <svg class="stamp-overlay" viewBox="0 0 52 52"><circle cx="26" cy="26" r="23" fill="none" stroke="#D84035" stroke-width="5"/><circle cx="26" cy="26" r="15" fill="none" stroke="#D84035" stroke-width="1.2"/><text x="26" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#D84035" letter-spacing="2">完成</text></svg>
+          </div>
+        </div>
+      </div>
+      <!-- 历史态：无"添加更多任务"虚线卡、无占位 holder -->
+
+      <div class="back-today-wrap">
+        <div class="back-today-btn"><span class="dot"></span>回到今天</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 框 3：原生日期选择器 ================= -->
+<div class="frame-col">
+  <div class="frame-label">C · 系统日期选择器<small>picker mode="date" · 点击 Hero 日期唤起 · 上限今天</small></div>
+  <div class="phone">
+    <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
+    <div class="page">
+
+      <div class="hero past" style="filter:brightness(0.85);">
+        <div class="hero-date-nav">
+          <div class="date-arrow">‹</div>
+          <div class="hero-date-center">
+            <div class="hero-date-label">回顾那一天</div>
+            <div class="hero-date-main">8月3日 周一</div>
+          </div>
+          <div class="date-arrow">›</div>
+        </div>
+      </div>
+      <div style="opacity:0.35;">
+        <div class="section-title">当日任务</div>
+        <div class="card-list">
+          <div class="task-card"><div class="card-accent" style="background:#4DB6AC;"></div><div class="card-body" style="padding-left:20px;"><div class="card-title">描红《静夜思》</div></div></div>
+        </div>
+      </div>
+
+      <div class="picker-mask"></div>
+      <div class="native-picker">
+        <div class="native-picker-toolbar">
+          <span class="cancel">取消</span>
+          <span class="confirm">确定</span>
+        </div>
+        <div class="native-picker-wheels">
+          <div class="native-col">
+            <span>2024年</span>
+            <span class="adj">2025年</span>
+            <span class="cur">2026年</span>
+            <span class="adj">2027年</span>
+            <span>2028年</span>
+          </div>
+          <div class="native-col">
+            <span>6月</span>
+            <span class="adj">7月</span>
+            <span class="cur">8月</span>
+            <span class="adj">9月</span>
+            <span>10月</span>
+          </div>
+          <div class="native-col">
+            <span>1日</span>
+            <span class="adj">2日</span>
+            <span class="cur">3日</span>
+            <span class="adj">4日</span>
+            <span>5日</span>
+          </div>
+        </div>
+        <div class="native-picker-note">系统原生组件，样式不可定制（此处为 iOS 风格示意）</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 交互规则说明 ================= -->
+<div class="frame-col">
+  <div class="frame-label">交互规则</div>
+  <div class="spec-card">
+    <h3>日期导航（Hero 区）</h3>
+    <div class="spec-item"><span class="num">1</span><div>Hero 日期行改造为 <b>‹ 日期 ›</b> 三段式：左右圆形半透明箭头 + 中间日期区。点箭头翻前一天/后一天，整页数据随之切换。</div></div>
+    <div class="spec-item"><span class="num">2</span><div>处于<b>今天</b>时右箭头 <span class="demo-tag gray">禁用灰化</span>——不支持查看未来日期。</div></div>
+    <div class="spec-item"><span class="num">3</span><div>点击中间日期文字唤起<b>系统日期选择器</b>（框 C）：原生 <b>picker mode="date"</b>，年/月/日滚轮 + 取消/确定均由系统提供，样式跟随系统不可定制。</div></div>
+    <div class="spec-item"><span class="num">4</span><div>picker 的 <b>end 属性设为当天</b>，系统层面禁选未来日期，与右箭头禁用逻辑一致；start 设一个足够早的日期（如 2020-01-01）。</div></div>
+  </div>
+  <div class="spec-card">
+    <h3>今天态 vs 历史态</h3>
+    <div class="spec-item"><span class="num">5</span><div><b>今天态</b>：label「今天是」，正常展示浮动添加按钮、添加更多虚线卡、holder 占位卡、去完成按钮。</div></div>
+    <div class="spec-item"><span class="num">6</span><div><b>历史态</b>：label 变为「回顾那一天」；Hero 保持同款蓝色渐变，仅叠一层<b>白色面纱做褪色处理</b>（inset 内阴影实现），前景文字/箭头/状态栏零改动——今天鲜明、历史淡退，主次自然分明。</div></div>
+    <div class="spec-item"><span class="num">7</span><div>历史态隐藏：浮动添加按钮、添加更多虚线卡、holder 占位卡——<b>历史只能补完成，不能补规划</b>。统计条完整保留（含待反馈，提醒还有没补的任务）。</div></div>
+    <div class="spec-item"><span class="num">8</span><div>历史态任务卡：完成卡正常展示印章+反馈语录；<b>未完成卡保留「去完成」按钮</b>，点击进入与今天一致的完成+费曼反馈流程，补记的 finishTime 记为实际操作时间。</div></div>
+    <div class="spec-item"><span class="num">9</span><div>历史态底部悬浮 <span class="demo-tag">● 回到今天</span> 胶囊按钮（原浮动按钮位置），一键返回今天。</div></div>
+  </div>
+  <div class="spec-card">
+    <h3>数据与边界</h3>
+    <div class="spec-item"><span class="num">10</span><div>翻日期时走既有 <b>Routine.list(date)</b> 按日期加载；当天无数据时展示空态插画「这一天还没有记录」。</div></div>
+    <div class="spec-item"><span class="num">11</span><div>连续左翻不限制天数；切换到任意日期后，再次进入页面<b>默认回到今天</b>（不记忆上次浏览位置）。</div></div>
+    <div class="spec-item"><span class="num">12</span><div><b>快捷回跳</b>不设独立 chip：回到今天靠底部胶囊，近几天靠箭头连点，更早日期靠系统 picker——三层覆盖全部场景，无需自绘面板。</div></div>
+  </div>
+</div>
+
+</body>
+</html>

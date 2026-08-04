@@ -24,20 +24,55 @@
     justify-content: space-between;
     align-items: flex-start;
 
+    // 历史态：同款蓝色渐变 + 白色面纱褪色（inset 渲染在背景之上、内容之下）
+    &.past {
+      box-shadow: inset 0 0 0 999rpx rgba(255, 255, 255, 0.32);
+    }
+
     &_info {
       flex: 1;
     }
 
+    // ---- 日期导航：‹ 日期 › 三段式 ----
+    &_nav {
+      display: flex;
+      align-items: center;
+      gap: 24rpx;
+    }
+
+    &_arrow {
+      width: 64rpx;
+      height: 64rpx;
+      border-radius: 50%;
+      background: $white5;
+      @include flex-layout;
+      font-size: 36rpx;
+      font-weight: 700;
+      color: white;
+      box-shadow:
+        0 4rpx 12rpx rgba(58, 90, 140, 0.12),
+        inset 0 2rpx 0 $white6;
+      flex-shrink: 0;
+
+      &.disabled {
+        opacity: 0.5;
+      }
+    }
+
+    &_datewrap {
+      flex: 1;
+      min-width: 0;
+    }
+
     &_label {
-      font-size: 28rpx;
+      font-size: 26rpx;
       color: $white85;
       font-weight: 500;
-      margin-top: 24rpx;
       letter-spacing: 2rpx;
     }
 
     &_date {
-      font-size: 72rpx;
+      font-size: 56rpx;
       font-weight: 800;
       color: white;
       line-height: 1.2;
@@ -280,6 +315,37 @@
     &_icon {
       width: 100rpx;
       height: 100rpx;
+    }
+  }
+
+  // ===== 回到今天胶囊（历史态，原浮动按钮位置） =====
+  &_backtoday {
+    position: fixed;
+    bottom: 40rpx;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    @include flex-layout;
+    gap: 16rpx;
+    background: $white6;
+    border-radius: 64rpx;
+    padding: 24rpx 48rpx;
+    box-shadow:
+      0 8rpx 40rpx rgba(74, 144, 226, 0.15),
+      0 2rpx 0 $white6 inset;
+
+    &_dot {
+      width: 16rpx;
+      height: 16rpx;
+      border-radius: 50%;
+      background: $main;
+    }
+
+    &_text {
+      font-size: 28rpx;
+      font-weight: 700;
+      color: $foreground-sub;
+      letter-spacing: 1rpx;
     }
   }
 }
