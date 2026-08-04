@@ -56,13 +56,13 @@
           <view class="routine_card_body">
             <view class="routine_card_title">{{ item.name }}</view>
             <view wx:if="{{ !item.holder }}" class="routine_card_sub">
-              {{ item.categoryName }} · {{ item.detail }}
+              {{ item.detail }}
             </view>
             <view wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</view>
           </view>
           <view class="routine_card_action" catch:tap="onItemTap" data-id="{{ item.id }}">
-            <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加 →</view>
-            <view wx:elif="{{ item.status === 100 }}" class="routine_card_btn">去完成 →</view>
+            <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
+            <view wx:elif="{{ item.status === 100 }}" class="routine_card_btn">去完成</view>
           </view>
           <image
             wx:if="{{ item.style === 'done' }}"

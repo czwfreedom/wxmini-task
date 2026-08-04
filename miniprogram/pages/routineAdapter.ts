@@ -59,12 +59,13 @@ export class RoutineAdapter {
         }
       }
 
+      const detail = `${config.name} · ${DateUtils.formatDate(info.planTime || Date.now(), 'hh:mm')}开始 · ${Math.floor(info.duration || 1800000) / 60000}分钟`;
+
       const record: RoutineUI.Record = {
         id: info.id,
-        name: info.name,
-        detail: info.detail,
+        name: info.detail,
+        detail: detail,
         category: info.category,
-        categoryName: config.name,
         color: config.color || '#f4b942',
         icon: config.icon || '/assets/imgs/ic-reading.svg',
         status: info.status,

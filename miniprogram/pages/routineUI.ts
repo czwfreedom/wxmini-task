@@ -37,8 +37,6 @@ export namespace RoutineUI {
     detail: string;
     /** 任务分类 */
     category: number;
-    /** 分类展示名 */
-    categoryName: string;
     /** 分类颜色 */
     color: string;
     /** 分类图标路径 */
@@ -169,6 +167,6 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
   /** 添加新任务 */
   protected onAddTap() {
     Logger.info('onAddTap');
-    wx.navigateTo({ url: '/pages/createRoutine' });
+    Intent.navigateTo(Constants.Page.CreateRoutine);
   }
 }

@@ -3,6 +3,7 @@ import { Err } from '../constant/error';
 import { Context } from '../core/context';
 import { Network } from '../core/network';
 import { Entity } from '../model/entity';
+import { DateUtils } from '../utils/dateUtils';
 import { Logger } from '../utils/logger';
 import { Utils } from '../utils/utils';
 
@@ -100,13 +101,17 @@ export namespace Routine {
       const now = Date.now();
       const uid = Context.getUserId();
       const tx = () => Utils.shortUuid();
+      const mills = DateUtils.getStartMillisOfDay(now);
       sMockItems = [
         {
           id: '1',
-          name: '《三体》第3章',
-          detail: '约30分钟',
+          name: '',
+          detail:
+            '《三体》第3章《三体》第3章《三体》第3章《三体》第3章《三体》第3章《三体》第3章《三体》第3章《三体》第3章《三体》第3章《三体》第3章',
           status: Status.Working,
           category: Category.Reading,
+          duration: 30 * 60000,
+          planTime: mills + 8 * 3600000,
           userId: uid,
           date,
           transaction: tx(),
@@ -114,10 +119,12 @@ export namespace Routine {
         },
         {
           id: '2',
-          name: '数学练习册 P20-25',
-          detail: '约30分钟',
+          name: '',
+          detail: '数学练习册 P20-25',
           status: Status.Working,
           category: Category.Homework,
+          duration: 30 * 60000,
+          planTime: mills + 9 * 3600000,
           userId: uid,
           date,
           transaction: tx(),
@@ -125,21 +132,12 @@ export namespace Routine {
         },
         {
           id: '3',
-          name: '跳绳500个',
-          detail: '约15分钟',
+          name: '',
+          detail: '跳绳500个',
           status: Status.Working,
           category: Category.Exercise,
-          userId: uid,
-          date,
-          transaction: tx(),
-          createTime: now,
-        },
-        {
-          id: '4',
-          name: 'Minecraft 建造城堡',
-          detail: '约30分钟',
-          status: Status.Working,
-          category: Category.Game,
+          duration: 30 * 60000,
+          planTime: mills + 10 * 3600000,
           userId: uid,
           date,
           transaction: tx(),
@@ -147,28 +145,19 @@ export namespace Routine {
         },
         {
           id: '5',
-          name: '描红《静夜思》',
-          detail: '约15分钟',
+          name: '',
+          detail: '描红《静夜思》',
           status: Status.Done,
           category: Category.Handwriting,
+          duration: 30 * 60000,
+          planTime: mills + 10 * 3600000,
           userId: uid,
           date,
           transaction: tx(),
           createTime: now,
           finishTime: now,
-          remark: '笔画比昨天平整，心也静下来了',
-        },
-        {
-          id: '6',
-          name: 'Scratch 发射子弹',
-          detail: '约45分钟',
-          status: Status.Done,
-          category: Category.Coding,
-          userId: uid,
-          date,
-          transaction: tx(),
-          createTime: now,
-          finishTime: now,
+          remark:
+            '笔画比昨天平整，心也静下来了，笔画比昨天平整，心也静下来了笔画比昨天平整，心也静下来了笔画比昨天平整，心也静下来了笔画比昨天平整，心也静下来了笔画比昨天平整，心也静下来了',
         },
       ];
     }
@@ -179,8 +168,7 @@ export namespace Routine {
    * 获取指定日期的任务列表
    */
   export async function list(date: number, userId?: string): Promise<number | Info[]> {
-    // if (sMock) return getMockItems(date);
-    if (sMock) return [];
+    if (sMock) return getMockItems(date);
     const res = await Network.post<Info[]>(Api.ListRoutine, { date, userId });
     if (res?.errcode !== 0) {
       Logger.warn('List routine failed', res);
