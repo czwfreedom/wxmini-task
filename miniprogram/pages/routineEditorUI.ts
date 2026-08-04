@@ -13,6 +13,8 @@ import { Intent } from '../core/intent';
 
 export namespace RoutineEditorUI {
   export interface Data extends SubUI.Data {
+    finishing?: boolean;
+
     choices: ChoicesUI.Data;
     /** 当前选中分类 ID */
     selectedCategoryId: number;
@@ -20,6 +22,9 @@ export namespace RoutineEditorUI {
     categories: Category[];
 
     /** 任务内容 */
+    contentHint?: string;
+    contentHolder?: string;
+    
     contentText: string;
     contentMaxLength: number;
     contentCharCount: number;
@@ -56,7 +61,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
   private adapter = new RoutineEditorAdapter();
   protected entry?: Partial<Routine.Info>;
 
-  public static readonly sContentMaxLength = 100;
+  public static readonly sContentMaxLength = 64;
 
   public constructor(component: any, intent?: Partial<Routine.Info>) {
     super(component);

@@ -164,6 +164,10 @@ export namespace Routine {
     return sMockItems;
   }
 
+  export function isDone(info?: Info): boolean {
+    return info?.status === Status.Done;
+  }
+
   /**
    * 获取指定日期的任务列表
    */

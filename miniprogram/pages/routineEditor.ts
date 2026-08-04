@@ -1,5 +1,8 @@
 import { Intent } from '../core/intent';
+import { Entity } from '../model/entity';
+import { Routine } from '../server/routine';
 import { RoutineEditorUI } from './routineEditorUI';
+import { RoutineReaperUI } from './routineReaperUI';
 
 Page({
   data: {
@@ -9,8 +12,13 @@ Page({
   ui: undefined as RoutineEditorUI | undefined,
 
   onLoad() {
-    this.ui = new RoutineEditorUI(this, Intent.get());
-    this.ui.loadData();
+    const intent = Intent.get() as Intent.Wrap<Partial<Routine.Info>>;
+    if (intent?.type === Entity.Action.Finish) {
+      this.ui = new RoutineReaperUI(this, intent?.data);
+    } else {
+      this.ui = new RoutineEditorUI(this, intent?.data);
+    }
+    this.ui?.loadData();
   },
 
   onUnload() {

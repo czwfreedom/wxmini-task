@@ -19,6 +19,11 @@ export namespace Intent {
     code: string;
   }
 
+  export interface Wrap<T> {
+    type: string;
+    data: T;
+  }
+
   export function navigateTo(target: string, params?: any) {
     !!params && put(params);
     wx.navigateTo({ url: target });

@@ -32,6 +32,10 @@ export namespace WxUtils {
     return index >= 0 ? v.substring(index + 1) : v;
   }
 
+  export function setNavTitle(v: string) {
+    wx.setNavigationBarTitle({ title: v });
+  }
+
   export async function alert(opt: WechatMiniprogram.ShowModalOption) {
     return new Promise((resolve, reject) => {
       wx.showModal({

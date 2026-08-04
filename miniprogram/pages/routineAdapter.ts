@@ -138,6 +138,7 @@ export namespace RoutineAdapter {
     default?: boolean;
     /** 各分类的快捷示例提示词 */
     examples?: string[];
+    finish?: string;
   }
 
   /** 所有分类统一配置：分类枚举、颜色、图标、是否默认、示例提示词 */
@@ -150,6 +151,7 @@ export namespace RoutineAdapter {
       icon: '/assets/imgs/ic-reading.svg',
       default: true,
       examples: ['《三体》第3章', '英语绘本朗读', '读书笔记一页'],
+      finish: '哪一句印象最深刻？',
     },
     {
       category: Routine.Category.Homework,

@@ -158,9 +158,17 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
     const info = this.adapter.getInfo(id);
     if (vm && !info) {
       if (id.startsWith('holder')) {
-        Intent.navigateTo(Constants.Page.CreateRoutine, { category: vm.category });
+        Intent.navigateTo(Constants.Page.CreateRoutine, {
+          data: { category: vm.category },
+        } as Intent.Wrap<Partial<Routine.Info>>);
       }
-    } else {
+    } else if (info) {
+      if (this.getData().updateable && !Routine.isDone(info)) {
+        Intent.navigateTo(Constants.Page.CreateRoutine, {
+          type: Entity.Action.Finish,
+          data: info,
+        } as Intent.Wrap<Routine.Info>);
+      }
     }
   }
 

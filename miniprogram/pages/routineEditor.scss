@@ -126,6 +126,15 @@
       color: $gray-99;
       font-weight: 500;
     }
+
+    &_hint {
+      font-size: 34rpx;
+      color: $gray-33;
+      text-align: left;
+      word-wrap: break-word;
+      white-space: normal;
+      margin: 0 0 28rpx 0;
+    }
   }
 
   // ===== 示例提示词 =====
@@ -204,7 +213,6 @@
         color: $gray-33;
         text-align: center;
         min-width: 40rpx;
-        max-width: 120rpx;
       }
 
       &_unit {

@@ -19,6 +19,13 @@ export namespace Entity {
     deleted?: boolean | number; // 是否已删除。
   }
 
+  export const enum Action {
+    Create = 'create',
+    Update = 'update',
+    Delete = 'delete',
+    Finish = 'finish',
+  }
+
   /**
    * 因为这个可能用于 data，定义的函数可能无法通过setData/组件传递
    */
