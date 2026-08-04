@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>底部 Tab + 我的页面 + 分享入口 - 交互设计稿</title>
+<title>底部 Tab + 我的页面 + 任务分享 - 交互设计稿</title>
 <style>
 /* ========== Reset & Base ========== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -57,7 +57,7 @@ body {
 
 /* ========== Page Container ========== */
 .page {
-  height: calc(100% - 44px - 60px); /* 减状态栏 + tabBar */
+  height: calc(100% - 44px - 60px);
   overflow-y: auto;
   background: linear-gradient(180deg, #B8DAF5 0%, #F2F5F8 30%);
   padding: 0 20px 20px;
@@ -65,7 +65,7 @@ body {
 }
 .page::-webkit-scrollbar { width: 0; }
 
-/* ========== Hero（复用） ========== */
+/* ========== Hero ========== */
 .hero {
   background: linear-gradient(160deg, #B5D9F8 0%, #A0CDF5 50%, #C5E3FA 100%);
   border-radius: 0 0 32px 32px;
@@ -133,7 +133,7 @@ body {
   background: #F4B942; border-radius: 2px;
 }
 
-/* ========== Task Cards（复用） ========== */
+/* ========== Task Cards ========== */
 .card-list { display: flex; flex-direction: column; gap: 14px; }
 .task-card {
   position: relative;
@@ -231,9 +231,6 @@ body {
   display: flex; align-items: center; justify-content: center;
   font-size: 18px;
 }
-.tab-icon svg { display: block; }
-
-/* 中央 + 按钮（创建任务） */
 .tab-add {
   width: 48px; height: 48px;
   border-radius: 50%;
@@ -243,7 +240,6 @@ body {
   margin-top: -18px;
   cursor: pointer;
 }
-.tab-add svg { display: block; }
 
 /* ========== 「我的」页面 ========== */
 .mine-header {
@@ -315,7 +311,192 @@ body {
 }
 .menu-chevron { font-size: 18px; color: #C5C5C5; font-weight: 700; }
 
-/* ========== 交互规则说明卡 ========== */
+/* ========== 伙伴页 ========== */
+.partner-header {
+  margin: 0 -20px 20px;
+  padding: 16px 20px 0;
+  background: linear-gradient(180deg, #B8DAF5, rgba(184,218,245,0));
+}
+.partner-title {
+  font-size: 22px; font-weight: 800; color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  margin-top: 8px;
+}
+.partner-tabs {
+  display: flex; gap: 10px;
+  margin-top: 16px;
+}
+.partner-tab {
+  flex: 1;
+  text-align: center;
+  font-size: 14px; font-weight: 600;
+  color: rgba(255,255,255,0.75);
+  padding: 10px 0;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.25);
+}
+.partner-tab.active {
+  color: #3A5A8C;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(58,90,140,0.12);
+}
+.partner-tab .count {
+  font-size: 11px; font-weight: 700;
+  background: #F4B942; color: #fff;
+  border-radius: 10px; padding: 1px 8px;
+  margin-left: 4px;
+}
+.partner-list { display: flex; flex-direction: column; gap: 12px; }
+.partner-row-wrap { position: relative; overflow: hidden; border-radius: 20px; }
+.partner-row {
+  background: #FDFBF7;
+  border-radius: 20px;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.03), 0 8px 24px rgba(74,144,226,0.06);
+  position: relative;
+  transition: transform .2s;
+}
+.partner-avatar {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.partner-avatar.c1 { background: linear-gradient(135deg, #64B5F6, #42A5F5); }
+.partner-avatar.c2 { background: linear-gradient(135deg, #F06292, #EC407A); }
+.partner-avatar.c3 { background: linear-gradient(135deg, #81C784, #66BB6A); }
+.partner-avatar.c4 { background: linear-gradient(135deg, #BA68C8, #AB47BC); }
+.partner-info { flex: 1; min-width: 0; }
+.partner-name { font-size: 16px; font-weight: 700; color: #333; }
+.partner-sub { font-size: 11px; color: #999; margin-top: 3px; }
+.partner-sub .hl { color: #6B9A5E; font-weight: 600; }
+.partner-chevron { font-size: 20px; color: #C5C5C5; font-weight: 700; }
+.partner-row-wrap { position: relative; overflow: hidden; border-radius: 20px; }
+
+/* 删除按钮：两个 tab 统一使用右侧 inline 移出按钮（不用左滑） */
+.partner-remove {
+  font-size: 12px; font-weight: 600; color: #EF5350;
+  background: rgba(239,83,80,0.08);
+  border: 1px solid rgba(239,83,80,0.25);
+  padding: 6px 14px; border-radius: 16px;
+  flex-shrink: 0;
+}
+
+/* 固定底部分享按钮 */
+.partner-share-btn {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  margin: 0 20px;
+  margin-bottom: calc(16px + env(safe-area-inset-bottom));
+  background: linear-gradient(135deg, #F4B942, #FFD54F);
+  border-radius: 999px;
+  padding: 14px;
+  text-align: center;
+  font-size: 15px; font-weight: 700; color: #fff;
+  letter-spacing: 2px;
+  box-shadow: 0 8px 24px rgba(244,185,66,0.35);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  z-index: 10;
+}
+
+/* ========== 微信分享卡片图文（450×360 固定内容） ========== */
+.share-img-demo {
+  width: 450px;
+  height: 360px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  display: flex; flex-direction: column;
+}
+/* 三版底色 */
+.share-img-demo.v1 { background: linear-gradient(160deg, #B5D9F8 0%, #A0CDF5 50%, #C5E3FA 100%); }
+.share-img-demo.v2 { background: linear-gradient(160deg, #FFE0B2 0%, #FFCC80 50%, #FFECB3 100%); }
+.share-img-demo.v3 { background: linear-gradient(160deg, #C8E6C9 0%, #A5D6A7 50%, #C8E6C9 100%); }
+.share-img-top {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 36px 48px 0;
+  position: relative;
+}
+.share-img-logo {
+  width: 64px; height: 64px;
+  position: absolute;
+  top: 24px; right: 36px;
+  opacity: 0.4;
+}
+.share-img-icon-big {
+  width: 72px; height: 72px;
+  margin-bottom: 14px;
+}
+.share-img-title {
+  font-size: 24px; font-weight: 800; color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  text-align: center; line-height: 1.4;
+}
+.share-img-subtitle {
+  font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.85);
+  margin-top: 10px; text-align: center; line-height: 1.6;
+  max-width: 320px;
+}
+/* 底部品牌条 */
+.share-img-bottom {
+  height: 54px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 15px; font-weight: 600; color: #3A5A8C;
+}
+.share-img-bottom.v2 { color: #8B6914; }
+.share-img-bottom.v3 { color: #2E7D32; }
+
+/* ========== 头像昵称设置引导弹窗 ========== */
+.profile-dialog {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 20;
+  display: flex; align-items: center; justify-content: center;
+}
+.profile-card {
+  width: 300px;
+  background: #FBFCFE;
+  border-radius: 24px;
+  padding: 28px 24px;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+}
+.profile-card-icon {
+  width: 64px; height: 64px; margin: 0 auto 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
+}
+.profile-card-title {
+  font-size: 17px; font-weight: 700; color: #333; margin-bottom: 4px;
+}
+.profile-card-sub {
+  font-size: 12px; color: #999; margin-bottom: 20px; line-height: 1.6;
+}
+.profile-btn {
+  display: block;
+  background: linear-gradient(135deg, #F4B942, #FFD54F);
+  border-radius: 999px;
+  padding: 14px;
+  font-size: 16px; font-weight: 700; color: #fff;
+  letter-spacing: 1px;
+  box-shadow: 0 6px 20px rgba(244,185,66,0.3);
+  margin-bottom: 10px;
+}
+.profile-skip {
+  font-size: 13px; color: #C5C5C5;
+}
+
+/* ========== 规则说明卡 ========== */
 .spec-card {
   width: 340px;
   background: #fff;
@@ -350,13 +531,14 @@ body {
 }
 .spec-item .demo-tag.gray { background: #EEF0F4; color: #999; }
 .spec-item .demo-tag.blue { background: #E3F2FD; color: #3A5A8C; }
+.spec-item .demo-tag.red { background: #FFEBEE; color: #D84035; }
 </style>
 </head>
 <body>
 
-<!-- ================= 框 A：任务页（tab 1）+ 底部 TabBar ================= -->
+<!-- ================= 框 A：任务页 ================= -->
 <div class="frame-col">
-  <div class="frame-label">A · 任务页<small>tab「任务」· 添加虚线卡替换为分享入口卡 · 仅今天态显示</small></div>
+  <div class="frame-label">A · 任务页<small>tab「任务」· 底部分享入口卡 · 历史态不显示分享卡</small></div>
   <div class="phone">
     <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
     <div class="page">
@@ -406,14 +588,14 @@ body {
         </div>
       </div>
 
-      <!-- 分享入口卡（替换原"添加更多"虚线卡） -->
+      <!-- 分享入口卡（仅今天态显示） -->
       <div class="share-entry">
         <div class="share-entry-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="6" cy="12" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="18" cy="19" r="2.5" stroke="#fff" stroke-width="1.8"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
         </div>
         <div class="share-entry-body">
-          <div class="share-entry-title">分享我的任务卡片</div>
-          <div class="share-entry-sub">邀请伙伴围观，互相激励一起坚持</div>
+          <div class="share-entry-title">邀请伙伴围观我的任务</div>
+          <div class="share-entry-sub">分享到微信群，互相激励一起坚持</div>
         </div>
         <div class="share-entry-arrow">›</div>
       </div>
@@ -443,7 +625,7 @@ body {
 
 <!-- ================= 框 B：「我的」页面 ================= -->
 <div class="frame-col">
-  <div class="frame-label">B · 「我的」页面<small>头像+昵称+累计统计 · 任务伙伴带角标入口 · 其他设置</small></div>
+  <div class="frame-label">B · 「我的」页面<small>头像+昵称+累计统计 · 任务伙伴带角标入口</small></div>
   <div class="phone">
     <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
     <div class="page">
@@ -472,7 +654,6 @@ body {
       </div>
 
       <div class="menu-card">
-        <!-- 任务伙伴入口 -->
         <div class="menu-row" style="cursor:pointer;">
           <div class="menu-row-icon" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#F4B942" stroke-width="1.8"/><circle cx="6" cy="12" r="2.5" stroke="#F4B942" stroke-width="1.8"/><circle cx="18" cy="19" r="2.5" stroke="#F4B942" stroke-width="1.8"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2" stroke="#F4B942" stroke-width="1.8" stroke-linecap="round"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8" stroke="#F4B942" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -487,10 +668,9 @@ body {
           </div>
         </div>
 
-        <!-- 其他设置项 -->
         <div class="menu-row">
           <div class="menu-row-icon" style="background:#E3F2FD;">
-            <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="#64B5F6"/><path d="M12 2 V4 M12 20 V22 M2 12 H4 M20 12 H22" stroke="#64B5F6" stroke-width="1.8" stroke-linecap="round"/><path d="M4.9 4.9 L6.3 6.3 M17.7 17.7 L19.1 19.1 M4.9 19.1 L6.3 17.7 M17.7 6.3 L19.1 4.9" stroke="#90CAF9" stroke-width="1.2" stroke-linecap="round"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="#64B5F6"/><path d="M12 2 V4 M12 20 V22 M2 12 H4 M20 12 H22" stroke="#64B5F6" stroke-width="1.8" stroke-linecap="round"/></svg>
           </div>
           <div class="menu-row-body">
             <div class="menu-row-title">每日提醒</div>
@@ -513,7 +693,6 @@ body {
 
     </div>
 
-    <!-- 底部 TabBar -->
     <div class="tabbar">
       <div class="tab-item">
         <div class="tab-icon">
@@ -534,46 +713,193 @@ body {
   </div>
 </div>
 
-<!-- ================= 框 C：伙伴页（复用原 share 设计） ================= -->
+<!-- ================= 框 C：伙伴页「谁能看我」+ 固定分享按钮 ================= -->
 <div class="frame-col">
-  <div class="frame-label">C · 伙伴页<small>从「我的」→「任务伙伴」进入 · 双 Tab + 固定底部分享按钮</small></div>
+  <div class="frame-label">C · 伙伴页「谁能看我」<small>底部固定分享按钮 · 列表可删除 · 左滑或点击移出</small></div>
   <div class="phone">
     <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
     <div class="page" style="height:calc(100% - 44px);">
 
-      <div style="margin:0 -20px 20px; padding:16px 20px 0; background:linear-gradient(180deg,#B8DAF5,rgba(184,218,245,0));">
-        <div style="font-size:22px;font-weight:800;color:#fff;margin-top:8px;">任务伙伴</div>
-        <div style="display:flex;gap:10px;margin-top:16px;">
-          <div style="flex:1;text-align:center;font-size:14px;font-weight:600;color:#3A5A8C;background:#fff;padding:10px 0;border-radius:16px;box-shadow:0 4px 12px rgba(58,90,140,0.12);">我能看谁 <span style="font-size:11px;background:#F4B942;color:#fff;border-radius:10px;padding:1px 8px;margin-left:4px;">2</span></div>
-          <div style="flex:1;text-align:center;font-size:14px;font-weight:600;color:rgba(255,255,255,0.75);background:rgba(255,255,255,0.25);padding:10px 0;border-radius:16px;">谁能看我 <span style="font-size:11px;background:#F4B942;color:#fff;border-radius:10px;padding:1px 8px;margin-left:4px;">3</span></div>
+      <div class="partner-header">
+        <div class="partner-title">任务伙伴</div>
+        <div class="partner-tabs">
+          <div class="partner-tab">我能看谁<span class="count">2</span></div>
+          <div class="partner-tab active">谁能看我<span class="count">3</span></div>
         </div>
       </div>
 
-      <!-- 伙伴列表 -->
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <div style="background:#FDFBF7;border-radius:20px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 0 rgba(0,0,0,0.03),0 8px 24px rgba(74,144,226,0.06);">
-          <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#64B5F6,#42A5F5);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;">明</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:16px;font-weight:700;color:#333;">小明</div>
-            <div style="font-size:11px;color:#999;margin-top:3px;">今日已完成 <span style="color:#6B9A5E;font-weight:600;">2/3</span> · 点击可围观</div>
+      <div class="partner-list">
+        <div class="partner-row-wrap">
+          <div class="partner-row">
+            <div class="partner-avatar c4">雨</div>
+            <div class="partner-info">
+              <div class="partner-name">小雨妈妈</div>
+              <div class="partner-sub">通过你的分享加入 · 3天前</div>
+            </div>
+            <div class="partner-remove">移出</div>
           </div>
-          <div style="font-size:20px;color:#C5C5C5;font-weight:700;">›</div>
         </div>
 
-        <div style="background:#FDFBF7;border-radius:20px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 0 rgba(0,0,0,0.03),0 8px 24px rgba(74,144,226,0.06);">
-          <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#F06292,#EC407A);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;">芳</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:16px;font-weight:700;color:#333;">芳芳</div>
-            <div style="font-size:11px;color:#999;margin-top:3px;">今日已完成 <span style="color:#6B9A5E;font-weight:600;">4/4</span> · 点击可围观</div>
+        <div class="partner-row-wrap">
+          <div class="partner-row">
+            <div class="partner-avatar c1">睿</div>
+            <div class="partner-info">
+              <div class="partner-name">睿睿</div>
+              <div class="partner-sub">通过你的分享加入 · 上周</div>
+            </div>
+            <div class="partner-remove">移出</div>
           </div>
-          <div style="font-size:20px;color:#C5C5C5;font-weight:700;">›</div>
+        </div>
+
+        <div class="partner-row-wrap">
+          <div class="partner-row">
+            <div class="partner-avatar c3">爷</div>
+            <div class="partner-info">
+              <div class="partner-name">爷爷</div>
+              <div class="partner-sub">通过你的分享加入 · 2周前</div>
+            </div>
+            <div class="partner-remove">移出</div>
+          </div>
+        </div>
+
+        <div style="height:90px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 框 D：「我能看谁」列表 ================= -->
+<div class="frame-col">
+  <div class="frame-label">D · 伙伴页「我能看谁」<small>右侧移出按钮（与谁能看我一致）· 底部固定分享按钮</small></div>
+  <div class="phone">
+    <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
+    <div class="page" style="height:calc(100% - 44px);">
+
+      <div class="partner-header">
+        <div class="partner-title">任务伙伴</div>
+        <div class="partner-tabs">
+          <div class="partner-tab active">我能看谁<span class="count">2</span></div>
+          <div class="partner-tab">谁能看我<span class="count">3</span></div>
         </div>
       </div>
 
-      <!-- 固定底部分享按钮 -->
-      <div style="position:fixed;bottom:0;left:0;right:0;margin:0 20px;margin-bottom:calc(16px + env(safe-area-inset-bottom));background:linear-gradient(135deg,#F4B942,#FFD54F);border-radius:999px;padding:14px;text-align:center;font-size:15px;font-weight:700;color:#fff;letter-spacing:2px;box-shadow:0 8px 24px rgba(244,185,66,0.35);display:flex;align-items:center;justify-content:center;gap:10px;z-index:10;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="6" cy="12" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="18" cy="19" r="2.5" stroke="#fff" stroke-width="1.8"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
-        分享我的任务卡片
+      <div class="partner-list">
+        <div class="partner-row-wrap">
+          <div class="partner-row">
+            <div class="partner-avatar c1">明</div>
+            <div class="partner-info">
+              <div class="partner-name">小明</div>
+              <div class="partner-sub">今日已完成 <span class="hl">2/3</span> · 点击可围观</div>
+            </div>
+            <div class="partner-remove">移出</div>
+          </div>
+        </div>
+
+        <div class="partner-row-wrap">
+          <div class="partner-row">
+            <div class="partner-avatar c2">芳</div>
+            <div class="partner-info">
+              <div class="partner-name">芳芳</div>
+              <div class="partner-sub">今日已完成 <span class="hl">4/4</span> · 点击可围观</div>
+            </div>
+            <div class="partner-remove">移出</div>
+          </div>
+        </div>
+
+        <div style="height:90px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 框 E：微信分享卡片 3 版固定内容（450×360） ================= -->
+<div class="frame-col">
+  <div class="frame-label">E · 分享卡片 · 版本 1<small>晴空蓝 · 一起坚持，共同进步</small></div>
+  <div class="share-img-demo v1">
+    <div class="share-img-top">
+      <svg class="share-img-logo" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#fff" opacity="0.55"/><polygon points="22,35 34,35 28,44" fill="#fff" opacity="0.45"/><rect x="21" y="0" width="14" height="3" rx="1" fill="#fff" opacity="0.55"/><rect x="21" y="-3" width="14" height="4" rx="1.5" fill="#fff" opacity="0.45"/><circle cx="28" cy="22" r="9" fill="#fff" opacity="0.3"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.2"/></svg>
+      <svg class="share-img-icon-big" viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><circle cx="26" cy="30" r="10" fill="rgba(255,255,255,0.7)" stroke="#fff" stroke-width="1.5"/><circle cx="46" cy="30" r="10" fill="rgba(255,255,255,0.7)" stroke="#fff" stroke-width="1.5"/><path d="M26 40 Q36 52 46 40" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <div class="share-img-title">一起坚持<br>共同进步</div>
+      <div class="share-img-subtitle">来看看我今天的任务<br>互相激励，每一步都算数</div>
+    </div>
+    <div class="share-img-bottom">
+      <svg width="18" height="18" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#F4B942"/><polygon points="22,35 34,35 28,44" fill="#FFE0B2"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.6"/></svg>
+      任务小助手 · 点击查看我的任务
+    </div>
+  </div>
+</div>
+
+<div class="frame-col">
+  <div class="frame-label">E · 分享卡片 · 版本 2<small>暖阳金 · 成长的路上，有伙伴同行</small></div>
+  <div class="share-img-demo v2">
+    <div class="share-img-top">
+      <svg class="share-img-logo" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#fff" opacity="0.55"/><polygon points="22,35 34,35 28,44" fill="#fff" opacity="0.45"/><rect x="21" y="0" width="14" height="3" rx="1" fill="#fff" opacity="0.55"/><rect x="21" y="-3" width="14" height="4" rx="1.5" fill="#fff" opacity="0.45"/><circle cx="28" cy="22" r="9" fill="#fff" opacity="0.3"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.2"/></svg>
+      <svg class="share-img-icon-big" viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><circle cx="36" cy="36" r="14" fill="rgba(255,255,255,0.7)" stroke="#fff" stroke-width="2"/><polygon points="36,26 39,32 45,33 41,38 42,44 36,41 30,44 31,38 27,33 33,32" fill="#FFD54F" stroke="#F4B942" stroke-width="1"/></svg>
+      <div class="share-img-title">成长的路上<br>有伙伴同行</div>
+      <div class="share-img-subtitle">分享我的任务，一起见证<br>每一天的坚持与进步</div>
+    </div>
+    <div class="share-img-bottom v2">
+      <svg width="18" height="18" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#F4B942"/><polygon points="22,35 34,35 28,44" fill="#FFE0B2"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.6"/></svg>
+      任务小助手 · 点击查看我的任务
+    </div>
+  </div>
+</div>
+
+<div class="frame-col">
+  <div class="frame-label">E · 分享卡片 · 版本 3<small>新芽绿 · 让努力被看见，让成长有回响</small></div>
+  <div class="share-img-demo v3">
+    <div class="share-img-top">
+      <svg class="share-img-logo" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#fff" opacity="0.55"/><polygon points="22,35 34,35 28,44" fill="#fff" opacity="0.45"/><rect x="21" y="0" width="14" height="3" rx="1" fill="#fff" opacity="0.55"/><rect x="21" y="-3" width="14" height="4" rx="1.5" fill="#fff" opacity="0.45"/><circle cx="28" cy="22" r="9" fill="#fff" opacity="0.3"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.2"/></svg>
+      <svg class="share-img-icon-big" viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><line x1="36" y1="16" x2="36" y2="48" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line x1="36" y1="30" x2="24" y2="38" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="36" y1="26" x2="48" y2="34" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="36" y1="36" x2="24" y2="44" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="48" r="3" fill="#fff"/></svg>
+      <div class="share-img-title">让努力被看见<br>让成长有回响</div>
+      <div class="share-img-subtitle">围观我的任务打卡<br>一起用行动说话</div>
+    </div>
+    <div class="share-img-bottom v3">
+      <svg width="18" height="18" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#F4B942"/><polygon points="22,35 34,35 28,44" fill="#FFE0B2"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.6"/></svg>
+      任务小助手 · 点击查看我的任务
+    </div>
+  </div>
+</div>
+
+<!-- ================= 框 F：头像昵称设置引导 ================= -->
+<div class="frame-col">
+  <div class="frame-label">F · 分享前检查<small>无头像昵称时弹出引导 · button open-type="getUserInfo"</small></div>
+  <div class="phone">
+    <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
+    <div class="page">
+
+      <div class="hero">
+        <div class="hero-date-nav">
+          <div class="date-arrow">‹</div>
+          <div class="hero-date-center">
+            <div class="hero-date-label">今天是</div>
+            <div class="hero-date-main">8月4日 周二</div>
+          </div>
+          <div class="date-arrow disabled">›</div>
+        </div>
+        <div class="hero-motto">✦ 苟日新，日日新，又日新</div>
+        <div class="hero-status-bar">
+          <div class="hero-status-item"><span class="hero-status-dot planned"></span>已规划 3</div>
+          <div class="hero-status-item"><span class="hero-status-dot done"></span>已完成 2</div>
+        </div>
+      </div>
+
+      <div style="opacity:0.25;">
+        <div class="section-title">当日任务</div>
+        <div class="card-list">
+          <div class="task-card"><div class="card-accent" style="background:#FFB74D;"></div><div class="card-body" style="padding-left:20px;"><div class="card-title">《三体》第3章</div></div></div>
+        </div>
+      </div>
+
+      <!-- 头像昵称设置弹窗 -->
+      <div class="profile-dialog">
+        <div class="profile-card">
+          <div class="profile-card-icon">👤</div>
+          <div class="profile-card-title">完善你的信息</div>
+          <div class="profile-card-sub">伙伴列表需要你的头像和昵称，<br>让伙伴们更容易认出你</div>
+          <div class="profile-btn">使用微信头像昵称</div>
+          <div class="profile-skip">暂不设置</div>
+        </div>
       </div>
     </div>
   </div>
@@ -585,36 +911,40 @@ body {
 
   <div class="spec-card">
     <h3>底部 TabBar 结构</h3>
-    <div class="spec-item"><span class="num">1</span><div>三元素：<b>任务</b>（当前页） | <b>+</b>（中央突出按钮，跳转创建任务页） | <b>我的</b>（个人中心）。</div></div>
-    <div class="spec-item"><span class="num">2</span><div>tabBar 高度 60px，半透明白底毛玻璃效果；中央 + 按钮圆形金色突出，margin-top 负值悬浮。</div></div>
-    <div class="spec-item"><span class="num">3</span><div>创建任务页（createRoutine）由 + 按钮 navigateTo 打开，非 tab 页，返回后回到原 tab。</div></div>
+    <div class="spec-item"><span class="num">1</span><div>三元素：<b>任务</b>（当前页） | <b>+</b>（中央突出按钮，跳转创建任务页） | <b>我的</b>（个人中心）。tabBar 高度 60px，半透明白底毛玻璃。</div></div>
+    <div class="spec-item"><span class="num">2</span><div>创建任务页（createRoutine）由 + 按钮 navigateTo 打开，非 tab 页，返回后回到原 tab。</div></div>
   </div>
 
   <div class="spec-card">
-    <h3>任务页改动（框 A）</h3>
-    <div class="spec-item"><span class="num">4</span><div>移除底部「添加更多」虚线卡，<b>改为分享入口卡</b>（金色暖调，仅今天态显示）。分享卡片内容与之前一致。</div></div>
-    <div class="spec-item"><span class="num">5</span><div>浮动按钮（logo 圆形）改为 + 按钮 → tabBar 中央，创建任务走 tabBar + 入口。</div></div>
-    <div class="spec-item"><span class="num">6</span><div>历史态：分享卡不显示，浮动按钮/添加卡均不显示，与现有逻辑一致。</div></div>
+    <h3>任务页改动</h3>
+    <div class="spec-item"><span class="num">3</span><div>移除底部「添加更多」虚线卡，<b>改为分享入口卡</b>（金色暖调，仅今天态显示）。分享前触发头像昵称检查。</div></div>
+    <div class="spec-item"><span class="num">4</span><div>移除底部浮动 logo 圆形按钮，创建任务走 tabBar 中央 + 入口。</div></div>
   </div>
 
   <div class="spec-card">
-    <h3>「我的」页面（框 B）</h3>
-    <div class="spec-item"><span class="num">7</span><div>顶部：微信头像 + 昵称 + 累计统计（累计任务数/累计完成数/连续天数），数据来自服务器。</div></div>
-    <div class="spec-item"><span class="num">8</span><div><b>任务伙伴</b>入口：菜单首行，带金色数字角标（伙伴总数）。点击进入伙伴页。</div></div>
-    <div class="spec-item"><span class="num">9</span><div>其他菜单项预留：每日提醒、关于，先做占位，后续迭代。</div></div>
+    <h3>「我的」页面</h3>
+    <div class="spec-item"><span class="num">5</span><div>顶部：微信头像 + 昵称 + 累计统计（累计任务数/累计完成数/连续天数）。</div></div>
+    <div class="spec-item"><span class="num">6</span><div><b>任务伙伴</b>入口：菜单首行，带金色数字角标（伙伴总数）。点击进入伙伴页。</div></div>
   </div>
 
   <div class="spec-card">
-    <h3>分享链路</h3>
-    <div class="spec-item"><span class="num">10</span><div>分享卡位于任务页列表底部（仅今天态），内容与之前一致。button open-type="share" 触发微信分享。</div></div>
-    <div class="spec-item"><span class="num">11</span><div>伙伴页底部固定「分享我的任务卡片」按钮，点击同样触发微信分享。</div></div>
-    <div class="spec-item"><span class="num">12</span><div>对方点卡 → 登记关系 → 弹窗「现在你可以看到 XX 的任务了」→ 落地 TA 的任务页（只读）。</div></div>
+    <h3>头像昵称获取</h3>
+    <div class="spec-item"><span class="num">7</span><div>分享前检查本地是否已存头像和昵称。若未设置，弹出引导弹窗（框 F），使用 <b>button open-type="getUserInfo"</b> 获取微信头像昵称，存入本地存储。</div></div>
+    <div class="spec-item"><span class="num">8</span><div>「我的」页面也提供头像昵称修改入口（点击头像区域），同样走 getUserInfo。</div></div>
+    <div class="spec-item"><span class="num">9</span><div>伙伴列表统一展示对方真实的微信头像昵称，不存在自定义备注。</div></div>
   </div>
 
   <div class="spec-card">
-    <h3>伙伴页 & TA 任务页</h3>
-    <div class="spec-item"><span class="num">13</span><div>伙伴页：双 Tab + 固定底部分享按钮，交互与之前设计稿一致（点击围观/左滑移出/移出确认）。</div></div>
-    <div class="spec-item"><span class="num">14</span><div>TA 任务页：全页只读，与之前设计稿一致。</div></div>
+    <h3>微信分享卡片</h3>
+    <div class="spec-item"><span class="num">10</span><div>分享卡片为<b>图文形式 · 固定内容</b>：图片固定 450×360 比例，不包含动态数据，3 版可选（框 E：晴空蓝「一起坚持」/ 暖阳金「伙伴同行」/ 新芽绿「努力被看见」），表达「共享信息、相互激励、共同进步」之意。</div></div>
+    <div class="spec-item"><span class="num">11</span><div>图片由 Canvas 绘制生成临时文件作为 imageUrl；分享标题固定为「任务小助手 · 点击查看我的任务」。路径携带分享者 userId：<b>/pages/index?share=uid</b>。</div></div>
+    <div class="spec-item"><span class="num">12</span><div>对方点卡 → 登记关系 → 弹窗「现在你可以看到 XX 的任务了」→ 落地 TA 任务页。重复点击幂等。</div></div>
+  </div>
+
+  <div class="spec-card">
+    <h3>伙伴列表删除</h3>
+    <div class="spec-item"><span class="num">13</span><div><b>两个列表删除方式一致</b>：均使用右侧 inline「移出」按钮（淡红底+红字），不再用左滑。点击二次确认后删除，双方列表同步消失，不可恢复，需重新分享点击。</div></div>
+    <div class="spec-item"><span class="num">14</span><div><b>谁能看我 tab 底部固定分享按钮</b>（框 C/D），点击触发分享；列表底部加 spacer 留白不被遮挡。</div></div>
   </div>
 </div>
 

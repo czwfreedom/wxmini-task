@@ -92,6 +92,15 @@ export namespace Routine {
     finishTime?: number;
   }
 
+  export interface Stat extends Entity.Id {
+    // 累计任务
+    total: number;
+    // 已完成的任务。
+    finished: number;
+    // 连续天数
+    days?: number;
+  }
+
   const sMock = true;
 
   let sMockItems: Info[] | null = null;
@@ -208,6 +217,11 @@ export namespace Routine {
       return res.errcode || Err.Code.Network;
     }
     return Err.Code.OK;
+  }
+
+  // TODO
+  export async function stat(data: Partial<Info>): Promise<number | Stat> {
+    return { id: data.userId!, total: 4, finished: 2 };
   }
 
   /**
