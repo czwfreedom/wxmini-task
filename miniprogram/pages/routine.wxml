@@ -29,14 +29,7 @@
       <view class="routine_section">当日任务</view>
 
       <view class="routine_cards">
-        <view
-          wx:for="{{ records }}"
-          wx:key="id"
-          class="routine_card {{ item.style || '' }}"
-          catch:tap="onTaskTap"
-          data-id="{{ item.id }}"
-          data-status="{{ item.status }}"
-        >
+        <view wx:for="{{ records }}" wx:key="id" class="routine_card {{ item.style || '' }}">
           <view class="routine_card_accent" style="background:{{ item.color }};"></view>
           <view class="routine_card_icon">
             <image src="{{ item.icon }}" class="routine_card_icon_img" mode="aspectFit" />
@@ -48,7 +41,7 @@
             </view>
             <view wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</view>
           </view>
-          <view class="routine_card_action">
+          <view class="routine_card_action" catch:tap="onItemTap" data-id="{{ item.id }}">
             <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加 →</view>
             <view wx:elif="{{ item.status === 100 }}" class="routine_card_btn">去完成 →</view>
           </view>
@@ -78,7 +71,7 @@
     </scroll-view>
 
     <!-- 浮动按钮 -->
-    <view wx:if="{{ addable }}" class="routine_float">
+    <view wx:if="{{ addable }}" class="routine_float" catch:tap="onAddTap">
       <view class="routine_float_btn">
         <image class="routine_float_icon" src="../assets/imgs/ic-logo.svg" />
       </view>

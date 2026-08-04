@@ -1,3 +1,4 @@
+import { Intent } from '../core/intent';
 import { CreateRoutineUI } from './createRoutineUI';
 
 Page({
@@ -8,7 +9,7 @@ Page({
   ui: undefined as CreateRoutineUI | undefined,
 
   onLoad() {
-    this.ui = new CreateRoutineUI(this);
+    this.ui = new CreateRoutineUI(this, Intent.get());
     this.ui.loadData();
   },
 

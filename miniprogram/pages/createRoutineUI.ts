@@ -8,6 +8,8 @@ import { ChoicesUI } from '../ui/choicesUI';
 import { InteractUI } from '../core/interactUI';
 import { Utils } from '../utils/utils';
 import { DateUtils } from '../utils/dateUtils';
+import { Event } from '../core/event';
+import { Intent } from '../core/intent';
 
 export namespace CreateRoutineUI {
   export interface Data extends SubUI.Data {
@@ -52,11 +54,14 @@ export namespace CreateRoutineUI {
 
 export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
   private adapter = new CreateRoutineAdapter();
+  protected entry?: Partial<Routine.Info>;
 
-  public static readonly sContentMaxLength = 50;
+  public static readonly sContentMaxLength = 100;
 
-  public constructor(component: any) {
+  public constructor(component: any, intent?: Partial<Routine.Info>) {
     super(component);
+
+    this.entry = intent;
 
     this.bindEvent('onCategoryTap', this.onCategoryTap);
     this.bindEvent('onContentInput', this.onContentInput);
@@ -98,12 +103,22 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
     const durations = this.adapter.adaptDurations();
     const times = this.adapter.adaptTimes(currentHour);
 
-    this.setData({
-      loaded: true,
-      categories: categories,
-      durations,
-      times,
-    });
+    this.setData(
+      {
+        loaded: true,
+        categories: categories,
+        durations,
+        times,
+      },
+      () => {
+        if (this.entry?.category) {
+          this.selectCategory(
+            this.entry.category,
+            this.adapter.isMoreCategory(this.entry.category)
+          );
+        }
+      }
+    );
 
     return Err.Code.OK;
   }
@@ -232,12 +247,9 @@ export class CreateRoutineUI extends InteractUI<CreateRoutineUI.Data> {
       return;
     }
 
-    // this.showToast('创建成功');
-    // this.postEvent('routineChanged', { action: 'created', id: result.id });
-
-    // setTimeout(() => {
-    //   wx.navigateBack();
-    // }, 800);
+    this.showToast('创建成功');
+    this.postEvent(Event.Name.RoutineUpdated, res);
+    Intent.delayBack();
   }
 
   protected updateData(data: Partial<CreateRoutineUI.Data>) {

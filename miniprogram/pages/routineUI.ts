@@ -5,6 +5,10 @@ import { DateUtils } from '../utils/dateUtils';
 import { Routine } from '../server/routine';
 import { RoutineAdapter } from './routineAdapter';
 import { Logger } from '../utils/logger';
+import { Event } from '../core/event';
+import { Context } from '../core/context';
+import { Intent } from '../core/intent';
+import { Constants } from '../constant/common';
 
 export namespace RoutineUI {
   export interface Data extends SubUI.Data {
@@ -46,10 +50,15 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
   public constructor(component: any) {
     super(component);
 
-    this.bindEvent('onTaskTap', this.onTaskTap);
+    this.bindEvent('onItemTap', this.onItemTap);
     this.bindEvent('onAddTap', this.onAddTap);
 
-    this.registerEventBus('routineChanged', this.onRoutineChanged.bind(this));
+    this.registerEventBus(Event.Name.RoutineUpdated, (ev: Routine.Info) => {
+      if (ev?.id && ev?.userId === Context.getUserId()) {
+        this.adapter.addInfo(ev);
+        this.updateView();
+      }
+    });
   }
 
   public static getDefaultData(): RoutineUI.Data {
@@ -71,7 +80,6 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
 
     const records = this.adapter.adapt();
     this.setData({
-      records,
       loaded: true,
       dateMain: DateUtils.formatDate(now, 'M月d日 周E'),
       ...records,
@@ -79,31 +87,27 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
     return 0;
   }
 
+  protected updateView() {
+    this.setData({ ...this.adapter.adapt() });
+  }
+
   /** 切换任务状态：进行中 ↔ 已完成 */
-  protected async onTaskTap(e: WechatMiniprogram.TouchEvent) {
-    const { id, status } = e.currentTarget.dataset;
-    const nextStatus =
-      status === Routine.Status.Done ? Routine.Status.Working : Routine.Status.Done;
+  protected async onItemTap(e: WechatMiniprogram.TouchEvent) {
+    const { id } = e.currentTarget.dataset;
 
-    Logger.info('onTaskTap', id, status, '->', nextStatus);
-
-    const errcode = await Routine.update(id, { status: nextStatus });
-    if (errcode !== Err.Code.OK) {
-      this.showErrToast(errcode);
-      return;
+    const vm = Entity.find(this.getData().records, id).item;
+    const info = this.adapter.getInfo(id);
+    if (vm && !info) {
+      if (id.startsWith('holder')) {
+        Intent.navigateTo(Constants.Page.CreateRoutine, { category: vm.category });
+      }
+    } else {
     }
-    await this.loadData();
   }
 
   /** 添加新任务 */
   protected onAddTap() {
     Logger.info('onAddTap');
     wx.navigateTo({ url: '/pages/createRoutine' });
-  }
-
-  /** 监听任务变更事件（创建成功后刷新列表） */
-  protected onRoutineChanged(_params: any) {
-    Logger.info('routineChanged received, reloading');
-    this.loadData();
   }
 }

@@ -1,5 +1,6 @@
 import { Err } from '../constant/error';
 import { Context } from '../core/context';
+import { Entity } from '../model/entity';
 import { Routine } from '../server/routine';
 import { DateUtils } from '../utils/dateUtils';
 import { RoutineUI } from './routineUI';
@@ -12,6 +13,19 @@ export class RoutineAdapter {
   protected date = 0;
 
   protected defaults = RoutineAdapter.getDefaults();
+
+  public getInfo(id: string): Routine.Info | undefined {
+    return Entity.find(this.infos, id).item;
+  }
+
+  public addInfo(info: Routine.Info) {
+    const res = Entity.find(this.infos, info.id);
+    if (res.index >= 0) {
+      this.infos[res.index] = info;
+    } else {
+      this.infos.push(info);
+    }
+  }
 
   /** 加载指定日期的任务数据，返回错误码 */
   public async load(date: number, userId?: string): Promise<number> {

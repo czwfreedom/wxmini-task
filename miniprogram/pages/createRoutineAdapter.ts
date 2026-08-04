@@ -41,8 +41,10 @@ export class CreateRoutineAdapter {
   // ---- 构建方法 ----
 
   /** 获取常用分类 VM 列表（从 sConfigs 中 default=true 的分类） */
-  public adaptCategories(): CreateRoutineUI.Category[] {
-    const result = RoutineAdapter.getDefaults().map((id) => this.buildCategoryVM(id));
+  public adaptCategories(selectedCategory?: number): CreateRoutineUI.Category[] {
+    const result = RoutineAdapter.getDefaults().map((id) =>
+      this.buildCategoryVM(id, selectedCategory)
+    );
     result.push({ id: '', name: '更多分类', other: true } as any);
     return result;
   }
@@ -86,8 +88,18 @@ export class CreateRoutineAdapter {
     return !RoutineAdapter.findConfig(category).default;
   }
 
-  public buildCategoryVM(id: Routine.Category): CreateRoutineUI.Category {
+  public buildCategoryVM(
+    id: Routine.Category,
+    selectedCategory?: number
+  ): CreateRoutineUI.Category {
     const config = RoutineAdapter.findConfig(id);
-    return { id: '' + id, name: config.name, avatar: config.icon, color: config.color };
+    const result: CreateRoutineUI.Category = {
+      id: '' + id,
+      name: config.name,
+      avatar: config.icon,
+      color: config.color,
+    };
+    if (id === selectedCategory) result.selected = true;
+    return result;
   }
 }

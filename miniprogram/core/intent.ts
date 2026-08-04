@@ -39,6 +39,12 @@ export namespace Intent {
     }
   }
 
+  export function delayBack(params?: any, delay = 800) {
+    setTimeout(() => {
+      navigateBack(params);
+    }, delay);
+  }
+
   export function open(target: string, params?: any) {
     const pages = getCurrentPages();
     while (pages?.length > 1 && WxUtils.pageExists(target, pages)) {
