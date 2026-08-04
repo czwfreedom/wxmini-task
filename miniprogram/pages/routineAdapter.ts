@@ -50,11 +50,13 @@ export class RoutineAdapter {
       const holder = info.id.startsWith('holder');
       const done = info.status === Routine.Status.Done;
       const config = RoutineAdapter.findConfig(info.category)!;
-      count++;
-      if (done) {
-        doneCount++;
-      } else {
-        pendingCount++;
+      if (!holder) {
+        count++;
+        if (done) {
+          doneCount++;
+        } else {
+          pendingCount++;
+        }
       }
 
       const record: RoutineUI.Record = {
