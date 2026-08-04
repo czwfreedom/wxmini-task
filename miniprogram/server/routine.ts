@@ -204,13 +204,13 @@ export namespace Routine {
   /**
    * 更新任务（状态切换、内容编辑、保存反馈）
    */
-  export async function update(id: string, patch: Partial<Info>): Promise<number> {
+  export async function update(data: Partial<Info>): Promise<number> {
     if (sMock) {
-      const item = sMockItems?.find((i) => i.id === id);
-      if (item) Object.assign(item, patch);
+      const item = sMockItems?.find((i) => i.id === data.id);
+      if (item) Object.assign(item, data);
       return Err.Code.OK;
     }
-    const res = await Network.post<Info>(Api.UpdateRoutine, { id, ...patch });
+    const res = await Network.post<Info>(Api.UpdateRoutine, { data: [data] });
     if (res.errcode !== 0) {
       Logger.info('Update routine failed', res);
       return res.errcode || Err.Code.Network;

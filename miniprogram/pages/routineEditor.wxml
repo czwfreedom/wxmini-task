@@ -6,7 +6,7 @@
     <scroll-view wx:if="{{ loaded }}" class="croutine_scroll" scroll-y="true" enhanced="{{ true }}">
       <!-- 1. 选择任务类型 -->
       <view class="croutine_section">
-        <view class="croutine_section_title">选择任务类型</view>
+        <view class="croutine_section_title">任务类型</view>
         <view class="croutine_category {{ selectedCategoryId ? 'has-selected' : '' }}">
           <view
             wx:for="{{ categories }}"

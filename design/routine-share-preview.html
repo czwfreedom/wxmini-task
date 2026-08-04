@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>底部 Tab + 我的页面 + 分享入口 - 交互设计稿</title>
+<style>
+/* ========== Reset & Base ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  background: #E8EFF5;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+  padding: 40px 24px;
+  min-height: 100vh;
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  flex-wrap: wrap;
+}
+
+/* ========== Frame Wrapper ========== */
+.frame-col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.frame-label {
+  font-size: 14px; font-weight: 700; color: #3A5A8C;
+  background: #fff; padding: 8px 20px; border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(74,144,226,0.10);
+}
+.frame-label small { display: block; font-size: 11px; color: #999; font-weight: 500; text-align: center; margin-top: 2px; }
+
+/* ========== Phone Frame ========== */
+.phone {
+  width: 375px;
+  height: 720px;
+  background: #F2F5F8;
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 3px #1a1a1a,
+    0 0 0 6px #2d2d2d,
+    0 20px 60px rgba(0,0,0,0.3);
+}
+.status-bar {
+  height: 44px;
+  background: #B8DAF5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  font-size: 12px;
+  color: #fff;
+  font-weight: 600;
+}
+.status-bar .time { font-size: 14px; font-weight: 700; }
+
+/* ========== Page Container ========== */
+.page {
+  height: calc(100% - 44px - 60px); /* 减状态栏 + tabBar */
+  overflow-y: auto;
+  background: linear-gradient(180deg, #B8DAF5 0%, #F2F5F8 30%);
+  padding: 0 20px 20px;
+  position: relative;
+}
+.page::-webkit-scrollbar { width: 0; }
+
+/* ========== Hero（复用） ========== */
+.hero {
+  background: linear-gradient(160deg, #B5D9F8 0%, #A0CDF5 50%, #C5E3FA 100%);
+  border-radius: 0 0 32px 32px;
+  margin: 0 -20px 24px;
+  padding: 24px 28px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 12px; left: 50%;
+  transform: translateX(-50%);
+  width: 40px; height: 10px;
+  background: #F2F5F8;
+  border-radius: 5px;
+  box-shadow: inset 1px 2px 3px rgba(0,0,0,0.06);
+}
+.hero.past { box-shadow: inset 0 0 0 999px rgba(255,255,255,0.32); }
+.hero-date-nav { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+.date-arrow {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; color: #fff;
+  box-shadow: 0 2px 6px rgba(58,90,140,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
+  flex-shrink: 0;
+}
+.date-arrow.disabled { opacity: 0.35; }
+.hero-date-center { flex: 1; min-width: 0; }
+.hero-date-label {
+  font-size: 13px; color: rgba(255,255,255,0.85);
+  font-weight: 500; letter-spacing: 1px;
+}
+.hero-date-main {
+  font-size: 28px; font-weight: 800; color: #fff;
+  line-height: 1.2; letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+.hero-motto {
+  font-size: 13px; color: rgba(255,255,255,0.78);
+  margin-top: 8px; font-weight: 500; letter-spacing: 0.5px;
+}
+.hero-status-bar { display: flex; gap: 10px; margin-top: 16px; }
+.hero-status-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: #3A5A8C;
+  background: rgba(255,255,255,0.65);
+  padding: 6px 14px; border-radius: 20px;
+}
+.hero-status-dot { width: 8px; height: 8px; border-radius: 50%; }
+.hero-status-dot.planned { background: #5B9BD5; }
+.hero-status-dot.feedback { background: #F4B942; }
+.hero-status-dot.done { background: #81C784; }
+
+/* ========== Section Title ========== */
+.section-title {
+  font-size: 17px; font-weight: 700; color: #333;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::before {
+  content: ''; width: 4px; height: 18px;
+  background: #F4B942; border-radius: 2px;
+}
+
+/* ========== Task Cards（复用） ========== */
+.card-list { display: flex; flex-direction: column; gap: 14px; }
+.task-card {
+  position: relative;
+  background: #FDFBF7;
+  border-radius: 20px;
+  padding: 18px 18px 18px 0;
+  display: flex; align-items: center;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.03), 0 8px 24px rgba(74,144,226,0.06);
+  overflow: hidden;
+}
+.task-card .card-accent {
+  position: absolute; left: 0; top: 12px; bottom: 12px;
+  width: 8px; border-radius: 0 4px 4px 0;
+}
+.card-icon-wrap {
+  width: 60px; height: 60px; min-width: 60px;
+  display: flex; align-items: center; justify-content: center;
+}
+.card-body { flex: 1; min-width: 0; }
+.card-title { font-size: 16px; font-weight: 600; color: #333; line-height: 1.4; margin-bottom: 3px; }
+.card-subtitle { font-size: 12px; color: #999; }
+.card-action { min-width: 60px; text-align: center; margin-right: 4px; }
+.card-action-btn {
+  display: inline-block;
+  font-size: 12px; font-weight: 600;
+  padding: 7px 14px; border-radius: 18px;
+  background: linear-gradient(135deg, #F4B942, #FFD54F);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(244,185,66,0.3);
+}
+.card-done { background: #FFFDF8; border: 2px solid rgba(200,180,150,0.4); }
+.card-done .card-body { position: relative; }
+.feedback-quote {
+  font-size: 11px; color: #6B9A5E;
+  margin-top: 6px; padding: 5px 9px;
+  background: rgba(129,199,132,0.12);
+  border-radius: 8px; font-style: italic; line-height: 1.5;
+  border-left: 3px solid rgba(129,199,132,0.4);
+}
+.stamp-overlay {
+  position: absolute; top: -4px; right: 0;
+  width: 38px; height: 38px;
+  transform: rotate(8deg);
+  filter: drop-shadow(0 2px 5px rgba(180,40,40,0.35));
+}
+.readonly-mark {
+  font-size: 11px; color: #C5C5C5; font-weight: 600;
+  text-align: center; padding: 0 8px;
+}
+
+/* ========== 分享入口卡（任务列表底部，仅今天态） ========== */
+.share-entry {
+  margin-top: 14px;
+  background: linear-gradient(135deg, #FFF8E1, #FFF3D6);
+  border: 2px solid rgba(244,185,66,0.45);
+  border-radius: 20px;
+  padding: 18px 20px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 8px 24px rgba(244,185,66,0.10);
+}
+.share-entry-icon {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, #F4B942, #FFD54F);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(244,185,66,0.35);
+  flex-shrink: 0;
+}
+.share-entry-body { flex: 1; min-width: 0; }
+.share-entry-title { font-size: 15px; font-weight: 700; color: #8B6914; }
+.share-entry-sub { font-size: 11px; color: #B8962E; margin-top: 2px; }
+.share-entry-arrow { font-size: 20px; color: #F4B942; font-weight: 700; }
+
+/* ========== 底部 TabBar ========== */
+.tabbar {
+  height: 60px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-top: 0.5px solid rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 16px;
+  padding-bottom: env(safe-area-inset-bottom);
+  position: relative;
+}
+.tab-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 10px; color: #C5C5C5; font-weight: 600;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.tab-item.active { color: #3A5A8C; }
+.tab-icon {
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.tab-icon svg { display: block; }
+
+/* 中央 + 按钮（创建任务） */
+.tab-add {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F4B942, #FFD54F);
+  box-shadow: 0 4px 16px rgba(244,185,66,0.4);
+  display: flex; align-items: center; justify-content: center;
+  margin-top: -18px;
+  cursor: pointer;
+}
+.tab-add svg { display: block; }
+
+/* ========== 「我的」页面 ========== */
+.mine-header {
+  margin: 0 -20px 20px;
+  padding: 20px 24px 16px;
+  background: linear-gradient(180deg, #B8DAF5, rgba(184,218,245,0));
+}
+.mine-avatar-row {
+  display: flex; align-items: center; gap: 14px;
+}
+.mine-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, #FFD54F, #F4B942);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700; color: #fff;
+  box-shadow: 0 4px 12px rgba(58,90,140,0.15);
+  border: 2px solid rgba(255,255,255,0.7);
+}
+.mine-nick {
+  font-size: 20px; font-weight: 800; color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+.mine-stats {
+  display: flex; gap: 24px;
+  margin-top: 14px;
+}
+.mine-stat {
+  text-align: center;
+}
+.mine-stat-val {
+  font-size: 22px; font-weight: 800; color: #3A5A8C;
+}
+.mine-stat-label {
+  font-size: 11px; color: #5C6178; font-weight: 500; margin-top: 2px;
+}
+
+/* 「我的」菜单列表 */
+.menu-card {
+  background: #FDFBF7;
+  border-radius: 20px;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.03), 0 8px 24px rgba(74,144,226,0.06);
+  overflow: hidden;
+}
+.menu-row {
+  display: flex; align-items: center;
+  padding: 16px 20px;
+  gap: 14px;
+  border-bottom: 0.5px solid rgba(0,0,0,0.04);
+  cursor: pointer;
+}
+.menu-row:last-child { border-bottom: none; }
+.menu-row-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.menu-row-body { flex: 1; min-width: 0; }
+.menu-row-title { font-size: 15px; font-weight: 600; color: #333; }
+.menu-row-sub { font-size: 11px; color: #999; margin-top: 2px; }
+.menu-row-extra {
+  font-size: 13px; font-weight: 600; color: #999;
+  display: flex; align-items: center; gap: 6px;
+}
+.menu-row-extra .badge {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #F4B942; color: #fff;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.menu-chevron { font-size: 18px; color: #C5C5C5; font-weight: 700; }
+
+/* ========== 交互规则说明卡 ========== */
+.spec-card {
+  width: 340px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(74,144,226,0.08);
+}
+.spec-card h3 {
+  font-size: 16px; color: #333; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.spec-card h3::before { content: ''; width: 4px; height: 16px; background: #F4B942; border-radius: 2px; }
+.spec-item {
+  display: flex; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #eee;
+  font-size: 13px; line-height: 1.6; color: #5C6178;
+}
+.spec-item:last-child { border-bottom: none; }
+.spec-item .num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: linear-gradient(135deg, #F4B942, #FFD54F);
+  color: #fff; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+}
+.spec-item b { color: #333; }
+.spec-item .demo-tag {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 1px 8px; border-radius: 8px; margin: 0 2px;
+  background: #FFF3E0; color: #8B6914;
+}
+.spec-item .demo-tag.gray { background: #EEF0F4; color: #999; }
+.spec-item .demo-tag.blue { background: #E3F2FD; color: #3A5A8C; }
+</style>
+</head>
+<body>
+
+<!-- ================= 框 A：任务页（tab 1）+ 底部 TabBar ================= -->
+<div class="frame-col">
+  <div class="frame-label">A · 任务页<small>tab「任务」· 添加虚线卡替换为分享入口卡 · 仅今天态显示</small></div>
+  <div class="phone">
+    <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
+    <div class="page">
+
+      <div class="hero">
+        <div class="hero-date-nav">
+          <div class="date-arrow">‹</div>
+          <div class="hero-date-center">
+            <div class="hero-date-label">今天是</div>
+            <div class="hero-date-main">8月4日 周二</div>
+          </div>
+          <div class="date-arrow disabled">›</div>
+        </div>
+        <div class="hero-motto">✦ 苟日新，日日新，又日新</div>
+        <div class="hero-status-bar">
+          <div class="hero-status-item"><span class="hero-status-dot planned"></span>已规划 3</div>
+          <div class="hero-status-item"><span class="hero-status-dot feedback"></span>待反馈 1</div>
+          <div class="hero-status-item"><span class="hero-status-dot done"></span>已完成 2</div>
+        </div>
+      </div>
+
+      <div class="section-title">当日任务</div>
+      <div class="card-list">
+        <div class="task-card">
+          <div class="card-accent" style="background:#FFB74D;"></div>
+          <div class="card-icon-wrap">
+            <svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#FFF3E0"/><path d="M24 16 C20 13.5 15 13 11 13.5 L11 32 C15 31.5 20 32 24 34.5 C28 32 33 31.5 37 32 L37 13.5 C33 13 28 13.5 24 16 Z" fill="#f4b942" stroke="#E65100" stroke-width="1.2"/><path d="M24 18.5 C20.8 16.6 16.2 16.1 13 16.6 L13 30.4 C16.2 29.9 20.8 30.4 24 32.3 C27.2 30.4 31.8 29.9 35 30.4 L35 16.6 C31.8 16.1 27.2 16.6 24 18.5 Z" fill="#FFFEF9"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-title">《三体》第3章</div>
+            <div class="card-subtitle">阅读 · 约30分钟</div>
+          </div>
+          <div class="card-action"><div class="card-action-btn">去完成</div></div>
+        </div>
+
+        <div class="task-card card-done">
+          <div class="card-accent" style="background:#81C784;"></div>
+          <div class="card-icon-wrap">
+            <svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#E8F5E9"/><circle cx="26" cy="13" r="4.5" fill="#43A047" stroke="#2E7D32" stroke-width="0.8"/><line x1="26" y1="17.5" x2="24" y2="29" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="25" y1="21" x2="32" y2="17" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="25" y1="22" x2="18" y2="20" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="29" x2="33" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="29" x2="18" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="card-body">
+            <div class="card-title">跳绳500个</div>
+            <div class="card-subtitle">运动 · 约15分钟</div>
+            <div class="feedback-quote">"今天比昨天多跳了30个！"</div>
+            <svg class="stamp-overlay" viewBox="0 0 52 52"><circle cx="26" cy="26" r="23" fill="none" stroke="#D84035" stroke-width="5"/><circle cx="26" cy="26" r="15" fill="none" stroke="#D84035" stroke-width="1.2"/><text x="26" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#D84035" letter-spacing="2">完成</text></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 分享入口卡（替换原"添加更多"虚线卡） -->
+      <div class="share-entry">
+        <div class="share-entry-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="6" cy="12" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="18" cy="19" r="2.5" stroke="#fff" stroke-width="1.8"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="share-entry-body">
+          <div class="share-entry-title">分享我的任务卡片</div>
+          <div class="share-entry-sub">邀请伙伴围观，互相激励一起坚持</div>
+        </div>
+        <div class="share-entry-arrow">›</div>
+      </div>
+
+    </div>
+
+    <!-- 底部 TabBar -->
+    <div class="tabbar">
+      <div class="tab-item active">
+        <div class="tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="#3A5A8C"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="#B0BEC5"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="#B0BEC5"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="#B0BEC5"/></svg>
+        </div>
+        任务
+      </div>
+      <div class="tab-add">
+        <svg width="24" height="24" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </div>
+      <div class="tab-item">
+        <div class="tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="4" fill="#B0BEC5"/><path d="M4 21 C4 16 7.6 13 12 13 C16.4 13 20 16 20 21" fill="#B0BEC5"/></svg>
+        </div>
+        我的
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 框 B：「我的」页面 ================= -->
+<div class="frame-col">
+  <div class="frame-label">B · 「我的」页面<small>头像+昵称+累计统计 · 任务伙伴带角标入口 · 其他设置</small></div>
+  <div class="phone">
+    <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
+    <div class="page">
+
+      <div class="mine-header">
+        <div class="mine-avatar-row">
+          <div class="mine-avatar">明</div>
+          <div>
+            <div class="mine-nick">小明</div>
+          </div>
+        </div>
+        <div class="mine-stats">
+          <div class="mine-stat">
+            <div class="mine-stat-val">12</div>
+            <div class="mine-stat-label">累计任务</div>
+          </div>
+          <div class="mine-stat">
+            <div class="mine-stat-val">8</div>
+            <div class="mine-stat-label">累计完成</div>
+          </div>
+          <div class="mine-stat">
+            <div class="mine-stat-val">3</div>
+            <div class="mine-stat-label">连续天数</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card">
+        <!-- 任务伙伴入口 -->
+        <div class="menu-row" style="cursor:pointer;">
+          <div class="menu-row-icon" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#F4B942" stroke-width="1.8"/><circle cx="6" cy="12" r="2.5" stroke="#F4B942" stroke-width="1.8"/><circle cx="18" cy="19" r="2.5" stroke="#F4B942" stroke-width="1.8"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2" stroke="#F4B942" stroke-width="1.8" stroke-linecap="round"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8" stroke="#F4B942" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="menu-row-body">
+            <div class="menu-row-title">任务伙伴</div>
+            <div class="menu-row-sub">围观伙伴的任务，互相激励</div>
+          </div>
+          <div class="menu-row-extra">
+            <span class="badge">3</span>
+            <span class="menu-chevron">›</span>
+          </div>
+        </div>
+
+        <!-- 其他设置项 -->
+        <div class="menu-row">
+          <div class="menu-row-icon" style="background:#E3F2FD;">
+            <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="#64B5F6"/><path d="M12 2 V4 M12 20 V22 M2 12 H4 M20 12 H22" stroke="#64B5F6" stroke-width="1.8" stroke-linecap="round"/><path d="M4.9 4.9 L6.3 6.3 M17.7 17.7 L19.1 19.1 M4.9 19.1 L6.3 17.7 M17.7 6.3 L19.1 4.9" stroke="#90CAF9" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="menu-row-body">
+            <div class="menu-row-title">每日提醒</div>
+            <div class="menu-row-sub">设置任务提醒时间</div>
+          </div>
+          <div class="menu-chevron">›</div>
+        </div>
+
+        <div class="menu-row">
+          <div class="menu-row-icon" style="background:#F3E5F5;">
+            <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#BA68C8" stroke-width="1.8"/><path d="M12 7 V13 L16 15" stroke="#BA68C8" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="menu-row-body">
+            <div class="menu-row-title">关于</div>
+            <div class="menu-row-sub">版本与反馈</div>
+          </div>
+          <div class="menu-chevron">›</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 底部 TabBar -->
+    <div class="tabbar">
+      <div class="tab-item">
+        <div class="tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="#B0BEC5"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="#B0BEC5"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="#B0BEC5"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="#B0BEC5"/></svg>
+        </div>
+        任务
+      </div>
+      <div class="tab-add">
+        <svg width="24" height="24" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </div>
+      <div class="tab-item active">
+        <div class="tab-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="4" fill="#3A5A8C"/><path d="M4 21 C4 16 7.6 13 12 13 C16.4 13 20 16 20 21" fill="#3A5A8C"/></svg>
+        </div>
+        我的
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 框 C：伙伴页（复用原 share 设计） ================= -->
+<div class="frame-col">
+  <div class="frame-label">C · 伙伴页<small>从「我的」→「任务伙伴」进入 · 双 Tab + 固定底部分享按钮</small></div>
+  <div class="phone">
+    <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
+    <div class="page" style="height:calc(100% - 44px);">
+
+      <div style="margin:0 -20px 20px; padding:16px 20px 0; background:linear-gradient(180deg,#B8DAF5,rgba(184,218,245,0));">
+        <div style="font-size:22px;font-weight:800;color:#fff;margin-top:8px;">任务伙伴</div>
+        <div style="display:flex;gap:10px;margin-top:16px;">
+          <div style="flex:1;text-align:center;font-size:14px;font-weight:600;color:#3A5A8C;background:#fff;padding:10px 0;border-radius:16px;box-shadow:0 4px 12px rgba(58,90,140,0.12);">我能看谁 <span style="font-size:11px;background:#F4B942;color:#fff;border-radius:10px;padding:1px 8px;margin-left:4px;">2</span></div>
+          <div style="flex:1;text-align:center;font-size:14px;font-weight:600;color:rgba(255,255,255,0.75);background:rgba(255,255,255,0.25);padding:10px 0;border-radius:16px;">谁能看我 <span style="font-size:11px;background:#F4B942;color:#fff;border-radius:10px;padding:1px 8px;margin-left:4px;">3</span></div>
+        </div>
+      </div>
+
+      <!-- 伙伴列表 -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="background:#FDFBF7;border-radius:20px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 0 rgba(0,0,0,0.03),0 8px 24px rgba(74,144,226,0.06);">
+          <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#64B5F6,#42A5F5);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;">明</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:16px;font-weight:700;color:#333;">小明</div>
+            <div style="font-size:11px;color:#999;margin-top:3px;">今日已完成 <span style="color:#6B9A5E;font-weight:600;">2/3</span> · 点击可围观</div>
+          </div>
+          <div style="font-size:20px;color:#C5C5C5;font-weight:700;">›</div>
+        </div>
+
+        <div style="background:#FDFBF7;border-radius:20px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 0 rgba(0,0,0,0.03),0 8px 24px rgba(74,144,226,0.06);">
+          <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#F06292,#EC407A);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;">芳</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:16px;font-weight:700;color:#333;">芳芳</div>
+            <div style="font-size:11px;color:#999;margin-top:3px;">今日已完成 <span style="color:#6B9A5E;font-weight:600;">4/4</span> · 点击可围观</div>
+          </div>
+          <div style="font-size:20px;color:#C5C5C5;font-weight:700;">›</div>
+        </div>
+      </div>
+
+      <!-- 固定底部分享按钮 -->
+      <div style="position:fixed;bottom:0;left:0;right:0;margin:0 20px;margin-bottom:calc(16px + env(safe-area-inset-bottom));background:linear-gradient(135deg,#F4B942,#FFD54F);border-radius:999px;padding:14px;text-align:center;font-size:15px;font-weight:700;color:#fff;letter-spacing:2px;box-shadow:0 8px 24px rgba(244,185,66,0.35);display:flex;align-items:center;justify-content:center;gap:10px;z-index:10;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="6" cy="12" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="18" cy="19" r="2.5" stroke="#fff" stroke-width="1.8"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        分享我的任务卡片
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 交互规则说明 ================= -->
+<div class="frame-col">
+  <div class="frame-label">交互规则</div>
+
+  <div class="spec-card">
+    <h3>底部 TabBar 结构</h3>
+    <div class="spec-item"><span class="num">1</span><div>三元素：<b>任务</b>（当前页） | <b>+</b>（中央突出按钮，跳转创建任务页） | <b>我的</b>（个人中心）。</div></div>
+    <div class="spec-item"><span class="num">2</span><div>tabBar 高度 60px，半透明白底毛玻璃效果；中央 + 按钮圆形金色突出，margin-top 负值悬浮。</div></div>
+    <div class="spec-item"><span class="num">3</span><div>创建任务页（createRoutine）由 + 按钮 navigateTo 打开，非 tab 页，返回后回到原 tab。</div></div>
+  </div>
+
+  <div class="spec-card">
+    <h3>任务页改动（框 A）</h3>
+    <div class="spec-item"><span class="num">4</span><div>移除底部「添加更多」虚线卡，<b>改为分享入口卡</b>（金色暖调，仅今天态显示）。分享卡片内容与之前一致。</div></div>
+    <div class="spec-item"><span class="num">5</span><div>浮动按钮（logo 圆形）改为 + 按钮 → tabBar 中央，创建任务走 tabBar + 入口。</div></div>
+    <div class="spec-item"><span class="num">6</span><div>历史态：分享卡不显示，浮动按钮/添加卡均不显示，与现有逻辑一致。</div></div>
+  </div>
+
+  <div class="spec-card">
+    <h3>「我的」页面（框 B）</h3>
+    <div class="spec-item"><span class="num">7</span><div>顶部：微信头像 + 昵称 + 累计统计（累计任务数/累计完成数/连续天数），数据来自服务器。</div></div>
+    <div class="spec-item"><span class="num">8</span><div><b>任务伙伴</b>入口：菜单首行，带金色数字角标（伙伴总数）。点击进入伙伴页。</div></div>
+    <div class="spec-item"><span class="num">9</span><div>其他菜单项预留：每日提醒、关于，先做占位，后续迭代。</div></div>
+  </div>
+
+  <div class="spec-card">
+    <h3>分享链路</h3>
+    <div class="spec-item"><span class="num">10</span><div>分享卡位于任务页列表底部（仅今天态），内容与之前一致。button open-type="share" 触发微信分享。</div></div>
+    <div class="spec-item"><span class="num">11</span><div>伙伴页底部固定「分享我的任务卡片」按钮，点击同样触发微信分享。</div></div>
+    <div class="spec-item"><span class="num">12</span><div>对方点卡 → 登记关系 → 弹窗「现在你可以看到 XX 的任务了」→ 落地 TA 的任务页（只读）。</div></div>
+  </div>
+
+  <div class="spec-card">
+    <h3>伙伴页 & TA 任务页</h3>
+    <div class="spec-item"><span class="num">13</span><div>伙伴页：双 Tab + 固定底部分享按钮，交互与之前设计稿一致（点击围观/左滑移出/移出确认）。</div></div>
+    <div class="spec-item"><span class="num">14</span><div>TA 任务页：全页只读，与之前设计稿一致。</div></div>
+  </div>
+</div>
+
+</body>
+</html>
