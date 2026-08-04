@@ -1,13 +1,15 @@
 {
   "pages": [
     "pages/index",
+    "pages/home",
     "pages/routine",
+    "pages/mine",
     "pages/routineEditor"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ffffff",
-    "navigationBarTitleText": "Hello 小程序",
+    "navigationBarTitleText": "日程",
     "navigationBarTextStyle": "black"
   },
   "style": "v2",

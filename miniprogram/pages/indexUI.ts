@@ -1,17 +1,13 @@
+import { Intent } from '../core/intent';
 import { SubUI } from '../core/subUI';
-import { Logger } from '../utils/logger';
 
 export namespace IndexUI {
-  export interface Data extends SubUI.Data {
-    style?: string;
-  }
+  export interface Data extends SubUI.Data {}
 }
 
 export class IndexUI extends SubUI<IndexUI.Data> {
   public constructor(component: any) {
     super(component);
-
-    this.bindEvent('onMenuTap', this.onMenuTap);
   }
 
   public static getDefaultData(): IndexUI.Data {
@@ -22,14 +18,7 @@ export class IndexUI extends SubUI<IndexUI.Data> {
   }
 
   public loadData() {
-    this.setData({ loaded: true, style: 'h' });
-  }
-
-  protected onMenuTap(e: WechatMiniprogram.TouchEvent) {
-    const { button } = e.currentTarget.dataset;
-    Logger.info('onMenuTap', button);
-    if (button === 'routine') {
-      wx.navigateTo({ url: '/pages/routine' });
-    }
+    this.setData({ loaded: true });
+    Intent.redirectTo('/pages/home');
   }
 }

@@ -1,0 +1,5 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 人物图标：选中态，蓝色调 -->
+  <circle cx="24" cy="18" r="8" fill="#E3F2FD" stroke="#64B5F6" stroke-width="1.5"/>
+  <path d="M6 42 C6 33 14.1 26 24 26 C33.9 26 42 33 42 42" fill="#E3F2FD" stroke="#64B5F6" stroke-width="1.5"/>
+</svg>

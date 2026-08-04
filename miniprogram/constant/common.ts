@@ -3,6 +3,7 @@ export namespace Constants {
 
   export const enum Page {
     Routine = '/pages/routine',
+    Mine = '/pages/mine',
     CreateRoutine = '/pages/routineEditor',
   }
 }

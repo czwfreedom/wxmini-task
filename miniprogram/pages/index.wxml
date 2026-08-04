@@ -1,15 +1,1 @@
-<import src="../templates/abort.wxml"></import>
-
-<view class="entry">
-  <view wx:if="{{ loaded }}" class="entry_content">
-    <view class="entry_content_tip {{ style || '' }}" catch:tap="onMenuTap" data-button="routine">
-      今日任务
-    </view>
-  </view>
-</view>
-
-<template
-  wx:if="{{ !loaded || abortMessage }}"
-  is="abort"
-  data="{{message: abortMessage || '加载中..' }}"
-></template>
+<view class="entry"></view>

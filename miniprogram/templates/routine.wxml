@@ -1,0 +1,121 @@
+<template name="routine">
+  <import src="../templates/abort.wxml"></import>
+
+  <view class="routine">
+    <view class="routine_content">
+      <scroll-view
+        wx:if="{{ loaded }}"
+        class="routine_scroll"
+        scroll-y="true"
+        enhanced="{{ true }}"
+      >
+        <!-- Hero 顶部（历史态加 past 褪色） -->
+        <view class="routine_hero {{ isToday ? '' : 'past' }}">
+          <view class="routine_hero_info">
+            <!-- 日期导航：‹ 日期 › 三段式，点日期唤起系统选择器 -->
+            <view class="routine_hero_nav">
+              <view class="routine_hero_arrow" catch:tap="onPrevDay">‹</view>
+              <picker
+                class="routine_hero_datewrap"
+                mode="date"
+                value="{{ pickerValue }}"
+                start="2026-07-01"
+                end="{{ pickerEnd }}"
+                bindchange="onDatePicked"
+              >
+                <view class="routine_hero_label">{{ dateLabel }}</view>
+                <view class="routine_hero_date">{{ dateMain }}</view>
+              </picker>
+              <!-- prettier-ignore -->
+              <view class="routine_hero_arrow {{ isToday ? 'disabled' : '' }}" catch:tap="onNextDay">›</view>
+            </view>
+
+            <view class="routine_hero_motto">
+              ✦ {{ isToday ? '苟日新，日日新，又日新' : '每一步都算数' }}
+            </view>
+            <view wx:if="{{ stats && stats.length}}" class="routine_hero_stats">
+              <view
+                wx:for="{{ stats }}"
+                wx:for-item="stat"
+                wx:for-index="sindex"
+                wx:key="sindex"
+                class="routine_hero_stat"
+              >
+                <view class="routine_hero_stat_dot {{ stat.style || '' }}"></view>
+                <text>{{ stat.name }}</text>
+              </view>
+            </view>
+          </view>
+
+          <image class="routine_hero_logo" src="../assets/imgs/ic-pencil.svg" />
+        </view>
+
+        <!-- 任务列表 -->
+        <view class="routine_section">当日任务</view>
+
+        <view class="routine_cards">
+          <view wx:for="{{ records }}" wx:key="id" class="routine_card {{ item.style || '' }}">
+            <view class="routine_card_accent" style="background:{{ item.color }};"></view>
+            <view class="routine_card_icon">
+              <image src="{{ item.icon }}" class="routine_card_icon_img" mode="aspectFit" />
+            </view>
+            <view class="routine_card_body">
+              <view class="routine_card_title">{{ item.name }}</view>
+              <view wx:if="{{ !item.holder }}" class="routine_card_sub">
+                {{ item.detail }}
+              </view>
+              <view wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</view>
+            </view>
+            <view class="routine_card_action" catch:tap="onItemTap" data-id="{{ item.id }}">
+              <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
+              <view wx:elif="{{ item.status === 100 }}" class="routine_card_btn">去完成</view>
+            </view>
+            <image
+              wx:if="{{ item.style === 'done' }}"
+              class="routine_card_stamp"
+              src="/assets/imgs/ic-stamp-done.svg"
+              mode="aspectFit"
+            />
+          </view>
+
+          <!-- 空状态 -->
+          <view wx:if="{{ records.length === 0 }}" class="routine_empty">
+            <text class="routine_empty_text">
+              {{ addable ? '还没有任务，去创建吧 🎉' : '这一天还没有记录' }}
+            </text>
+          </view>
+
+          <!-- 分享入口卡（仅今天态） -->
+          <view wx:if="{{ addable }}" class="routine_share" catch:tap="onShareTap">
+            <view class="routine_share_icon">
+              <image
+                class="routine_share_icon_img"
+                src="../assets/imgs/ic-share.svg"
+                mode="aspectFit"
+              />
+            </view>
+            <view class="routine_share_body">
+              <view class="routine_share_title">邀请伙伴围观我的任务</view>
+              <view class="routine_share_sub">互相激励，一起坚持</view>
+            </view>
+            <view class="routine_share_arrow">›</view>
+          </view>
+        </view>
+
+        <view class="routine_spacer"></view>
+      </scroll-view>
+
+      <!-- 回到今天胶囊（历史态） -->
+      <view wx:if="{{ loaded && !isToday }}" class="routine_backtoday" catch:tap="onBackToday">
+        <view class="routine_backtoday_dot"></view>
+        <text class="routine_backtoday_text">回到今天</text>
+      </view>
+    </view>
+  </view>
+
+  <template
+    wx:if="{{ !loaded || abortMessage }}"
+    is="abort"
+    data="{{message: abortMessage || '加载中..' }}"
+  ></template>
+</template>

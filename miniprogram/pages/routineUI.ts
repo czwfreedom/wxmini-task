@@ -55,14 +55,15 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
   protected date: number;
   protected userId: string;
 
-  public constructor(component: any) {
-    super(component);
+  public constructor(component: any, subDataKey = '') {
+    super(component, subDataKey);
 
     this.date = DateUtils.getStartMillisOfDay(Date.now());
     this.userId = Context.getUserId();
 
     this.bindEvent('onItemTap', this.onItemTap);
     this.bindEvent('onAddTap', this.onAddTap);
+    this.bindEvent('onShareTap', this.onShareTap);
     this.bindEvent('onPrevDay', this.onPrevDay);
     this.bindEvent('onNextDay', this.onNextDay);
     this.bindEvent('onDatePicked', this.onDatePicked);
@@ -176,5 +177,11 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
   protected onAddTap() {
     Logger.info('onAddTap');
     Intent.navigateTo(Constants.Page.CreateRoutine);
+  }
+
+  /** 分享入口 */
+  protected onShareTap() {
+    Logger.info('onShareTap');
+    // TODO: 检查头像昵称 → 触发微信分享
   }
 }

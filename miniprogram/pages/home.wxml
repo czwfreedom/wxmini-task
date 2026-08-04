@@ -1,0 +1,37 @@
+<view class="home">
+  <swiper
+    class="home_content"
+    autoplay="{{ false }}"
+    current="{{ current }}"
+    circular="{{ false }}"
+    display-multiple-items="1"
+    skip-hidden-item-layout="false"
+    bindchange="onSwiperChanged"
+  >
+    <block wx:for="{{ tabs.items }}" wx:key="index">
+      <swiper-item>
+        <!-- <table-wrapper
+          class="home_swiper_item"
+          type="{{ item.id }}"
+          visible="{{ item.id === tabs.currentTab }}"
+          bind:selection="{{ item.id === 'managedSchools' ? 'onSelectionChanged' : '' }}"
+        ></table-wrapper> -->
+      </swiper-item>
+    </block>
+  </swiper>
+
+  <!-- 底部 TabBar -->
+  <view class="home_tab">
+    <view class="home_tab_item" catch:tap="onTabTap" data-id="routine">
+      <image class="home_tab_icon" src="../assets/imgs/ic-routine-normal.svg"></image>
+      <text>任务</text>
+    </view>
+    <view class="home_tab_add" catch:tap="onTabTap" data-id="add">
+      <text class="home_tab_add_text">+</text>
+    </view>
+    <view class="home_tab_item">
+      <image class="home_tab_icon" src="../assets/imgs/ic-mine-normal.svg"></image>
+      <text>我的</text>
+    </view>
+  </view>
+</view>

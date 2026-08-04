@@ -81,7 +81,7 @@
 
   /** 单选：底部取消按钮 */
   &_sheet_cancel {
-    border-top: 1rpx solid rgba(0, 0, 0, 0.06);
+    border-top: 1rpx solid $border;
     padding: 28rpx;
     text-align: center;
     font-size: 32rpx;
