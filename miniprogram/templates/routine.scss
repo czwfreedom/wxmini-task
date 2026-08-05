@@ -273,19 +273,21 @@
 
   // ===== 分享入口卡（替换原"添加更多"） =====
   &_share {
-    @include card;
     margin-top: 28rpx;
-    border: 2rpx solid $gray-e5;
+    background: $gradient;
+    border-radius: 32rpx;
     padding: 28rpx 32rpx;
     display: flex;
     align-items: center;
     gap: 24rpx;
+    box-shadow: 0 8rpx 24rpx rgba(244, 185, 66, 0.35);
+    opacity: 0.8;
 
     &_icon {
       width: 80rpx;
       height: 80rpx;
       border-radius: 50%;
-      background: $gradient;
+      background: white;
       @include flex-layout;
       box-shadow: 0 8rpx 24rpx rgba(244, 185, 66, 0.35);
       flex-shrink: 0;
@@ -303,19 +305,18 @@
 
     &_title {
       font-size: 30rpx;
-      font-weight: 700;
-      color: $gray-33;
+      color: white;
     }
 
     &_sub {
       font-size: 22rpx;
-      color: $gray-99;
+      color: $white85;
       margin-top: 4rpx;
     }
 
     &_arrow {
       font-size: 40rpx;
-      color: $main;
+      color: white;
       font-weight: 700;
     }
   }
