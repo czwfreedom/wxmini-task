@@ -75,7 +75,7 @@
 }
 
 @mixin card {
-  background: #fdfbf7;
+  background: $background-card;
   border-radius: 32rpx;
   box-shadow:
     0 4rpx 0 rgba(0, 0, 0, 0.03),
@@ -84,7 +84,7 @@
 
 @mixin hero {
   position: relative;
-  background: linear-gradient(160deg, #b5d9f8 0%, #a0cdf5 50%, #c5e3fa 100%);
+  background: $gradient-sub;
   border-radius: 0 0 32rpx 32rpx;
 }
 

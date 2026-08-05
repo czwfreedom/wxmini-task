@@ -1,3 +1,5 @@
+import { Constants } from '../constant/common';
+import { Intent } from '../core/intent';
 import { Entity } from '../model/entity';
 import { MenuUI } from '../ui/menuUI';
 
@@ -24,6 +26,7 @@ Page({
   onTabTap(e: WechatMiniprogram.TouchEvent) {
     const { id } = e.currentTarget.dataset;
     if (id === 'add') {
+      Intent.navigateTo(Constants.Page.CreateRoutine);
     } else {
       const res = Entity.find(this.getRealTabs(), id);
       if (res.item && res.index !== this.data.current) {

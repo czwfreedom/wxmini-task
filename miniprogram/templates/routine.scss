@@ -248,8 +248,8 @@
 
     // 已完成变体
     &.done {
-      background: #fffdf8;
-      border: 4rpx solid rgba(200, 180, 150, 0.4);
+      background: $background-white;
+      border: 4rpx solid $gold-border;
 
       .routine_card_title {
         color: $gray-44;
@@ -274,7 +274,7 @@
   // ===== 分享入口卡（替换原"添加更多"） =====
   &_share {
     margin-top: 28rpx;
-    background: linear-gradient(135deg, #fff8e1, #fff3d6);
+    background: linear-gradient(135deg, $gold-50, $gold-100);
     border: 3rpx solid rgba(244, 185, 66, 0.45);
     border-radius: 32rpx;
     padding: 28rpx 32rpx;
@@ -306,12 +306,12 @@
     &_title {
       font-size: 30rpx;
       font-weight: 700;
-      color: #8b6914;
+      color: $gold-700;
     }
 
     &_sub {
       font-size: 22rpx;
-      color: #b8962e;
+      color: $gold-600;
       margin-top: 4rpx;
     }
 

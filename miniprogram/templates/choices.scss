@@ -4,7 +4,7 @@
 /* ==========================================================
    Choices 通用底部弹窗
    配色全部引用 var.scss 变量
-   统一选中态：.sel.selected → $main 描边 + #fffdf8 底 + $gradient 打勾
+   统一选中态：.sel.selected → $main 描边 + $background-white 底 + $gradient 打勾
    ========================================================== */
 .choices {
   position: fixed;
@@ -137,14 +137,14 @@
     &.single {
       padding: 24rpx 32rpx;
       border-radius: 24rpx;
-      background: #fdfbf7;
+      background: $background-card;
       border: 2rpx solid $gray-e5;
     }
 
     // 统一选中态
     &.selected {
       border-color: $main;
-      background: #fffdf8;
+      background: $background-white;
     }
 
     // ---- Item 内部元素 ----

@@ -175,7 +175,7 @@
 
       &.selected {
         border-color: $main;
-        background: #fffdf8;
+        background: $background-white;
       }
 
       &.custom {
@@ -242,7 +242,7 @@
 
       &.selected {
         border-color: $main;
-        background: #fffdf8;
+        background: $background-white;
         color: $gray-33;
       }
 
@@ -255,11 +255,15 @@
     }
   }
 
+  &_spacer {
+    height: 32rpx;
+  }
+
   // ===== CTA 底部按钮（固定底部，不随内容滚动） =====
   &_cta {
     padding: 20rpx 48rpx;
     padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-    background: linear-gradient(180deg, transparent, #f2f5f8 30%);
+    background: $white92;
 
     &_btn {
       background: $gradient;

@@ -140,6 +140,7 @@
           </block>
         </view>
       </view>
+      <view class="croutine_spacer"></view>
     </scroll-view>
   </view>
   <!-- CTA 底部按钮（固定浮层） -->

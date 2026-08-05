@@ -3,6 +3,9 @@ $main: #f4b942;
 $blue: #5b9bd5;
 $green: #81c784;
 
+// 页面浅色底：背景渐变末端 & 全局 page 兜底背景（统一此前 #f5f5f5 / #f2f5f8 两值）
+$bg-page: #f2f5f8;
+
 // 标题、任务名称、按钮文字，比纯黑柔和护眼，符合儿童视力标准
 $gray-33: #333;
 $gray-44: #444;
@@ -26,8 +29,10 @@ $gradient-sub: linear-gradient(160deg, #b5d9f8 0%, #a0cdf5 50%, #c5e3fa 100%);
 // 页面的淡色背景。
 $background-gradient: linear-gradient(180deg, #b8daf5 0%, #f2f5f8 30%);
 
-// 全局背景，比纯白暖 2 度，和微信原生浅灰背景自然衔接
-$background-white: #fbfcfe;
+// 标准卡片底色（@mixin card、Choices 纯文本项复用）
+$background-card: #fdfbf7;
+// 选中态 / 已完成卡片底色，看起来亮一点。
+$background-white: #fffdf8;
 
 $black4: rgba(0, 0, 0, 0.4);
 $black3: rgba(0, 0, 0, 0.3);
@@ -41,3 +46,11 @@ $white92: rgba(255, 255, 255, 0.92);
 $transparent: rgba(255, 255, 255, 0);
 
 $border: rgba(0, 0, 0, 0.06);
+
+// 已完成卡片柔和描边（金系）
+$gold-border: rgba(200, 180, 150, 0.4);
+// ===== 分享卡金系色（与 $main 同族，仅分享卡使用，集中收口避免新增配色） =====
+$gold-50: #fff8e1; // 分享卡渐变起点（浅金）
+$gold-100: #fff3d6; // 分享卡渐变终点（浅金）
+$gold-600: #b8962e; // 分享卡副文字（金）
+$gold-700: #8b6914; // 分享卡标题（深金）
