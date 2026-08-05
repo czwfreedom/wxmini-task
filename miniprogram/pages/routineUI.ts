@@ -77,7 +77,7 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
     });
   }
 
-  public static getDefaultData(): RoutineUI.Data {
+  public static defaultData(): RoutineUI.Data {
     return {
       loaded: false,
       abortMessage: '',

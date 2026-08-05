@@ -250,7 +250,7 @@ this.setData({ style: 'h' });
 import { XxxUI } from './xxxUI';
 
 Page({
-  data: { ...XxxUI.getDefaultData() },
+  data: { ...XxxUI.defaultData() },
   ui: undefined as XxxUI | undefined,
   onLoad() {
     this.ui = new XxxUI(this);
@@ -286,7 +286,7 @@ export class XxxUI extends SubUI<XxxUI.Data> {
     this.bindEvent('onItemTap', this.onItemTap);
   }
 
-  static getDefaultData(): XxxUI.Data {
+  static defaultData(): XxxUI.Data {
     return { loaded: false, abortMessage: '', items: [], keyword: '' };
   }
 

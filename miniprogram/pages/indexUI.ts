@@ -10,7 +10,7 @@ export class IndexUI extends SubUI<IndexUI.Data> {
     super(component);
   }
 
-  public static getDefaultData(): IndexUI.Data {
+  public static defaultData(): IndexUI.Data {
     return {
       loaded: false,
       abortMessage: '',

@@ -1,5 +1,6 @@
 <view class="home">
   <swiper
+    wx:if="{{ tabs && tabs.items && tabs.items.length }}"
     class="home_content"
     autoplay="{{ false }}"
     current="{{ current }}"
@@ -9,29 +10,35 @@
     bindchange="onSwiperChanged"
   >
     <block wx:for="{{ tabs.items }}" wx:key="index">
-      <swiper-item>
-        <!-- <table-wrapper
+      <swiper-item wx:if="{{ item.id }}">
+        <home-wrapper
           class="home_swiper_item"
           type="{{ item.id }}"
-          visible="{{ item.id === tabs.currentTab }}"
-          bind:selection="{{ item.id === 'managedSchools' ? 'onSelectionChanged' : '' }}"
-        ></table-wrapper> -->
+          visible="{{ item.id === tabs.id }}"
+        ></home-wrapper>
       </swiper-item>
     </block>
   </swiper>
 
   <!-- 底部 TabBar -->
-  <view class="home_tab">
-    <view class="home_tab_item" catch:tap="onTabTap" data-id="routine">
-      <image class="home_tab_icon" src="../assets/imgs/ic-routine-normal.svg"></image>
-      <text>任务</text>
-    </view>
-    <view class="home_tab_add" catch:tap="onTabTap" data-id="add">
-      <text class="home_tab_add_text">+</text>
-    </view>
-    <view class="home_tab_item">
-      <image class="home_tab_icon" src="../assets/imgs/ic-mine-normal.svg"></image>
-      <text>我的</text>
-    </view>
+  <view wx:if="{{ tabs && tabs.items && tabs.items.length }}" class="home_tab">
+    <block wx:for="{{ tabs.items }}" wx:key="id">
+      <view
+        wx:if="{{ item.id }}"
+        class="home_tab_item {{ tabs.id === item.id? 'active' : '' }}"
+        catch:tap="onTabTap"
+        data-id="{{ item.id }}"
+      >
+        <image
+          class="home_tab_icon"
+          src="{{ tabs.id === item.id? item.checkedImage : item.normalImage }}"
+        ></image>
+        <text>{{ item.name }}</text>
+      </view>
+
+      <view wx:if="{{ !item.id }}" class="home_tab_add" catch:tap="onTabTap" data-id="add">
+        <text class="home_tab_add_text">+</text>
+      </view>
+    </block>
   </view>
 </view>

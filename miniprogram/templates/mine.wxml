@@ -1,0 +1,18 @@
+<template name="mine">
+  <import src="../templates/abort.wxml"></import>
+  <view class="mine">
+    <view class="mine_content">
+      <scroll-view
+        wx:if="{{ loaded }}"
+        class="mine_scroll"
+        scroll-y="true"
+        enhanced="{{ true }}"
+      ></scroll-view>
+    </view>
+  </view>
+  <template
+    wx:if="{{ !loaded || abortMessage }}"
+    is="abort"
+    data="{{message: abortMessage || '加载中..' }}"
+  ></template>
+</template>

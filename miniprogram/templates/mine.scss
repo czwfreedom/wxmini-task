@@ -1,0 +1,17 @@
+@import '../assets/style/var.scss';
+@import '../assets/style/mixin.scss';
+@import '../templates/abort.scss';
+
+.mine {
+  @include flex-container;
+  background: $background-gradient;
+
+  &_content {
+    @include flex-scaleable-content;
+  }
+
+  &_scroll {
+    @include flex-scaleable-scroll-view;
+    bottom: 120rpx;
+  }
+}

@@ -1,5 +1,7 @@
 {
-    "usingComponents": {},
+    "usingComponents": {
+        "home-wrapper": "../components/homeWrapper"
+    },
     "navigationBarTitleText": "",
     "disableScroll": true,
     "enablePullDownRefresh": false

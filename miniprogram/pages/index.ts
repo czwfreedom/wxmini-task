@@ -4,7 +4,7 @@ import { IndexUI } from './indexUI';
 // pages/index/index.ts
 Page({
   data: {
-    ...IndexUI.getDefaultData(),
+    ...IndexUI.defaultData(),
   },
 
   ui: undefined as IndexUI | undefined,

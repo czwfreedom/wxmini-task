@@ -324,13 +324,13 @@
 
   // ===== 底部留白 =====
   &_spacer {
-    height: 200rpx;
+    height: 32rpx;
   }
 
   // ===== 回到今天胶囊 =====
   &_backtoday {
     position: fixed;
-    bottom: 160rpx;
+    bottom: 32rpx;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
