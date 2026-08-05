@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>底部 Tab + 我的页面 + 任务分享 - 交互设计稿</title>
+<title>底部 Tab + 我的页面 + 任务分享 - v3</title>
 <style>
 /* ========== Reset & Base ========== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -13,7 +13,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 32px;
+  gap: 28px;
   padding: 40px 24px;
   min-height: 100vh;
   font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
@@ -37,21 +37,13 @@ body {
   border-radius: 40px;
   overflow: hidden;
   position: relative;
-  box-shadow:
-    0 0 0 3px #1a1a1a,
-    0 0 0 6px #2d2d2d,
-    0 20px 60px rgba(0,0,0,0.3);
+  box-shadow: 0 0 0 3px #1a1a1a, 0 0 0 6px #2d2d2d, 0 20px 60px rgba(0,0,0,0.3);
 }
 .status-bar {
-  height: 44px;
-  background: #B8DAF5;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  height: 44px; background: #B8DAF5;
+  display: flex; align-items: center; justify-content: space-between;
   padding: 0 28px;
-  font-size: 12px;
-  color: #fff;
-  font-weight: 600;
+  font-size: 12px; color: #fff; font-weight: 600;
 }
 .status-bar .time { font-size: 14px; font-weight: 700; }
 
@@ -64,157 +56,23 @@ body {
   position: relative;
 }
 .page::-webkit-scrollbar { width: 0; }
-
-/* ========== Hero ========== */
-.hero {
-  background: linear-gradient(160deg, #B5D9F8 0%, #A0CDF5 50%, #C5E3FA 100%);
-  border-radius: 0 0 32px 32px;
-  margin: 0 -20px 24px;
-  padding: 24px 28px 28px;
+/* 伙伴列表页：无底部 tab，全高 */
+.page-full {
+  height: calc(100% - 44px);
+  overflow-y: auto;
+  background: linear-gradient(180deg, #B8DAF5 0%, #F2F5F8 30%);
+  padding: 0 20px 100px;
   position: relative;
-  overflow: hidden;
 }
-.hero::before {
-  content: '';
-  position: absolute;
-  top: 12px; left: 50%;
-  transform: translateX(-50%);
-  width: 40px; height: 10px;
-  background: #F2F5F8;
-  border-radius: 5px;
-  box-shadow: inset 1px 2px 3px rgba(0,0,0,0.06);
-}
-.hero.past { box-shadow: inset 0 0 0 999px rgba(255,255,255,0.32); }
-.hero-date-nav { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
-.date-arrow {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.5);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; font-weight: 700; color: #fff;
-  box-shadow: 0 2px 6px rgba(58,90,140,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
-  flex-shrink: 0;
-}
-.date-arrow.disabled { opacity: 0.35; }
-.hero-date-center { flex: 1; min-width: 0; }
-.hero-date-label {
-  font-size: 13px; color: rgba(255,255,255,0.85);
-  font-weight: 500; letter-spacing: 1px;
-}
-.hero-date-main {
-  font-size: 28px; font-weight: 800; color: #fff;
-  line-height: 1.2; letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.06);
-}
-.hero-motto {
-  font-size: 13px; color: rgba(255,255,255,0.78);
-  margin-top: 8px; font-weight: 500; letter-spacing: 0.5px;
-}
-.hero-status-bar { display: flex; gap: 10px; margin-top: 16px; }
-.hero-status-item {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12px; font-weight: 600; color: #3A5A8C;
-  background: rgba(255,255,255,0.65);
-  padding: 6px 14px; border-radius: 20px;
-}
-.hero-status-dot { width: 8px; height: 8px; border-radius: 50%; }
-.hero-status-dot.planned { background: #5B9BD5; }
-.hero-status-dot.feedback { background: #F4B942; }
-.hero-status-dot.done { background: #81C784; }
+.page-full::-webkit-scrollbar { width: 0; }
 
-/* ========== Section Title ========== */
-.section-title {
-  font-size: 17px; font-weight: 700; color: #333;
-  margin-bottom: 14px;
-  display: flex; align-items: center; gap: 8px;
-}
-.section-title::before {
-  content: ''; width: 4px; height: 18px;
-  background: #F4B942; border-radius: 2px;
-}
-
-/* ========== Task Cards ========== */
-.card-list { display: flex; flex-direction: column; gap: 14px; }
-.task-card {
-  position: relative;
-  background: #FDFBF7;
-  border-radius: 20px;
-  padding: 18px 18px 18px 0;
-  display: flex; align-items: center;
-  box-shadow: 0 2px 0 rgba(0,0,0,0.03), 0 8px 24px rgba(74,144,226,0.06);
-  overflow: hidden;
-}
-.task-card .card-accent {
-  position: absolute; left: 0; top: 12px; bottom: 12px;
-  width: 8px; border-radius: 0 4px 4px 0;
-}
-.card-icon-wrap {
-  width: 60px; height: 60px; min-width: 60px;
-  display: flex; align-items: center; justify-content: center;
-}
-.card-body { flex: 1; min-width: 0; }
-.card-title { font-size: 16px; font-weight: 600; color: #333; line-height: 1.4; margin-bottom: 3px; }
-.card-subtitle { font-size: 12px; color: #999; }
-.card-action { min-width: 60px; text-align: center; margin-right: 4px; }
-.card-action-btn {
-  display: inline-block;
-  font-size: 12px; font-weight: 600;
-  padding: 7px 14px; border-radius: 18px;
-  background: linear-gradient(135deg, #F4B942, #FFD54F);
-  color: #fff;
-  box-shadow: 0 3px 10px rgba(244,185,66,0.3);
-}
-.card-done { background: #FFFDF8; border: 2px solid rgba(200,180,150,0.4); }
-.card-done .card-body { position: relative; }
-.feedback-quote {
-  font-size: 11px; color: #6B9A5E;
-  margin-top: 6px; padding: 5px 9px;
-  background: rgba(129,199,132,0.12);
-  border-radius: 8px; font-style: italic; line-height: 1.5;
-  border-left: 3px solid rgba(129,199,132,0.4);
-}
-.stamp-overlay {
-  position: absolute; top: -4px; right: 0;
-  width: 38px; height: 38px;
-  transform: rotate(8deg);
-  filter: drop-shadow(0 2px 5px rgba(180,40,40,0.35));
-}
-.readonly-mark {
-  font-size: 11px; color: #C5C5C5; font-weight: 600;
-  text-align: center; padding: 0 8px;
-}
-
-/* ========== 分享入口卡（任务列表底部，仅今天态） ========== */
-.share-entry {
-  margin-top: 14px;
-  background: linear-gradient(135deg, #FFF8E1, #FFF3D6);
-  border: 2px solid rgba(244,185,66,0.45);
-  border-radius: 20px;
-  padding: 18px 20px;
-  display: flex; align-items: center; gap: 14px;
-  box-shadow: 0 8px 24px rgba(244,185,66,0.10);
-}
-.share-entry-icon {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: linear-gradient(135deg, #F4B942, #FFD54F);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 12px rgba(244,185,66,0.35);
-  flex-shrink: 0;
-}
-.share-entry-body { flex: 1; min-width: 0; }
-.share-entry-title { font-size: 15px; font-weight: 700; color: #8B6914; }
-.share-entry-sub { font-size: 11px; color: #B8962E; margin-top: 2px; }
-.share-entry-arrow { font-size: 20px; color: #F4B942; font-weight: 700; }
-
-/* ========== 底部 TabBar ========== */
+/* ========== TabBar ========== */
 .tabbar {
   height: 60px;
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px);
   border-top: 0.5px solid rgba(0,0,0,0.06);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
+  display: flex; align-items: center; justify-content: space-around;
   padding: 0 16px;
   padding-bottom: env(safe-area-inset-bottom);
   position: relative;
@@ -222,23 +80,16 @@ body {
 .tab-item {
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   font-size: 10px; color: #C5C5C5; font-weight: 600;
-  padding: 4px 0;
-  cursor: pointer;
+  padding: 4px 0; cursor: pointer;
 }
 .tab-item.active { color: #3A5A8C; }
-.tab-icon {
-  width: 24px; height: 24px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-}
+.tab-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
 .tab-add {
-  width: 48px; height: 48px;
-  border-radius: 50%;
+  width: 48px; height: 48px; border-radius: 50%;
   background: linear-gradient(135deg, #F4B942, #FFD54F);
   box-shadow: 0 4px 16px rgba(244,185,66,0.4);
   display: flex; align-items: center; justify-content: center;
-  margin-top: -18px;
-  cursor: pointer;
+  margin-top: -18px; cursor: pointer;
 }
 
 /* ========== 「我的」页面 ========== */
@@ -247,46 +98,30 @@ body {
   padding: 20px 24px 16px;
   background: linear-gradient(180deg, #B8DAF5, rgba(184,218,245,0));
 }
-.mine-avatar-row {
-  display: flex; align-items: center; gap: 14px;
-}
+.mine-avatar-row { display: flex; align-items: center; gap: 14px; }
 .mine-avatar {
   width: 56px; height: 56px; border-radius: 50%;
   background: linear-gradient(135deg, #FFD54F, #F4B942);
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px; font-weight: 700; color: #fff;
+  font-size: 22px; font-weight: 800; color: #fff;
   box-shadow: 0 4px 12px rgba(58,90,140,0.15);
   border: 2px solid rgba(255,255,255,0.7);
 }
-.mine-nick {
-  font-size: 20px; font-weight: 800; color: #fff;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.08);
-}
-.mine-stats {
-  display: flex; gap: 24px;
-  margin-top: 14px;
-}
-.mine-stat {
-  text-align: center;
-}
-.mine-stat-val {
-  font-size: 22px; font-weight: 800; color: #3A5A8C;
-}
-.mine-stat-label {
-  font-size: 11px; color: #5C6178; font-weight: 500; margin-top: 2px;
-}
+.mine-nick { font-size: 20px; font-weight: 800; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+.mine-stats { display: flex; gap: 24px; margin-top: 14px; }
+.mine-stat { text-align: center; }
+.mine-stat-val { font-size: 22px; font-weight: 800; color: #3A5A8C; }
+.mine-stat-label { font-size: 11px; color: #5C6178; font-weight: 500; margin-top: 2px; }
 
-/* 「我的」菜单列表 */
+/* 「我的」菜单 */
 .menu-card {
-  background: #FDFBF7;
-  border-radius: 20px;
+  background: #FDFBF7; border-radius: 20px;
   box-shadow: 0 2px 0 rgba(0,0,0,0.03), 0 8px 24px rgba(74,144,226,0.06);
   overflow: hidden;
 }
 .menu-row {
   display: flex; align-items: center;
-  padding: 16px 20px;
-  gap: 14px;
+  padding: 16px 20px; gap: 14px;
   border-bottom: 0.5px solid rgba(0,0,0,0.04);
   cursor: pointer;
 }
@@ -299,19 +134,17 @@ body {
 .menu-row-body { flex: 1; min-width: 0; }
 .menu-row-title { font-size: 15px; font-weight: 600; color: #333; }
 .menu-row-sub { font-size: 11px; color: #999; margin-top: 2px; }
-.menu-row-extra {
-  font-size: 13px; font-weight: 600; color: #999;
-  display: flex; align-items: center; gap: 6px;
-}
+.menu-row-extra { display: flex; align-items: center; gap: 6px; }
 .menu-row-extra .badge {
-  width: 20px; height: 20px; border-radius: 50%;
+  min-width: 20px; height: 20px; border-radius: 10px;
   background: #F4B942; color: #fff;
   font-size: 11px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
+  padding: 0 6px;
 }
 .menu-chevron { font-size: 18px; color: #C5C5C5; font-weight: 700; }
 
-/* ========== 伙伴页 ========== */
+/* ========== 伙伴列表页 ========== */
 .partner-header {
   margin: 0 -20px 20px;
   padding: 16px 20px 0;
@@ -322,40 +155,12 @@ body {
   text-shadow: 0 2px 4px rgba(0,0,0,0.08);
   margin-top: 8px;
 }
-.partner-tabs {
-  display: flex; gap: 10px;
-  margin-top: 16px;
-}
-.partner-tab {
-  flex: 1;
-  text-align: center;
-  font-size: 14px; font-weight: 600;
-  color: rgba(255,255,255,0.75);
-  padding: 10px 0;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.25);
-}
-.partner-tab.active {
-  color: #3A5A8C;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(58,90,140,0.12);
-}
-.partner-tab .count {
-  font-size: 11px; font-weight: 700;
-  background: #F4B942; color: #fff;
-  border-radius: 10px; padding: 1px 8px;
-  margin-left: 4px;
-}
 .partner-list { display: flex; flex-direction: column; gap: 12px; }
-.partner-row-wrap { position: relative; overflow: hidden; border-radius: 20px; }
 .partner-row {
-  background: #FDFBF7;
-  border-radius: 20px;
+  background: #FDFBF7; border-radius: 20px;
   padding: 14px 16px;
   display: flex; align-items: center; gap: 14px;
   box-shadow: 0 2px 0 rgba(0,0,0,0.03), 0 8px 24px rgba(74,144,226,0.06);
-  position: relative;
-  transition: transform .2s;
 }
 .partner-avatar {
   width: 46px; height: 46px; border-radius: 50%;
@@ -371,24 +176,24 @@ body {
 .partner-name { font-size: 16px; font-weight: 700; color: #333; }
 .partner-sub { font-size: 11px; color: #999; margin-top: 3px; }
 .partner-sub .hl { color: #6B9A5E; font-weight: 600; }
-.partner-chevron { font-size: 20px; color: #C5C5C5; font-weight: 700; }
-.partner-row-wrap { position: relative; overflow: hidden; border-radius: 20px; }
-
-/* 删除按钮：两个 tab 统一使用右侧 inline 移出按钮（不用左滑） */
-.partner-remove {
-  font-size: 12px; font-weight: 600; color: #EF5350;
-  background: rgba(239,83,80,0.08);
-  border: 1px solid rgba(239,83,80,0.25);
-  padding: 6px 14px; border-radius: 16px;
+.partner-gear {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
+  font-size: 18px; color: #C5C5C5; font-weight: 700; letter-spacing: -1px;
 }
+.partner-chevron { font-size: 20px; color: #C5C5C5; font-weight: 700; flex-shrink: 0; }
 
-/* 固定底部分享按钮 */
-.partner-share-btn {
-  position: fixed;
+/* 伙伴列表页底部固定分享按钮 */
+.partner-fixed-share {
+  position: absolute;
   bottom: 0; left: 0; right: 0;
-  margin: 0 20px;
-  margin-bottom: calc(16px + env(safe-area-inset-bottom));
+  padding: 12px 20px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, #F2F5F8 35%);
+  z-index: 10;
+}
+.partner-fixed-share .btn {
   background: linear-gradient(135deg, #F4B942, #FFD54F);
   border-radius: 999px;
   padding: 14px;
@@ -397,111 +202,36 @@ body {
   letter-spacing: 2px;
   box-shadow: 0 8px 24px rgba(244,185,66,0.35);
   display: flex; align-items: center; justify-content: center; gap: 10px;
-  z-index: 10;
 }
 
-/* ========== 微信分享卡片图文（450×360 固定内容） ========== */
-.share-img-demo {
-  width: 450px;
-  height: 360px;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  display: flex; flex-direction: column;
-}
-/* 三版底色 */
-.share-img-demo.v1 { background: linear-gradient(160deg, #B5D9F8 0%, #A0CDF5 50%, #C5E3FA 100%); }
-.share-img-demo.v2 { background: linear-gradient(160deg, #FFE0B2 0%, #FFCC80 50%, #FFECB3 100%); }
-.share-img-demo.v3 { background: linear-gradient(160deg, #C8E6C9 0%, #A5D6A7 50%, #C8E6C9 100%); }
-.share-img-top {
-  flex: 1;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 36px 48px 0;
-  position: relative;
-}
-.share-img-logo {
-  width: 64px; height: 64px;
-  position: absolute;
-  top: 24px; right: 36px;
-  opacity: 0.4;
-}
-.share-img-icon-big {
-  width: 72px; height: 72px;
-  margin-bottom: 14px;
-}
-.share-img-title {
-  font-size: 24px; font-weight: 800; color: #fff;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.08);
-  text-align: center; line-height: 1.4;
-}
-.share-img-subtitle {
-  font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.85);
-  margin-top: 10px; text-align: center; line-height: 1.6;
-  max-width: 320px;
-}
-/* 底部品牌条 */
-.share-img-bottom {
-  height: 54px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(4px);
-  display: flex; align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 15px; font-weight: 600; color: #3A5A8C;
-}
-.share-img-bottom.v2 { color: #8B6914; }
-.share-img-bottom.v3 { color: #2E7D32; }
-
-/* ========== 头像昵称设置引导弹窗 ========== */
-.profile-dialog {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 20;
-  display: flex; align-items: center; justify-content: center;
-}
-.profile-card {
-  width: 300px;
+/* ========== 通用弹窗（独立模块，不在手机框内） ========== */
+.dialog-demo {
+  width: 290px;
   background: #FBFCFE;
   border-radius: 24px;
-  padding: 28px 24px;
+  padding: 32px 24px 24px;
   text-align: center;
   box-shadow: 0 16px 48px rgba(0,0,0,0.2);
 }
-.profile-card-icon {
-  width: 64px; height: 64px; margin: 0 auto 12px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 30px;
+.dialog-demo .title { font-size: 17px; font-weight: 700; color: #333; margin-bottom: 8px; }
+.dialog-demo .body { font-size: 13px; color: #999; line-height: 1.7; margin-bottom: 24px; }
+.dialog-demo .actions { display: flex; gap: 12px; }
+.dialog-demo .actions .btn {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 20px;
+  font-size: 14px; font-weight: 700;
+  text-align: center;
 }
-.profile-card-title {
-  font-size: 17px; font-weight: 700; color: #333; margin-bottom: 4px;
-}
-.profile-card-sub {
-  font-size: 12px; color: #999; margin-bottom: 20px; line-height: 1.6;
-}
-.profile-btn {
-  display: block;
-  background: linear-gradient(135deg, #F4B942, #FFD54F);
-  border-radius: 999px;
-  padding: 14px;
-  font-size: 16px; font-weight: 700; color: #fff;
-  letter-spacing: 1px;
-  box-shadow: 0 6px 20px rgba(244,185,66,0.3);
-  margin-bottom: 10px;
-}
-.profile-skip {
-  font-size: 13px; color: #C5C5C5;
-}
+.btn-cancel { background: #F2F5F8; color: #999; }
+.btn-confirm { background: linear-gradient(135deg, #F4B942, #FFD54F); color: #fff; box-shadow: 0 4px 12px rgba(244,185,66,0.3); }
+.btn-danger { background: rgba(239,83,80,0.1); color: #EF5350; border: 1px solid rgba(239,83,80,0.25); }
 
 /* ========== 规则说明卡 ========== */
+.spec-col { display: flex; flex-direction: column; gap: 16px; }
 .spec-card {
-  width: 340px;
-  background: #fff;
-  border-radius: 20px;
-  padding: 24px;
+  width: 350px;
+  background: #fff; border-radius: 20px; padding: 24px;
   box-shadow: 0 8px 32px rgba(74,144,226,0.08);
 }
 .spec-card h3 {
@@ -530,102 +260,14 @@ body {
   background: #FFF3E0; color: #8B6914;
 }
 .spec-item .demo-tag.gray { background: #EEF0F4; color: #999; }
-.spec-item .demo-tag.blue { background: #E3F2FD; color: #3A5A8C; }
 .spec-item .demo-tag.red { background: #FFEBEE; color: #D84035; }
 </style>
 </head>
 <body>
 
-<!-- ================= 框 A：任务页 ================= -->
+<!-- ================= 框 A：我的页面 ================= -->
 <div class="frame-col">
-  <div class="frame-label">A · 任务页<small>tab「任务」· 底部分享入口卡 · 历史态不显示分享卡</small></div>
-  <div class="phone">
-    <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
-    <div class="page">
-
-      <div class="hero">
-        <div class="hero-date-nav">
-          <div class="date-arrow">‹</div>
-          <div class="hero-date-center">
-            <div class="hero-date-label">今天是</div>
-            <div class="hero-date-main">8月4日 周二</div>
-          </div>
-          <div class="date-arrow disabled">›</div>
-        </div>
-        <div class="hero-motto">✦ 苟日新，日日新，又日新</div>
-        <div class="hero-status-bar">
-          <div class="hero-status-item"><span class="hero-status-dot planned"></span>已规划 3</div>
-          <div class="hero-status-item"><span class="hero-status-dot feedback"></span>待反馈 1</div>
-          <div class="hero-status-item"><span class="hero-status-dot done"></span>已完成 2</div>
-        </div>
-      </div>
-
-      <div class="section-title">当日任务</div>
-      <div class="card-list">
-        <div class="task-card">
-          <div class="card-accent" style="background:#FFB74D;"></div>
-          <div class="card-icon-wrap">
-            <svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#FFF3E0"/><path d="M24 16 C20 13.5 15 13 11 13.5 L11 32 C15 31.5 20 32 24 34.5 C28 32 33 31.5 37 32 L37 13.5 C33 13 28 13.5 24 16 Z" fill="#f4b942" stroke="#E65100" stroke-width="1.2"/><path d="M24 18.5 C20.8 16.6 16.2 16.1 13 16.6 L13 30.4 C16.2 29.9 20.8 30.4 24 32.3 C27.2 30.4 31.8 29.9 35 30.4 L35 16.6 C31.8 16.1 27.2 16.6 24 18.5 Z" fill="#FFFEF9"/></svg>
-          </div>
-          <div class="card-body">
-            <div class="card-title">《三体》第3章</div>
-            <div class="card-subtitle">阅读 · 约30分钟</div>
-          </div>
-          <div class="card-action"><div class="card-action-btn">去完成</div></div>
-        </div>
-
-        <div class="task-card card-done">
-          <div class="card-accent" style="background:#81C784;"></div>
-          <div class="card-icon-wrap">
-            <svg width="44" height="44" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#E8F5E9"/><circle cx="26" cy="13" r="4.5" fill="#43A047" stroke="#2E7D32" stroke-width="0.8"/><line x1="26" y1="17.5" x2="24" y2="29" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="25" y1="21" x2="32" y2="17" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="25" y1="22" x2="18" y2="20" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="29" x2="33" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="29" x2="18" y2="36" stroke="#43A047" stroke-width="2.5" stroke-linecap="round"/></svg>
-          </div>
-          <div class="card-body">
-            <div class="card-title">跳绳500个</div>
-            <div class="card-subtitle">运动 · 约15分钟</div>
-            <div class="feedback-quote">"今天比昨天多跳了30个！"</div>
-            <svg class="stamp-overlay" viewBox="0 0 52 52"><circle cx="26" cy="26" r="23" fill="none" stroke="#D84035" stroke-width="5"/><circle cx="26" cy="26" r="15" fill="none" stroke="#D84035" stroke-width="1.2"/><text x="26" y="31" text-anchor="middle" font-size="11" font-weight="900" fill="#D84035" letter-spacing="2">完成</text></svg>
-          </div>
-        </div>
-      </div>
-
-      <!-- 分享入口卡（仅今天态显示） -->
-      <div class="share-entry">
-        <div class="share-entry-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="6" cy="12" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="18" cy="19" r="2.5" stroke="#fff" stroke-width="1.8"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
-        </div>
-        <div class="share-entry-body">
-          <div class="share-entry-title">邀请伙伴围观我的任务</div>
-          <div class="share-entry-sub">分享到微信群，互相激励一起坚持</div>
-        </div>
-        <div class="share-entry-arrow">›</div>
-      </div>
-
-    </div>
-
-    <!-- 底部 TabBar -->
-    <div class="tabbar">
-      <div class="tab-item active">
-        <div class="tab-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="#3A5A8C"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="#B0BEC5"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="#B0BEC5"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="#B0BEC5"/></svg>
-        </div>
-        任务
-      </div>
-      <div class="tab-add">
-        <svg width="24" height="24" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
-      </div>
-      <div class="tab-item">
-        <div class="tab-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="4" fill="#B0BEC5"/><path d="M4 21 C4 16 7.6 13 12 13 C16.4 13 20 16 20 21" fill="#B0BEC5"/></svg>
-        </div>
-        我的
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ================= 框 B：「我的」页面 ================= -->
-<div class="frame-col">
-  <div class="frame-label">B · 「我的」页面<small>头像+昵称+累计统计 · 任务伙伴带角标入口</small></div>
+  <div class="frame-label">A · 「我的」页面<small>双伙伴入口 · 无每日提醒/关于 · 底部仅为 tabBar</small></div>
   <div class="phone">
     <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
     <div class="page">
@@ -633,318 +275,232 @@ body {
       <div class="mine-header">
         <div class="mine-avatar-row">
           <div class="mine-avatar">明</div>
-          <div>
-            <div class="mine-nick">小明</div>
-          </div>
+          <div><div class="mine-nick">小明</div></div>
         </div>
         <div class="mine-stats">
-          <div class="mine-stat">
-            <div class="mine-stat-val">12</div>
-            <div class="mine-stat-label">累计任务</div>
-          </div>
-          <div class="mine-stat">
-            <div class="mine-stat-val">8</div>
-            <div class="mine-stat-label">累计完成</div>
-          </div>
-          <div class="mine-stat">
-            <div class="mine-stat-val">3</div>
-            <div class="mine-stat-label">连续天数</div>
-          </div>
+          <div class="mine-stat"><div class="mine-stat-val">12</div><div class="mine-stat-label">累计任务</div></div>
+          <div class="mine-stat"><div class="mine-stat-val">8</div><div class="mine-stat-label">累计完成</div></div>
+          <div class="mine-stat"><div class="mine-stat-val">3</div><div class="mine-stat-label">连续天数</div></div>
         </div>
       </div>
 
       <div class="menu-card">
+        <!-- 我关注的 -->
         <div class="menu-row" style="cursor:pointer;">
-          <div class="menu-row-icon" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#F4B942" stroke-width="1.8"/><circle cx="6" cy="12" r="2.5" stroke="#F4B942" stroke-width="1.8"/><circle cx="18" cy="19" r="2.5" stroke="#F4B942" stroke-width="1.8"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2" stroke="#F4B942" stroke-width="1.8" stroke-linecap="round"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8" stroke="#F4B942" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <div class="menu-row-icon" style="background:#E3F2FD;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="4" fill="#64B5F6"/><path d="M4 21 C4 16 7.6 13 12 13 C16.4 13 20 16 20 21" fill="#64B5F6"/><circle cx="16" cy="8" r="2.5" fill="#42A5F5" opacity="0.6"/></svg>
           </div>
           <div class="menu-row-body">
-            <div class="menu-row-title">任务伙伴</div>
-            <div class="menu-row-sub">围观伙伴的任务，互相激励</div>
+            <div class="menu-row-title">我关注的伙伴</div>
+            <div class="menu-row-sub">围观他们的任务，一起加油</div>
+          </div>
+          <div class="menu-row-extra">
+            <span class="badge">2</span>
+            <span class="menu-chevron">›</span>
+          </div>
+        </div>
+
+        <!-- 关注我的 -->
+        <div class="menu-row" style="cursor:pointer;">
+          <div class="menu-row-icon" style="background:#FFF3E0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="4" fill="#F4B942"/><path d="M4 21 C4 16 7.6 13 12 13 C16.4 13 20 16 20 21" fill="#F4B942"/><circle cx="16" cy="8" r="2.5" fill="#E8A830" opacity="0.5"/></svg>
+          </div>
+          <div class="menu-row-body">
+            <div class="menu-row-title">关注我的伙伴</div>
+            <div class="menu-row-sub">他们也在一起见证你的坚持</div>
           </div>
           <div class="menu-row-extra">
             <span class="badge">3</span>
             <span class="menu-chevron">›</span>
           </div>
         </div>
-
-        <div class="menu-row">
-          <div class="menu-row-icon" style="background:#E3F2FD;">
-            <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="#64B5F6"/><path d="M12 2 V4 M12 20 V22 M2 12 H4 M20 12 H22" stroke="#64B5F6" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </div>
-          <div class="menu-row-body">
-            <div class="menu-row-title">每日提醒</div>
-            <div class="menu-row-sub">设置任务提醒时间</div>
-          </div>
-          <div class="menu-chevron">›</div>
-        </div>
-
-        <div class="menu-row">
-          <div class="menu-row-icon" style="background:#F3E5F5;">
-            <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#BA68C8" stroke-width="1.8"/><path d="M12 7 V13 L16 15" stroke="#BA68C8" stroke-width="1.8" stroke-linecap="round"/></svg>
-          </div>
-          <div class="menu-row-body">
-            <div class="menu-row-title">关于</div>
-            <div class="menu-row-sub">版本与反馈</div>
-          </div>
-          <div class="menu-chevron">›</div>
-        </div>
       </div>
 
     </div>
 
     <div class="tabbar">
-      <div class="tab-item">
-        <div class="tab-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="#B0BEC5"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="#B0BEC5"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="#B0BEC5"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="#B0BEC5"/></svg>
-        </div>
-        任务
-      </div>
-      <div class="tab-add">
-        <svg width="24" height="24" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
-      </div>
-      <div class="tab-item active">
-        <div class="tab-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="4" fill="#3A5A8C"/><path d="M4 21 C4 16 7.6 13 12 13 C16.4 13 20 16 20 21" fill="#3A5A8C"/></svg>
-        </div>
-        我的
-      </div>
+      <div class="tab-item"><div class="tab-icon"><svg width="24" height="24" viewBox="0 0 48 48" fill="none"><rect x="5" y="5" width="16" height="16" rx="3" fill="#E8E8E8" stroke="#D0D0D0" stroke-width="1.5"/><rect x="27" y="5" width="16" height="16" rx="3" fill="#E8E8E8" stroke="#D0D0D0" stroke-width="1.5"/><rect x="5" y="27" width="16" height="16" rx="3" fill="#E8E8E8" stroke="#D0D0D0" stroke-width="1.5"/><rect x="27" y="27" width="16" height="16" rx="3" fill="#E8E8E8" stroke="#D0D0D0" stroke-width="1.5"/></svg></div>任务</div>
+      <div class="tab-add"><svg width="24" height="24" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+      <div class="tab-item active"><div class="tab-icon"><svg width="24" height="24" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="18" r="8" fill="#E3F2FD" stroke="#64B5F6" stroke-width="1.5"/><path d="M6 42 C6 33 14.1 26 24 26 C33.9 26 42 33 42 42" fill="#E3F2FD" stroke="#64B5F6" stroke-width="1.5"/></svg></div>我的</div>
     </div>
   </div>
 </div>
 
-<!-- ================= 框 C：伙伴页「谁能看我」+ 固定分享按钮 ================= -->
+<!-- ================= 框 B：我关注的伙伴列表 ================= -->
 <div class="frame-col">
-  <div class="frame-label">C · 伙伴页「谁能看我」<small>底部固定分享按钮 · 列表可删除 · 左滑或点击移出</small></div>
+  <div class="frame-label">B · 我关注的伙伴<small>› 围观 · ⋮ 取消关注 · 底部固定分享按钮</small></div>
   <div class="phone">
     <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
-    <div class="page" style="height:calc(100% - 44px);">
+    <div class="page-full">
 
       <div class="partner-header">
-        <div class="partner-title">任务伙伴</div>
-        <div class="partner-tabs">
-          <div class="partner-tab">我能看谁<span class="count">2</span></div>
-          <div class="partner-tab active">谁能看我<span class="count">3</span></div>
-        </div>
+        <div class="partner-title">我关注的伙伴</div>
       </div>
 
       <div class="partner-list">
-        <div class="partner-row-wrap">
-          <div class="partner-row">
-            <div class="partner-avatar c4">雨</div>
-            <div class="partner-info">
-              <div class="partner-name">小雨妈妈</div>
-              <div class="partner-sub">通过你的分享加入 · 3天前</div>
-            </div>
-            <div class="partner-remove">移出</div>
+        <div class="partner-row" style="cursor:pointer;">
+          <div class="partner-avatar c1">明</div>
+          <div class="partner-info">
+            <div class="partner-name">小明</div>
+            <div class="partner-sub">今日已完成 <span class="hl">2/3</span> · 点击可围观</div>
           </div>
+          <div class="partner-gear">&#8942;</div>
+          <div class="partner-chevron">›</div>
         </div>
 
-        <div class="partner-row-wrap">
-          <div class="partner-row">
-            <div class="partner-avatar c1">睿</div>
-            <div class="partner-info">
-              <div class="partner-name">睿睿</div>
-              <div class="partner-sub">通过你的分享加入 · 上周</div>
-            </div>
-            <div class="partner-remove">移出</div>
+        <div class="partner-row" style="cursor:pointer;">
+          <div class="partner-avatar c2">芳</div>
+          <div class="partner-info">
+            <div class="partner-name">芳芳</div>
+            <div class="partner-sub">今日已完成 <span class="hl">4/4</span> · 点击可围观</div>
           </div>
+          <div class="partner-gear">&#8942;</div>
+          <div class="partner-chevron">›</div>
         </div>
 
-        <div class="partner-row-wrap">
-          <div class="partner-row">
-            <div class="partner-avatar c3">爷</div>
-            <div class="partner-info">
-              <div class="partner-name">爷爷</div>
-              <div class="partner-sub">通过你的分享加入 · 2周前</div>
-            </div>
-            <div class="partner-remove">移出</div>
+        <div class="partner-row" style="cursor:pointer;">
+          <div class="partner-avatar c3">轩</div>
+          <div class="partner-info">
+            <div class="partner-name">轩轩</div>
+            <div class="partner-sub">最近活跃：昨天 · 点击可围观</div>
           </div>
+          <div class="partner-gear">&#8942;</div>
+          <div class="partner-chevron">›</div>
         </div>
 
-        <div style="height:90px;"></div>
+        <div style="height:80px;"></div>
+      </div>
+
+      <div class="partner-fixed-share">
+        <div class="btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="6" cy="12" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="18" cy="19" r="2.5" stroke="#fff" stroke-width="1.8"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+          邀请伙伴围观我的任务
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ================= 框 D：「我能看谁」列表 ================= -->
+<!-- ================= 框 C：关注我的伙伴列表 ================= -->
 <div class="frame-col">
-  <div class="frame-label">D · 伙伴页「我能看谁」<small>右侧移出按钮（与谁能看我一致）· 底部固定分享按钮</small></div>
+  <div class="frame-label">C · 关注我的伙伴<small>⋮ → 弹窗确认移出 · 底部固定分享按钮</small></div>
   <div class="phone">
     <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
-    <div class="page" style="height:calc(100% - 44px);">
+    <div class="page-full">
 
       <div class="partner-header">
-        <div class="partner-title">任务伙伴</div>
-        <div class="partner-tabs">
-          <div class="partner-tab active">我能看谁<span class="count">2</span></div>
-          <div class="partner-tab">谁能看我<span class="count">3</span></div>
-        </div>
+        <div class="partner-title">关注我的伙伴</div>
       </div>
 
       <div class="partner-list">
-        <div class="partner-row-wrap">
-          <div class="partner-row">
-            <div class="partner-avatar c1">明</div>
-            <div class="partner-info">
-              <div class="partner-name">小明</div>
-              <div class="partner-sub">今日已完成 <span class="hl">2/3</span> · 点击可围观</div>
-            </div>
-            <div class="partner-remove">移出</div>
+        <div class="partner-row">
+          <div class="partner-avatar c4">雨</div>
+          <div class="partner-info">
+            <div class="partner-name">小雨妈妈</div>
+            <div class="partner-sub">通过你的分享加入 · 3天前</div>
           </div>
+          <div class="partner-gear">&#8942;</div>
+          <div class="partner-chevron">›</div>
         </div>
 
-        <div class="partner-row-wrap">
-          <div class="partner-row">
-            <div class="partner-avatar c2">芳</div>
-            <div class="partner-info">
-              <div class="partner-name">芳芳</div>
-              <div class="partner-sub">今日已完成 <span class="hl">4/4</span> · 点击可围观</div>
-            </div>
-            <div class="partner-remove">移出</div>
+        <div class="partner-row">
+          <div class="partner-avatar c1">睿</div>
+          <div class="partner-info">
+            <div class="partner-name">睿睿</div>
+            <div class="partner-sub">通过你的分享加入 · 上周</div>
           </div>
+          <div class="partner-gear">&#8942;</div>
+          <div class="partner-chevron">›</div>
         </div>
 
-        <div style="height:90px;"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ================= 框 E：微信分享卡片 3 版固定内容（450×360） ================= -->
-<div class="frame-col">
-  <div class="frame-label">E · 分享卡片 · 版本 1<small>晴空蓝 · 一起坚持，共同进步</small></div>
-  <div class="share-img-demo v1">
-    <div class="share-img-top">
-      <svg class="share-img-logo" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#fff" opacity="0.55"/><polygon points="22,35 34,35 28,44" fill="#fff" opacity="0.45"/><rect x="21" y="0" width="14" height="3" rx="1" fill="#fff" opacity="0.55"/><rect x="21" y="-3" width="14" height="4" rx="1.5" fill="#fff" opacity="0.45"/><circle cx="28" cy="22" r="9" fill="#fff" opacity="0.3"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.2"/></svg>
-      <svg class="share-img-icon-big" viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><circle cx="26" cy="30" r="10" fill="rgba(255,255,255,0.7)" stroke="#fff" stroke-width="1.5"/><circle cx="46" cy="30" r="10" fill="rgba(255,255,255,0.7)" stroke="#fff" stroke-width="1.5"/><path d="M26 40 Q36 52 46 40" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
-      <div class="share-img-title">一起坚持<br>共同进步</div>
-      <div class="share-img-subtitle">来看看我今天的任务<br>互相激励，每一步都算数</div>
-    </div>
-    <div class="share-img-bottom">
-      <svg width="18" height="18" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#F4B942"/><polygon points="22,35 34,35 28,44" fill="#FFE0B2"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.6"/></svg>
-      任务小助手 · 点击查看我的任务
-    </div>
-  </div>
-</div>
-
-<div class="frame-col">
-  <div class="frame-label">E · 分享卡片 · 版本 2<small>暖阳金 · 成长的路上，有伙伴同行</small></div>
-  <div class="share-img-demo v2">
-    <div class="share-img-top">
-      <svg class="share-img-logo" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#fff" opacity="0.55"/><polygon points="22,35 34,35 28,44" fill="#fff" opacity="0.45"/><rect x="21" y="0" width="14" height="3" rx="1" fill="#fff" opacity="0.55"/><rect x="21" y="-3" width="14" height="4" rx="1.5" fill="#fff" opacity="0.45"/><circle cx="28" cy="22" r="9" fill="#fff" opacity="0.3"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.2"/></svg>
-      <svg class="share-img-icon-big" viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><circle cx="36" cy="36" r="14" fill="rgba(255,255,255,0.7)" stroke="#fff" stroke-width="2"/><polygon points="36,26 39,32 45,33 41,38 42,44 36,41 30,44 31,38 27,33 33,32" fill="#FFD54F" stroke="#F4B942" stroke-width="1"/></svg>
-      <div class="share-img-title">成长的路上<br>有伙伴同行</div>
-      <div class="share-img-subtitle">分享我的任务，一起见证<br>每一天的坚持与进步</div>
-    </div>
-    <div class="share-img-bottom v2">
-      <svg width="18" height="18" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#F4B942"/><polygon points="22,35 34,35 28,44" fill="#FFE0B2"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.6"/></svg>
-      任务小助手 · 点击查看我的任务
-    </div>
-  </div>
-</div>
-
-<div class="frame-col">
-  <div class="frame-label">E · 分享卡片 · 版本 3<small>新芽绿 · 让努力被看见，让成长有回响</small></div>
-  <div class="share-img-demo v3">
-    <div class="share-img-top">
-      <svg class="share-img-logo" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#fff" opacity="0.55"/><polygon points="22,35 34,35 28,44" fill="#fff" opacity="0.45"/><rect x="21" y="0" width="14" height="3" rx="1" fill="#fff" opacity="0.55"/><rect x="21" y="-3" width="14" height="4" rx="1.5" fill="#fff" opacity="0.45"/><circle cx="28" cy="22" r="9" fill="#fff" opacity="0.3"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.2"/></svg>
-      <svg class="share-img-icon-big" viewBox="0 0 72 72"><circle cx="36" cy="36" r="34" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/><line x1="36" y1="16" x2="36" y2="48" stroke="#fff" stroke-width="3" stroke-linecap="round"/><line x1="36" y1="30" x2="24" y2="38" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="36" y1="26" x2="48" y2="34" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><line x1="36" y1="36" x2="24" y2="44" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="36" cy="48" r="3" fill="#fff"/></svg>
-      <div class="share-img-title">让努力被看见<br>让成长有回响</div>
-      <div class="share-img-subtitle">围观我的任务打卡<br>一起用行动说话</div>
-    </div>
-    <div class="share-img-bottom v3">
-      <svg width="18" height="18" viewBox="0 0 56 56"><rect x="21" y="3" width="14" height="32" rx="2" fill="#F4B942"/><polygon points="22,35 34,35 28,44" fill="#FFE0B2"/><circle cx="28" cy="22" r="4" fill="#fff" opacity="0.6"/></svg>
-      任务小助手 · 点击查看我的任务
-    </div>
-  </div>
-</div>
-
-<!-- ================= 框 F：头像昵称设置引导 ================= -->
-<div class="frame-col">
-  <div class="frame-label">F · 分享前检查<small>无头像昵称时弹出引导 · button open-type="getUserInfo"</small></div>
-  <div class="phone">
-    <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
-    <div class="page">
-
-      <div class="hero">
-        <div class="hero-date-nav">
-          <div class="date-arrow">‹</div>
-          <div class="hero-date-center">
-            <div class="hero-date-label">今天是</div>
-            <div class="hero-date-main">8月4日 周二</div>
+        <div class="partner-row">
+          <div class="partner-avatar c3">爷</div>
+          <div class="partner-info">
+            <div class="partner-name">爷爷</div>
+            <div class="partner-sub">通过你的分享加入 · 2周前</div>
           </div>
-          <div class="date-arrow disabled">›</div>
+          <div class="partner-gear">&#8942;</div>
+          <div class="partner-chevron">›</div>
         </div>
-        <div class="hero-motto">✦ 苟日新，日日新，又日新</div>
-        <div class="hero-status-bar">
-          <div class="hero-status-item"><span class="hero-status-dot planned"></span>已规划 3</div>
-          <div class="hero-status-item"><span class="hero-status-dot done"></span>已完成 2</div>
-        </div>
+
+        <div style="height:80px;"></div>
       </div>
 
-      <div style="opacity:0.25;">
-        <div class="section-title">当日任务</div>
-        <div class="card-list">
-          <div class="task-card"><div class="card-accent" style="background:#FFB74D;"></div><div class="card-body" style="padding-left:20px;"><div class="card-title">《三体》第3章</div></div></div>
-        </div>
-      </div>
-
-      <!-- 头像昵称设置弹窗 -->
-      <div class="profile-dialog">
-        <div class="profile-card">
-          <div class="profile-card-icon">👤</div>
-          <div class="profile-card-title">完善你的信息</div>
-          <div class="profile-card-sub">伙伴列表需要你的头像和昵称，<br>让伙伴们更容易认出你</div>
-          <div class="profile-btn">使用微信头像昵称</div>
-          <div class="profile-skip">暂不设置</div>
+      <div class="partner-fixed-share">
+        <div class="btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="6" cy="12" r="2.5" stroke="#fff" stroke-width="1.8"/><circle cx="18" cy="19" r="2.5" stroke="#fff" stroke-width="1.8"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+          邀请伙伴围观我的任务
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ================= 交互规则说明 ================= -->
+<!-- ================= 框 D：通用弹窗 ================= -->
+<div class="frame-col">
+  <div class="frame-label">D · 通用弹窗设计<small>无图标 · 标题+正文+左右双按钮 · 所有弹窗复用</small></div>
+
+  <div class="spec-col">
+    <!-- 弹窗 1：完善信息 -->
+    <div class="dialog-demo" style="padding-top:40px;">
+      <div class="title">完善你的信息</div>
+      <div class="body">伙伴列表需要你的昵称，<br>让大家更容易认出你</div>
+      <div class="actions">
+        <div class="btn btn-cancel">暂不设置</div>
+        <div class="btn btn-confirm">使用微信昵称</div>
+      </div>
+    </div>
+
+    <!-- 弹窗 2：取消关注 -->
+    <div class="dialog-demo" style="padding-top:40px;">
+      <div class="title">取消关注</div>
+      <div class="body">取消后你将不再看到<br>TA 的任务动态</div>
+      <div class="actions">
+        <div class="btn btn-cancel">暂不</div>
+        <div class="btn btn-danger">确认取消</div>
+      </div>
+    </div>
+
+    <!-- 弹窗 3：移出关注 -->
+    <div class="dialog-demo" style="padding-top:40px;">
+      <div class="title">移出关注</div>
+      <div class="body">TA 将不再看到你的任务，<br>如需恢复需重新分享</div>
+      <div class="actions">
+        <div class="btn btn-cancel">暂不</div>
+        <div class="btn btn-danger">确认移出</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 交互规则 ================= -->
 <div class="frame-col">
   <div class="frame-label">交互规则</div>
 
   <div class="spec-card">
-    <h3>底部 TabBar 结构</h3>
-    <div class="spec-item"><span class="num">1</span><div>三元素：<b>任务</b>（当前页） | <b>+</b>（中央突出按钮，跳转创建任务页） | <b>我的</b>（个人中心）。tabBar 高度 60px，半透明白底毛玻璃。</div></div>
-    <div class="spec-item"><span class="num">2</span><div>创建任务页（createRoutine）由 + 按钮 navigateTo 打开，非 tab 页，返回后回到原 tab。</div></div>
+    <h3>「我的」页面（框 A）</h3>
+    <div class="spec-item"><span class="num">1</span><div>仅保留<b>头像昵称 + 累计统计 + 双伙伴入口</b>。移除每日提醒、关于、底部分享按钮。</div></div>
+    <div class="spec-item"><span class="num">2</span><div><b>我关注的伙伴</b>（蓝色）→ 围观 TA 的任务。<b>关注我的伙伴</b>（金色）→ 通过分享加入的人。各带人数角标，点击分别进入独立列表页。</div></div>
   </div>
 
   <div class="spec-card">
-    <h3>任务页改动</h3>
-    <div class="spec-item"><span class="num">3</span><div>移除底部「添加更多」虚线卡，<b>改为分享入口卡</b>（金色暖调，仅今天态显示）。分享前触发头像昵称检查。</div></div>
-    <div class="spec-item"><span class="num">4</span><div>移除底部浮动 logo 圆形按钮，创建任务走 tabBar 中央 + 入口。</div></div>
+    <h3>伙伴列表页（框 B / C）</h3>
+    <div class="spec-item"><span class="num">3</span><div>两个入口各自进入<b>独立页面</b>，无顶部 tab。页面标题分别为「我关注的伙伴」「关注我的伙伴」。</div></div>
+    <div class="spec-item"><span class="num">4</span><div>每一行右侧同时展示：<b>⋮（更多操作）</b>和<b>›（进入围观）</b>。点击行 / 「›」→ 进入 TA 的任务页。点击「⋮」→ 弹通用弹窗确认取消关注/移出。</div></div>
+    <div class="spec-item"><span class="num">5</span><div>每个列表页<b>底部仅有一个固定元素</b>：分享按钮「邀请伙伴围观我的任务」，点击触发微信分享。</div></div>
   </div>
 
   <div class="spec-card">
-    <h3>「我的」页面</h3>
-    <div class="spec-item"><span class="num">5</span><div>顶部：微信头像 + 昵称 + 累计统计（累计任务数/累计完成数/连续天数）。</div></div>
-    <div class="spec-item"><span class="num">6</span><div><b>任务伙伴</b>入口：菜单首行，带金色数字角标（伙伴总数）。点击进入伙伴页。</div></div>
+    <h3>通用弹窗（框 D）</h3>
+    <div class="spec-item"><span class="num">6</span><div>结构：<b>title + body + 左右双按钮</b>。无图标，纯文字信息+操作按钮。</div></div>
+    <div class="spec-item"><span class="num">7</span><div>左按钮<span class="demo-tag gray">暂不/取消</span>灰底灰字。右按钮确认：普通操作用金底白字，<b>危险操作（删除/取消关注）用红色</b> <span class="demo-tag red">danger</span>。</div></div>
+    <div class="spec-item"><span class="num">8</span><div>完善信息弹窗、取消关注、移出关注……所有弹窗复用同一结构，仅替换 icon/title/body/按钮文案和颜色。</div></div>
   </div>
 
   <div class="spec-card">
-    <h3>头像昵称获取</h3>
-    <div class="spec-item"><span class="num">7</span><div>分享前检查本地是否已存头像和昵称。若未设置，弹出引导弹窗（框 F），使用 <b>button open-type="getUserInfo"</b> 获取微信头像昵称，存入本地存储。</div></div>
-    <div class="spec-item"><span class="num">8</span><div>「我的」页面也提供头像昵称修改入口（点击头像区域），同样走 getUserInfo。</div></div>
-    <div class="spec-item"><span class="num">9</span><div>伙伴列表统一展示对方真实的微信头像昵称，不存在自定义备注。</div></div>
-  </div>
-
-  <div class="spec-card">
-    <h3>微信分享卡片</h3>
-    <div class="spec-item"><span class="num">10</span><div>分享卡片为<b>图文形式 · 固定内容</b>：图片固定 450×360 比例，不包含动态数据，3 版可选（框 E：晴空蓝「一起坚持」/ 暖阳金「伙伴同行」/ 新芽绿「努力被看见」），表达「共享信息、相互激励、共同进步」之意。</div></div>
-    <div class="spec-item"><span class="num">11</span><div>图片由 Canvas 绘制生成临时文件作为 imageUrl；分享标题固定为「任务小助手 · 点击查看我的任务」。路径携带分享者 userId：<b>/pages/index?share=uid</b>。</div></div>
-    <div class="spec-item"><span class="num">12</span><div>对方点卡 → 登记关系 → 弹窗「现在你可以看到 XX 的任务了」→ 落地 TA 任务页。重复点击幂等。</div></div>
-  </div>
-
-  <div class="spec-card">
-    <h3>伙伴列表删除</h3>
-    <div class="spec-item"><span class="num">13</span><div><b>两个列表删除方式一致</b>：均使用右侧 inline「移出」按钮（淡红底+红字），不再用左滑。点击二次确认后删除，双方列表同步消失，不可恢复，需重新分享点击。</div></div>
-    <div class="spec-item"><span class="num">14</span><div><b>谁能看我 tab 底部固定分享按钮</b>（框 C/D），点击触发分享；列表底部加 spacer 留白不被遮挡。</div></div>
+    <h3>分享链路</h3>
+    <div class="spec-item"><span class="num">9</span><div>分享入口：任务页底部金色分享卡 + 伙伴列表页底部固定按钮。分享前检查昵称 → 未设置则弹完善信息弹窗。</div></div>
+    <div class="spec-item"><span class="num">10</span><div>分享卡片：450×360 固定内容，3 版可选。路径携带 userId。对方点卡 → 登记关系 → 弹窗 → 落地 TA 任务页。</div></div>
   </div>
 </div>
 
