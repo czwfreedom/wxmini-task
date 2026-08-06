@@ -9,6 +9,7 @@ import { Event } from '../core/event';
 import { Context } from '../core/context';
 import { Intent } from '../core/intent';
 import { Constants } from '../constant/common';
+import { DialogUI } from '../ui/dialogUI';
 
 export namespace RoutineUI {
   export interface Data extends SubUI.Data {
@@ -28,6 +29,8 @@ export namespace RoutineUI {
     pickerEnd: string;
 
     stats: Entity.Label[];
+
+    dialog?: DialogUI.Data;
   }
 
   /** ViewModel，仅包含 UI 渲染需要的字段 */
@@ -175,6 +178,19 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
   /** 分享入口 */
   protected onShareTap() {
     Logger.info('onShareTap');
-    // TODO: 检查头像昵称 → 触发微信分享
+    new DialogUI(this.component, this.subDataKey).show(
+      {
+        id: 'share',
+        name: '完善你的信息',
+        desc: '伙伴列表需要你的昵称，\n让大家更容易认出你',
+        menus: [
+          { id: 'cancel', name: '暂不设置' },
+          { id: 'confirm', name: '使用微信昵称', openType: 'getUserInfo' },
+        ],
+      },
+      (button) => {
+        Logger.info('onDialogTap', button);
+      }
+    );
   }
 }

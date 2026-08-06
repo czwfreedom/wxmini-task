@@ -1,6 +1,6 @@
 <template name="routine">
   <import src="../templates/abort.wxml"></import>
-
+  <import src="../templates/dialog.wxml"></import>
   <view class="routine">
     <view class="routine_content">
       <scroll-view
@@ -112,6 +112,8 @@
       </view>
     </view>
   </view>
+
+  <template wx:if="{{ dialog && dialog.id }}" is="dialog" data="{{ ...dialog }}"></template>
 
   <template
     wx:if="{{ !loaded || abortMessage }}"

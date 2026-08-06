@@ -1,5 +1,6 @@
 import { SubUI } from '../core/subUI';
 import { Entity } from '../model/entity';
+import { Logger } from '../utils/logger';
 import { MenuUI } from './menuUI';
 
 export namespace DialogUI {
@@ -24,6 +25,7 @@ export class DialogUI extends SubUI<DialogUI.WrapData> {
   public show(data: DialogUI.Data, onButtonTap?: (button: string) => void) {
     this.data = data;
     this.bindEvent('onDialogButtonTap', (e) => {
+      Logger.log('onDialogButtonTap', e);
       const { button } = e.currentTarget.dataset;
 
       this.hide();

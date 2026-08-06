@@ -1,3 +1,53 @@
+<!--
+  Dialog 通用弹窗模板
+  设计参考：routine-share-preview.html 框 D
+  结构：无图标 · title + body + 左右双按钮
+  菜单驱动：menus 每项的 style 控制外观（cancel/confirm/danger）
+           openType 控制是否渲染为微信 button（支持 getUserInfo 等）
+           enabled=false 时为不可点击态
+-->
 <template name="dialog">
-    
+  <view class="dialog">
+    <!-- 遮罩 -->
+    <view class="dialog_mask"></view>
+
+    <!-- 弹窗面板（居中浮层） -->
+    <view class="dialog_panel">
+      <!-- 标题 -->
+      <view class="dialog_title">{{name}}</view>
+
+      <!-- 正文描述（默认居中，descStyle 可切换为左对齐） -->
+      <view wx:if="{{desc}}" class="dialog_desc {{ descStyle || 'center'}}">{{desc}}</view>
+
+      <!-- 按钮区（左右排列） -->
+      <view class="dialog_actions">
+        <block wx:for="{{menus}}" wx:key="id">
+          <!-- 有 openType：渲染为微信原生 button（getUserInfo 等） -->
+          <button
+            wx:if="{{item.openType}}"
+            class="dialog_btn {{item.style || item.id}} {{item.enabled === false ? 'disabled' : ''}}"
+            open-type="{{item.openType}}"
+            disabled="{{item.enabled === false}}"
+            data-button="{{item.id}}"
+            bindgetuserinfo="onDialogButtonTap"
+          >
+            {{item.name}}
+          </button>
+
+          <!-- 普通按钮（可点击） -->
+          <view
+            wx:else
+            class="dialog_btn {{item.style || item.id }} {{ item.enabled === false? 'disabled' : ''}}"
+            catch:tap="{{ item.enabled === false? '' : 'onDialogButtonTap'}}"
+            data-button="{{item.id}}"
+          >
+            {{item.name}}
+          </view>
+        </block>
+      </view>
+
+      <!-- 按钮下方提示文字 -->
+      <view wx:if="{{hint}}" class="dialog_hint">{{hint}}</view>
+    </view>
+  </view>
 </template>

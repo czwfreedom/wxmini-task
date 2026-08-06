@@ -1,5 +1,114 @@
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
 
+/* ==========================================================
+   Dialog 通用弹窗
+   设计参考：routine-share-preview.html 框 D
+   结构：无图标 · 标题+正文+左右双按钮
+   配色全部引用 var.scss 变量
+   ========================================================== */
+// 微信原生 button 组件样式重置
+// clear-button 清除默认 background/border/width/margin/font-weight
+// 在此之上，dialog_btn 的 .cancel/.confirm/.danger 等修饰符重新赋色
 .dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  @include flex-layout;
+
+  // ---- 遮罩 ----
+  &_mask {
+    position: absolute;
+    inset: 0;
+    background: $black4;
+  }
+
+  // ---- 弹窗面板（居中浮层） ----
+  &_panel {
+    position: relative;
+    width: 580rpx;
+    background: $background-white;
+    border-radius: 48rpx;
+    padding: 56rpx 48rpx 36rpx;
+    box-shadow: 0 32rpx 96rpx $black3;
+  }
+
+  // ---- 标题 ----
+  &_title {
+    font-size: 34rpx;
+    font-weight: 700;
+    color: $gray-33;
+    text-align: center;
+    margin-bottom: 20rpx;
+    line-height: 1.4;
+  }
+
+  // ===== 按钮样式（同时适配 view 和 button 两种元素） =====
+  &_btn {
+    @include clear-button;
+    line-height: 1.2;
+    flex: 1;
+    padding: 24rpx 0;
+    border-radius: 40rpx;
+    font-size: 28rpx;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 2rpx;
+
+    // ---- 右按钮：确认/正向操作（金底白字） ----
+    &.confirm {
+      background: $gradient;
+      color: white;
+      box-shadow: 0 8rpx 24rpx $gold3;
+    }
+
+    // ---- 左按钮：取消/暂不（灰底灰字） ----
+    &.cancel {
+      background: $gray-ee;
+      color: $gray-99;
+    }
+
+    // ---- 危险操作（红底浅红文字 + 红色边框） ----
+    &.danger {
+      background: rgba($foreground-red, 0.1);
+      color: $foreground-red;
+      border: 2rpx solid rgba($foreground-red, 0.25);
+    }
+
+    // ---- 禁用态 ----
+    &.disabled {
+      opacity: 0.5;
+    }
+  }
+
+  // ---- 正文描述（默认居中，.left 左对齐） ----
+  &_desc {
+    font-size: 28rpx;
+    color: $gray-99;
+    line-height: 1.7;
+    margin-bottom: 36rpx;
+    white-space: pre-wrap;
+
+    &.center {
+      text-align: center;
+    }
+
+    &.left {
+      text-align: left;
+    }
+  }
+
+  // ---- 按钮区（左右双按钮） ----
+  &_actions {
+    display: flex;
+    gap: 24rpx;
+  }
+
+  // ---- 按钮下方提示 ----
+  &_hint {
+    text-align: center;
+    font-size: 22rpx;
+    color: $gray-99;
+    margin-top: 20rpx;
+  }
 }
