@@ -10,6 +10,7 @@ import { Context } from '../core/context';
 import { Intent } from '../core/intent';
 import { Constants } from '../constant/common';
 import { DialogUI } from '../ui/dialogUI';
+import { UserUpdaterUI } from '../ui/userUpdaterUI';
 
 export namespace RoutineUI {
   export interface Data extends SubUI.Data {
@@ -178,17 +179,8 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
   /** 分享入口 */
   protected onShareTap() {
     Logger.info('onShareTap');
-    new DialogUI(this.component, this.subDataKey).show(
-      {
-        id: 'share',
-        name: '完善你的信息',
-        desc: '伙伴列表需要你的昵称，\n让大家更容易认出你',
-        input: { id: 'name', name: '', hint: '输入你的昵称', type: 'nickname', maxLength: 16 },
-        menus: DialogUI.defaultMenus(),
-      },
-      (button) => {
-        Logger.info('onDialogTap', button);
-      }
-    );
+    new UserUpdaterUI(this.component, this.subDataKey).checkName(() => {
+      Logger.info('onNameChecked');
+    });
   }
 }

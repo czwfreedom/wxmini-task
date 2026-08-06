@@ -10,8 +10,18 @@ export namespace User {
     loginTime?: number;
   }
 
+  export async function update(data: Partial<Info>): Promise<number | Info> {
+    if (1) return data as any;
+    const res = await Network.post<Info>(Api.UpdateUser, data);
+    if (res.errcode !== 0 || !res.data) {
+      Logger.info('Update user failed', res);
+      return res.errcode || Err.Code.Network;
+    }
+    return res.data;
+  }
+
   export async function login(code: string): Promise<number | User.Info> {
-    if (true) return { id: '10174646050143', token: "97dc1e45e74149cd96c054f78f7ec645'" } as any;
+    if (1) return { id: '10174646050143', token: "97dc1e45e74149cd96c054f78f7ec645'" } as any;
     const res = await Network.post<User.Info[]>(Api.Login, { code });
     if (!res || res.errcode !== 0) {
       Logger.warn('Web login failed.', res);

@@ -68,7 +68,6 @@ export class DialogUI extends SubUI<DialogUI.WrapData> {
 
   // 在open-type的场景，未必会直接回调上面的事件，而要主动调用。
   public hide() {
-    this.inputValue = '';
     // 总是隐藏
     this.setData({ dialog: { id: '', title: '', left: '', right: '' } });
     this.unbindEvent('onDialogButtonTap');
