@@ -54,7 +54,7 @@ export namespace RoutineUI {
   }
 }
 
-export class RoutineUI extends SubUI<RoutineUI.Data> {
+export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   protected adapter = new RoutineAdapter();
   protected date: number;
   protected userId: string;
@@ -179,8 +179,6 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
   /** 分享入口 */
   protected onShareTap() {
     Logger.info('onShareTap');
-    new UserUpdaterUI(this.component, this.subDataKey).checkName(() => {
-      Logger.info('onNameChecked');
-    });
+    this.share();
   }
 }

@@ -12,6 +12,7 @@
     <block wx:for="{{ tabs.items }}" wx:key="index">
       <swiper-item wx:if="{{ item.id }}">
         <home-wrapper
+          id="home-{{ item.id }}"
           class="home_swiper_item"
           type="{{ item.id }}"
           visible="{{ item.id === tabs.id }}"

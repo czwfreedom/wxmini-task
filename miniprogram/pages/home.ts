@@ -14,6 +14,17 @@ Page({
     this.init();
   },
 
+  onShareAppMessage(obj: any) {
+    // 不知道为什么报错。试过放在data内部，报错倒是没有了，小程序貌似会序列化data中的所有数据。
+    const tab = this.getRealTabs()[this.data.current];
+    if (tab) {
+      const component = this.selectComponent('#home-' + tab.id);
+      if (!!component?.onShareAppMessage) {
+        return component.onShareAppMessage(obj);
+      }
+    }
+  },
+
   onSwiperChanged(e: WechatMiniprogram.TouchEvent) {
     const { current, source } = e.detail;
     // Logger.info('onSwiperChange.', current, source);
