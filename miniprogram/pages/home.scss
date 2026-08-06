@@ -45,7 +45,7 @@
       height: 96rpx;
       border-radius: 50%;
       background: $gradient;
-      box-shadow: 0 8rpx 32rpx rgba(244, 185, 66, 0.4);
+      box-shadow: 0 8rpx 32rpx $gold4;
       @include flex-layout;
       margin-top: -36rpx;
       padding-bottom: 2rpx; // 看起来视觉不是居中的，奇怪。没有测试过兼容性。

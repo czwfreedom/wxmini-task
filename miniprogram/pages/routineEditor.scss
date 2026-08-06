@@ -274,8 +274,8 @@
       color: #fff;
       letter-spacing: 4rpx;
       box-shadow:
-        0 16rpx 40rpx rgba(244, 185, 66, 0.35),
-        0 4rpx 0 rgba(255, 255, 255, 0.35) inset;
+        0 16rpx 40rpx $gold4,
+        0 4rpx 0 $white4 inset;
       gap: 20rpx;
 
       &.disabled {

@@ -3,6 +3,14 @@ $main: #f4b942;
 $blue: #5b9bd5;
 $green: #81c784;
 
+// 80%透明 main
+$gold8: rgba(244, 185, 66, 0.8);
+$gold3: rgba(244, 185, 66, 0.3);
+$gold35: rgba(244, 185, 66, 0.35);
+$gold4: rgba(244, 185, 66, 0.4);
+// 已完成卡片柔和描边（金系）
+$gold-border: rgba(200, 180, 150, 0.4);
+
 // 页面浅色底：背景渐变末端 & 全局 page 兜底背景（统一此前 #f5f5f5 / #f2f5f8 两值）
 $bg-page: #f2f5f8;
 
@@ -38,14 +46,13 @@ $black4: rgba(0, 0, 0, 0.4);
 $black3: rgba(0, 0, 0, 0.3);
 $black2: rgba(0, 0, 0, 0.2);
 $black1: rgba(0, 0, 0, 0.1);
+$border: rgba(0, 0, 0, 0.06);
+
+$transparent: rgba(255, 255, 255, 0);
 $white2: rgba(255, 255, 255, 0.2);
+$white3: rgba(255, 255, 255, 0.3);
+$white4: rgba(255, 255, 255, 0.4);
 $white5: rgba(255, 255, 255, 0.5);
 $white6: rgba(255, 255, 255, 0.6);
 $white85: rgba(255, 255, 255, 0.85);
 $white92: rgba(255, 255, 255, 0.92);
-$transparent: rgba(255, 255, 255, 0);
-
-$border: rgba(0, 0, 0, 0.06);
-
-// 已完成卡片柔和描边（金系）
-$gold-border: rgba(200, 180, 150, 0.4);

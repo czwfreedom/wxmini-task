@@ -25,7 +25,7 @@
     background: $background-white;
     border-radius: 48rpx 48rpx 0 0;
     padding: 20rpx 32rpx 32rpx;
-    box-shadow: 0 -16rpx 64rpx rgba(0, 0, 0, 0.12);
+    box-shadow: 0 -16rpx 64rpx $black1;
     animation: choicesSlideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
   }
 
