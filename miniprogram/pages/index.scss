@@ -4,19 +4,4 @@
 
 .entry {
   @include flex-container;
-
-  &_content {
-    @include flex-scaleable-content;
-    @include flex-layout(column);
-
-    &_tip {
-      font-size: 30rpx;
-      line-height: 48rpx;
-      color: $gray-33;
-
-      &.h {
-        color: $foreground-red;
-      }
-    }
-  }
 }

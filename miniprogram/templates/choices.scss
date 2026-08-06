@@ -8,12 +8,18 @@
    ========================================================== */
 .choices {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 100;
 
   &_mask {
     position: absolute;
-    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     background: $black4;
   }
 
@@ -153,10 +159,7 @@
         width: 96rpx;
         height: 96rpx;
         display: flex;
-        align-items: center;
-        justify-content: center;
-
-        // 未使用
+          // 未使用
         &.small {
           width: 64rpx;
           height: 64rpx;
