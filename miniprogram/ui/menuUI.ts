@@ -9,6 +9,12 @@ export namespace MenuUI {
     openType?: string; // 如果设置了，那使用微信小程序的button:open-type
     data?: any; // 私有数据。
   }
+
+  export interface Input extends VM {
+    type?: string;
+    maxLength?: number;
+    value?: string;
+  }
   /**
    * Tab有文字，有普通图片，也有选中态图片。
    */

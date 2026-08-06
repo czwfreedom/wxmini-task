@@ -98,6 +98,25 @@
     }
   }
 
+  // ---- 输入框（如 type="nickname"） ----
+  &_input {
+    &_wrap {
+      padding: 0 48rpx;
+      margin-bottom: 32rpx;
+    }
+    &_holder {
+      color: $gray-99;
+      line-height: 52rpx; // 小程序设置无效，所以是没办法对齐的。
+    }
+
+    padding: 48rpx 0 28rpx 0;
+    font-size: 34rpx;
+    line-height: 52rpx;
+    color: $gray-33;
+    text-align: center;
+    border-bottom: 1rpx solid $border;
+  }
+
   // ---- 按钮区（左右双按钮） ----
   &_actions {
     display: flex;

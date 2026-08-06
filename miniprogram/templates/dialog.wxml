@@ -19,6 +19,21 @@
       <!-- 正文描述（默认居中，descStyle 可切换为左对齐） -->
       <view wx:if="{{desc}}" class="dialog_desc {{ descStyle || 'center'}}">{{desc}}</view>
 
+      <!-- 输入框（如果 input 字段设置了，type 如 "nickname" 获取微信昵称） -->
+      <view wx:if="{{input}}" class="dialog_input_wrap">
+        <input
+          class="dialog_input"
+          type="{{input.type || 'text'}}"
+          value="{{ input.value }}"
+          focus="true"
+          adjust-position="{{ false }}"
+          placeholder-class="dialog_input_holder"
+          placeholder="{{input.hint}}"
+          maxlength="{{input.maxLength || -1}}"
+          bindinput="onDialogInput"
+        />
+      </view>
+
       <!-- 按钮区（左右排列） -->
       <view class="dialog_actions">
         <block wx:for="{{menus}}" wx:key="id">
@@ -29,7 +44,6 @@
             open-type="{{item.openType}}"
             disabled="{{item.enabled === false}}"
             data-button="{{item.id}}"
-            bindgetuserinfo="onDialogButtonTap"
           >
             {{item.name}}
           </button>

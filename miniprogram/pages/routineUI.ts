@@ -183,10 +183,8 @@ export class RoutineUI extends SubUI<RoutineUI.Data> {
         id: 'share',
         name: '完善你的信息',
         desc: '伙伴列表需要你的昵称，\n让大家更容易认出你',
-        menus: [
-          { id: 'cancel', name: '暂不设置' },
-          { id: 'confirm', name: '使用微信昵称', openType: 'getUserInfo' },
-        ],
+        input: { id: 'name', name: '', hint: '输入你的昵称', type: 'nickname', maxLength: 16 },
+        menus: DialogUI.defaultMenus(),
       },
       (button) => {
         Logger.info('onDialogTap', button);
