@@ -2,17 +2,58 @@
   <import src="../templates/abort.wxml"></import>
   <view class="mine">
     <view class="mine_content">
-      <scroll-view
-        wx:if="{{ loaded }}"
-        class="mine_scroll"
-        scroll-y="true"
-        enhanced="{{ true }}"
-      ></scroll-view>
+      <scroll-view wx:if="{{ loaded }}" class="mine_scroll" scroll-y="true" enhanced="{{ true }}">
+        <!-- Hero：头像 + 昵称 + 统计 -->
+        <view class="mine_header">
+          <view class="mine_avatar_row">
+            <view class="mine_avatar {{ info.avatarStyle || '' }}">
+              {{ info.letterIndex }}
+            </view>
+            <text class="mine_nick">{{ info.nickname || info.name }}</text>
+          </view>
+
+          <view wx:if="{{ stats && stats.length }}" class="mine_stats">
+            <view wx:for="{{ stats }}" wx:key="id" class="mine_stat">
+              <view class="mine_stat_val">{{ item.name }}</view>
+              <view class="mine_stat_label">{{ item.hint }}</view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 菜单卡片 -->
+        <view wx:if="{{ cards && cards.length }}" class="mine_menu">
+          <view
+            wx:for="{{ cards }}"
+            wx:key="id"
+            class="mine_menu_row"
+            catch:tap="onCardTap"
+            data-id="{{ item.id }}"
+          >
+            <view class="mine_menu_icon {{ item.avatarStyle || '' }}">
+              <image
+                wx:if="{{ item.avatar }}"
+                src="{{ item.avatar }}"
+                class="mine_menu_icon_img"
+                mode="aspectFit"
+              />
+            </view>
+            <view class="mine_menu_body">
+              <view class="mine_menu_title">{{ item.name }}</view>
+              <view wx:if="{{ item.desc }}" class="mine_menu_sub">{{ item.desc }}</view>
+            </view>
+            <view class="mine_menu_extra">
+              <view wx:if="{{ item.hint }}" class="mine_menu_badge">{{ item.hint }}</view>
+              <text class="mine_menu_chevron">›</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
     </view>
   </view>
+
   <template
     wx:if="{{ !loaded || abortMessage }}"
     is="abort"
-    data="{{message: abortMessage || '加载中..' }}"
+    data="{{ message: abortMessage || '加载中..' }}"
   ></template>
 </template>

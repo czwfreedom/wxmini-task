@@ -51,7 +51,7 @@
       font-weight: 700;
       color: white;
       box-shadow:
-        0 4rpx 12rpx rgba(58, 90, 140, 0.12),
+        0 4rpx 12rpx rgba($blue-dark, 0.12),
         inset 0 2rpx 0 $white6;
       flex-shrink: 0;
 
@@ -215,7 +215,7 @@
       border-radius: 16rpx;
       font-style: italic;
       line-height: 1.5;
-      border-left: 6rpx solid rgba(129, 199, 132, 0.4);
+      border-left: 6rpx solid rgba($green, 0.4);
       word-wrap: break-word;
       white-space: normal;
     }
@@ -279,7 +279,7 @@
   // ===== 分享入口卡（替换原"添加更多"） =====
   &_share {
     margin-top: 28rpx;
-    background: $gold8;
+    background: rgba($main, 0.8);
     border-radius: 32rpx;
     padding: 28rpx 32rpx;
     display: flex;
@@ -343,7 +343,7 @@
     border-radius: 64rpx;
     padding: 24rpx 48rpx;
     box-shadow:
-      0 8rpx 40rpx rgba(74, 144, 226, 0.15),
+      0 8rpx 40rpx rgba($blue-light, 0.15),
       0 2rpx 0 $white6 inset;
 
     &_dot {

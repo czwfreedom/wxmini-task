@@ -65,7 +65,7 @@
     &.confirm {
       background: $gradient;
       color: white;
-      box-shadow: 0 8rpx 24rpx $gold3;
+      box-shadow: 0 8rpx 24rpx rgba($main, 0.3);
     }
 
     // ---- 左按钮：取消/暂不（灰底灰字） ----
@@ -76,9 +76,9 @@
 
     // ---- 危险操作（红底浅红文字 + 红色边框） ----
     &.danger {
-      background: rgba($foreground-red, 0.1);
-      color: $foreground-red;
-      border: 2rpx solid rgba($foreground-red, 0.25);
+      background: rgba($red, 0.1);
+      color: $red;
+      border: 2rpx solid rgba($red, 0.25);
     }
 
     // ---- 禁用态 ----

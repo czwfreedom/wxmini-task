@@ -1,27 +1,15 @@
 import { SubUI } from '../core/subUI';
+import { Err } from '../constant/error';
 import { MineAdapter } from './mineAdapter';
 import { Entity } from '../model/entity';
 
 export namespace MineUI {
   export interface Data extends SubUI.Data {
-    /**
-     * 表示我的信息
-     */
+    /** 用户基本信息（头像+昵称） */
     info: Entity.Image;
-
-    /**
-     * 表示各种统计。里面的数字、文字全在adapter中拼装。
-     */
+    /** 统计数字列表（name=数值, hint=标签） */
     stats: Entity.Label[];
-
-    /**
-     * 底下的卡片入口，包含我关注的伙伴这些。
-     * {@link Entity.Image#name} 标题文字
-     * {@link Entity.Image#desc} 灰色描述
-     * {@link Entity.Image#hint} 色标
-     * {@link Entity.Image#avatar} 图标
-     * {@link Entity.Image#avatarStyle} 图标样式类
-     */
+    /** 菜单入口卡片（name=标题, desc=副标题, hint=角标, avatarStyle=图标底色） */
     cards: Entity.Image[];
   }
 }
@@ -31,6 +19,7 @@ export class MineUI extends SubUI<MineUI.Data> {
 
   public constructor(component: any, subDataKey: string) {
     super(component, subDataKey);
+    this.bindEvent('onCardTap', this.onCardTap);
   }
 
   public static defaultData(): MineUI.Data {
@@ -43,5 +32,18 @@ export class MineUI extends SubUI<MineUI.Data> {
     };
   }
 
-  public loadData() {}
+  public async loadData() {
+    const errcode = await this.adapter.load();
+    if (errcode !== Err.Code.OK) {
+      this.abort(errcode);
+      return;
+    }
+    this.setData({ ...this.adapter.adapt(), loaded: true });
+  }
+
+  protected onCardTap(e: WechatMiniprogram.TouchEvent) {
+    const { id } = e.currentTarget.dataset;
+    // TODO: 后续跳转到伙伴列表页
+    console.log('mine card tap:', id);
+  }
 }

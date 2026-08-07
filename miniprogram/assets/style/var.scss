@@ -1,15 +1,22 @@
 // 核心按钮、选中态图标、重点点缀，比 App 版本稍浅，适配微信浅生态不刺眼
+// rgba(244, 185, 66)
 $main: #f4b942;
+$gold-light: #ffd54f;
+// rgba(200, 180, 150)
+$gold-dark: #c8b496;
 $blue: #5b9bd5;
+// rgba(74, 144, 226)
+$blue-light: #4a90e2;
+// rgba(58, 90, 140)
+$blue-dark: #3a5a8c;
+// rgba(129, 199, 132
 $green: #81c784;
+// 柔红（绶带色）	高优先级任务、奖励按钮
+$red: #ef5350;
 
-// 80%透明 main
-$gold8: rgba(244, 185, 66, 0.8);
-$gold3: rgba(244, 185, 66, 0.3);
-$gold35: rgba(244, 185, 66, 0.35);
-$gold4: rgba(244, 185, 66, 0.4);
+$gold4: rgba($main, 0.4);
 // 已完成卡片柔和描边（金系）
-$gold-border: rgba(200, 180, 150, 0.4);
+$gold-border: rgba($gold-dark, 0.4);
 
 // 页面浅色底：背景渐变末端 & 全局 page 兜底背景（统一此前 #f5f5f5 / #f2f5f8 两值）
 $bg-page: #f2f5f8;
@@ -24,14 +31,13 @@ $gray-c5: #c5c5c5;
 // 占位符、提示文字
 $gray-99: #999;
 
-// 柔红（绶带色）	高优先级任务、奖励按钮
-$foreground-red: #ef5350;
 // 次文字、说明文字
 $foreground-sub: #5c6178;
 
-$background-green-light: rgba(129, 199, 132, 0.12);
+$background-green-light: rgba($green, 0.12);
 
-$gradient: linear-gradient(135deg, $main, #ffd54f);
+$gradient: linear-gradient(135deg, $main, $gold-light);
+// Hero区渐变，也被用于蓝色按钮。
 $gradient-sub: linear-gradient(160deg, #b5d9f8 0%, #a0cdf5 50%, #c5e3fa 100%);
 
 // 页面的淡色背景。
