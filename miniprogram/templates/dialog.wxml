@@ -54,6 +54,7 @@
             class="dialog_btn {{item.style || item.id }} {{ item.enabled === false? 'disabled' : ''}}"
             catch:tap="{{ item.enabled === false? '' : 'onDialogButtonTap'}}"
             data-button="{{item.id}}"
+            hover-class="press"
           >
             {{item.name}}
           </view>

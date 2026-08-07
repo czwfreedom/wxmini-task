@@ -98,6 +98,7 @@
       padding: 32rpx 40rpx;
       gap: 28rpx;
       border-bottom: 1rpx solid $border;
+      @include press;
 
       &:last-child {
         border-bottom: none;

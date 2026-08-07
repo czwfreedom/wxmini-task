@@ -14,6 +14,7 @@
             class="croutine_category_cell {{ item.other? 'other' : '' }} {{ item.selected? 'selected' : '' }}"
             catch:tap="onCategoryTap"
             data-id="{{ item.id }}"
+            hover-class="press"
           >
             <view
               wx:if="{{ item.avatar }}"
@@ -64,6 +65,7 @@
             wx:key="id"
             class="croutine_example_item"
             catch:tap="onContentExampleTap"
+            hover-class="press"
             data-name="{{ item.name }}"
           >
             {{ item.name }}
@@ -81,6 +83,7 @@
               wx:if="{{ item.id !== 'custom' }}"
               class="croutine_duration_cell {{ item.selected? 'selected' : '' }}"
               catch:tap="onDurationTap"
+              hover-class="press"
               data-id="{{ item.id }}"
             >
               <!-- prettier-ignore -->
@@ -128,6 +131,7 @@
               class="croutine_time_item {{ item.selected? 'selected' : '' }}"
               catch:tap="onTimeTap"
               data-id="{{ item.id }}"
+              hover-class="press"
             >
               {{ item.name }}
             </view>
@@ -145,17 +149,18 @@
   </view>
   <!-- CTA 底部按钮（固定浮层） -->
   <view class="croutine_cta" style="transform: translateY(-{{ keyboardHeight || 0 }}px);">
-    <view class="croutine_cta_btn {{ submittable ? '' : 'disabled' }}" catch:tap="onSubmitTap">
+    <view
+      class="croutine_cta_btn {{ submittable ? '' : 'disabled' }}"
+      catch:tap="onSubmitTap"
+      hover-class="press"
+    >
       <text>{{ finishing ? '完成任务' : '创建任务' }}</text>
     </view>
   </view>
 </view>
 
 <!-- Choices 通用弹窗（更多分类等） -->
-<template
-  is="choices"
-  data="{{ id: choices.id, title: choices.title, confirm: choices.confirm, items: choices.items, limited: choices.limited, grid: choices.grid, modal: choices.modal, tips: choices.tips }}"
-></template>
+<template wx:if="{{ choices && choices.id }}" is="choices" data="{{ ...choices }}"></template>
 
 <template
   wx:if="{{ !loaded || abortMessage }}"

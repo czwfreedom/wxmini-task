@@ -28,6 +28,7 @@
             class="mine_menu_row"
             catch:tap="onCardTap"
             data-id="{{ item.id }}"
+            hover-class="press"
           >
             <view class="mine_menu_icon {{ item.avatarStyle || '' }}">
               <image

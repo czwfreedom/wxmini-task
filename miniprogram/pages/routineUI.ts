@@ -160,7 +160,6 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
 
   /** 切换任务状态：进行中 ↔ 已完成 */
   protected async onItemTap(e: WechatMiniprogram.TouchEvent) {
-    WxUtils.hapticLight();
     const { id } = e.currentTarget.dataset;
 
     const vm = Entity.find(this.getData().records, id).item;

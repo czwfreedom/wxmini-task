@@ -43,7 +43,6 @@ export class MineUI extends SubUI<MineUI.Data> {
   }
 
   protected onCardTap(e: WechatMiniprogram.TouchEvent) {
-    WxUtils.hapticLight();
     const { id } = e.currentTarget.dataset;
     // TODO: 后续跳转到伙伴列表页
     console.log('mine card tap:', id);

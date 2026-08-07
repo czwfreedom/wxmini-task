@@ -14,7 +14,7 @@
           <view class="routine_hero_info">
             <!-- 日期导航：‹ 日期 › 三段式，点日期唤起系统选择器 -->
             <view class="routine_hero_nav">
-              <view class="routine_hero_arrow" catch:tap="onPrevDay">‹</view>
+              <view class="routine_hero_arrow" catch:tap="onPrevDay" hover-class="press">‹</view>
               <picker
                 class="routine_hero_datewrap"
                 mode="date"
@@ -27,7 +27,7 @@
                 <view class="routine_hero_date">{{ dateMain }}</view>
               </picker>
               <!-- prettier-ignore -->
-              <view class="routine_hero_arrow {{ isToday ? 'disabled' : '' }}" catch:tap="onNextDay">›</view>
+              <view class="routine_hero_arrow {{ isToday ? 'disabled' : '' }}" catch:tap="onNextDay" hover-class="press">›</view>
             </view>
 
             <view class="routine_hero_motto {{ isAllDone ? 'celebrate' : '' }}">
@@ -66,7 +66,7 @@
               </view>
               <view wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</view>
             </view>
-            <view class="routine_card_action" catch:tap="onItemTap" data-id="{{ item.id }}">
+            <view class="routine_card_action" catch:tap="onItemTap" data-id="{{ item.id }}" hover-class="press">
               <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
               <view wx:elif="{{ item.status === 100 }}" class="routine_card_btn">去完成</view>
             </view>
@@ -88,7 +88,7 @@
           </view>
 
           <!-- 分享入口卡（仅今天态） -->
-          <view wx:if="{{ addable }}" class="routine_share" catch:tap="onShareTap">
+          <view wx:if="{{ addable }}" class="routine_share" catch:tap="onShareTap" hover-class="press">
             <view class="routine_share_icon">
               <image
                 class="routine_share_icon_img"

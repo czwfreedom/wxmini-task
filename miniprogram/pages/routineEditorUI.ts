@@ -245,7 +245,6 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
 
   /** 提交创建任务 */
   protected async onSubmitTap() {
-    WxUtils.hapticLight();
     const data = this.getCommitData(true);
     if (!data) return;
 

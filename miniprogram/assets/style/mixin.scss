@@ -54,6 +54,10 @@
   top: 0;
 }
 
+@mixin press {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
 @mixin clear-button {
   // 清除默认参数。
   width: unset; // 这样设置并没用，得在style中设置。

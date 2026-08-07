@@ -7,3 +7,9 @@ page {
   font-size: 14px;
   color: $gray-33;
 }
+
+/** 全局按压反馈（hover-class="press" 共用） */
+.press {
+  transform: scale(0.96);
+  opacity: 0.85;
+}

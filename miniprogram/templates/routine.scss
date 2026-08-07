@@ -50,6 +50,7 @@
       font-size: 36rpx;
       font-weight: 700;
       color: white;
+      @include press;
       box-shadow:
         0 4rpx 12rpx rgba($blue-dark, 0.12),
         inset 0 2rpx 0 $white6;
@@ -264,7 +265,9 @@
       z-index: 3;
       opacity: 0;
       transform: scale(0.2) rotate(-15deg);
-      transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+      transition:
+        transform 0.4s ease-out,
+        opacity 0.4s ease-out;
 
       &.pop {
         opacity: 1;
@@ -308,6 +311,7 @@
     background: rgba($main, 0.8);
     border-radius: 32rpx;
     padding: 28rpx 32rpx;
+    @include press;
     display: flex;
     align-items: center;
     gap: 24rpx;
@@ -362,6 +366,7 @@
     bottom: 32rpx;
     left: 50%;
     transform: translateX(-50%);
+    @include press;
     z-index: 10;
     @include flex-layout;
     gap: 16rpx;
