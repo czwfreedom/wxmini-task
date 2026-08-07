@@ -70,12 +70,14 @@
               <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
               <view wx:elif="{{ item.status === 100 }}" class="routine_card_btn">去完成</view>
             </view>
-            <image
-              wx:if="{{ item.style === 'done' }}"
-              class="routine_card_stamp"
-              src="/assets/imgs/ic-stamp-done.svg"
-              mode="aspectFit"
-            />
+            <view class="routine_card_stamp {{ item.status === 200 ? 'pop' : '' }}">
+              <image
+                wx:if="{{ item.status === 200 }}"
+                class="routine_card_stamp_img"
+                src="/assets/imgs/ic-stamp-done.svg"
+                mode="aspectFit"
+              />
+            </view>
           </view>
 
           <!-- 空状态 -->
