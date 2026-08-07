@@ -16,6 +16,8 @@ export namespace RoutineUI {
   export interface Data extends SubUI.Data {
     updateable: boolean;
     addable: boolean;
+    /** 今天的任务是否已全部完成 */
+    isAllDone: boolean;
     /** 任务列表 */
     records: Record[];
     /** 是否今天（历史日期为 false，Hero 褪色 + 显示回到今天） */
@@ -86,6 +88,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       abortMessage: '',
       updateable: false,
       addable: false,
+      isAllDone: false,
       records: [],
       isToday: true,
       dateLabel: '',

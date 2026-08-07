@@ -30,8 +30,8 @@
               <view class="routine_hero_arrow {{ isToday ? 'disabled' : '' }}" catch:tap="onNextDay">›</view>
             </view>
 
-            <view class="routine_hero_motto">
-              ✦ {{ isToday ? '苟日新，日日新，又日新' : '每一步都算数' }}
+            <view class="routine_hero_motto {{ isAllDone ? 'celebrate' : '' }}">
+              ✦ {{ isAllDone ? '今天全搞定，太厉害了！🎉' : (isToday ? '又是闪闪发光的一天！⭐' : '每一步都算数') }}
             </view>
             <view wx:if="{{ stats && stats.length}}" class="routine_hero_stats">
               <view
@@ -51,7 +51,7 @@
         </view>
 
         <!-- 任务列表 -->
-        <view class="routine_section">当日任务</view>
+        <view class="routine_section {{ isAllDone ? 'celebrate' : '' }}">{{ isToday ? '今天做点啥？' : '当日任务' }}</view>
 
         <view class="routine_cards">
           <view wx:for="{{ records }}" wx:key="id" class="routine_card {{ item.style || '' }}">

@@ -87,6 +87,12 @@
       margin-top: 8rpx;
       font-weight: 500;
       letter-spacing: 1rpx;
+
+      &.celebrate {
+        color: #ffd54f;
+        font-weight: 700;
+        font-size: 28rpx;
+      }
     }
 
     &_stats {
@@ -136,6 +142,14 @@
     @include section-title;
     @include flex-layout(row, flex-start);
     margin: 0 40rpx 28rpx;
+
+    &.celebrate {
+      color: $green;
+
+      &::before {
+        background: $green;
+      }
+    }
   }
 
   // ===== Task Cards =====
@@ -249,6 +263,7 @@
       height: 80rpx;
       transform: rotate(8deg);
       z-index: 3;
+      animation: stampPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
     }
 
     // 已完成变体
@@ -359,5 +374,21 @@
       color: $foreground-sub;
       letter-spacing: 1rpx;
     }
+  }
+}
+
+// ===== 印章弹入动画 =====
+@keyframes stampPop {
+  0% {
+    transform: rotate(-15deg) scale(0.2);
+    opacity: 0;
+  }
+  60% {
+    transform: rotate(12deg) scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(8deg) scale(1);
+    opacity: 1;
   }
 }

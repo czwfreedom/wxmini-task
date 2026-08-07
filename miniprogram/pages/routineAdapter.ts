@@ -84,9 +84,12 @@ export class RoutineAdapter {
       });
     }
 
+    const isAllDone = count > 0 && doneCount === count;
+
     return {
       updateable: this.updateable,
       addable: this.addable,
+      isAllDone,
       records,
       stats: [
         { id: 'count', name: `已规划 ${count}` },
