@@ -57,7 +57,11 @@
         </view>
 
         <view class="routine_cards">
-          <view wx:for="{{ records }}" wx:key="id" class="routine_card {{ item.style || '' }}">
+          <view
+            wx:for="{{ records }}"
+            wx:key="id"
+            class="routine_card {{ item.style || '' }} {{ isToday && item.done ? 'harvest' : '' }}"
+          >
             <view class="routine_card_accent" style="background:{{ item.color }};"></view>
             <view class="routine_card_icon">
               <image src="{{ item.icon }}" class="routine_card_icon_img" mode="aspectFit" />
@@ -76,9 +80,9 @@
               hover-class="press"
             >
               <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
-              <view wx:elif="{{ item.status === 100 }}" class="routine_card_btn">去完成</view>
+              <view wx:elif="{{ !item.done }}" class="routine_card_btn">去完成</view>
             </view>
-            <view wx:if="{{ item.status === 200 }}" class="routine_card_stamp">
+            <view wx:if="{{ item.done }}" class="routine_card_stamp">
               <image
                 class="routine_card_stamp_img"
                 src="/assets/imgs/ic-stamp-done.svg"

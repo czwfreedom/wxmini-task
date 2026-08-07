@@ -6,7 +6,7 @@
     <scroll-view wx:if="{{ loaded }}" class="croutine_scroll" scroll-y="true" enhanced="{{ true }}">
       <!-- 1. 选择任务类型 -->
       <view wx:if="{{ !finishing }}" class="croutine_section">
-        <view class="croutine_section_title">任务类型</view>
+        <view class="croutine_section_title">想做什么呢？</view>
         <view class="croutine_category {{ selectedCategoryId ? 'has-selected' : '' }}">
           <view
             wx:for="{{ categories }}"
@@ -33,7 +33,7 @@
 
       <!-- 2. 任务内容 -->
       <view class="croutine_section">
-        <view class="croutine_section_title">{{ finishing ? '任务反馈' : '任务内容' }}</view>
+        <view class="croutine_section_title">{{ finishing ? '任务反馈' : '写下来吧 ✍️' }}</view>
 
         <view wx:if="{{ contentHint }}" class="croutine_detail_hint">{{ contentHint }}</view>
         <view class="croutine_detail">
@@ -120,8 +120,8 @@
       <!-- 4. 计划时间 -->
       <view wx:if="{{ !finishing }}" class="croutine_section">
         <view class="croutine_section_title">
-          计划时间
-          <text class="croutine_section_tip">可选，默认现在</text>
+          几点开始？⏰
+        <text class="croutine_section_tip">可选，默认现在</text>
         </view>
 
         <view class="croutine_time_items">

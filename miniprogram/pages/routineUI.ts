@@ -40,6 +40,7 @@ export namespace RoutineUI {
   /** ViewModel，仅包含 UI 渲染需要的字段 */
   export interface Record extends Entity.Label {
     holder?: boolean;
+    done?: boolean;
     /** 任务详情 */
     detail: string;
     /** 任务分类 */

@@ -72,6 +72,7 @@ export class RoutineAdapter {
         finishTime: info.finishTime,
         remark: info.remark,
         holder: holder,
+        done,
         style: done ? 'done' : holder ? 'holder' : '',
       };
       records.push(record);
