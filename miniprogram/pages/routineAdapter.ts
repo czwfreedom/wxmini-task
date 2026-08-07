@@ -163,6 +163,7 @@ export namespace RoutineAdapter {
       icon: '/assets/imgs/ic-homework.svg',
       default: true,
       examples: ['数学练习册 P20', '背诵古诗一首', '英语单词10个'],
+      finish: '做完感觉怎么样？',
     },
     {
       category: Routine.Category.Exercise,
@@ -171,6 +172,7 @@ export namespace RoutineAdapter {
       icon: '/assets/imgs/ic-sport.svg',
       default: true,
       examples: ['跳绳500个', '跑步15分钟', '仰卧起坐30个'],
+      finish: '出汗了吗？运动完爽不爽？',
     },
     {
       category: Routine.Category.Chores,
@@ -178,6 +180,7 @@ export namespace RoutineAdapter {
       color: '#BA68C8',
       icon: '/assets/imgs/ic-housework.svg',
       examples: ['整理书桌', '扫地拖地', '浇花'],
+      finish: '家里是不是变整洁了？',
     },
     {
       category: Routine.Category.Game,
@@ -185,6 +188,7 @@ export namespace RoutineAdapter {
       color: '#F06292',
       icon: '/assets/imgs/ic-game.svg',
       examples: ['Minecraft 建造', '拼图100片', '数独一局'],
+      finish: '今天玩得最开心的是什么？',
     },
     {
       category: Routine.Category.Handwriting,
@@ -192,6 +196,7 @@ export namespace RoutineAdapter {
       color: '#4DB6AC',
       icon: '/assets/imgs/ic-calligraphy.svg',
       examples: ['描红一页', '临摹《兰亭序》', '硬笔字帖'],
+      finish: '哪个字写得最好看？',
     },
     {
       category: Routine.Category.Instrument,
@@ -199,6 +204,7 @@ export namespace RoutineAdapter {
       color: '#A1887F',
       icon: '/assets/imgs/ic-instrument.svg',
       examples: ['音阶练习10遍', '练习曲第3首', '复习和弦'],
+      finish: '哪一段弹得最顺？',
     },
     {
       category: Routine.Category.Drawing,
@@ -206,6 +212,7 @@ export namespace RoutineAdapter {
       color: '#FFD54F',
       icon: '/assets/imgs/ic-drawing.svg',
       examples: ['素描静物', '水彩风景', '卡通人物'],
+      finish: '画了什么？满意吗？',
     },
     {
       category: Routine.Category.Coding,
@@ -213,6 +220,7 @@ export namespace RoutineAdapter {
       color: '#4FC3F7',
       icon: '/assets/imgs/ic-coding.svg',
       examples: ['Scratch 发射子弹', 'Python 小游戏', '网页制作'],
+      finish: '搞定什么Bug了？',
     },
     {
       category: Routine.Category.Practice,
@@ -220,6 +228,7 @@ export namespace RoutineAdapter {
       color: '#FF8A65',
       icon: '/assets/imgs/ic-practice.svg',
       examples: ['摆摊体验', '社区志愿服务', '参观博物馆'],
+      finish: '今天有什么新收获？',
     },
     {
       category: Routine.Category.QA,
@@ -228,6 +237,7 @@ export namespace RoutineAdapter {
       icon: '/assets/imgs/ic-qa.svg',
       default: true,
       examples: ['每日一问', '百科知识问答', '成语接龙'],
+      finish: '今天问了什么有趣的问题？',
     },
     {
       category: Routine.Category.Job,
@@ -235,6 +245,7 @@ export namespace RoutineAdapter {
       color: '#26C6DA',
       icon: '/assets/imgs/ic-job.svg',
       examples: ['处理工作消息', '完成项目方案', '整理会议纪要'],
+      finish: '今天搞定了什么大事？',
     },
     {
       category: Routine.Category.Shoot,
@@ -242,6 +253,7 @@ export namespace RoutineAdapter {
       color: '#EF5350',
       icon: '/assets/imgs/ic-shoot.svg',
       examples: ['拍一段 Vlog', '录制朗读视频', '拍摄全家福'],
+      finish: '拍到了什么精彩画面？',
     },
     {
       category: Routine.Category.Other,
@@ -272,5 +284,10 @@ export namespace RoutineAdapter {
   /** 获取所有非默认/更多分类 ID */
   export function getMoreCategoryIds(): Routine.Category[] {
     return sConfigs.filter((c) => !c.default).map((c) => c.category);
+  }
+
+  /** 获取指定分类的完成反馈提示词 */
+  export function getFinish(category: number): string {
+    return findConfig(category)?.finish || '做完啦，有什么想说的？';
   }
 }
