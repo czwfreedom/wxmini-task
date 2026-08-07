@@ -8,6 +8,11 @@ import { RoutineEditorUI } from './routineEditorUI';
 
 // 完成事件。
 export class RoutineReaperUI extends RoutineEditorUI {
+  public constructor(component: any, intent?: Partial<Routine.Info>) {
+    super(component, intent);
+    this.watchKeyboard();
+  }
+
   protected getInfo(): Routine.Info {
     return this.entry as Routine.Info;
   }

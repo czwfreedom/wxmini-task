@@ -24,7 +24,7 @@ export namespace RoutineEditorUI {
     /** 任务内容 */
     contentHint?: string;
     contentHolder?: string;
-    
+
     contentText: string;
     contentMaxLength: number;
     contentCharCount: number;
@@ -43,6 +43,9 @@ export namespace RoutineEditorUI {
 
     /** 是否可以提交 */
     submittable: boolean;
+
+    /** 键盘弹起高度（px），用于 CTA 按钮跟随上移 */
+    keyboardHeight: number;
   }
 
   export interface Category extends Entity.Image {
@@ -97,7 +100,14 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       times: [],
       timeCustomValue: '',
       submittable: false,
+      keyboardHeight: 0,
     };
+  }
+
+  protected watchKeyboard() {
+    wx.onKeyboardHeightChange((res) => {
+      this.setData({ keyboardHeight: res.height });
+    });
   }
 
   /** 初始化页面数据（同步，无需网络请求） */

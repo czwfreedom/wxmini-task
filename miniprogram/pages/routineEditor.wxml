@@ -144,7 +144,7 @@
     </scroll-view>
   </view>
   <!-- CTA 底部按钮（固定浮层） -->
-  <view class="croutine_cta">
+  <view class="croutine_cta" style="transform: translateY(-{{ keyboardHeight || 0 }}px);">
     <view class="croutine_cta_btn {{ submittable ? '' : 'disabled' }}" catch:tap="onSubmitTap">
       <text>{{ finishing ? '完成任务' : '创建任务' }}</text>
     </view>
