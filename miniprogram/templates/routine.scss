@@ -270,11 +270,6 @@
       }
     }
 
-    // 未开始卡片呼吸（邀请点击）
-    &:not(.done):not(.holder) {
-      animation: cardBreathe 1.5s ease-in-out infinite;
-    }
-
     // 已完成变体
     &.done {
       background: $background-white;
@@ -390,16 +385,5 @@
       color: $foreground-sub;
       letter-spacing: 1rpx;
     }
-  }
-}
-
-/* 未开始卡片呼吸（邀请点击） */
-@keyframes cardBreathe {
-  0%,
-  100% {
-    box-shadow: 0 4rpx 0 rgba(0, 0, 0, 0.03), 0 8rpx 24rpx rgba(74, 144, 226, 0.04);
-  }
-  50% {
-    box-shadow: 0 4rpx 0 rgba(0, 0, 0, 0.03), 0 8rpx 24rpx rgba(244, 185, 66, 0.12);
   }
 }
