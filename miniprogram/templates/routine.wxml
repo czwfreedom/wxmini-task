@@ -30,6 +30,7 @@
               <view class="routine_hero_arrow {{ isToday ? 'disabled' : '' }}" catch:tap="onNextDay" hover-class="press">›</view>
             </view>
 
+            <!-- prettier-ignore -->
             <view class="routine_hero_motto {{ isAllDone ? 'celebrate' : '' }}">
               ✦ {{ isAllDone ? '今天全搞定，太厉害了！🎉' : (isToday ? '又是闪闪发光的一天！⭐' : '每一步都算数') }}
             </view>
@@ -51,7 +52,9 @@
         </view>
 
         <!-- 任务列表 -->
-        <view class="routine_section {{ isAllDone ? 'celebrate' : '' }}">{{ isToday ? '今天做点啥？' : '当日任务' }}</view>
+        <view class="routine_section {{ isAllDone ? 'celebrate' : '' }}">
+          {{ isToday ? '今天做点啥？' : '当日任务' }}
+        </view>
 
         <view class="routine_cards">
           <view wx:for="{{ records }}" wx:key="id" class="routine_card {{ item.style || '' }}">
@@ -66,13 +69,17 @@
               </view>
               <view wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</view>
             </view>
-            <view class="routine_card_action" catch:tap="onItemTap" data-id="{{ item.id }}" hover-class="press">
+            <view
+              class="routine_card_action"
+              catch:tap="onItemTap"
+              data-id="{{ item.id }}"
+              hover-class="press"
+            >
               <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
               <view wx:elif="{{ item.status === 100 }}" class="routine_card_btn">去完成</view>
             </view>
-            <view class="routine_card_stamp {{ item.status === 200 ? 'pop' : '' }}">
+            <view wx:if="{{ item.status === 200 }}" class="routine_card_stamp">
               <image
-                wx:if="{{ item.status === 200 }}"
                 class="routine_card_stamp_img"
                 src="/assets/imgs/ic-stamp-done.svg"
                 mode="aspectFit"
@@ -88,7 +95,12 @@
           </view>
 
           <!-- 分享入口卡（仅今天态） -->
-          <view wx:if="{{ addable }}" class="routine_share" catch:tap="onShareTap" hover-class="press">
+          <view
+            wx:if="{{ addable }}"
+            class="routine_share"
+            catch:tap="onShareTap"
+            hover-class="press"
+          >
             <view class="routine_share_icon">
               <image
                 class="routine_share_icon_img"
