@@ -2,6 +2,7 @@ import { Constants } from '../constant/common';
 import { Intent } from '../core/intent';
 import { Entity } from '../model/entity';
 import { MenuUI } from '../ui/menuUI';
+import { WxUtils } from '../utils/wxUtils';
 
 Page({
   data: {
@@ -37,6 +38,7 @@ Page({
   onTabTap(e: WechatMiniprogram.TouchEvent) {
     const { id } = e.currentTarget.dataset;
     if (id === 'add') {
+      WxUtils.hapticLight();
       Intent.navigateTo(Constants.Page.CreateRoutine);
     } else {
       const res = Entity.find(this.getRealTabs(), id);

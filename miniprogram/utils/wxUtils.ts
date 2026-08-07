@@ -7,6 +7,11 @@ import { Logger } from './logger';
  * 注意，globalUtils下还有一个util.ts
  */
 export namespace WxUtils {
+  /** 短触感反馈，用于按钮点击等交互 */
+  export function hapticLight() {
+    wx.vibrateShort({ type: 'light' });
+  }
+
   /**
    * 因为代码自动格式化，也许这种封装，可以把代码从4行变为一行。
    */

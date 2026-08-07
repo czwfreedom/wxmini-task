@@ -8,6 +8,7 @@ import { ChoicesUI } from '../ui/choicesUI';
 import { InteractUI } from '../core/interactUI';
 import { Utils } from '../utils/utils';
 import { DateUtils } from '../utils/dateUtils';
+import { WxUtils } from '../utils/wxUtils';
 import { Event } from '../core/event';
 import { Intent } from '../core/intent';
 
@@ -244,6 +245,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
 
   /** 提交创建任务 */
   protected async onSubmitTap() {
+    WxUtils.hapticLight();
     const data = this.getCommitData(true);
     if (!data) return;
 
