@@ -176,43 +176,48 @@ export class RoutineAdapter {
 }
 
 // ❌ 错误：平铺
-&_menu { padding: 20rpx; }
-&_menu_icon { width: 40rpx; }
-&_menu_title { color: $gray-33; }
+&_menu {
+  padding: 20rpx;
+}
+&_menu_icon {
+  width: 40rpx;
+}
+&_menu_title {
+  color: $gray-33;
+}
 ```
 
 ### 变量速查
 
-| 变量                     | 值                                                       | 用途                         |
-| ------------------------ | -------------------------------------------------------- | ---------------------------- |
-| `$main`                  | `#f4b942`                                                | 主色调 / 选中描边 / 金色强调 |
-| `$gold-light`            | `#ffd54f`                                                | 金色渐变的浅端               |
-| `$gold-dark`             | `#c8b496`                                                | 金系描边基底                 |
-| `$blue`                  | `#5b9bd5`                                                | 统计点蓝色                   |
-| `$blue-light`            | `#4a90e2`                                                | 阴影蓝色基底                 |
-| `$blue-dark`             | `#3a5a8c`                                                | 统计数值深蓝                 |
-| `$green`                 | `#81c784`                                                | 完成点绿色 / 已完成文字      |
-| `$red`                   | `#ef5350`                                                | 高优先级 / 删除 / 绶带       |
-| `$gray-33`               | `#333`                                                   | 标题 / 重要文字              |
-| `$gray-44`               | `#444`                                                   | done 卡片标题                |
-| `$gray-ee`               | `#eee`                                                   | 浅灰底 / 装饰元素            |
-| `$gray-e5`               | `#e5e5e5`                                                | 边框                         |
-| `$gray-d9`               | `#d9d9d9`                                                | 深色边框                     |
-| `$gray-c5`               | `#c5c5c5`                                                | 虚线边框 / placeholder       |
-| `$gray-99`               | `#999`                                                   | 占位符 / 提示文字 / 次要灰   |
-| `$foreground-sub`        | `#5c6178`                                                | 次要文字                     |
-| `$background-green-light` | `rgba($green, 0.12)`                                     | remark 底                    |
-| `$background-card`       | `#fdfbf7`                                                | 标准卡片底色                 |
-| `$background-white`      | `#fffdf8`                                                | 选中态 / 已完成卡片底色      |
-| `$background-gradient`   | `linear-gradient(180deg, #b8daf5, #f2f5f8 30%)`         | 页面背景渐变                 |
-| `$bg-page`               | `#f2f5f8`                                                | 页面浅色底（渐变末端）       |
-| `$gradient`              | `linear-gradient(135deg, $main, $gold-light)`            | 主按钮 / 打勾 / 分享卡       |
-| `$gradient-sub`          | `linear-gradient(160deg, #b5d9f8, #a0cdf5 50%, #c5e3fa)` | Hero 渐变                    |
-| `$gold4`                 | `rgba($main, 0.4)`                                       | 金系阴影                     |
-| `$gold-border`           | `rgba($gold-dark, 0.4)`                                  | 已完成卡片柔和金描边         |
-| `$border`                | `rgba(0, 0, 0, 0.06)`                                    | 半透明分割线                 |
-| `$black1~$black4`        | `rgba(0,0,0,0.1~0.4)`                                    | 阴影 / 遮罩                  |
-| `$white2~$white6` / `$white85` / `$white92` | `rgba(255,255,255,0.x)`                  | 半透明白 / 毛玻璃            |
+| 变量                                        | 值                                                       | 用途                         |
+| ------------------------------------------- | -------------------------------------------------------- | ---------------------------- |
+| `$main`                                     | `#f4b942`                                                | 主色调 / 选中描边 / 金色强调 |
+| `$gold-light`                               | `#ffd54f`                                                | 金色渐变的浅端               |
+| `$gold-dark`                                | `#c8b496`                                                | 金系描边基底                 |
+| `$blue`                                     | `#5b9bd5`                                                | 统计点蓝色                   |
+| `$blue-light`                               | `#4a90e2`                                                | 阴影蓝色基底                 |
+| `$blue-dark`                                | `#3a5a8c`                                                | 统计数值深蓝                 |
+| `$green`                                    | `#81c784`                                                | 完成点绿色 / 已完成文字      |
+| `$red`                                      | `#ef5350`                                                | 高优先级 / 删除 / 绶带       |
+| `$gray-33`                                  | `#333`                                                   | 标题 / 重要文字              |
+| `$gray-44`                                  | `#444`                                                   | done 卡片标题                |
+| `$gray-ee`                                  | `#eee`                                                   | 浅灰底 / 装饰元素            |
+| `$gray-e5`                                  | `#e5e5e5`                                                | 边框                         |
+| `$gray-d9`                                  | `#d9d9d9`                                                | 深色边框                     |
+| `$gray-c5`                                  | `#c5c5c5`                                                | 虚线边框 / placeholder       |
+| `$gray-99`                                  | `#999`                                                   | 占位符 / 提示文字 / 次要灰   |
+| `$foreground-sub`                           | `#5c6178`                                                | 次要文字                     |
+| `$background-green-light`                   | `rgba($green, 0.12)`                                     | remark 底                    |
+| `$background-card`                          | `#fdfbf7`                                                | 标准卡片底色                 |
+| `$background-white`                         | `#fffdf8`                                                | 选中态 / 已完成卡片底色      |
+| `$background-gradient`                      | `linear-gradient(180deg, #b8daf5, #f2f5f8 30%)`          | 页面背景渐变                 |
+| `$gradient`                                 | `linear-gradient(135deg, $main, $gold-light)`            | 主按钮 / 打勾 / 分享卡       |
+| `$gradient-sub`                             | `linear-gradient(160deg, #b5d9f8, #a0cdf5 50%, #c5e3fa)` | Hero 渐变                    |
+| `$gold4`                                    | `rgba($main, 0.4)`                                       | 金系阴影                     |
+| `$gold-border`                              | `rgba($gold-dark, 0.4)`                                  | 已完成卡片柔和金描边         |
+| `$border`                                   | `rgba(0, 0, 0, 0.06)`                                    | 半透明分割线                 |
+| `$black1~$black4`                           | `rgba(0,0,0,0.1~0.4)`                                    | 阴影 / 遮罩                  |
+| `$white2~$white6` / `$white85` / `$white92` | `rgba(255,255,255,0.x)`                                  | 半透明白 / 毛玻璃            |
 
 ### Mixin 速查
 
