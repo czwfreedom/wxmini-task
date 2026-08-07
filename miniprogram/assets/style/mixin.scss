@@ -55,7 +55,9 @@
 }
 
 @mixin press {
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
 }
 
 @mixin clear-button {
@@ -90,6 +92,7 @@
   position: relative;
   background: $gradient-sub;
   border-radius: 0 0 32rpx 32rpx;
+  animation: heroIn 0.6s ease-out;
 }
 
 // 分区头：前面带一个金色的竖线。
@@ -138,5 +141,17 @@
   }
   to {
     pointer-events: all;
+  }
+}
+
+/* Hero 淡入上滑 */
+@keyframes heroIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

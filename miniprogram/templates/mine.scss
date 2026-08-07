@@ -25,6 +25,7 @@
     margin-bottom: 40rpx;
     padding: 40rpx 48rpx 32rpx;
     background: linear-gradient(180deg, #b8daf5, $transparent);
+    animation: heroIn 0.6s ease-out;
   }
 
   &_avatar {
