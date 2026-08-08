@@ -104,8 +104,8 @@ export class RoutineAdapter {
     const config = RoutineAdapter.findConfig(category);
     return {
       id: 'holder' + category,
-      name: config.name,
-      detail: '',
+      name: '',
+      detail: config.name,
       status: Routine.Status.Working,
       category: category,
       userId: '',

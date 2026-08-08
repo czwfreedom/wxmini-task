@@ -12,6 +12,11 @@ export namespace Relation {
     createTime: number;
   }
 
+  export interface Stat {
+    useeCount: number;
+    userCount: number;
+  }
+
   export interface ListResponse {
     data: Info[];
     users: User.Info[];
@@ -42,5 +47,14 @@ export namespace Relation {
       return res.errcode || Err.Code.Network;
     }
     return Err.Code.OK;
+  }
+
+  export async function stat(): Promise<number | Stat> {
+    const res = await Network.post<Stat>(Api.StatRelation);
+    if (res?.errcode !== 0 || !res.data) {
+      Logger.warn('Stat relation failed', res);
+      return res?.errcode || Err.Code.Network;
+    }
+    return res.data;
   }
 }
