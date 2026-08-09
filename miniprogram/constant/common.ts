@@ -5,5 +5,6 @@ export namespace Constants {
     Routine = '/pages/routine',
     Mine = '/pages/mine',
     CreateRoutine = '/pages/routineEditor',
+    Relations = '/pages/relations',
   }
 }

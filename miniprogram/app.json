@@ -3,7 +3,8 @@
     "pages/index",
     "pages/home",
     "pages/routine",
-    "pages/routineEditor"
+    "pages/routineEditor",
+    "pages/relations"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -62,14 +62,14 @@ export class MineAdapter {
     const relation = this.relation;
     return [
       {
-        id: 'following',
+        id: 'usee',
         name: '我可查看的伙伴',
         desc: '围观他们的任务，一起加油',
         hint: relation?.useeCount ? '' + relation?.useeCount : '',
         avatarStyle: 'blue',
       },
       {
-        id: 'followers',
+        id: 'user',
         name: '可查看我的伙伴',
         desc: '他们也在一起见证你的坚持',
         hint: relation?.userCount ? '' + relation?.userCount : '',

@@ -3,13 +3,17 @@ import { Err } from '../constant/error';
 import { Network } from '../core/network';
 import { Entity } from '../model/entity';
 import { Logger } from '../utils/logger';
-import { User } from './user';
 
 export namespace Relation {
   export interface Info extends Entity.Id {
     userId: string;
     useeId: string;
     createTime: number;
+  }
+
+  export interface User extends Entity.Info {
+    // 当天的任务数量
+    routine?: { count: number };
   }
 
   export interface Stat {
@@ -19,16 +23,16 @@ export namespace Relation {
 
   export interface ListResponse {
     data: Info[];
-    users: User.Info[];
+    users: User[];
   }
 
   export async function list(data: Partial<Info>): Promise<number | ListResponse> {
-    const res = await Network.post<ListResponse>(Api.ListRelation, data);
+    const res = await Network.post<Info[]>(Api.ListRelation, data);
     if (res?.errcode !== 0) {
       Logger.warn('List relation failed', res);
       return res?.errcode || Err.Code.Network;
     }
-    return res.data ?? { data: [], users: [] };
+    return { data: res?.data || [], users: res?.users || [] };
   }
 
   export async function create(userId: string, useeId: string): Promise<Info | number> {

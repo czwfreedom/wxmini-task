@@ -1,0 +1,53 @@
+<import src="../templates/abort.wxml"></import>
+
+<view class="relations">
+  <view class="relations_content">
+    <scroll-view
+      wx:if="{{ loaded }}"
+      class="relations_scroll"
+      scroll-y="true"
+      enhanced="{{ true }}"
+    >
+      <!-- 标题区 -->
+      <view class="relations_header">
+        <!-- prettier-ignore -->
+        <text class="relations_title">{{ direction === 'usee' ? '我可查看的伙伴' : '可查看我的伙伴' }}</text>
+      </view>
+
+      <!-- 伙伴列表 -->
+      <view wx:if="{{ items && items.length }}" class="relations_list">
+        <view
+          wx:for="{{ items }}"
+          wx:key="id"
+          class="relations_row"
+          catch:tap="onRowTap"
+          data-id="{{ item.id }}"
+          hover-class="press"
+        >
+          <view class="relations_avatar {{ item.avatarStyle || 'c1' }}">
+            <text>{{ item.letterIndex }}</text>
+          </view>
+          <view class="relations_info">
+            <view class="relations_name">{{ item.name }}</view>
+            <view wx:if="{{ item.desc }}" class="relations_desc">{{ item.desc }}</view>
+          </view>
+          <text class="relations_chevron">›</text>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view wx:else class="relations_empty">
+        <text class="relations_empty_icon">{{ direction === 'usee' ? '👀' : '🤝' }}</text>
+        <text class="relations_empty_text">
+          {{ direction === 'usee' ? '还没有可查看的伙伴，去邀请吧' : '还没有人通过你的分享加入' }}
+        </text>
+      </view>
+    </scroll-view>
+  </view>
+</view>
+
+<template
+  wx:if="{{ !loaded || abortMessage }}"
+  is="abort"
+  data="{{ message: abortMessage || '加载中..' }}"
+></template>

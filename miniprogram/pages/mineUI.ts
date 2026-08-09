@@ -1,8 +1,9 @@
 import { SubUI } from '../core/subUI';
 import { Err } from '../constant/error';
+import { Constants } from '../constant/common';
+import { Intent } from '../core/intent';
 import { MineAdapter } from './mineAdapter';
 import { Entity } from '../model/entity';
-import { WxUtils } from '../utils/wxUtils';
 
 export namespace MineUI {
   export interface Data extends SubUI.Data {
@@ -44,7 +45,6 @@ export class MineUI extends SubUI<MineUI.Data> {
 
   protected onCardTap(e: WechatMiniprogram.TouchEvent) {
     const { id } = e.currentTarget.dataset;
-    // TODO: 后续跳转到伙伴列表页
-    console.log('mine card tap:', id);
+    Intent.navigateTo(`${Constants.Page.Relations}?dir=${id}`);
   }
 }
