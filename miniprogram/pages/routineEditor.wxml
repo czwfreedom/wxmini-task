@@ -1,5 +1,6 @@
 <import src="../templates/abort.wxml"></import>
 <import src="../templates/choices.wxml"></import>
+<import src="../templates/bottomBar.wxml"></import>
 
 <view class="croutine">
   <view class="croutine_content">
@@ -121,7 +122,7 @@
       <view wx:if="{{ !finishing }}" class="croutine_section">
         <view class="croutine_section_title">
           几点开始？⏰
-        <text class="croutine_section_tip">可选，默认现在</text>
+          <text class="croutine_section_tip">可选，默认现在</text>
         </view>
 
         <view class="croutine_time_items">
@@ -147,16 +148,12 @@
       <view class="croutine_spacer"></view>
     </scroll-view>
   </view>
-  <!-- CTA 底部按钮（固定浮层） -->
-  <view class="croutine_cta" style="transform: translateY(-{{ keyboardHeight || 0 }}px);">
-    <view
-      class="croutine_cta_btn {{ submittable ? '' : 'disabled' }}"
-      catch:tap="onSubmitTap"
-      hover-class="press"
-    >
-      <text>{{ finishing ? '完成任务' : '创建任务' }}</text>
-    </view>
-  </view>
+  <!-- CTA 底部按钮（通用 bottomBar 驱动） -->
+  <template
+    wx:if="{{ menus && menus.items && menus.items.length }}"
+    is="bottomBar"
+    data="{{ menus, keyboardHeight }}"
+  ></template>
 </view>
 
 <!-- Choices 通用弹窗（更多分类等） -->

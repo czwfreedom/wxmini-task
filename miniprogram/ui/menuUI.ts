@@ -10,6 +10,10 @@ export namespace MenuUI {
     data?: any; // 私有数据。
   }
 
+  export interface Menus extends Entity.Id {
+    items: VM[];
+  }
+
   export interface Input extends VM {
     type?: string;
     maxLength?: number;

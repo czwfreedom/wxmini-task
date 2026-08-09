@@ -1,0 +1,35 @@
+<!--
+  bottomBar 通用底部按钮栏
+  数据驱动：传入 menus（MenuUI.VM[]），通过 style 区分主次
+    openType: 支持微信 button 特殊能力（如 share）
+    enabled: false → 半透明禁用态
+  事件：catch:tap="onBottomBarTap" + data-id
+  键盘适配：keyboardHeight 传入键盘高度，自动上移
+-->
+<template name="bottomBar">
+  <view class="bottombar" style="transform: translateY(-{{ keyboardHeight || 0 }}px);">
+    <block wx:for="{{ menus.items }}" wx:key="id">
+      <!-- openType: 微信原生 button -->
+      <button
+        wx:if="{{ item.openType }}"
+        class="bottombar_btn {{ item.style || '' }} {{ item.enabled === false ? 'disabled' : '' }}"
+        open-type="{{ item.openType }}"
+        disabled="{{ item.enabled === false }}"
+        catch:tap="onBottomBarTap"
+        data-id="{{ item.id }}"
+      >
+        {{ item.name }}
+      </button>
+
+      <!-- 正常可点击 -->
+      <view
+        class="bottombar_btn {{ item.style || '' }} {{ item.enabled === false ? 'disabled' : '' }}"
+        catch:tap="onBottomBarTap"
+        data-id="{{ item.id }}"
+        hover-class="press"
+      >
+        {{ item.name }}
+      </view>
+    </block>
+  </view>
+</template>

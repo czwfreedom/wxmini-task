@@ -1,6 +1,7 @@
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
 @import '../templates/abort.scss';
+@import '../templates/bottomBar.scss';
 @import '../templates/choices.scss';
 
 /* ==========================================================
@@ -262,31 +263,5 @@
 
   &_spacer {
     height: 32rpx;
-  }
-
-  // ===== CTA 底部按钮（固定底部，不随内容滚动） =====
-  &_cta {
-    padding: 20rpx 48rpx;
-    padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-    background: $white92;
-
-    &_btn {
-      background: $gradient;
-      border-radius: 999rpx;
-      padding: 24rpx;
-      text-align: center;
-      @include press;
-      font-size: 34rpx;
-      color: #fff;
-      letter-spacing: 4rpx;
-      box-shadow:
-        0 16rpx 40rpx $gold4,
-        0 4rpx 0 $white4 inset;
-      gap: 20rpx;
-
-      &.disabled {
-        opacity: 0.5;
-      }
-    }
   }
 }

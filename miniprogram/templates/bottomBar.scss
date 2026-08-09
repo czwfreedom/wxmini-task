@@ -1,0 +1,43 @@
+@import '../assets/style/var.scss';
+@import '../assets/style/mixin.scss';
+
+/* ==========================================================
+   bottomBar 通用底部按钮栏
+   .primary  → 金底白字（主操作，最常用）
+   .secondary → 白底金描边（次要操作）
+   ========================================================== */
+.bottombar {
+  display: flex;
+  gap: 24rpx;
+  padding: 20rpx 48rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: $white92;
+
+  &_btn {
+    @include clear-button;
+    flex: 1;
+    border-radius: 999rpx;
+    padding: 24rpx;
+    text-align: center;
+    font-size: 32rpx;
+    font-weight: 700;
+    letter-spacing: 4rpx;
+    transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
+    background: white;
+    color: $main;
+    border: 3rpx solid $main;
+
+    &:last-child {
+      background: $gradient;
+      color: white;
+      box-shadow: 0 6rpx 20rpx $gold4;
+      border: 3rpx solid $transparent;
+    }
+
+    &.disabled {
+      opacity: 0.5;
+    }
+  }
+}

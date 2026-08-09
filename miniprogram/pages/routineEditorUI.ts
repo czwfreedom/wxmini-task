@@ -8,9 +8,9 @@ import { ChoicesUI } from '../ui/choicesUI';
 import { InteractUI } from '../core/interactUI';
 import { Utils } from '../utils/utils';
 import { DateUtils } from '../utils/dateUtils';
-import { WxUtils } from '../utils/wxUtils';
 import { Event } from '../core/event';
 import { Intent } from '../core/intent';
+import { MenuUI } from '../ui/menuUI';
 
 export namespace RoutineEditorUI {
   export interface Data extends SubUI.Data {
@@ -47,6 +47,7 @@ export namespace RoutineEditorUI {
 
     /** 键盘弹起高度（px），用于 CTA 按钮跟随上移 */
     keyboardHeight: number;
+    menus?: MenuUI.Menus;
   }
 
   export interface Category extends Entity.Image {
@@ -80,7 +81,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     this.bindEvent('onDurationCustomConfirm', this.onDurationCustomConfirm);
     this.bindEvent('onTimeTap', this.onTimeTap);
     this.bindEvent('onTimePicked', this.onTimePicked);
-    this.bindEvent('onSubmitTap', this.onSubmitTap);
+    this.bindEvent('onBottomBarTap', this.onBottomBarTap);
   }
 
   public static defaultData(): RoutineEditorUI.Data {
@@ -132,6 +133,8 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
             this.entry.category,
             this.adapter.isMoreCategory(this.entry.category)
           );
+        } else {
+          this.setData({ menus: this.getMenus() });
         }
       }
     );
@@ -244,7 +247,11 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
   }
 
   /** 提交创建任务 */
-  protected async onSubmitTap() {
+  protected onBottomBarTap(e: WechatMiniprogram.TouchEvent) {
+    this.commit();
+  }
+
+  protected async commit() {
     const data = this.getCommitData(true);
     if (!data) return;
 
@@ -268,10 +275,14 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     Intent.delayBack();
   }
 
+  protected getMenus(): MenuUI.Menus {
+    const commitData = this.getCommitData();
+    return { id: 'm', items: [{ id: 'create', name: '创建任务', enabled: !!commitData }] };
+  }
+
   protected updateData(data: Partial<RoutineEditorUI.Data>) {
     this.setData(data, () => {
-      const commitData = this.getCommitData();
-      this.setData({ submittable: !!commitData });
+      this.setData({ menus: this.getMenus() });
     });
   }
 
