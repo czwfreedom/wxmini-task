@@ -11,6 +11,7 @@ import { DateUtils } from '../utils/dateUtils';
 import { Event } from '../core/event';
 import { Intent } from '../core/intent';
 import { MenuUI } from '../ui/menuUI';
+import { RoutineAdapter } from './routineAdapter';
 
 export namespace RoutineEditorUI {
   export interface Data extends SubUI.Data {
@@ -346,11 +347,13 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     }
     this.markSelected(categories, category);
     const examples = this.adapter.adaptExamples(category);
+    const config = RoutineAdapter.findConfig(category);
 
     this.updateData({
       selectedCategoryId: category,
       categories: categories,
       contentExamples: examples,
+      contentHolder: config?.hint || '',
     });
   }
 
