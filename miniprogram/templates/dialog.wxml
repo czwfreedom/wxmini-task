@@ -25,13 +25,11 @@
           class="dialog_input"
           type="{{input.type || 'text'}}"
           value="{{ input.value }}"
-          focus="true"
           adjust-position="{{ true }}"
           placeholder-class="dialog_input_holder"
           placeholder="{{input.hint}}"
           maxlength="{{input.maxLength || -1}}"
           bindinput="onDialogInput"
-          bindnicknamereview="onDialogInput"
         />
       </view>
 
