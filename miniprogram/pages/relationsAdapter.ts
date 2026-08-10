@@ -13,7 +13,7 @@ export class RelationsAdapter {
 
   public async load(): Promise<number> {
     const userId = Context.getUserId();
-    const params = this.direction === 'usee' ? { userId } : { useeId: userId };
+    const params = this.canManage() ? { userId } : { useeId: userId };
 
     const result = await Relation.list(params);
     if ('number' === typeof result) return result;
@@ -22,12 +22,13 @@ export class RelationsAdapter {
   }
 
   public adapt(): Pick<RelationsUI.Data, 'items'> {
+    const m = this.canManage();
     return {
       items: this.users.map((u) => ({
         id: u.id,
         name: u.nickname || u.name || '',
         letterIndex: (u.nickname || u.name || '?')[0],
-        desc: `今日任务 ${u.routine?.count || 0} 个`,
+        desc: m ? `今日任务 ${u.routine?.count || 0} 个` : '',
         avatarStyle: this.randomColor(u.id),
       })),
     };
@@ -41,5 +42,9 @@ export class RelationsAdapter {
       hash = seed.charCodeAt(i) + ((hash << 5) - hash);
     }
     return colors[Math.abs(hash) % colors.length];
+  }
+
+  protected canManage() {
+    return this.direction === 'usee';
   }
 }

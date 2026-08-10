@@ -1,4 +1,5 @@
 import { Context } from '../core/context';
+import { Logger } from '../utils/logger';
 import { Utils } from '../utils/utils';
 
 export namespace ShareUI {
@@ -11,9 +12,11 @@ export namespace ShareUI {
 
   // https://developers.weixin.qq.com/miniprogram/dev/api/chattool/wx.shareAppMessageToGroup.html
   export function share(title?: string, imageUrl?: string, path?: string) {
+    const p = path || ShareUI.path();
+    Logger.info('Share', p);
     return {
       title: title || '来看看我在做什么吧！',
-      path: path || ShareUI.path(),
+      path: p,
       imageUrl: imageUrl || '../assets/imgs/share-task.png',
     };
   }

@@ -8,8 +8,8 @@ Page({
 
   ui: undefined as RoutineUI | undefined,
 
-  onLoad() {
-    this.ui = new RoutineUI(this, 'wrap');
+  onLoad(options: Record<string, string>) {
+    this.ui = new RoutineUI(this, 'wrap', options.uid);
     this.ui.loadData();
   },
 

@@ -1,6 +1,7 @@
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
 @import '../templates/abort.scss';
+@import '../templates/bottomBar.scss';
 
 .relations {
   @include flex-container;

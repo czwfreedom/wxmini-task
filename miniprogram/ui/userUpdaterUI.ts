@@ -23,8 +23,7 @@ export abstract class UserUpdaterUI<D> extends InteractUI<D> {
 
   public async share(): Promise<void> {
     const user = Context.getUser();
-    // DEBUGGER
-    if (user.name && user.name !== '微信用户' && 0) {
+    if (User.isNameSet(user)) {
       this.doShare();
       return;
     }

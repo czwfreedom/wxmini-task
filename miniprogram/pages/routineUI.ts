@@ -63,11 +63,11 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   protected date: number;
   protected userId: string;
 
-  public constructor(component: any, subDataKey = '') {
+  public constructor(component: any, subDataKey = '', userId?: string) {
     super(component, subDataKey);
 
     this.date = DateUtils.getStartMillisOfDay(Date.now());
-    this.userId = Context.getUserId();
+    this.userId = userId || Context.getUserId();
 
     this.bindEvent('onItemTap', this.onItemTap);
     this.bindEvent('onShareTap', this.onShareTap);
@@ -108,7 +108,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   /** 加载指定日期并刷新视图，供翻页/选择器/回到今天复用 */
   protected async loadDate(date: number): Promise<number> {
     this.date = date;
-    const errcode = await this.adapter.load(this.date);
+    const errcode = await this.adapter.load(this.date, this.userId);
     if (errcode !== Err.Code.OK) return this.abort(errcode);
 
     const today = DateUtils.getStartMillisOfDay(Date.now());

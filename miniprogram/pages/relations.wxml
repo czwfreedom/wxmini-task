@@ -1,4 +1,5 @@
 <import src="../templates/abort.wxml"></import>
+<import src="../templates/bottomBar.wxml"></import>
 
 <view class="relations">
   <view class="relations_content">
@@ -20,7 +21,7 @@
           wx:for="{{ items }}"
           wx:key="id"
           class="relations_row"
-          catch:tap="onRowTap"
+          catch:tap="onItemTap"
           data-id="{{ item.id }}"
           hover-class="press"
         >
@@ -44,6 +45,13 @@
       </view>
     </scroll-view>
   </view>
+
+  <!-- CTA 底部按钮（通用 bottomBar 驱动） -->
+  <template
+    wx:if="{{ menus && menus.items && menus.items.length }}"
+    is="bottomBar"
+    data="{{ menus }}"
+  ></template>
 </view>
 
 <template

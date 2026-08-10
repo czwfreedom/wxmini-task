@@ -10,6 +10,10 @@ export namespace User {
     loginTime?: number;
   }
 
+  export function isNameSet(info: Info): boolean {
+    return !!info?.name && info.name !== '微信用户';
+  }
+
   export async function update(data: Partial<Info>): Promise<number | Info> {
     if (1) return data as any;
     const res = await Network.post<Info>(Api.UpdateUser, data);

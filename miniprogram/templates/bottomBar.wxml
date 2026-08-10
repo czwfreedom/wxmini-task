@@ -16,16 +16,17 @@
         open-type="{{ item.openType }}"
         disabled="{{ item.enabled === false }}"
         catch:tap="onBottomBarTap"
-        data-id="{{ item.id }}"
+        data-button="{{ item.id }}"
       >
         {{ item.name }}
       </button>
 
       <!-- 正常可点击 -->
       <view
+        wx:else
         class="bottombar_btn {{ item.style || '' }} {{ item.enabled === false ? 'disabled' : '' }}"
         catch:tap="onBottomBarTap"
-        data-id="{{ item.id }}"
+        data-button="{{ item.id }}"
         hover-class="press"
       >
         {{ item.name }}

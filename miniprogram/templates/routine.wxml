@@ -53,7 +53,7 @@
 
         <!-- 任务列表 -->
         <view class="routine_section {{ isAllDone ? 'celebrate' : '' }}">
-          {{ isToday ? '今天做点啥？' : '当日任务' }}
+          {{ isToday ? (addable? '今天做点啥？' : '伙伴在做啥？') : '当日任务' }}
         </view>
 
         <view class="routine_cards">
@@ -74,6 +74,7 @@
               <view wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</view>
             </view>
             <view
+              wx:if="{{ updateable }}"
               class="routine_card_action"
               catch:tap="onItemTap"
               data-id="{{ item.id }}"
