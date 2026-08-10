@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>分享卡片 v4 · 450×360 · 导出优化</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* 精确铺满 450×360，不做布局居中，保证无偏移 */
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 450px;
+    height: 360px;
+    overflow: hidden;
+    background: transparent;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== 卡片填满整个页面 ===== */
+  .card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 450px;
+    height: 360px;
+    border-radius: 28px;
+    overflow: hidden;
+    /* 温暖有力：金 → 橙 渐变 + 顶部柔光 */
+    background:
+      radial-gradient(circle at 50% 6%, rgba(255,255,255,0.42), transparent 44%),
+      linear-gradient(140deg, #FFCB6B 0%, #FF9F5A 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 34px 36px 26px;
+  }
+
+  /* 环境柔光圆点 */
+  .card_deco { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.14); pointer-events: none; }
+  .card_deco.a { width: 150px; height: 150px; top: -54px; left: -44px; }
+  .card_deco.b { width: 84px;  height: 84px;  bottom: -30px; right: -26px; background: rgba(255,255,255,0.12); }
+
+  /* ===== 伙伴同行 主视觉 ===== */
+  .card_art {
+    width: 150px; height: 100px;
+    position: relative; z-index: 2;
+    margin-top: 4px;
+  }
+
+  /* ===== 主文案 ===== */
+  .card_title {
+    margin-top: 16px;
+    text-align: center;
+    color: #FFFFFF;
+    line-height: 1.4;
+    text-shadow: 0 2px 8px rgba(180,90,30,0.22);
+    position: relative; z-index: 2;
+  }
+  .card_title_main {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 4px;
+  }
+  .card_title_main em {
+    font-style: normal;
+    color: #FFF3D6;
+  }
+
+  /* ===== 轻触提示 ===== */
+  .card_hint {
+    margin-top: auto;
+    display: inline-flex; align-items: center;
+    background: rgba(255,255,255,0.94);
+    border-radius: 999px;
+    padding: 12px 24px;
+    font-size: 18px; font-weight: 700;
+    color: #C8853E;
+    letter-spacing: 2px;
+    box-shadow: 0 6px 16px rgba(180,90,30,0.14);
+    position: relative; z-index: 2;
+  }
+  .card_hint svg { width: 22px; height: 22px; margin-right: 10px; display: block; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <span class="card_deco a"></span>
+  <span class="card_deco b"></span>
+
+  <!-- 伙伴同行：两个并肩小伙伴头像 + 顶部金星 -->
+  <div class="card_art">
+    <svg width="150" height="100" viewBox="0 0 150 100" fill="none">
+      <!-- 左伙伴 -->
+      <g>
+        <circle cx="54" cy="58" r="26" fill="#FFFFFF" opacity="0.95"/>
+        <circle cx="47" cy="54" r="2.6" fill="#C8853E"/>
+        <circle cx="61" cy="54" r="2.6" fill="#C8853E"/>
+        <path d="M47 63 Q54 69 61 63" stroke="#C8853E" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+      </g>
+      <!-- 右伙伴（略透明） -->
+      <g>
+        <circle cx="96" cy="58" r="26" fill="#FFFFFF" opacity="0.82"/>
+        <circle cx="89" cy="54" r="2.6" fill="#C8853E"/>
+        <circle cx="103" cy="54" r="2.6" fill="#C8853E"/>
+        <path d="M89 63 Q96 69 103 63" stroke="#C8853E" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+      </g>
+      <!-- 中间金星 -->
+      <g transform="translate(75,30)">
+        <circle cx="0" cy="0" r="14" fill="#FFE08A"/>
+        <path d="M0 -9 L2.6 -2.8 L9 -2.4 L4 1.8 L5.7 8.2 L0 4.6 L-5.7 8.2 L-4 1.8 L-9 -2.4 L-2.6 -2.8 Z"
+              fill="#FFFFFF" stroke="#F4B942" stroke-width="1" stroke-linejoin="round"/>
+      </g>
+      <!-- 点缀小星 -->
+      <path d="M22 34 l1.4 -3.4 l3.4 -1.4 l-3.4 -1.4 l-1.4 -3.4 l-1.4 3.4 l-3.4 1.4 l3.4 1.4 Z" fill="#FFFFFF" opacity="0.85"/>
+      <path d="M128 38 l1.2 -2.8 l2.8 -1.2 l-2.8 -1.2 l-1.2 -2.8 l-1.2 2.8 l-2.8 1.2 l2.8 1.2 Z" fill="#FFFFFF" opacity="0.7"/>
+    </svg>
+  </div>
+
+  <!-- 主文案 -->
+  <div class="card_title">
+    <div class="card_title_main">成长的路上</div>
+    <div class="card_title_main">有<em>伙伴</em>同行</div>
+  </div>
+
+  <!-- 轻触提示 -->
+  <div class="card_hint">
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3" fill="#F4B942"/>
+      <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"
+            stroke="#F4B942" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    轻触卡片，解锁好玩的
+  </div>
+</div>
+
+</body>
+</html>
