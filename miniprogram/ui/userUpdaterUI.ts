@@ -60,8 +60,8 @@ export abstract class UserUpdaterUI<D> extends InteractUI<D> {
   protected doShare() {
     this.getDialog().show({
       id: 'share',
-      name: '三人行，必有我师',
-      desc: '邀请好友来看看你在做什么吧！',
+      name: '邀请伙伴',
+      desc: '让伙伴见证你的日常，见证你的成长。',
       menus: [{ id: 'confirm', name: '马上分享', openType: 'share' }],
     });
   }
