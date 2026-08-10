@@ -187,6 +187,10 @@ export class RoutineAdapter {
 }
 ```
 
+### 禁止使用 `gap`
+
+**严禁在 SCSS 中使用 `gap` 属性**（flexbox 中的 `gap` 在部分 iOS 机型不兼容）。
+
 ### 变量速查
 
 | 变量                                        | 值                                                       | 用途                         |

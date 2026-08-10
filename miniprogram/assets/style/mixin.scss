@@ -100,10 +100,10 @@
   font-size: 34rpx;
   font-weight: 700;
   color: $gray-33;
-  gap: 16rpx;
 
   &::before {
     content: '';
+    margin-right: 16rpx;
     width: 8rpx;
     height: 36rpx;
     background: $main;
