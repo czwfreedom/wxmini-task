@@ -8,11 +8,13 @@ Page({
   },
 
   ui: undefined as IndexUI | undefined,
+  options: undefined as Record<string, string> | undefined,
 
-  onLoad() {
+  onLoad(options: Record<string, string>) {
+    this.options = options;
     Context.bindLogin(() => {
       this.ui = new IndexUI(this);
-      this.ui.loadData();
+      this.ui.loadData(options);
     });
   },
 

@@ -7,4 +7,15 @@ export namespace Constants {
     CreateRoutine = '/pages/routineEditor',
     Relations = '/pages/relations',
   }
+
+  // 为了让url短一些，有一些缩写。
+  export const enum Param {
+    Event = 'e',
+    UserId = 'uid',
+    Nonce = 'n',
+  }
+
+  export const enum Share {
+    Def = 'share',
+  }
 }

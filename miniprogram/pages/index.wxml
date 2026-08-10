@@ -1,1 +1,12 @@
+<import src="../templates/abort.wxml"></import>
+<import src="../templates/dialog.wxml"></import>
+
 <view class="entry"></view>
+
+<template wx:if="{{ dialog && dialog.id }}" is="dialog" data="{{ ...dialog }}"></template>
+
+<template
+  wx:if="{{ !loaded || abortMessage }}"
+  is="abort"
+  data="{{ message: abortMessage || '加载中..' }}"
+></template>

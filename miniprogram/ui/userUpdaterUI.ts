@@ -21,10 +21,9 @@ export abstract class UserUpdaterUI<D> extends InteractUI<D> {
     return data;
   }
 
-  public async share(): Promise<void> {
-    const user = Context.getUser();
-    if (User.isNameSet(user)) {
-      this.doShare();
+  public async share(cb?: (cancel: boolean) => void): Promise<void> {
+    if (Context.isNamed()) {
+      cb ? cb(false) : this.doShare();
       return;
     }
 
@@ -39,6 +38,7 @@ export abstract class UserUpdaterUI<D> extends InteractUI<D> {
       },
       (button) => {
         if (button === 'confirm' && dialog.getInputValue()) {
+          const user = Context.getUser();
           const newData = { id: user.id, name: dialog.getInputValue() };
           User.update(newData).then((res) => {
             if ('number' === typeof res) {
@@ -48,8 +48,10 @@ export abstract class UserUpdaterUI<D> extends InteractUI<D> {
             Logger.info('User name updated.');
             user.name = newData.name;
             Login.setCache(user);
-            this.doShare();
+            cb ? cb(false) : this.doShare();
           });
+        } else if (cb) {
+          cb(true);
         }
       }
     );

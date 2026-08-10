@@ -3,5 +3,18 @@
   "projectname": "task",
   "setting": {
     "compileHotReLoad": true
+  },
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "伙伴分享",
+          "pathName": "pages/index",
+          "query": "e=share&uid=10174646050144&n=3c291faf9c844da28e31b26f564e21fa",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
   }
 }

@@ -82,11 +82,10 @@ export class RelationsUI extends UserUpdaterUI<RelationsUI.Data> {
 
   protected getMenus(): MenuUI.Menus {
     if (this.direction === 'user') return { id: '', items: [] };
-    const user = Context.getUser();
-    const isNameSet = User.isNameSet(user);
+    const named = Context.isNamed();
     return {
       id: 'm',
-      items: [{ id: 'share', name: '邀请伙伴', openType: isNameSet ? 'share' : '' }],
+      items: [{ id: 'share', name: '邀请伙伴', openType: named ? 'share' : '' }],
     };
   }
 }
