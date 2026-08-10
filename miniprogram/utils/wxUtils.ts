@@ -23,11 +23,11 @@ export namespace WxUtils {
     showToast(Err.getMessage(errno));
   }
 
-  export function copy(v: string) {
-    if (v) {
-      wx.setClipboardData({ data: v });
-    }
-  }
+  // export function copy(v: string) {
+  //   if (v) {
+  //     wx.setClipboardData({ data: v });
+  //   }
+  // }
 
   export function getFileName(v: string): string {
     if (!v) {
@@ -305,31 +305,31 @@ export namespace WxUtils {
     }
   }
 
-  export async function downloadAndSaveToAlbum(path: string, showLoading = true): Promise<boolean> {
-    if (showLoading) wx.showLoading({ title: '下载中..', mask: true });
-    const res = await WxUtils.downloadFile(path);
-    if (showLoading) wx.hideLoading();
-    if (!res) {
-      if (showLoading) WxUtils.showToast('下载失败');
-      return false;
-    }
-    return saveImageToAlbum(res);
-  }
+  // export async function downloadAndSaveToAlbum(path: string, showLoading = true): Promise<boolean> {
+  //   if (showLoading) wx.showLoading({ title: '下载中..', mask: true });
+  //   const res = await WxUtils.downloadFile(path);
+  //   if (showLoading) wx.hideLoading();
+  //   if (!res) {
+  //     if (showLoading) WxUtils.showToast('下载失败');
+  //     return false;
+  //   }
+  //   return saveImageToAlbum(res);
+  // }
 
-  export async function saveImageToAlbum(path: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      wx.saveImageToPhotosAlbum({
-        filePath: path,
-        success: (res) => {
-          resolve(true);
-        },
-        fail: (err) => {
-          Logger.warn('Save image failed.', err);
-          resolve(false);
-        },
-      });
-    });
-  }
+  // export async function saveImageToAlbum(path: string): Promise<boolean> {
+  //   return new Promise((resolve) => {
+  //     wx.saveImageToPhotosAlbum({
+  //       filePath: path,
+  //       success: (res) => {
+  //         resolve(true);
+  //       },
+  //       fail: (err) => {
+  //         Logger.warn('Save image failed.', err);
+  //         resolve(false);
+  //       },
+  //     });
+  //   });
+  // }
 
   export async function readImageInfo(
     path: string,

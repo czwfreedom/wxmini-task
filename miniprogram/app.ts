@@ -22,7 +22,7 @@ App<Global.App | any>({
       this.systemInfo.platform !== 'devtools' &&
       this.accountInfo.miniProgram.envVersion === 'develop'
     ) {
-      wx.setEnableDebug({ enableDebug: true });
+      wx.setEnableDebug({ enableDebug: false });
     }
     this.login();
   },
