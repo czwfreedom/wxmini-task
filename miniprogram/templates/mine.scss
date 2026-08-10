@@ -32,8 +32,8 @@
     &_row {
       display: flex;
       align-items: center;
-      gap: 28rpx;
     }
+    margin-right: 28rpx;
     width: 112rpx;
     height: 112rpx;
     border-radius: 50%;
@@ -61,11 +61,11 @@
   // ===== 统计区（三列数字） =====
   &_stats {
     display: flex;
-    gap: 48rpx;
     margin-top: 28rpx;
   }
 
   &_stat {
+    margin: 0 24rpx;
     flex: 1;
     &_val {
       font-size: 44rpx;
@@ -97,7 +97,6 @@
       display: flex;
       align-items: center;
       padding: 32rpx 40rpx;
-      gap: 28rpx;
       border-bottom: 1rpx solid $border;
       @include press;
 
@@ -127,6 +126,7 @@
     }
 
     &_body {
+      margin: 0 28rpx;
       flex: 1;
       min-width: 0;
     }
@@ -146,11 +146,11 @@
     &_extra {
       display: flex;
       align-items: center;
-      gap: 12rpx;
       flex-shrink: 0;
     }
 
     &_badge {
+      margin-right: 12rpx;
       min-width: 40rpx;
       height: 40rpx;
       padding: 0 12rpx;

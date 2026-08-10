@@ -30,7 +30,7 @@
     bottom: 0;
     background: $background-white;
     border-radius: 48rpx 48rpx 0 0;
-    padding: 20rpx 32rpx 32rpx;
+    padding: 20rpx 24rpx 32rpx;
     box-shadow: 0 -16rpx 64rpx $black1;
     animation: choicesSlideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
   }
@@ -102,26 +102,22 @@
     // 纯文本列表（纵向单列）
     display: flex;
     flex-direction: column;
-    gap: 16rpx;
 
     // grid='2': 横向双列
     &.grid2 {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 20rpx;
     }
 
     // grid='3': 纵向三列（分类选择）
     &.grid3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20rpx;
     }
 
     &.grid4 {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 20rpx;
     }
   }
 
@@ -131,11 +127,11 @@
 
     &.grid {
       @include card;
+      margin: 8rpx;
       border: 4rpx solid $gray-e5;
       border-radius: 32rpx;
       @include flex-layout(column);
       padding: 24rpx 0;
-      gap: 16rpx;
       box-shadow: none;
     }
 
@@ -156,6 +152,7 @@
     // ---- Item 内部元素 ----
     &_avatar {
       &_container {
+        margin-bottom: 16rpx;
         width: 96rpx;
         height: 96rpx;
         display: flex;

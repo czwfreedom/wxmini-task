@@ -60,6 +60,7 @@
     font-weight: 700;
     text-align: center;
     letter-spacing: 2rpx;
+    margin-right: 24rpx;
 
     // ---- 右按钮：确认/正向操作（金底白字） ----
     &.confirm {
@@ -84,6 +85,10 @@
     // ---- 禁用态 ----
     &.disabled {
       opacity: 0.5;
+    }
+
+    &:last-child {
+      margin-right: unset;
     }
   }
 
@@ -126,7 +131,6 @@
   // ---- 按钮区（左右双按钮） ----
   &_actions {
     display: flex;
-    gap: 24rpx;
   }
 
   // ---- 按钮下方提示 ----

@@ -36,7 +36,6 @@
     padding: 0 40rpx;
     display: flex;
     flex-direction: column;
-    gap: 24rpx;
   }
 
   &_row {
@@ -45,7 +44,7 @@
     padding: 28rpx 32rpx;
     display: flex;
     align-items: center;
-    gap: 28rpx;
+    margin-bottom: 28rpx;
     box-shadow:
       0 4rpx 0 rgba(0, 0, 0, 0.03),
       0 16rpx 48rpx rgba($blue-light, 0.06);
@@ -79,6 +78,7 @@
   }
 
   &_info {
+    margin: 0 28rpx;
     flex: 1;
     min-width: 0;
   }
@@ -111,10 +111,10 @@
   &_empty {
     @include flex-layout(column);
     height: 500rpx;
-    gap: 20rpx;
 
     &_icon {
       font-size: 80rpx;
+      margin-bottom: 20rpx;
     }
 
     &_text {

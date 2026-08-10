@@ -38,7 +38,6 @@
     &_nav {
       display: flex;
       align-items: center;
-      gap: 24rpx;
     }
 
     &_arrow {
@@ -63,6 +62,7 @@
 
     &_datewrap {
       flex: 1;
+      margin: 0 24rpx;
       min-width: 0;
     }
 
@@ -98,14 +98,13 @@
 
     &_stats {
       display: flex;
-      gap: 24rpx;
       margin-top: 32rpx;
     }
 
     &_stat {
+      margin-right: 24rpx;
       display: flex;
       align-items: center;
-      gap: 12rpx;
       font-size: 24rpx;
       font-weight: 600;
       color: $gray-33;
@@ -118,6 +117,7 @@
         height: 16rpx;
         border-radius: 50%;
         background: $blue;
+        margin-right: 12rpx;
 
         &.pending {
           background: $main;
@@ -309,7 +309,6 @@
     @include press;
     display: flex;
     align-items: center;
-    gap: 24rpx;
     box-shadow: 0 8rpx 24rpx $gold4;
 
     &_icon {
@@ -328,6 +327,7 @@
     }
 
     &_body {
+      margin: 0 24rpx;
       flex: 1;
       min-width: 0;
     }
@@ -364,7 +364,6 @@
     @include press;
     z-index: 10;
     @include flex-layout;
-    gap: 16rpx;
     background: $white6;
     border-radius: 64rpx;
     padding: 24rpx 48rpx;
@@ -373,6 +372,7 @@
       0 2rpx 0 $white6 inset;
 
     &_dot {
+      margin-right: 16rpx;
       width: 16rpx;
       height: 16rpx;
       border-radius: 50%;

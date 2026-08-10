@@ -8,13 +8,13 @@
    ========================================================== */
 .bottombar {
   display: flex;
-  gap: 24rpx;
   padding: 20rpx 48rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
   background: $white92;
 
   &_btn {
     @include clear-button;
+    margin-right: 24rpx;
     flex: 1;
     border-radius: 999rpx;
     padding: 24rpx;
@@ -30,6 +30,7 @@
     border: 3rpx solid $main;
 
     &:last-child {
+      margin-right: unset;
       background: $gradient;
       color: white;
       box-shadow: 0 6rpx 20rpx $gold4;
