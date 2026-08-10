@@ -11,7 +11,6 @@ export namespace User {
   }
 
   export async function update(data: Partial<Info>): Promise<number | Info> {
-    if (1) return data as any;
     const res = await Network.post<Info>(Api.UpdateUser, data);
     if (res.errcode !== 0 || !res.data) {
       Logger.info('Update user failed', res);
