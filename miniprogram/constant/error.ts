@@ -15,6 +15,7 @@ export namespace Err {
     WxAPIFailed = 10005,
     WXLoginFailed = 30001,
     ServerFailed = 40001,
+    Unknown = 50000,
   }
 
   const sMessages: Record<number, string> = {

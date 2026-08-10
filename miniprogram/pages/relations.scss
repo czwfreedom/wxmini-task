@@ -2,6 +2,8 @@
 @import '../assets/style/mixin.scss';
 @import '../templates/abort.scss';
 @import '../templates/bottomBar.scss';
+@import '../templates/choices.scss';
+@import '../templates/dialog.scss';
 
 .relations {
   @include flex-container;
@@ -119,5 +121,17 @@
       font-size: 28rpx;
       color: $gray-99;
     }
+  }
+
+  &_gear {
+    width: 72rpx;
+    height: 72rpx;
+    flex-shrink: 0;
+    font-size: 36rpx;
+    text-align: center;
+    line-height: 68rpx;
+    color: $gray-99;
+    padding-bottom: 4rpx; // 为了让视觉看起来居中，很SB。
+    font-weight: 700;
   }
 }

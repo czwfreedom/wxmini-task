@@ -1,5 +1,7 @@
 <import src="../templates/abort.wxml"></import>
 <import src="../templates/bottomBar.wxml"></import>
+<import src="../templates/choices.wxml"></import>
+<import src="../templates/dialog.wxml"></import>
 
 <view class="relations">
   <view class="relations_content">
@@ -32,6 +34,16 @@
             <view class="relations_name">{{ item.name }}</view>
             <view wx:if="{{ item.desc }}" class="relations_desc">{{ item.desc }}</view>
           </view>
+          <view
+            class="relations_gear"
+            catch:tap="onMenuTap"
+            hover-class="press"
+            data-id="{{ item.id }}"
+            data-button="more"
+            hover-stop-propagation="{{true}}"
+          >
+            ...
+          </view>
           <text class="relations_chevron">›</text>
         </view>
       </view>
@@ -53,6 +65,10 @@
     data="{{ menus }}"
   ></template>
 </view>
+
+<!-- Choices 通用弹窗（更多分类等） -->
+<template wx:if="{{ choices && choices.id }}" is="choices" data="{{ ...choices }}"></template>
+<template wx:if="{{ dialog && dialog.id }}" is="dialog" data="{{ ...dialog }}"></template>
 
 <template
   wx:if="{{ !loaded || abortMessage }}"

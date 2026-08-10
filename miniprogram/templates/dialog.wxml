@@ -31,6 +31,7 @@
           placeholder="{{input.hint}}"
           maxlength="{{input.maxLength || -1}}"
           bindinput="onDialogInput"
+          bindnicknamereview="onDialogInput"
         />
       </view>
 

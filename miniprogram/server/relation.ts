@@ -9,6 +9,7 @@ export namespace Relation {
     userId: string;
     useeId: string;
     createTime: number;
+    deleted?: number;
   }
 
   export interface User extends Entity.Info {

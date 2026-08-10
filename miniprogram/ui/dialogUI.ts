@@ -54,6 +54,7 @@ export class DialogUI extends SubUI<DialogUI.WrapData> {
     // 如果有 input 字段，则启用输入组件（如 type="nickname"）
     if (data.input) {
       this.bindEvent('onDialogInput', (e: WechatMiniprogram.TouchEvent) => {
+        Logger.info('onDialogInput', e);
         this.inputValue = e.detail.value;
       });
     }

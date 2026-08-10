@@ -1,5 +1,6 @@
 import { Constants } from '../constant/common';
 import { Context } from '../core/context';
+import { Event } from '../core/event';
 import { Intent } from '../core/intent';
 import { SubUI } from '../core/subUI';
 import { Relation } from '../server/relation';
@@ -33,7 +34,8 @@ export class IndexUI extends UserUpdaterUI<IndexUI.Data> {
       if (userId && nonce && userId !== Context.getUserId()) {
         this.share((cancel) => {
           if (!cancel && Context.isNamed()) {
-            Relation.create(Context.getUserId(), userId).then(() => {
+            Relation.create(Context.getUserId(), userId).then((res) => {
+              if ('number' !== typeof res) this.postEvent(Event.Name.RelationUpdated);
               this.home();
             });
           } else {

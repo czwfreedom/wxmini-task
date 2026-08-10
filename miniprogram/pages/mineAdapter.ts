@@ -15,6 +15,9 @@ export class MineAdapter {
 
   /** 加载用户信息与统计数据，返回错误码 */
   public async load(): Promise<number> {
+    this.routine = undefined;
+    this.relation = undefined;
+
     const routine = await Routine.stat();
     if ('number' === typeof routine) return routine;
     this.routine = routine;

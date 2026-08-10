@@ -141,10 +141,10 @@
 
     // 未调。
     &.single {
-      padding: 24rpx 32rpx;
-      border-radius: 24rpx;
-      background: $background-card;
-      border: 2rpx solid $gray-e5;
+      width: 100%;
+      @include flex-layout;
+      border-bottom: 1rpx solid $border;
+      padding: 32rpx 0;
     }
 
     // 统一选中态
@@ -159,7 +159,7 @@
         width: 96rpx;
         height: 96rpx;
         display: flex;
-          // 未使用
+        // 未使用
         &.small {
           width: 64rpx;
           height: 64rpx;
@@ -175,6 +175,11 @@
 
       &.selected {
         color: $gray-33;
+      }
+
+      &.single {
+        font-size: 34rpx;
+        line-height: 48rpx;
       }
     }
 

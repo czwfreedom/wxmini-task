@@ -178,9 +178,14 @@ body {
 .partner-sub .hl { color: #6B9A5E; font-weight: 600; }
 .partner-gear {
   width: 36px; height: 36px; border-radius: 50%;
+  background: #F2F5F8;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
-  font-size: 18px; color: #C5C5C5; font-weight: 700; letter-spacing: -1px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.partner-gear:hover {
+  background: #E8EDF2;
 }
 .partner-chevron { font-size: 20px; color: #C5C5C5; font-weight: 700; flex-shrink: 0; }
 
@@ -328,7 +333,7 @@ body {
 
 <!-- ================= 框 B：我关注的伙伴列表 ================= -->
 <div class="frame-col">
-  <div class="frame-label">B · 我关注的伙伴<small>› 围观 · ⋮ 取消关注 · 底部固定分享按钮</small></div>
+  <div class="frame-label">B · 我关注的伙伴<small>› 围观 · ⚙ 取消关注 · 底部固定分享按钮</small></div>
   <div class="phone">
     <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
     <div class="page-full">
@@ -344,7 +349,7 @@ body {
             <div class="partner-name">小明</div>
             <div class="partner-sub">今日已完成 <span class="hl">2/3</span> · 点击可围观</div>
           </div>
-          <div class="partner-gear">&#8942;</div>
+          <div class="partner-gear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#A0AAB4" stroke-width="2"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8l2.8-2.8M17 7l2.8-2.8" stroke="#A0AAB4" stroke-width="2" stroke-linecap="round"/></svg></div>
           <div class="partner-chevron">›</div>
         </div>
 
@@ -354,7 +359,7 @@ body {
             <div class="partner-name">芳芳</div>
             <div class="partner-sub">今日已完成 <span class="hl">4/4</span> · 点击可围观</div>
           </div>
-          <div class="partner-gear">&#8942;</div>
+          <div class="partner-gear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#A0AAB4" stroke-width="2"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8l2.8-2.8M17 7l2.8-2.8" stroke="#A0AAB4" stroke-width="2" stroke-linecap="round"/></svg></div>
           <div class="partner-chevron">›</div>
         </div>
 
@@ -364,7 +369,7 @@ body {
             <div class="partner-name">轩轩</div>
             <div class="partner-sub">最近活跃：昨天 · 点击可围观</div>
           </div>
-          <div class="partner-gear">&#8942;</div>
+          <div class="partner-gear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#A0AAB4" stroke-width="2"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8l2.8-2.8M17 7l2.8-2.8" stroke="#A0AAB4" stroke-width="2" stroke-linecap="round"/></svg></div>
           <div class="partner-chevron">›</div>
         </div>
 
@@ -383,7 +388,7 @@ body {
 
 <!-- ================= 框 C：关注我的伙伴列表 ================= -->
 <div class="frame-col">
-  <div class="frame-label">C · 关注我的伙伴<small>⋮ → 弹窗确认移出 · 底部固定分享按钮</small></div>
+  <div class="frame-label">C · 关注我的伙伴<small>⚙ → 弹窗确认移出 · 底部固定分享按钮</small></div>
   <div class="phone">
     <div class="status-bar"><span class="time">9:41</span><span>●●●● Wi-Fi 🔋</span></div>
     <div class="page-full">
@@ -399,7 +404,7 @@ body {
             <div class="partner-name">小雨妈妈</div>
             <div class="partner-sub">通过你的分享加入 · 3天前</div>
           </div>
-          <div class="partner-gear">&#8942;</div>
+          <div class="partner-gear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#A0AAB4" stroke-width="2"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8l2.8-2.8M17 7l2.8-2.8" stroke="#A0AAB4" stroke-width="2" stroke-linecap="round"/></svg></div>
           <div class="partner-chevron">›</div>
         </div>
 
@@ -409,7 +414,7 @@ body {
             <div class="partner-name">睿睿</div>
             <div class="partner-sub">通过你的分享加入 · 上周</div>
           </div>
-          <div class="partner-gear">&#8942;</div>
+          <div class="partner-gear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#A0AAB4" stroke-width="2"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8l2.8-2.8M17 7l2.8-2.8" stroke="#A0AAB4" stroke-width="2" stroke-linecap="round"/></svg></div>
           <div class="partner-chevron">›</div>
         </div>
 
@@ -419,7 +424,7 @@ body {
             <div class="partner-name">爷爷</div>
             <div class="partner-sub">通过你的分享加入 · 2周前</div>
           </div>
-          <div class="partner-gear">&#8942;</div>
+          <div class="partner-gear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#A0AAB4" stroke-width="2"/><path d="M12 1v4M12 19v4M4.2 4.2l2.8 2.8M17 17l2.8 2.8M1 12h4M19 12h4M4.2 19.8l2.8-2.8M17 7l2.8-2.8" stroke="#A0AAB4" stroke-width="2" stroke-linecap="round"/></svg></div>
           <div class="partner-chevron">›</div>
         </div>
 

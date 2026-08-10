@@ -4,6 +4,7 @@ import { Constants } from '../constant/common';
 import { Intent } from '../core/intent';
 import { MineAdapter } from './mineAdapter';
 import { Entity } from '../model/entity';
+import { Event } from '../core/event';
 
 export namespace MineUI {
   export interface Data extends SubUI.Data {
@@ -22,6 +23,10 @@ export class MineUI extends SubUI<MineUI.Data> {
   public constructor(component: any, subDataKey: string) {
     super(component, subDataKey);
     this.bindEvent('onCardTap', this.onCardTap);
+
+    this.registerEventBus(Event.Name.RelationUpdated, () => {
+      this.loadData();
+    });
   }
 
   public static defaultData(): MineUI.Data {

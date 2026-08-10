@@ -66,13 +66,13 @@ export class ChoicesUI extends SubUI<ChoicesUI.WrapData> {
     this.selectedIds = [];
 
     if (!data.limited) data.limited = 1;
-    this.setData({ _choices: data });
+    this.setData({ choices: data });
   }
 
   /** 隐藏弹窗 */
   public hide() {
     this.setData({
-      _choices: { id: '', title: '', items: [], limited: 1, grid: '3' },
+      choices: { id: '', title: '', items: [], limited: 1, grid: '3' },
     });
     this.listener = undefined;
     this.selectedIds = [];
@@ -101,7 +101,7 @@ export class ChoicesUI extends SubUI<ChoicesUI.WrapData> {
           item.selected = false;
         }
       }
-      this.setData({ _choices: choices });
+      this.setData({ choices: choices });
       if (item && this.listener?.onChoicesDialogItemTap) {
         this.listener.onChoicesDialogItemTap(item, choices.id);
       }
@@ -109,7 +109,7 @@ export class ChoicesUI extends SubUI<ChoicesUI.WrapData> {
     } else {
       // TODO 如果超出限制？
       item.selected = !item.selected;
-      this.setData({ _choices: choices });
+      this.setData({ choices: choices });
       this.listener?.onSelectedChanged?.(Entity.getSelectedIds(choices.items));
     }
   }
