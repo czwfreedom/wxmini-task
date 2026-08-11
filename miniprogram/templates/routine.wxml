@@ -3,12 +3,7 @@
   <import src="../templates/dialog.wxml"></import>
   <view class="routine">
     <view class="routine_content">
-      <scroll-view
-        wx:if="{{ loaded }}"
-        class="routine_scroll"
-        scroll-y="true"
-        enhanced="{{ true }}"
-      >
+      <scroll-view wx:if="{{ loaded }}" class="routine_scroll" scroll-y="true">
         <!-- Hero 顶部（历史态加 past 褪色） -->
         <view class="routine_hero {{ isToday ? '' : 'past' }}">
           <view class="routine_hero_info">

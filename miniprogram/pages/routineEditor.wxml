@@ -4,7 +4,7 @@
 
 <view class="croutine">
   <view class="croutine_content">
-    <scroll-view wx:if="{{ loaded }}" class="croutine_scroll" scroll-y="true" enhanced="{{ true }}">
+    <scroll-view wx:if="{{ loaded }}" class="croutine_scroll" scroll-y="true">
       <!-- 1. 选择任务类型 -->
       <view wx:if="{{ !finishing }}" class="croutine_section">
         <view class="croutine_section_title">想做什么呢？</view>
@@ -44,7 +44,7 @@
             maxlength="{{ contentMaxLength }}"
             value="{{ contentText }}"
             bindinput="onContentInput"
-            auto-height="{{ true }}"
+            auto-height="true"
             disabled="{{ !selectedCategoryId && !finishing }}"
           />
 
@@ -108,7 +108,7 @@
                   value="{{ durationCustomText }}"
                   bindinput="onDurationCustomInput"
                   bindblur="onDurationCustomConfirm"
-                  focus="{{ true }}"
+                  focus="true"
                 />
                 <text class="croutine_duration_custom_unit">分钟</text>
               </block>

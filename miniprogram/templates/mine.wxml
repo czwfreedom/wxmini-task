@@ -2,7 +2,7 @@
   <import src="../templates/abort.wxml"></import>
   <view class="mine">
     <view class="mine_content">
-      <scroll-view wx:if="{{ loaded }}" class="mine_scroll" scroll-y="true" enhanced="{{ true }}">
+      <scroll-view wx:if="{{ loaded }}" class="mine_scroll" scroll-y="true">
         <!-- Hero：头像 + 昵称 + 统计 -->
         <view class="mine_header">
           <view class="mine_avatar_row">

@@ -22,6 +22,7 @@ export namespace Context {
   }
 
   export function isNamed(): boolean {
+    // if (1) return false; // DEBUGGER;
     const user = getUser();
     return !!user?.name && user.name !== '微信用户';
   }

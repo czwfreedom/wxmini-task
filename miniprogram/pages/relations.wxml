@@ -5,12 +5,7 @@
 
 <view class="relations">
   <view class="relations_content">
-    <scroll-view
-      wx:if="{{ loaded }}"
-      class="relations_scroll"
-      scroll-y="true"
-      enhanced="{{ true }}"
-    >
+    <scroll-view wx:if="{{ loaded }}" class="relations_scroll" scroll-y="true">
       <!-- 标题区 -->
       <view class="relations_header">
         <!-- prettier-ignore -->
