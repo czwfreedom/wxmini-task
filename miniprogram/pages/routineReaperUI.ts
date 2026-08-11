@@ -28,7 +28,7 @@ export class RoutineReaperUI extends RoutineEditorUI {
     this.setData({
       loaded: true,
       finishing: true,
-      contentMaxLength: 256,
+      contentMaxLength: 400,
       contentHolder: config.finish || '说说做了什么吧',
       contentHint: `任务：${info.detail}`,
       menus: this.getMenus(),

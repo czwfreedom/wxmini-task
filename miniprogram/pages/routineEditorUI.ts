@@ -67,7 +67,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
   private adapter = new RoutineEditorAdapter();
   protected entry?: Partial<Routine.Info>;
 
-  public static readonly sContentMaxLength = 64;
+  public static readonly sContentMaxLength = 128;
 
   public constructor(component: any, intent?: Partial<Routine.Info>) {
     super(component);
