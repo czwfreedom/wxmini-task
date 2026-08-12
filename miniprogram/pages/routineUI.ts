@@ -161,7 +161,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
 
   /** 切换任务状态：进行中 ↔ 已完成 */
   protected async onItemTap(e: WechatMiniprogram.TouchEvent) {
-    const { id } = e.currentTarget.dataset;
+    const { id, button } = e.currentTarget.dataset;
 
     const vm = Entity.find(this.getData().records, id).item;
     const info = this.adapter.getInfo(id);
@@ -172,11 +172,17 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
         } as Intent.Wrap<Partial<Routine.Info>>);
       }
     } else if (info) {
-      if (this.getData().updateable && !Routine.isDone(info)) {
+      const edit = button !== 'next';
+      if (edit) {
+        const day = DateUtils.getStartMillisOfDay(Date.now());
+        // 不是当天的任务不能更新。
+        if (day !== info.date) return;
+      }
+      if (this.getData().updateable) {
         Intent.navigateTo(Constants.Page.CreateRoutine, {
-          type: Entity.Action.Finish,
+          type: Routine.isDone(info) || !edit ? Entity.Action.Finish : Entity.Action.Update,
           data: info,
-        } as Intent.Wrap<Routine.Info>);
+        });
       }
     }
   }

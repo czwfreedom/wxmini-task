@@ -25,10 +25,13 @@ export class RoutineReaperUI extends RoutineEditorUI {
     const info = this.getInfo();
     const config = RoutineAdapter.findConfig(info.category);
     WxUtils.setNavTitle('完成任务');
+    const remark = info.remark || '';
     this.setData({
       loaded: true,
       finishing: true,
       contentMaxLength: 400,
+      contentText: remark,
+      contentCharCount: remark.length,
       contentHolder: config.finish || '说说做了什么吧',
       contentHint: `任务：${info.detail}`,
       menus: this.getMenus(),
@@ -41,29 +44,41 @@ export class RoutineReaperUI extends RoutineEditorUI {
    */
   protected getMenus(): MenuUI.Menus {
     const commitData = this.getCommitData();
-    return { id: 'm', items: [{ id: 'finish', name: '完成任务', enabled: !!commitData }] };
+    const updating = this.updating();
+    if (!commitData && updating) return { id: '', items: [] };
+
+    return {
+      id: 'm',
+      items: [{ id: 'finish', name: updating ? '修改反馈' : '完成任务', enabled: !!commitData }],
+    };
+  }
+
+  /**
+   * @override
+   */
+  protected updating(): boolean {
+    return Routine.isDone(this.getInfo());
   }
 
   /** 提交创建任务 */
   protected async commit() {
     const data = this.getCommitData(true);
     if (!data) return;
-
     Logger.info('Finishing', data);
 
-    data.status = Routine.Status.Done;
+    const updating = this.updating();
+    if (!updating) data.status = Routine.Status.Done;
 
     this.showLoading();
     const res = await Routine.update(data);
     this.hideLoading();
 
-    if (res !== 0) {
+    if ('number' === typeof res) {
       this.showErrToast(res);
       return;
     }
 
-    this.showToast('已完成');
-
+    this.showToast(updating ? '已修改' : '已完成');
     Object.assign(this.getInfo(), data);
     this.postEvent(Event.Name.RoutineUpdated, this.getInfo());
     Intent.delayBack();
@@ -79,6 +94,8 @@ export class RoutineReaperUI extends RoutineEditorUI {
       if (showToast) this.showToast('请填写任务反馈');
       return undefined;
     }
+    // 没有改动。
+    if (this.updating() && content === this.getInfo().remark) return undefined;
 
     return {
       id: this.getInfo().id,

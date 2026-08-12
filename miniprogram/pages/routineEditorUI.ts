@@ -12,6 +12,7 @@ import { Event } from '../core/event';
 import { Intent } from '../core/intent';
 import { MenuUI } from '../ui/menuUI';
 import { RoutineAdapter } from './routineAdapter';
+import { ObjectUtils } from '../utils/objectUtils';
 
 export namespace RoutineEditorUI {
   export interface Data extends SubUI.Data {
@@ -115,25 +116,24 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
 
   /** 初始化页面数据（同步，无需网络请求） */
   public loadData(): number {
-    const now = new Date();
-    const currentHour = now.getHours();
+    const entry = this.entry;
     const categories = this.adapter.adaptCategories();
-    const durations = this.adapter.adaptDurations();
-    const times = this.adapter.adaptTimes(currentHour);
+    const durations = this.adapter.adaptDurations((entry?.duration || 0) / 60000 || 30);
+    const times = this.adapter.adaptTimes(entry?.planTime);
 
+    const detail = entry?.detail || '';
     this.setData(
       {
         loaded: true,
         categories: categories,
-        durations,
-        times,
+        ...durations,
+        ...times,
+        contentText: detail,
+        contentCharCount: detail.length,
       },
       () => {
-        if (this.entry?.category) {
-          this.selectCategory(
-            this.entry.category,
-            this.adapter.isMoreCategory(this.entry.category)
-          );
+        if (entry?.category) {
+          this.selectCategory(entry.category, this.adapter.isMoreCategory(entry.category));
         } else {
           this.setData({ menus: this.getMenus() });
         }
@@ -252,18 +252,34 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     this.commit();
   }
 
+  protected updating() {
+    return !!this.entry?.id && DateUtils.getStartMillisOfDay(Date.now()) === this.entry.date;
+  }
+
   protected async commit() {
     const data = this.getCommitData(true);
     if (!data) return;
 
+    const updating = this.updating();
+    if (this.entry?.id && !updating) {
+      this.showToast('只能修改当天的任务');
+      // 隔天的处理。
+      this.setData({ menus: this.getMenus() });
+      return;
+    }
+
     Logger.info('Commiting', data);
 
-    data.status = Routine.Status.Working;
-    data.date = DateUtils.getStartMillisOfDay(data.planTime!);
-    data.transaction = Routine.newTransaction();
-
+    let res: number | Routine.Info | undefined = undefined;
     this.showLoading();
-    const res = await Routine.create(data);
+    if (updating) {
+      res = await Routine.update(data);
+    } else {
+      data.status = Routine.Status.Working;
+      data.date = DateUtils.getStartMillisOfDay(data.planTime!);
+      data.transaction = Routine.newTransaction();
+      res = await Routine.create(data);
+    }
     this.hideLoading();
 
     if ('number' === typeof res) {
@@ -271,14 +287,19 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       return;
     }
 
-    this.showToast('创建成功');
+    this.showToast(updating ? '修改成功' : '创建成功');
     this.postEvent(Event.Name.RoutineUpdated, res);
     Intent.delayBack();
   }
 
   protected getMenus(): MenuUI.Menus {
     const commitData = this.getCommitData();
-    return { id: 'm', items: [{ id: 'create', name: '创建任务', enabled: !!commitData }] };
+    const updating = this.updating();
+    if (this.entry?.id && (!updating || !commitData)) return { id: '', items: [] };
+    return {
+      id: 'm',
+      items: [{ id: 'create', name: updating ? '修改任务' : '创建任务', enabled: !!commitData }],
+    };
   }
 
   protected updateData(data: Partial<RoutineEditorUI.Data>) {
@@ -316,12 +337,21 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       return undefined;
     }
 
-    return {
+    const newInfo: Partial<Routine.Info> = {
       category: data.selectedCategoryId,
       detail: content,
       duration: mins * 60000,
       planTime: this.formatPlanTime(time.id === 'custom' ? data.timeCustomValue.trim() : time.id),
     };
+    const entry = this.entry;
+    if (!entry?.id) return newInfo;
+    // 也支持修改。
+    ObjectUtils.deleteSame(newInfo, entry);
+    if (Object.keys(newInfo).length) {
+      newInfo.id = entry?.id;
+      return newInfo;
+    }
+    return undefined;
   }
 
   private formatPlanTime(v: string): number {

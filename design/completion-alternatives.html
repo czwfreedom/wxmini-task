@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>完成动画 · 非弹窗方案</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body {
+    background: #E8EFF5;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    padding: 32px 24px;
+  }
+
+  h2 {
+    font-size: 22px; font-weight: 800; color: #3A5A8C;
+    margin-bottom: 16px; padding-left: 14px; border-left: 4px solid #F4B942;
+  }
+  .section { width: 100%; max-width: 840px; margin: 0 auto 40px; }
+
+  .scene-row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+  .frame-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .frame-label {
+    font-size: 12px; font-weight: 800; color: #5C6178;
+    background: #fff; padding: 6px 16px; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.08);
+  }
+
+  /* ===== 手机框 ===== */
+  .phone {
+    width: 320px; height: 500px;
+    background: #F2F5F8; border-radius: 32px; overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 3px #1A1A1A, 0 0 0 6px #2D2D2D, 0 14px 40px rgba(0,0,0,0.25);
+  }
+  .phone_status {
+    height: 32px; background: #B8DAF5;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px; font-size: 10px; color: #fff; font-weight: 600;
+  }
+  .phone_content {
+    height: calc(100% - 32px); overflow: hidden;
+    background: linear-gradient(180deg, #B8DAF5, #F2F5F8 30%);
+    padding: 14px 14px 18px; position: relative;
+  }
+
+  /* ===== 日常页基础元素 ===== */
+  .hero {
+    display: flex; align-items: center; gap: 12px;
+    background: #FDFBF7; border-radius: 14px;
+    padding: 12px 14px; font-size: 10px;
+    box-shadow: 0 3px 10px rgba(74,144,226,0.05);
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-val { font-size: 18px; font-weight: 800; color: #3A5A8C; }
+  .hero-stat-lbl { font-size: 9px; color: #999; }
+  .hero-stat-div { width: 0.5px; height: 22px; background: rgba(0,0,0,0.06); margin: 0 6px; }
+
+  .task-card {
+    background: #FDFBF7; border-radius: 14px; padding: 12px 14px;
+    margin-top: 10px; position: relative;
+    box-shadow: 0 2px 10px rgba(74,144,226,0.05);
+  }
+  .task-card .tc-cat { font-size: 9px; color: #999; font-weight: 600; }
+  .task-card .tc-name { font-size: 13px; font-weight: 700; color: #333; margin-top: 2px; }
+  .task-card .tc-detail { font-size: 10px; color: #999; margin-top: 1px; }
+
+  /* ===== 印章 ===== */
+  .stamp {
+    position: absolute; right: 12px; top: 10px;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, #81C784, #66BB6A);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #fff;
+    box-shadow: 0 3px 8px rgba(129,199,132,0.3);
+    opacity: 0; transform: scale(0.5);
+    transition: opacity 0.3s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .stamp.show { opacity: 1; transform: scale(1) rotate(-8deg); }
+
+  /* ===== 方案 1：底部条 ===== */
+  .bottom-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(135deg, #81C784, #43A047);
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    z-index: 10;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+  }
+  .bottom-bar.show { transform: translateY(0); }
+  .bottom-bar .bb-emoji { font-size: 24px; }
+  .bottom-bar .bb-text { flex: 1; color: #fff; font-size: 12px; font-weight: 700; line-height: 1.5; }
+  .bottom-bar .bb-btn {
+    background: rgba(255,255,255,0.2); color: #fff;
+    padding: 6px 12px; border-radius: 10px;
+    font-size: 10px; font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* ===== 方案 2：任务卡片内嵌 ===== */
+  .card-encourage {
+    background: linear-gradient(135deg, #E8F5E9, #fff);
+    border-radius: 6px; margin-top: 8px;
+    padding: 8px 10px; font-size: 10px; color: #43A047;
+    font-weight: 600;
+    opacity: 0; max-height: 0; overflow: hidden;
+    transition: opacity 0.4s, max-height 0.4s, margin 0.4s;
+  }
+  .card-encourage.show { opacity: 1; max-height: 40px; }
+
+  /* ===== 方案 3：Hero 区域庆祝 ===== */
+  .hero-banner {
+    background: linear-gradient(135deg, #FFF8E1, #FFE08A);
+    border-radius: 10px; padding: 10px 12px;
+    margin-bottom: 8px; text-align: center;
+    font-size: 11px; font-weight: 700; color: #C8853E;
+    opacity: 0; max-height: 0; overflow: hidden;
+    transition: opacity 0.4s, max-height 0.4s, margin 0.4s;
+  }
+  .hero-banner.show { opacity: 1; max-height: 50px; margin-bottom: 10px; }
+
+  .hero-streak-bump { display: inline-block; transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+  .hero-streak-bump.bump { transform: scale(1.35); }
+
+  /* ===== 方案 4：Tab 角标舞动 ===== */
+  .tab-badge {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #F4B942;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; color: #fff;
+    transition: transform 0.3s;
+  }
+  .tab-badge.dance { animation: badgeDance 0.6s ease-in-out; }
+  @keyframes badgeDance {
+    0%,100% { transform: scale(1); }
+    30%  { transform: scale(1.4); }
+    50%  { transform: scale(0.9) rotate(10deg); }
+    70%  { transform: scale(1.2) rotate(-8deg); }
+  }
+
+  /* ===== 对比表 ===== */
+  .spec-table {
+    width: 100%; background: #fff; border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+    overflow: hidden; font-size: 13px;
+  }
+  .spec-table table { width: 100%; border-collapse: collapse; }
+  .spec-table th {
+    background: #F2F5F8; padding: 10px 12px; text-align: left;
+    font-size: 12px; font-weight: 700; color: #5C6178;
+  }
+  .spec-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(0,0,0,0.04); color: #333; vertical-align: top; }
+  .spec-table tr:last-child td { border-bottom: none; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .tag.g { background: #E8F5E9; color: #81C784; }
+  .tag.y { background: #FFF8E1; color: #C8853E; }
+  .tag.b { background: #E3F2FD; color: #5B9BD5; }
+</style>
+</head>
+<body>
+
+<div class="section">
+  <h2>非弹窗的完成反馈 · 四种方案</h2>
+  <p style="font-size:12px;color:#999;margin-bottom:20px;line-height:1.7;">
+    弹窗 = 中断式（覆盖整页，打断浏览）。下面四种方案都是<b>非中断式</b>，在"已完成"的卡片上直接展示鼓励内容。
+  </p>
+
+  <div class="scene-row">
+
+    <!-- 方案 1 -->
+    <div class="frame-col">
+      <div class="frame-label">方案 1 · 底部鼓励条<span style="display:block;font-size:10px;color:#999;font-weight:500;">slide-up 非阻断，3秒自动收起</span></div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content" style="overflow:hidden;">
+          <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:8px;text-shadow:0 2px 4px rgba(0,0,0,0.1);">今日日常</div>
+
+          <div class="hero-banner show" style="margin-bottom:10px;">✨ 太棒了！又完成了一项</div>
+
+          <!-- Hero -->
+          <div class="hero" style="display:flex;">
+            <div class="hero-stat"><div class="hero-stat-val">3</div><div class="hero-stat-lbl">已规划</div></div>
+            <div class="hero-stat-div"></div>
+            <div class="hero-stat"><div class="hero-stat-val">1</div><div class="hero-stat-lbl">进行中</div></div>
+            <div class="hero-stat-div"></div>
+            <div class="hero-stat"><div class="hero-stat-val">2</div><div class="hero-stat-lbl">已完成</div></div>
+            <div style="flex:1;"></div>
+            <div class="hero-stat"><div class="hero-stat-val hero-streak-bump bump">5</div><div class="hero-stat-lbl">连续天</div></div>
+          </div>
+
+          <!-- 任务卡片 -->
+          <div class="task-card" style="border:1.5px solid #C8E6C9;">
+            <div class="tc-cat">📖 阅读</div>
+            <div class="tc-name">阅读《西游记》</div>
+            <div class="tc-detail">约 30 分钟</div>
+            <span class="stamp show" style="right:12px;top:14px;">✓</span>
+            <!-- 卡片内鼓励 -->
+            <div class="card-encourage show">
+              📖 书里藏着一个更大的世界
+            </div>
+          </div>
+
+          <!-- 底部条 -->
+          <div class="bottom-bar show" style="bottom:0;">
+            <span class="bb-emoji">📖</span>
+            <div class="bb-text">书里藏着一个更大的世界</div>
+            <span class="bb-btn">继续加油</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 方案 2 -->
+    <div class="frame-col">
+      <div class="frame-label">方案 2 · 卡片内嵌<span style="display:block;font-size:10px;color:#999;font-weight:500;">印章弹出 + 卡片下方展开鼓励语</span></div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:8px;text-shadow:0 2px 4px rgba(0,0,0,0.1);">今日日常</div>
+
+          <div class="hero">
+            <div class="hero-stat"><div class="hero-stat-val">2</div><div class="hero-stat-lbl">进行中</div></div>
+            <div class="hero-stat-div"></div>
+            <div class="hero-stat"><div class="hero-stat-val">2</div><div class="hero-stat-lbl">已完成</div></div>
+            <div style="flex:1;"></div>
+            <div class="hero-stat"><div class="hero-stat-val">5</div><div class="hero-stat-lbl">连续天</div></div>
+          </div>
+
+          <!-- 已完成卡片 1 -->
+          <div class="task-card" style="opacity:0.6;background:#F5F9F5;">
+            <div class="tc-cat">📖 阅读</div>
+            <div class="tc-name">阅读《西游记》</div>
+            <span class="stamp show">✓</span>
+            <div class="card-encourage show">📖 书里藏着一个更大的世界</div>
+          </div>
+
+          <!-- 已完成卡片 2 -->
+          <div class="task-card" style="border:1.5px solid #C8E6C9;">
+            <div class="tc-cat">✏️ 作业</div>
+            <div class="tc-name">完成数学练习</div>
+            <span class="stamp show" style="right:12px;top:10px;">✓</span>
+            <div class="card-encourage show">
+              ✏️ 今天的难题，明天的底气
+            </div>
+          </div>
+
+          <!-- 进行中卡片 -->
+          <div class="task-card">
+            <div class="tc-cat">💪 运动</div>
+            <div class="tc-name">跳绳 200 个</div>
+            <div class="tc-detail">约 20 分钟</div>
+            <div style="margin-top:6px;text-align:right;">
+              <span style="font-size:11px;color:#5B9BD5;font-weight:700;border:1px solid #5B9BD5;border-radius:8px;padding:4px 12px;">去完成 →</span>
+            </div>
+          </div>
+
+          <div style="text-align:center;margin-top:14px;font-size:11px;color:#999;">
+            💡 鼓励语直接长在卡片里，不打断浏览
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 方案 3 -->
+    <div class="frame-col">
+      <div class="frame-label">方案 3 · Hero 区域庆祝<span style="display:block;font-size:10px;color:#999;font-weight:500;">连续天数放大 + 顶部横幅</span></div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:8px;text-shadow:0 2px 4px rgba(0,0,0,0.1);">今日日常</div>
+
+          <!-- 横幅 -->
+          <div class="hero-banner show">
+            📖 书里藏着一个更大的世界 · 又完成了一项
+          </div>
+
+          <!-- Hero：连续天数被强调 -->
+          <div class="hero" style="align-items:center;justify-content:center;gap:20px;">
+            <div class="hero-stat"><div class="hero-stat-val">3</div><div class="hero-stat-lbl">已规划</div></div>
+            <div class="hero-stat"><div class="hero-stat-val">2</div><div class="hero-stat-lbl">已完成</div></div>
+            <div style="text-align:center;background:linear-gradient(135deg,#F4B942,#FFD54F);border-radius:14px;padding:8px 14px;box-shadow:0 4px 12px rgba(244,185,66,0.25);">
+              <div class="hero-stat-val hero-streak-bump bump" style="color:#fff;font-size:32px;">5</div>
+              <div class="hero-stat-lbl" style="color:rgba(255,255,255,0.85);font-size:10px;">连续天 ✨</div>
+            </div>
+          </div>
+
+          <!-- 任务 -->
+          <div class="task-card" style="margin-top:14px;opacity:0.6;background:#F5F9F5;">
+            <div class="tc-cat">📖 阅读</div>
+            <div class="tc-name">阅读《西游记》</div>
+            <span class="stamp show">✓</span>
+          </div>
+          <div class="task-card" style="opacity:1;background:#fff;border:1.5px solid #C8E6C9;">
+            <div class="tc-cat">✏️ 作业</div>
+            <div class="tc-name">完成数学练习</div>
+            <span class="stamp show">✓</span>
+          </div>
+          <div class="task-card">
+            <div class="tc-cat">💪 运动</div>
+            <div class="tc-name">跳绳 200 个</div>
+            <div style="margin-top:6px;text-align:right;">
+              <span style="font-size:11px;color:#5B9BD5;font-weight:700;border:1px solid #5B9BD5;border-radius:8px;padding:4px 12px;">去完成 →</span>
+            </div>
+          </div>
+
+          <div style="text-align:center;margin-top:12px;font-size:11px;color:#999;">
+            💡 注意力引到"连续天数"上，而非弹窗
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 方案 4 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>方案 4 · 累积多米诺</h2>
+  <p style="font-size:12px;color:#999;margin-bottom:14px;line-height:1.7;">
+    每完成一个，页面底部"已完成"任务以多米诺骨牌方式堆叠。<br>
+    鼓励语不出现——取而代之的是"还差 X 个全部完成"的紧迫感提示在 Hero 区。
+  </p>
+
+  <div class="scene-row">
+    <div class="frame-col">
+      <div class="frame-label">4A · 完成第 1 个<span style="display:block;font-size:10px;color:#999;font-weight:500;">多米诺开始排列</span></div>
+      <div class="phone" style="height:480px;">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content" style="display:flex;flex-direction:column;">
+          <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:8px;text-shadow:0 2px 4px rgba(0,0,0,0.1);">今日日常</div>
+          <div class="hero" style="align-items:center;justify-content:center;gap:16px;">
+            <div class="hero-stat"><div class="hero-stat-val">2</div><div class="hero-stat-lbl">进行中</div></div>
+            <div style="text-align:center;background:#FFFDF8;border-radius:12px;padding:6px 12px;border:1.5px dashed #FFD54F;">
+              <div style="font-size:10px;color:#C8853E;font-weight:700;">还差 2 个全部完成</div>
+            </div>
+            <div class="hero-stat"><div class="hero-stat-val">1</div><div class="hero-stat-lbl">已完成</div></div>
+          </div>
+
+          <!-- 已完成：多米诺骨牌 -->
+          <div style="display:flex;justify-content:center;margin-top:16px;">
+            <div style="width:120px;padding:8px;background:linear-gradient(135deg,#81C784,#66BB6A);border-radius:10px;text-align:center;color:#fff;font-size:11px;font-weight:700;box-shadow:0 4px 12px rgba(129,199,132,0.25);position:relative;">
+              📖 阅读《西游记》
+              <div style="font-size:8px;opacity:0.8;">✓ 已完成</div>
+            </div>
+          </div>
+
+          <!-- 进行中 -->
+          <div class="task-card" style="margin-top:16px;">
+            <div class="tc-cat">✏️ 作业</div>
+            <div class="tc-name">完成数学练习</div>
+            <div style="margin-top:6px;text-align:right;"><span style="font-size:11px;color:#5B9BD5;font-weight:700;border:1px solid #5B9BD5;border-radius:8px;padding:4px 12px;">去完成 →</span></div>
+          </div>
+          <div class="task-card" style="margin-top:8px;">
+            <div class="tc-cat">💪 运动</div>
+            <div class="tc-name">跳绳 200 个</div>
+            <div style="margin-top:6px;text-align:right;"><span style="font-size:11px;color:#5B9BD5;font-weight:700;border:1px solid #5B9BD5;border-radius:8px;padding:4px 12px;">去完成 →</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="frame-col">
+      <div class="frame-label">4B · 最后一个：全部完成<span style="display:block;font-size:10px;color:#999;font-weight:500;">多米诺全部立起 → 全屏撒花</span></div>
+      <div class="phone" style="height:480px;">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;">
+          <!-- 撒花背景 -->
+          <span style="position:absolute;background:#F4B942;width:8px;height:8px;border-radius:50%;top:30px;left:50px;opacity:.9;"></span>
+          <span style="position:absolute;background:#FFD54F;width:6px;height:6px;border-radius:50%;top:60px;left:220px;opacity:.7;"></span>
+          <span style="position:absolute;background:#81C784;width:7px;height:7px;border-radius:50%;top:100px;left:140px;opacity:.8;"></span>
+          <span style="position:absolute;background:#5B9BD5;width:5px;height:5px;border-radius:50%;top:50px;right:60px;opacity:.7;"></span>
+          <span style="position:absolute;background:#F4B942;width:9px;height:9px;border-radius:50%;top:80px;left:80px;"></span>
+          <span style="position:absolute;background:#FFD54F;width:6px;height:6px;border-radius:50%;bottom:100px;right:70px;"></span>
+          <span style="position:absolute;background:#81C784;width:8px;height:8px;border-radius:50%;bottom:80px;left:200px;"></span>
+
+          <!-- 多米诺全倒形态 -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:16px;">
+            <div style="padding:8px 20px;background:linear-gradient(135deg,#81C784,#66BB6A);border-radius:10px;color:#fff;font-size:12px;font-weight:700;">
+              📖 阅读《西游记》
+            </div>
+            <div style="padding:8px 20px;background:linear-gradient(135deg,#F4B942,#FFD54F);border-radius:10px;color:#fff;font-size:12px;font-weight:700;">
+              ✏️ 完成数学练习
+            </div>
+            <div style="padding:8px 20px;background:linear-gradient(135deg,#5B9BD5,#42A5F5);border-radius:10px;color:#fff;font-size:12px;font-weight:700;">
+              💪 跳绳 200 个
+            </div>
+          </div>
+
+          <div style="text-align:center;font-size:16px;font-weight:800;color:#3A5A8C;">
+            🎉 全部完成！<br>
+            <span style="font-size:14px;color:#F4B942;">连续打卡 5 天</span>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:10px;">
+            <span style="background:linear-gradient(135deg,#F4B942,#FFD54F);padding:8px 18px;border-radius:12px;color:#fff;font-size:12px;font-weight:700;">📸 分享成就</span>
+            <span style="background:#F2F5F8;padding:8px 18px;border-radius:12px;color:#999;font-size:12px;font-weight:700;">👍 好的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 对比 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>四种方案对比</h2>
+
+  <div class="spec-table">
+    <table>
+      <tr><th>方案</th><th>中断性</th><th>鼓励语可见度</th><th>开发成本</th><th>适合场景</th><th>趣味性</th></tr>
+      <tr>
+        <td><span class="tag b">1. 底部鼓励条</span></td>
+        <td>极低——底部 40px 条，不盖内容</td>
+        <td>中——文字小但显眼</td>
+        <td>低</td>
+        <td>每次完成都触发，例行公事</td>
+        <td>⭐⭐</td>
+      </tr>
+      <tr>
+        <td><span class="tag g">2. 卡片内嵌</span></td>
+        <td>无——完全在卡片内</td>
+        <td>低——嵌在卡片底部</td>
+        <td>最低</td>
+        <td>回顾已完成任务时自然看到</td>
+        <td>⭐⭐</td>
+      </tr>
+      <tr>
+        <td><span class="tag y">3. Hero 区域庆祝</span></td>
+        <td>低——仅 Hero 横幅 + 连续天数跳动</td>
+        <td>高——顶部横幅显眼，连续天数变大</td>
+        <td>低</td>
+        <td>强调持续坚持而非单次完成</td>
+        <td>⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td><span class="tag y">4. 累积多米诺</span></td>
+        <td>中——全部完成时有页面变化</td>
+        <td>高——完成越多画面越丰富</td>
+        <td>中</td>
+        <td>追求"全部完成"的每日目标感</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td><em>（比照）弹窗</em></td>
+        <td>高——覆盖全页</td>
+        <td>最高</td>
+        <td>中</td>
+        <td>里程碑时刻（7 天/30 天）</td>
+        <td>⭐⭐⭐</td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="margin-top:20px;background:#fff;border-radius:14px;padding:18px;box-shadow:0 3px 12px rgba(74,144,226,0.05);">
+    <h3 style="font-size:15px;font-weight:800;color:#3A5A8C;margin-bottom:10px;">建议组合方案</h3>
+    <p style="font-size:12px;color:#5C6178;line-height:1.8;">
+      <span class="tag g">日常完成</span> = <strong>方案 2 卡片内嵌</strong>（无中断，鼓励语长在卡片底部，回顾时能看到）<br>
+      <span class="tag y">每日最后一个</span> = <strong>方案 4 累积多米诺</strong>（多个已完成骨牌列起来，全部完成时自动演变成庆祝页）<br>
+      <span class="tag b">里程碑完成</span> = <strong>弹窗</strong>（7 天 / 30 天等，值得打断的节点）<br><br>
+      这样三层递进：<em>日常无感 → 全部完成有仪式感 → 里程碑有大惊喜</em>。<br>
+      每个层级对应不同的情感强度，不会疲劳。
+    </p>
+  </div>
+</div>
+
+</body>
+</html>

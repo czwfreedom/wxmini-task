@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>任务编辑交互 · 设计稿</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body {
+    background: #E8EFF5;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    padding: 36px 24px;
+  }
+  h2 {
+    font-size: 22px; font-weight: 800; color: #3A5A8C;
+    margin-bottom: 16px; padding-left: 14px; border-left: 4px solid #F4B942;
+  }
+  h3 {
+    font-size: 15px; font-weight: 700; color: #5C6178;
+    margin: 24px 0 10px;
+    padding-bottom: 5px; border-bottom: 1px dashed rgba(0,0,0,0.08);
+  }
+  .section { width: 100%; max-width: 900px; margin: 0 auto 40px; }
+
+  .scene-row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+  .frame-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .frame-label {
+    font-size: 12px; font-weight: 800; color: #5C6178;
+    background: #fff; padding: 6px 16px; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.08);
+  }
+  .frame-label .sub { display: block; font-size: 10px; font-weight: 500; color: #999; margin-top: 2px; }
+
+  .phone {
+    width: 320px; height: 500px;
+    background: #F2F5F8; border-radius: 32px; overflow: hidden;
+    box-shadow: 0 0 0 3px #1A1A1A, 0 0 0 6px #2D2D2D, 0 14px 40px rgba(0,0,0,0.25);
+    position: relative;
+  }
+  .phone_status {
+    height: 32px; background: #B8DAF5;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px; font-size: 10px; color: #fff; font-weight: 600;
+  }
+  .phone_content {
+    height: calc(100% - 32px); overflow-y: auto;
+    background: linear-gradient(180deg, #B8DAF5, #F2F5F8 30%);
+    padding: 14px 14px 18px;
+  }
+  .phone_content::-webkit-scrollbar { width: 0; }
+
+  /* ===== 常用样式 ===== */
+  .page-title {
+    font-size: 15px; font-weight: 800; color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+  }
+  .task-card {
+    background: #FDFBF7; border-radius: 14px; padding: 12px 14px;
+    margin-bottom: 10px; position: relative;
+    box-shadow: 0 2px 10px rgba(74,144,226,0.05);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .tc-icon {
+    width: 38px; height: 38px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .tc-body { flex: 1; min-width: 0; }
+  .tc-cat  { font-size: 10px; color: #999; font-weight: 600; }
+  .tc-name { font-size: 13px; font-weight: 700; color: #333; margin-top: 1px; }
+  .tc-detail { font-size: 10px; color: #999; margin-top: 1px; }
+
+  .stamp {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #81C784, #66BB6A);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #fff; flex-shrink: 0;
+    box-shadow: 0 3px 8px rgba(129,199,132,0.3);
+  }
+  .stamp.tappable { cursor: pointer; }
+
+  /* ===== 编辑图标 ===== */
+  .edit-badge {
+    position: absolute; top: -6px; right: -6px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: linear-gradient(135deg, #5B9BD5, #42A5F5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2;
+    box-shadow: 0 2px 6px rgba(66,165,245,0.3);
+  }
+  .edit-badge svg { width: 12px; height: 12px; }
+
+  /* ===== 编辑弹窗 ===== */
+  .overlay {
+    position: absolute; inset: 0; z-index: 20;
+    background: rgba(0,0,0,0.35);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .edit-modal {
+    width: 250px; background: #fff; border-radius: 18px;
+    padding: 20px 18px 16px; text-align: center;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+  }
+  .edit-modal .em-title {
+    font-size: 16px; font-weight: 800; color: #333; margin-bottom: 6px;
+  }
+  .edit-modal .em-hint {
+    font-size: 11px; color: #999; margin-bottom: 14px; line-height: 1.5;
+  }
+  .edit-modal .em-input {
+    width: 100%; border: 1px solid #E5E5E5; border-radius: 10px;
+    padding: 8px 12px; font-size: 13px; color: #333;
+    text-align: left; margin-bottom: 14px;
+  }
+  .em-btns { display: flex; gap: 10px; }
+  .em-btns span {
+    flex: 1; padding: 10px 0; border-radius: 12px;
+    font-size: 13px; font-weight: 700; text-align: center;
+  }
+  .em-btns .cancel { background: #F2F5F8; color: #999; }
+  .em-btns .save   { background: linear-gradient(135deg,#F4B942,#FFD54F); color: #fff; box-shadow: 0 4px 12px rgba(244,185,66,0.3); }
+
+  /* ===== 编辑页（复用 routineEditor） ===== */
+  .editor-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .editor-back { font-size: 14px; color: #fff; font-weight: 700; }
+  .editor-title { font-size: 15px; font-weight: 800; color: #fff; }
+  .edit-field {
+    background: #FDFBF7; border-radius: 14px; padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(74,144,226,0.05);
+  }
+  .edit-field .ef-label {
+    font-size: 11px; color: #999; font-weight: 600; margin-bottom: 6px;
+  }
+  .edit-field .ef-value {
+    font-size: 13px; color: #333; font-weight: 600;
+    background: #F2F5F8; border-radius: 8px; padding: 8px 12px;
+  }
+  .edit-field .ef-input {
+    font-size: 13px; color: #333;
+    background: #fff; border: 1px solid #E5E5E5;
+    border-radius: 8px; padding: 8px 12px; width: 100%;
+  }
+  .edit-field .ef-tap-hint {
+    font-size: 10px; color: #5B9BD5; text-align: right;
+    margin-top: 4px;
+  }
+
+  .spec-table {
+    width: 100%; background: #fff; border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+    overflow: hidden; font-size: 13px;
+  }
+  .spec-table table { width: 100%; border-collapse: collapse; }
+  .spec-table th {
+    background: #F2F5F8; padding: 10px 12px; text-align: left;
+    font-size: 12px; font-weight: 700; color: #5C6178;
+  }
+  .spec-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(0,0,0,0.04); color: #333; vertical-align: top; }
+  .spec-table tr:last-child td { border-bottom: none; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .tag.g { background: #E8F5E9; color: #81C784; }
+  .tag.y { background: #FFF8E1; color: #C8853E; }
+  .tag.b { background: #E3F2FD; color: #5B9BD5; }
+
+  blockquote {
+    background: #FFF8E1; border-left: 4px solid #F4B942;
+    padding: 12px 16px; border-radius: 0 8px 8px 0;
+    font-size: 13px; color: #5C6178; line-height: 1.7; margin: 14px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="section">
+  <h2>两种场景，两种编辑方式</h2>
+
+  <div class="scene-row">
+
+    <!-- 场景 1：未完成 → 改任务内容 -->
+    <div class="frame-col">
+      <div class="frame-label">场景 1 · 未完成任务<span class="sub">轻点内容区 → 直接改</span></div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div class="page-title">今日日常</div>
+
+          <!-- normal card -->
+          <div class="task-card" style="border:1.5px solid rgba(0,0,0,0.05);">
+            <div class="tc-icon" style="background:#E3F2FD;">📖</div>
+            <div class="tc-body">
+              <div class="tc-cat">阅读</div>
+              <div class="tc-name">阅读《西游记》第五回</div>
+              <div class="tc-detail">30 分钟 · 10:00</div>
+            </div>
+            <span style="font-size:11px;color:#5B9BD5;font-weight:700;border:1px solid #5B9BD5;padding:6px 12px;border-radius:10px;">去完成 →</span>
+          </div>
+
+          <!-- 说明：卡片内容区可点击，弹编辑面板 -->
+          <div style="text-align:center;margin:8px 0;font-size:11px;color:#999;">↓ 轻点卡片内容区（不是按钮区） ↓</div>
+
+          <!-- edit card with overlay -->
+          <div class="task-card" style="position:relative;border:2px solid #5B9BD5;box-shadow:0 0 0 4px rgba(91,155,213,0.12);">
+            <div class="tc-icon" style="background:#E3F2FD;">📖</div>
+            <div class="tc-body">
+              <div class="tc-cat">阅读</div>
+              <div class="tc-name">阅读《西游记》第五回</div>
+              <div class="tc-detail" style="color:#5B9BD5;">30 分钟 · 10:00</div>
+            </div>
+
+            <!-- 轻量编辑弹窗 -->
+            <div class="overlay" style="background:rgba(0,0,0,0.3);border-radius:0;">
+              <div class="edit-modal" style="width:260px;">
+                <div class="em-title">修改任务</div>
+                <div class="em-hint">你可以修改任务名称</div>
+                <div class="em-input" style="display:flex;align-items:center;gap:6px;text-align:left;font-size:13px;color:#333;">
+                  📖 阅读《西游记》
+                </div>
+                <div class="em-btns">
+                  <span class="cancel">取消</span>
+                  <span class="save">保存修改</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align:center;font-size:10px;color:#999;margin-top:10px;line-height:1.6;">
+            • 轻点内容区 → 弹简洁编辑面板<br>
+            • 仅可修改内容文本，分类/时间在这儿不动<br>
+            • 如需改分类/时长 → 弹出引导去完整编辑页
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 场景 1 进阶：完整编辑 -->
+    <div class="frame-col">
+      <div class="frame-label">场景 1 进阶 · 完整编辑<span class="sub">点击编辑面板中"更多设置" → 跳转完整编辑页</span></div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div class="editor-header">
+            <span class="editor-back">‹ 返回</span>
+            <span class="editor-title">修改任务</span>
+            <span style="width:32px;"></span>
+          </div>
+
+          <!-- 复用 routineEditor 结构，但数据已预填 -->
+          <div class="edit-field">
+            <div class="ef-label">任务分类（可改）</div>
+            <div class="ef-value" style="display:flex;align-items:center;gap:8px;background:#E3F2FD;">
+              📖 阅读
+            </div>
+            <div class="ef-tap-hint">点击切换分类</div>
+          </div>
+
+          <div class="edit-field">
+            <div class="ef-label">任务内容</div>
+            <div class="ef-input">阅读《西游记》第五回</div>
+          </div>
+
+          <div class="edit-field">
+            <div class="ef-label">计划时长</div>
+            <div class="ef-value">30 分钟</div>
+            <div class="ef-tap-hint">点击修改时长</div>
+          </div>
+
+          <div class="edit-field">
+            <div class="ef-label">计划时间</div>
+            <div class="ef-value">10:00</div>
+            <div class="ef-tap-hint">点击修改时间</div>
+          </div>
+
+          <div style="margin-top:16px;background:linear-gradient(135deg,#F4B942,#FFD54F);border-radius:14px;padding:12px;text-align:center;font-size:15px;font-weight:800;color:#fff;box-shadow:0 6px 16px rgba(244,185,66,0.3);">
+            保存修改
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 场景 2：已完成 → 改反馈 -->
+    <div class="frame-col">
+      <div class="frame-label">场景 2 · 已完成任务<span class="sub">点击印章或反馈区 → 修改反馈内容</span></div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div class="page-title">今日日常</div>
+
+          <!-- 已完成卡片 -->
+          <div class="task-card" style="background:#F5F9F5;">
+            <div class="tc-icon" style="background:#E8F5E9;">✏️</div>
+            <div class="tc-body">
+              <div class="tc-cat" style="color:#81C784;">已 完 成</div>
+              <div class="tc-name">完成数学练习</div>
+              <!-- 反馈区域带虚线框，暗示可点击编辑 -->
+              <div style="border:1.5px dashed #C8E6C9;border-radius:8px;padding:6px 10px;margin-top:6px;position:relative;cursor:pointer;">
+                <div style="font-size:11px;color:#5C6178;line-height:1.5;font-style:italic;">
+                  "我学会了分数加减法，先找公分母再计算"
+                </div>
+                <span style="position:absolute;top:-8px;right:-6px;background:#5B9BD5;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;">✎</span>
+              </div>
+            </div>
+            <span class="stamp tappable">✓</span>
+          </div>
+
+          <div style="text-align:center;margin:10px 0;font-size:11px;color:#999;">↓ 两种触发方式：点印章 / 点反馈文本 ↓</div>
+
+          <!-- 点击后 -->
+          <div class="task-card" style="background:#F5F9F5;position:relative;border:2px solid #81C784;box-shadow:0 0 0 4px rgba(129,199,132,0.15);">
+            <div class="tc-icon" style="background:#E8F5E9;">✏️</div>
+            <div class="tc-body">
+              <div class="tc-cat" style="color:#81C784;">已 完 成</div>
+              <div class="tc-name">完成数学练习</div>
+            </div>
+            <span class="stamp">✓</span>
+
+            <div class="overlay" style="border-radius:0;">
+              <div class="edit-modal">
+                <div class="em-title">修改反馈</div>
+                <div class="em-hint">今天学到了什么？</div>
+                <div class="em-input" style="height:60px;font-size:12px;line-height:1.6;">
+                  我学会了分数加减法，先找公分母再计算。但是约分的时候出了点错。
+                </div>
+                <div class="em-btns">
+                  <span class="cancel">取消</span>
+                  <span class="save">保存</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align:center;font-size:10px;color:#999;margin-top:10px;line-height:1.6;">
+            • 点击印章 → 弹出反馈编辑面板<br>
+            • 也可以直接点反馈文字区域<br>
+            • 仅可修改 remark，状态保持 Done<br>
+            • 修改后卡片反馈内容实时更新
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- 流程总览 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>编辑交互流程总览</h2>
+
+  <div style="display:flex;justify-content:center;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:28px;">
+    <!-- 未完成 -->
+    <div style="background:#fff;border-radius:14px;padding:16px;width:180px;text-align:center;box-shadow:0 3px 12px rgba(74,144,226,0.06);">
+      <div style="font-size:24px;margin-bottom:6px;">📋</div>
+      <div style="font-size:13px;font-weight:800;color:#333;margin-bottom:8px;">未完成任务</div>
+      <div style="font-size:10px;color:#5C6178;line-height:1.7;">
+        轻点卡片内容区<br>
+        <span style="color:#999;">→</span><br>
+        弹出简洁编辑面板<br>
+        <span style="color:#5C6178;">修改文本即可</span>
+      </div>
+      <div style="margin-top:6px;font-size:9px;color:#5B9BD5;border-top:0.5px solid rgba(0,0,0,0.06);padding-top:6px;">
+        如需改分类/时长 →<br>面板中"更多设置"
+      </div>
+    </div>
+
+    <div style="color:#C5C5C5;font-size:20px;align-self:center;">→</div>
+
+    <div style="background:#fff;border-radius:14px;padding:16px;width:200px;text-align:center;box-shadow:0 3px 12px rgba(74,144,226,0.06);">
+      <div style="font-size:24px;margin-bottom:6px;">💾</div>
+      <div style="font-size:13px;font-weight:800;color:#333;margin-bottom:8px;">Routine.update</div>
+      <div style="font-size:10px;color:#999;line-height:1.7;">
+        更新 detail 字段<br>
+        （或 category/duration）<br>
+        不改变 status
+      </div>
+    </div>
+
+    <div style="color:#C5C5C5;font-size:20px;align-self:center;">→</div>
+
+    <div style="background:#fff;border-radius:14px;padding:16px;width:160px;text-align:center;box-shadow:0 3px 12px rgba(74,144,226,0.06);">
+      <div style="font-size:24px;margin-bottom:6px;">🔄</div>
+      <div style="font-size:13px;font-weight:800;color:#333;margin-bottom:8px;">页面刷新</div>
+      <div style="font-size:10px;color:#999;line-height:1.7;">
+        EventBus 触发<br>
+        <code>RoutineUpdated</code><br>
+        卡片实时更新
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:center;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+    <!-- 已完成 -->
+    <div style="background:#fff;border-radius:14px;padding:16px;width:180px;text-align:center;box-shadow:0 3px 12px rgba(74,144,226,0.06);">
+      <div style="font-size:24px;margin-bottom:6px;">✅</div>
+      <div style="font-size:13px;font-weight:800;color:#333;margin-bottom:8px;">已完成任务</div>
+      <div style="font-size:10px;color:#5C6178;line-height:1.7;">
+        点击印章 或 反馈文字区<br>
+        <span style="color:#999;">→</span><br>
+        弹出反馈编辑面板
+      </div>
+      <div style="margin-top:6px;font-size:9px;color:#81C784;border-top:0.5px solid rgba(0,0,0,0.06);padding-top:6px;">
+        仅修改 remark<br>任务内容锁定不可改
+      </div>
+    </div>
+
+    <div style="color:#C5C5C5;font-size:20px;align-self:center;">→</div>
+
+    <div style="background:#fff;border-radius:14px;padding:16px;width:200px;text-align:center;box-shadow:0 3px 12px rgba(74,144,226,0.06);">
+      <div style="font-size:24px;margin-bottom:6px;">💾</div>
+      <div style="font-size:13px;font-weight:800;color:#333;margin-bottom:8px;">Routine.update</div>
+      <div style="font-size:10px;color:#999;line-height:1.7;">
+        更新 remark 字段<br>
+        status 保持 Done<br>
+        不改变 finishTime
+      </div>
+    </div>
+
+    <div style="color:#C5C5C5;font-size:20px;align-self:center;">→</div>
+
+    <div style="background:#fff;border-radius:14px;padding:16px;width:160px;text-align:center;box-shadow:0 3px 12px rgba(74,144,226,0.06);">
+      <div style="font-size:24px;margin-bottom:6px;">🔄</div>
+      <div style="font-size:13px;font-weight:800;color:#333;margin-bottom:8px;">页面刷新</div>
+      <div style="font-size:10px;color:#999;line-height:1.7;">
+        卡片 remark<br>
+        实时更新
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 对比与决策 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>两种场景的设计要点</h2>
+
+  <div class="spec-table">
+    <table>
+      <tr><th style="width:16%;">维度</th><th style="width:42%;">场景 1：未完成 → 改任务内容</th><th style="width:42%;">场景 2：已完成 → 改完成内容</th></tr>
+      <tr>
+        <td><strong>触发方式</strong></td>
+        <td>轻点卡片内容区域（图标/文字/详情），不是按钮区</td>
+        <td>① 点击印章图标 ② 点击反馈文字区域（虚线框提示可编辑）</td>
+      </tr>
+      <tr>
+        <td><strong>编辑界面</strong></td>
+        <td>简洁面板（弹窗）：仅改文本，3 秒完事。<br>面板中带"更多设置"引导跳转到完整编辑页</td>
+        <td>弹窗：textarea + 保存/取消。<br>不跳页面，不离开日常页</td>
+      </tr>
+      <tr>
+        <td><strong>可修改字段</strong></td>
+        <td>简洁模式：<code>detail</code><br>完整模式：<code>category | detail | duration | planTime</code></td>
+        <td>仅 <code>remark</code><br>任务内容 / 分类 / 时间锁定不可改</td>
+      </tr>
+      <tr>
+        <td><strong>调用接口</strong></td>
+        <td><code>Routine.update({ id, detail })</code> 或<br><code>Routine.update({ id, category, detail, duration, planTime })</code></td>
+        <td><code>Routine.update({ id, remark })</code></td>
+      </tr>
+      <tr>
+        <td><strong>其他限制</strong></td>
+        <td>只允许在「今天」修改。历史日期的未完成任务不能改（保持历史真实性）</td>
+        <td>今天的已完成可以改 remark。<br>历史日也可改（补充回顾）</td>
+      </tr>
+      <tr>
+        <td><strong>视觉提示</strong></td>
+        <td>可直接轻点区域用浅蓝边框 + 淡阴影标记"可编辑"，或在卡片右上角放小的 ✎ 图标</td>
+        <td>印章图标变为可点击态（蓝色圆形描边 + "✎"小角标）；反馈文字区加虚线边框暗示可编辑</td>
+      </tr>
+    </table>
+  </div>
+
+  <blockquote>
+    <strong>为什么已完成任务的"任务内容"不可改？</strong><br>
+    任务内容和分类是"当时决定的"，已经完成了就是历史事实。可以补充反思（改 remark），但不应该把"读了《西游记》"改成"做了数学题"——这会破坏历史记录的可信度。如果需要改任务本身，可以新建一个。
+  </blockquote>
+</div>
+
+</body>
+</html>

@@ -1,4 +1,6 @@
+import { Entity } from '../model/entity';
 import { Routine } from '../server/routine';
+import { DateUtils } from '../utils/dateUtils';
 import { RoutineAdapter } from './routineAdapter';
 import { RoutineEditorUI } from './routineEditorUI';
 
@@ -15,7 +17,7 @@ export class RoutineEditorAdapter {
   private static sDurations: RoutineEditorUI.Duration[] = [
     { id: '10', name: '10', desc: '分钟' },
     { id: '25', name: '25', desc: '分钟' },
-    { id: '30', name: '30', desc: '分钟', selected: true },
+    { id: '30', name: '30', desc: '分钟' },
     { id: '45', name: '45', desc: '分钟' },
     { id: '60', name: '1', desc: '小时' },
     { id: 'custom', name: '其他', desc: '' },
@@ -23,7 +25,7 @@ export class RoutineEditorAdapter {
 
   /** 计划时间选项（整点快捷 + 自定义入口），构建时按当前小时过滤已过时间 */
   private static readonly sTimes: RoutineEditorUI.Time[] = [
-    { id: 'now', name: '现在', selected: true },
+    { id: 'now', name: '现在' },
     { id: '08:00', name: '08:00' },
     { id: '09:00', name: '09:00' },
     { id: '10:00', name: '10:00' },
@@ -69,18 +71,44 @@ export class RoutineEditorAdapter {
   }
 
   /** 获取计划时长选项 VM 列表（带选中态），末尾"其他"为虚线自定义入口 */
-  public adaptDurations(selectedMinutes?: number): RoutineEditorUI.Duration[] {
-    return RoutineEditorAdapter.sDurations.map((o) => Object.assign({}, o));
+  public adaptDurations(selectedMinutes?: number): Partial<RoutineEditorUI.Data> {
+    const items: RoutineEditorUI.Duration[] = RoutineEditorAdapter.sDurations.map((o) =>
+      Object.assign({}, o)
+    );
+    let custom = '';
+    if (selectedMinutes) {
+      const minId = '' + selectedMinutes;
+      const item = Entity.find(items, minId).item || Entity.find(items, 'custom').item;
+      if (item) {
+        item!.selected = true;
+        if (item.id === 'custom') custom = minId;
+      }
+    }
+    return custom ? { durations: items, durationCustomText: custom } : { durations: items };
   }
 
   /** 获取计划时间选项 VM 列表（按当前小时过滤已过时间 + 带选中态），末尾为自定义入口 */
-  public adaptTimes(hour: number): RoutineEditorUI.Time[] {
+  public adaptTimes(planTime?: number): Partial<RoutineEditorUI.Data> {
+    const now = new Date();
+    const hour = now.getHours();
     const filtered = RoutineEditorAdapter.sTimes.filter((item) => {
       if (item.id === 'now' || item.id === 'custom') return true;
       const itemHour = parseInt(item.id.split(':')[0], 10);
       return itemHour > hour;
     });
-    return filtered.map((item) => ({ ...item }));
+    const items: RoutineEditorUI.Time[] = filtered.map((item) => ({ ...item }));
+    let custom = '';
+    if (planTime) {
+      const v = DateUtils.formatDate(planTime, 'hh:mm');
+      const item = Entity.find(items, v).item || Entity.find(items, 'custom').item;
+      if (item) {
+        item.selected = true;
+        if (item.id === 'custom') custom = v;
+      }
+    } else {
+      items[0].selected = true; // 现在在第一位。
+    }
+    return custom ? { times: items, timeCustomValue: custom } : { times: items };
   }
 
   /** 判断分类 ID 是否属于「更多分类」 */

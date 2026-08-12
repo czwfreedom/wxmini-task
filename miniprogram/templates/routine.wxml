@@ -56,6 +56,9 @@
             wx:for="{{ records }}"
             wx:key="id"
             class="routine_card {{ item.style || '' }} {{ isToday && item.done ? 'harvest' : '' }}"
+            catch:tap="{{ addable && !item.holder? 'onItemTap' : '' }}"
+            data-id="{{ item.id }}"
+            hover-class="{{ addable && !item.holder? 'press' : '' }}"
           >
             <view class="routine_card_accent" style="background:{{ item.color }};"></view>
             <view class="routine_card_icon">
@@ -73,7 +76,9 @@
               class="routine_card_action"
               catch:tap="onItemTap"
               data-id="{{ item.id }}"
+              data-button="next"
               hover-class="press"
+              hover-stop-propagation="true"
             >
               <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
               <view wx:elif="{{ !item.done }}" class="routine_card_btn">去完成</view>

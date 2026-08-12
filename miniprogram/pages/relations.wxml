@@ -35,7 +35,7 @@
             hover-class="press"
             data-id="{{ item.id }}"
             data-button="more"
-            hover-stop-propagation="{{true}}"
+            hover-stop-propagation="true"
           >
             ...
           </view>

@@ -134,13 +134,13 @@ export namespace Routine {
   /**
    * 更新任务（状态切换、内容编辑、保存反馈）
    */
-  export async function update(data: Partial<Info>): Promise<number> {
-    const res = await Network.post<Info>(Api.UpdateRoutine, { data: [data] });
+  export async function update(data: Partial<Info>): Promise<number | Info | undefined> {
+    const res = await Network.post<Info[]>(Api.UpdateRoutine, { data: [data] });
     if (res.errcode !== 0) {
       Logger.info('Update routine failed', res);
       return res.errcode || Err.Code.Network;
     }
-    return Err.Code.OK;
+    return res?.data?.length === 1 ? res.data[0] : undefined;
   }
 
   export async function stat(): Promise<number | Stat> {
