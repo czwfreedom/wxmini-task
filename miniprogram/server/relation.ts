@@ -36,8 +36,15 @@ export namespace Relation {
     return { data: res?.data || [], users: res?.users || [] };
   }
 
-  export async function create(userId: string, useeId: string): Promise<Info | number> {
-    const res = await Network.post<Info[]>(Api.CreateRelation, { data: [{ userId, useeId }] });
+  export async function create(
+    userId: string,
+    useeId: string,
+    nonce?: string
+  ): Promise<Info | number> {
+    const res = await Network.post<Info[]>(Api.CreateRelation, {
+      nonce,
+      data: [{ userId, useeId }],
+    });
     if (res?.errcode !== 0 || res.data?.length !== 1) {
       Logger.info('Create relation failed', res);
       return res?.errcode || Err.Code.Network;

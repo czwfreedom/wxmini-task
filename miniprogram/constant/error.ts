@@ -13,6 +13,7 @@ export namespace Err {
     NoPermission = 10003,
     DuplicateOperate = 10004,
     WxAPIFailed = 10005,
+    OverLimited = 10006,
     WXLoginFailed = 30001,
     ServerFailed = 40001,
     Unknown = 50000,
@@ -27,6 +28,7 @@ export namespace Err {
     [Code.InvalidParam]: '当前请求参数错误，请重试！',
     [Code.NoPermission]: '无权限',
     [Code.DuplicateOperate]: '重复操作',
+    [Code.OverLimited]: '超出限制',
 
     [Code.WXLoginFailed]: '微信登录失败',
     [Code.ServerFailed]: '服务器异常',

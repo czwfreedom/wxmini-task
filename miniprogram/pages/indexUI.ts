@@ -1,4 +1,5 @@
 import { Constants } from '../constant/common';
+import { Err } from '../constant/error';
 import { Context } from '../core/context';
 import { Event } from '../core/event';
 import { Intent } from '../core/intent';
@@ -34,7 +35,8 @@ export class IndexUI extends UserUpdaterUI<IndexUI.Data> {
       if (userId && nonce && userId !== Context.getUserId()) {
         this.share((cancel) => {
           if (!cancel && Context.isNamed()) {
-            Relation.create(Context.getUserId(), userId).then((res) => {
+            Relation.create(Context.getUserId(), userId, nonce).then((res) => {
+              if (res === Err.Code.OverLimited) this.showToast('超出可查看最大限制');
               if ('number' !== typeof res) this.postEvent(Event.Name.RelationUpdated);
               this.home();
             });
