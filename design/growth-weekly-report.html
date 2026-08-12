@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>成长周报 · 三版设计对比</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body {
+    background: #E8EFF5;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    padding: 32px 20px;
+  }
+
+  .page-header {
+    text-align: center; margin-bottom: 32px;
+  }
+  .page-header h1 {
+    font-size: 28px; font-weight: 800; color: #3A5A8C;
+  }
+  .page-header p {
+    font-size: 13px; color: #999; margin-top: 6px;
+  }
+
+  /* ===== 三列布局 ===== */
+  .versions-row {
+    display: flex; gap: 28px; justify-content: center; flex-wrap: wrap;
+  }
+
+  .version-col {
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  .version-label {
+    font-size: 13px; font-weight: 800; color: #fff;
+    padding: 8px 20px; border-radius: 20px; text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+  .version-label .sub { display: block; font-size: 11px; font-weight: 500; margin-top: 2px; opacity: 0.85; }
+  .v1 .version-label { background: linear-gradient(135deg, #5B9BD5, #3A5A8C); }
+  .v2 .version-label { background: linear-gradient(135deg, #FFD54F, #FF9F5A); }
+  .v3 .version-label { background: linear-gradient(135deg, #333, #5C6178); }
+
+  /* ===== 手机框 ===== */
+  .phone {
+    width: 300px; height: 540px;
+    background: #F2F5F8; border-radius: 32px; overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 3px #1A1A1A, 0 0 0 6px #2D2D2D, 0 14px 40px rgba(0,0,0,0.25);
+  }
+  .phone_status {
+    height: 32px; background: #B8DAF5;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; font-size: 10px; color: #fff; font-weight: 600;
+  }
+
+  /* ===== 周报卡片（在手机里展示） ===== */
+  .report {
+    height: calc(100% - 32px);
+    overflow-y: auto;
+    padding: 18px 16px 24px;
+    position: relative;
+  }
+  .report::-webkit-scrollbar { width: 0; }
+
+  /* ==================== V1：清新教育风 ==================== */
+  .r1 { background: linear-gradient(180deg, #E3F0FA, #F2F5F8 30%); }
+  .r1 .report-hero {
+    background: linear-gradient(135deg, #5B9BD5, #3A5A8C);
+    border-radius: 20px; padding: 20px 16px; color: #fff;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(74,144,226,0.2);
+    position: relative; overflow: hidden;
+  }
+  .r1 .report-hero::after {
+    content: ''; position: absolute;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    top: -20px; right: -16px;
+  }
+  .r1 .report-hero .tag {
+    font-size: 10px; font-weight: 600; letter-spacing: 2px;
+    opacity: 0.8; margin-bottom: 6px;
+  }
+  .r1 .report-hero .name {
+    font-size: 22px; font-weight: 800; margin-bottom: 2px;
+  }
+  .r1 .report-hero .date {
+    font-size: 11px; opacity: 0.75; margin-bottom: 14px;
+  }
+  .r1 .report-hero .big-num {
+    font-size: 48px; font-weight: 800; line-height: 1;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .r1 .report-hero .big-label {
+    font-size: 13px; font-weight: 700; opacity: 0.9; margin-top: 4px;
+  }
+  .r1 .cards { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .r1 .card {
+    background: #FDFBF7; border-radius: 14px; padding: 14px;
+    box-shadow: 0 2px 10px rgba(74,144,226,0.05);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .r1 .card .icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .r1 .card .icon.blue { background: #E3F2FD; }
+  .r1 .card .icon.green { background: #E8F5E9; }
+  .r1 .card .icon.gold { background: #FFF8E1; }
+  .r1 .card .icon.pink { background: #FCE4EC; }
+  .r1 .card .body { flex: 1; min-width: 0; }
+  .r1 .card .body .label { font-size: 11px; color: #999; font-weight: 600; }
+  .r1 .card .body .val { font-size: 15px; font-weight: 800; color: #333; }
+  .r1 .card .body .val .up { color: #81C784; font-size: 11px; margin-left: 4px; }
+  .r1 .card .body .val .same { color: #999; font-size: 11px; margin-left: 4px; font-weight: 500; }
+  .r1 .quote-card {
+    background: linear-gradient(135deg, #E3F2FD, #fff);
+    border-radius: 14px; padding: 12px 14px; margin-top: 10px;
+    box-shadow: 0 2px 10px rgba(74,144,226,0.05);
+  }
+  .r1 .quote-card .q-icon {
+    font-size: 20px; color: #5B9BD5; margin-bottom: 4px;
+  }
+  .r1 .quote-card .q-text {
+    font-size: 12px; color: #5C6178; line-height: 1.6; font-style: italic;
+  }
+  .r1 .quote-card .q-source {
+    font-size: 10px; color: #999; margin-top: 4px; text-align: right;
+  }
+  .r1 .footer {
+    margin-top: 10px; text-align: center; font-size: 10px;
+    color: #C5C5C5; letter-spacing: 1px;
+  }
+
+  /* ==================== V2：温暖手账风 ==================== */
+  .r2 { background: linear-gradient(180deg, #FFF8E1, #FDFBF7 20%); }
+  .r2 .report-hero {
+    background: #FDFBF7;
+    border: 2px dashed #FFD54F;
+    border-radius: 20px; padding: 20px 16px;
+    text-align: center; position: relative;
+    box-shadow: 0 4px 14px rgba(244,185,66,0.1);
+  }
+  .r2 .sticker {
+    position: absolute; font-size: 26px;
+  }
+  .r2 .sticker.tl { top: -10px; left: -10px; transform: rotate(-15deg); }
+  .r2 .sticker.tr { top: 8px; right: -6px; transform: rotate(12deg); }
+  .r2 .sticker.bl { bottom: -6px; left: 16px; transform: rotate(-8deg); }
+  .r2 .sticker.br { bottom: -10px; right: -10px; transform: rotate(18deg); }
+  .r2 .report-hero .name {
+    font-size: 18px; font-weight: 800; color: #C8853E;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .r2 .report-hero .name .star {
+    font-size: 14px;
+  }
+  .r2 .report-hero .date {
+    font-size: 11px; color: #999; margin-top: 2px;
+    background: #FFF8E1; display: inline-block;
+    padding: 2px 12px; border-radius: 10px;
+  }
+  .r2 .report-hero .streak {
+    margin-top: 12px;
+    display: inline-flex; align-items: baseline; gap: 6px;
+  }
+  .r2 .report-hero .streak .num {
+    font-size: 42px; font-weight: 800; color: #3A5A8C;
+    font-family: Georgia, serif;
+  }
+  .r2 .report-hero .streak .txt {
+    font-size: 13px; color: #5C6178; font-weight: 700;
+  }
+  .r2 .tag-row { margin-top: 12px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .r2 .tag {
+    font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 10px;
+  }
+  .r2 .tag.read  { background: #E3F2FD; color: #5B9BD5; }
+  .r2 .tag.write { background: #FFF8E1; color: #C8853E; }
+  .r2 .tag.sport { background: #E8F5E9; color: #81C784; }
+
+  .r2 .cards { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .r2 .card {
+    background: #FFFFFF; border-radius: 14px; padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    position: relative;
+  }
+  .r2 .card .title {
+    font-size: 13px; font-weight: 700; color: #333;
+    margin-bottom: 6px;
+  }
+  .r2 .card .bars { display: flex; gap: 6px; align-items: flex-end; height: 32px; }
+  .r2 .card .bar {
+    flex: 1; border-radius: 4px 4px 0 0; min-height: 4px;
+  }
+  .r2 .card .bar.lo { background: #FFE08A; }
+  .r2 .card .bar.hi { background: #81C784; }
+  .r2 .card .legend {
+    display: flex; justify-content: space-between;
+    font-size: 9px; color: #999; margin-top: 4px;
+  }
+  .r2 .card .check { position: absolute; right: 14px; top: 14px; font-size: 18px; }
+  .r2 .quote-card {
+    background: #FFF8E1; border-radius: 14px; padding: 12px 14px;
+    margin-top: 10px; position: relative;
+  }
+  .r2 .quote-card .pin {
+    position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+    font-size: 16px;
+  }
+  .r2 .quote-card .q-text {
+    font-size: 12px; color: #5C6178; line-height: 1.6; text-align: center;
+    font-style: italic; margin-top: 4px;
+  }
+  .r2 .footer {
+    margin-top: 12px; text-align: center; font-size: 10px;
+    color: #C5C5C5;
+    background: #fff; display: inline-block; left: 50%; position: relative;
+    transform: translateX(-50%); padding: 4px 12px; border-radius: 8px;
+  }
+
+  /* ==================== V3：极简数据风 ==================== */
+  .r3 { background: #F7F5F0; }
+  .r3 .report-hero {
+    text-align: center; padding: 24px 16px 16px;
+    position: relative;
+  }
+  .r3 .report-hero .name {
+    font-size: 14px; font-weight: 700; color: #999; letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .r3 .report-hero .date-row {
+    font-size: 11px; color: #C5C5C5; margin-top: 4px;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .r3 .report-hero .date-row .line { width: 20px; height: 0.5px; background: #D9D9D9; }
+  .r3 .big-block {
+    margin-top: 18px; display: flex; align-items: baseline; justify-content: center; gap: 8px;
+  }
+  .r3 .big-block .huge {
+    font-size: 72px; font-weight: 800; color: #3A5A8C;
+    line-height: 1; font-family: Georgia, serif;
+  }
+  .r3 .big-block .huge-label {
+    font-size: 16px; font-weight: 700; color: #333;
+  }
+  .r3 .big-block .sub {
+    font-size: 11px; color: #999; font-weight: 600;
+  }
+
+  .r3 .stat-grid {
+    margin-top: 14px;
+    display: flex; gap: 0;
+    background: #FFFFFF; border-radius: 16px;
+    overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  }
+  .r3 .stat-grid .sg-item {
+    flex: 1; text-align: center; padding: 14px 0;
+    border-right: 0.5px solid rgba(0,0,0,0.05);
+  }
+  .r3 .stat-grid .sg-item:last-child { border-right: none; }
+  .r3 .stat-grid .sg-val {
+    font-size: 22px; font-weight: 800; color: #333;
+  }
+  .r3 .stat-grid .sg-val.gold { color: #F4B942; }
+  .r3 .stat-grid .sg-label {
+    font-size: 10px; color: #C5C5C5; font-weight: 600; margin-top: 2px;
+  }
+
+  .r3 .highlight-row {
+    margin-top: 12px; display: flex; gap: 8px;
+  }
+  .r3 .hl-box {
+    flex: 1; background: #FFF; border-radius: 12px;
+    padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    text-align: center;
+  }
+  .r3 .hl-box .hl-icon { font-size: 20px; margin-bottom: 4px; }
+  .r3 .hl-box .hl-label { font-size: 10px; color: #999; font-weight: 600; }
+  .r3 .hl-box .hl-val { font-size: 16px; font-weight: 800; color: #333; }
+
+  .r3 .quote-card {
+    background: #3A5A8C; border-radius: 14px;
+    padding: 14px 16px; margin-top: 10px;
+    color: #fff; text-align: center;
+  }
+  .r3 .quote-card .q-text {
+    font-size: 13px; line-height: 1.6; font-style: italic;
+    opacity: 0.95;
+  }
+  .r3 .quote-card .q-source {
+    font-size: 10px; opacity: 0.6; margin-top: 6px;
+  }
+  .r3 .footer {
+    margin-top: 10px; text-align: center; font-size: 10px;
+    color: #C5C5C5; letter-spacing: 1px;
+  }
+
+  /* ===== 分析卡片 ===== */
+  .analysis {
+    margin-top: 28px; background: #fff; border-radius: 16px;
+    padding: 20px; box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+  }
+  .analysis h3 {
+    font-size: 16px; font-weight: 800; color: #3A5A8C; margin-bottom: 12px;
+  }
+  .analysis p { font-size: 13px; color: #5C6178; line-height: 1.8; }
+  .analysis .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .analysis .tag.good { background: #E8F5E9; color: #81C784; }
+  .analysis .tag.bad  { background: #FFEBEE; color: #EF5350; }
+  .analysis .tag.warn { background: #FFF8E1; color: #C8853E; }
+
+  .compare-table {
+    margin-top: 32px; width: 100%; background: #fff;
+    border-radius: 16px; box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+    overflow: hidden; font-size: 13px;
+  }
+  .compare-table table { width: 100%; border-collapse: collapse; }
+  .compare-table th {
+    background: #F2F5F8; padding: 10px 12px; text-align: left;
+    font-size: 12px; font-weight: 700; color: #5C6178;
+  }
+  .compare-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(0,0,0,0.04); color: #333; }
+  .compare-table tr:last-child td { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>成长周报 · 三版设计对比</h1>
+  <p>同一份数据 → 三种视觉语言的周报卡片（在手机框内模拟分享前预览）</p>
+</div>
+
+<!-- ==================== 三版周报 ==================== -->
+<div class="versions-row">
+
+  <!-- ===== V1：清新教育风 ===== -->
+  <div class="version-col v1">
+    <div class="version-label">V1 · 清新教育风<span class="sub">如成长手册 / 班级成绩单</span></div>
+    <div class="phone">
+      <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+      <div class="report r1">
+        <div class="report-hero">
+          <div class="tag">📋 成 长 周 报</div>
+          <div class="name">小明的成长周报</div>
+          <div class="date">2026.08.04 — 08.10</div>
+          <div class="big-num">6</div>
+          <div class="big-label">本周完成天数</div>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <div class="icon green">✅</div>
+            <div class="body">
+              <div class="label">任务完成率</div>
+              <div class="val">18 / 21 <span class="up">↑ 2</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="icon gold">🔁</div>
+            <div class="body">
+              <div class="label">连续打卡</div>
+              <div class="val">7 天 <span class="same">— 保持</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="icon blue">📖</div>
+            <div class="body">
+              <div class="label">最坚持的类型</div>
+              <div class="val">阅读 · 4 次</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-card">
+          <div class="q-icon">❝</div>
+          <div class="q-text">我知道了水为什么从高处流向低处——因为地球有引力，它把水往下拉。</div>
+          <div class="q-source">—— 小明 · 作业反馈</div>
+        </div>
+
+        <div class="footer">日常 · 小程序</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== V2：温暖手账风 ===== -->
+  <div class="version-col v2">
+    <div class="version-label">V2 · 温暖手账风<span class="sub">如手帐本 / 妈妈朋友圈感</span></div>
+    <div class="phone">
+      <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+      <div class="report r2">
+        <div class="report-hero">
+          <span class="sticker tl">🌟</span>
+          <span class="sticker tr">📚</span>
+          <span class="sticker bl">💪</span>
+          <span class="sticker br">✏️</span>
+
+          <div class="name">
+            <span class="star">🌟</span> 小明的一周 <span class="star">🌟</span>
+          </div>
+          <div class="date">8/4 → 8/10</div>
+
+          <div class="streak">
+            <span class="num">6</span>
+            <span class="txt">/ 7<br>天完成</span>
+          </div>
+
+          <div class="tag-row">
+            <span class="tag read">📖 阅读 4次</span>
+            <span class="tag write">✏️ 作业 3次</span>
+            <span class="tag sport">💪 运动 2次</span>
+          </div>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <div class="title">📊 本周每日打卡</div>
+            <div class="bars">
+              <span class="bar hi" style="height:28px;" title="一 3/3"></span>
+              <span class="bar hi" style="height:18px;" title="二 2/3"></span>
+              <span class="bar hi" style="height:28px;" title="三 3/3"></span>
+              <span class="bar hi" style="height:28px;" title="四 3/3"></span>
+              <span class="bar hi" style="height:24px;" title="五 3/3"></span>
+              <span class="bar lo" style="height:14px;" title="六 2/3"></span>
+              <span class="bar hi" style="height:28px;" title="日 3/3"></span>
+            </div>
+            <div class="legend">
+              <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <span class="check">🏆</span>
+            <div class="title">对比上周</div>
+            <div style="font-size:12px;color:#5C6178;margin-top:4px;">
+              任务完成 <b style="color:#81C784;">+2</b> ·
+              新增运动任务 ·
+              作业多完成了1次
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-card">
+          <span class="pin">📌</span>
+          <div class="q-text">"我知道了水为什么从高处流向低处——因为地球有引力，它把水往下拉。"</div>
+          <div style="font-size:10px;color:#C5C5C5;text-align:center;margin-top:6px;">小明 · 本周金句</div>
+        </div>
+
+        <div class="footer">日常 · 小程序</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== V3：极简数据风 ===== -->
+  <div class="version-col v3">
+    <div class="version-label">V3 · 极简数据风<span class="sub">如年度报告 / 数据卡片</span></div>
+    <div class="phone">
+      <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+      <div class="report r3">
+        <div class="report-hero">
+          <div class="name">小 明 · 成 长 周 报</div>
+          <div class="date-row">
+            <span class="line"></span><span>08.04 — 08.10</span><span class="line"></span>
+          </div>
+
+          <div class="big-block">
+            <span class="huge">6</span>
+            <span>
+              <span class="huge-label">/7</span>
+              <div class="sub">天完成</div>
+            </span>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="sg-item">
+            <div class="sg-val">18</div>
+            <div class="sg-label">完成任务</div>
+          </div>
+          <div class="sg-item">
+            <div class="sg-val gold">12</div>
+            <div class="sg-label">费曼反馈</div>
+          </div>
+          <div class="sg-item">
+            <div class="sg-val">4.2<span style="font-size:12px;font-weight:600;">h</span></div>
+            <div class="sg-label">累计时长</div>
+          </div>
+        </div>
+
+        <div class="highlight-row">
+          <div class="hl-box">
+            <div class="hl-icon">📖</div>
+            <div class="hl-val">阅读</div>
+            <div class="hl-label">最坚持</div>
+          </div>
+          <div class="hl-box">
+            <div class="hl-icon">💪</div>
+            <div class="hl-val">+运动</div>
+            <div class="hl-label">新增项目</div>
+          </div>
+          <div class="hl-box">
+            <div class="hl-icon">↗️</div>
+            <div class="hl-val">+2</div>
+            <div class="hl-label">环比上周</div>
+          </div>
+        </div>
+
+        <div class="quote-card">
+          <div class="q-text">❝ 我知道了水为什么从高处流向低处——<br>因为地球有引力，它把水往下拉。 ❞</div>
+          <div class="q-source">小明 · 本周金句</div>
+        </div>
+
+        <div class="footer">日常 · 小程序</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ==================== 分析对比 ==================== -->
+<div style="max-width:960px;margin:0 auto;">
+
+  <div class="compare-table">
+    <table>
+      <tr><th style="width:14%;">维度</th><th style="width:28%;">V1 清新教育风</th><th style="width:28%;">V2 温暖手账风</th><th style="width:28%;">V3 极简数据风</th></tr>
+      <tr>
+        <td><strong>设计语言</strong></td>
+        <td>蓝白渐变 + 圆角卡片 + 图标分区</td>
+        <td>米黄底 + 虚线框 + 贴纸 + 手写感</td>
+        <td>暖灰底 + 大字 + 规则网格 + 深色金句</td>
+      </tr>
+      <tr>
+        <td><strong>妈妈会感觉</strong></td>
+        <td>"像一份正式成绩单"</td>
+        <td>"像写给孩子的手帐"</td>
+        <td>"像 App 年度报告"</td>
+      </tr>
+      <tr>
+        <td><strong>适合分享到</strong></td>
+        <td>班级群 / 老师可见的群</td>
+        <td>朋友圈 / 妈妈群</td>
+        <td>朋友圈（配简短文案）</td>
+      </tr>
+      <tr>
+        <td><strong>情感温度</strong></td>
+        <td>中——理性温暖</td>
+        <td>高——感性温暖</td>
+        <td>中低——现代简约</td>
+      </tr>
+      <tr>
+        <td><strong>数据密度</strong></td>
+        <td>中——3个核心指标+金句</td>
+        <td>中高——柱状图+对比+标签</td>
+        <td>高——数字矩阵+多维度</td>
+      </tr>
+      <tr>
+        <td><strong>金句突出程度</strong></td>
+        <td>中等——独立浅蓝卡片</td>
+        <td>高——便签纸上📌钉住</td>
+        <td>最高——深蓝底白字反色</td>
+      </tr>
+      <tr>
+        <td><strong>开发成本</strong></td>
+        <td>低——最接近现有卡片体系</td>
+        <td>中——需要柱状图+贴纸SVG</td>
+        <td>低——纯文字+网格布局</td>
+      </tr>
+      <tr>
+        <td><strong>品牌辨识度</strong></td>
+        <td>高——蓝金双色 = 小程序主色调</td>
+        <td>中——暖和但辨识度一般</td>
+        <td>高——深蓝+金点缀 = 高级感</td>
+      </tr>
+      <tr>
+        <td><strong>数据生成前端还是后端</strong></td>
+        <td>可前端聚合——已有 stat + list</td>
+        <td>可前端聚合——需算每日柱状</td>
+        <td>可前端聚合——需累计时长</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="analysis">
+    <h3>综合建议</h3>
+    <p>
+      <span class="tag good">推荐首发 V1</span>
+      清新教育风与现有小程序设计体系最接近（蓝白渐变、圆角卡片、FDFBF7 底色），
+      开发成本最低，且适合班级群场景（妈妈最常分享的地方）。<br><br>
+
+      <span class="tag warn">可兼收 V2</span>
+      手账风的"柱状图 + 贴纸装饰"可以部分融入 V1——比如在 V1 的卡片中增加
+      每日打卡柱状图（V2 中的条目），让数据维度更丰富而不过度感性。<br><br>
+
+      <span class="tag warn">金句是灵魂</span>
+      三个版本都保留了"费曼金句"，这是区别于任何"数据报告"的核心——没有金句，
+      周报就是一张数字表。有了金句，它才是一份成长纪念。建议在最终方案中，
+      给金句最大的视觉权重（如 V3 的深底反白处理，或 V2 的便签纸突出）。
+    </p>
+  </div>
+
+  <!-- ==================== V1 增强版 ==================== -->
+  <div style="margin-top:32px;">
+    <h3 style="font-size:20px;font-weight:800;color:#3A5A8C;margin-bottom:8px;text-align:center;">✨ V1 增强版 · 从任务数据中挖掘更多洞察</h3>
+    <p style="font-size:13px;color:#999;text-align:center;margin-bottom:20px;">同一份数据可以讲更多故事——时间、节奏、深度、趣味</p>
+
+    <!-- 增强版手机预览 -->
+    <div style="display:flex;justify-content:center;margin-bottom:28px;">
+      <div class="version-col v1">
+        <div class="version-label">V1 增强版 · 图文并茂的成长周报<span class="sub">同一份数据，讲更丰富的故事</span></div>
+        <div class="phone" style="height:620px;">
+          <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+          <div class="report r1">
+            <!-- Hero 不变 -->
+            <div class="report-hero">
+              <div class="tag">📋 成 长 周 报</div>
+              <div class="name">小明的成长周报</div>
+              <div class="date">2026.08.04 — 08.10</div>
+              <div class="big-num">6</div>
+              <div class="big-label">本周完成天数</div>
+            </div>
+
+            <!-- 新增：时间投入仪表盘 -->
+            <div style="background:#FDFBF7;border-radius:14px;padding:14px;margin-top:12px;box-shadow:0 2px 10px rgba(74,144,226,0.05);">
+              <div style="font-size:11px;color:#999;font-weight:600;margin-bottom:8px;">⏱️ 本周投入时间 · 约 4.2 小时</div>
+              <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;">
+                <span style="flex:4;background:#5B9BD5;" title="阅读 90分钟"></span>
+                <span style="flex:3;background:#F4B942;" title="作业 65分钟"></span>
+                <span style="flex:2;background:#81C784;" title="运动 40分钟"></span>
+                <span style="flex:1.5;background:#CE93D8;" title="练字 30分钟"></span>
+                <span style="flex:1;background:#FFCC80;" title="其他 25分钟"></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:#999;">
+                <span>📖 阅读 90min</span><span>✏️ 作业 65m</span><span>💪 运动 40m</span><span>✒️ 练字 30m</span><span>📋 其他 25m</span>
+              </div>
+            </div>
+
+            <!-- 新增：每日节奏 -->
+            <div style="background:#FDFBF7;border-radius:14px;padding:14px;margin-top:10px;box-shadow:0 2px 10px rgba(74,144,226,0.05);">
+              <div style="font-size:11px;color:#999;font-weight:600;margin-bottom:8px;">🌙 每日完成节奏</div>
+              <div style="display:flex;align-items:flex-end;justify-content:center;gap:8px;height:48px;">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                  <span style="font-size:7px;color:#999;">一</span>
+                  <div style="width:14px;background:linear-gradient(180deg,#81C784,#E8F5E9);border-radius:4px 4px 0 0;height:40px;" title="上午完成 3/3"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                  <span style="font-size:7px;color:#999;">二</span>
+                  <div style="width:14px;background:linear-gradient(180deg,#FFE08A,#FFF8E1);border-radius:4px 4px 0 0;height:28px;" title="下午 2/3"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                  <span style="font-size:7px;color:#999;">三</span>
+                  <div style="width:14px;background:linear-gradient(180deg,#81C784,#E8F5E9);border-radius:4px 4px 0 0;height:40px;" title="上午 3/3"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                  <span style="font-size:7px;color:#999;">四</span>
+                  <div style="width:14px;background:linear-gradient(180deg,#81C784,#E8F5E9);border-radius:4px 4px 0 0;height:40px;" title="上午 3/3"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                  <span style="font-size:7px;color:#999;">五</span>
+                  <div style="width:14px;background:linear-gradient(180deg,#FEE4E4,#FFCDD2);border-radius:4px 4px 0 0;height:14px;" title="晚上才完成 1/3"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                  <span style="font-size:7px;color:#999;">六</span>
+                  <div style="width:14px;background:linear-gradient(180deg,#FFE08A,#FFF8E1);border-radius:4px 4px 0 0;height:24px;" title="下午 2/3"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                  <span style="font-size:7px;color:#999;">日</span>
+                  <div style="width:14px;background:linear-gradient(180deg,#81C784,#E8F5E9);border-radius:4px 4px 0 0;height:40px;" title="上午 3/3"></div>
+                </div>
+              </div>
+              <div style="font-size:9px;color:#999;text-align:center;margin-top:4px;">
+                🟢 上午 · 🟡 下午 · 🔴 晚上完成
+              </div>
+            </div>
+
+            <!-- 原有统计卡片精简 -->
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <div style="flex:1;background:#FDFBF7;border-radius:12px;padding:10px;text-align:center;box-shadow:0 2px 8px rgba(74,144,226,0.04);">
+                <div style="font-size:22px;font-weight:800;color:#3A5A8C;">18<span style="font-size:12px;color:#81C784;margin-left:3px;">↑2</span></div>
+                <div style="font-size:10px;color:#999;">完成任务</div>
+              </div>
+              <div style="flex:1;background:#FDFBF7;border-radius:12px;padding:10px;text-align:center;box-shadow:0 2px 8px rgba(74,144,226,0.04);">
+                <div style="font-size:22px;font-weight:800;color:#F4B942;">4.2<span style="font-size:12px;color:#999;">h</span></div>
+                <div style="font-size:10px;color:#999;">累计时长</div>
+              </div>
+              <div style="flex:1;background:#FDFBF7;border-radius:12px;padding:10px;text-align:center;box-shadow:0 2px 8px rgba(74,144,226,0.04);">
+                <div style="font-size:22px;font-weight:800;color:#333;">850<span style="font-size:11px;color:#999;">字</span></div>
+                <div style="font-size:10px;color:#999;">费曼输出</div>
+              </div>
+            </div>
+
+            <!-- 新增：趣味发现 -->
+            <div style="background:linear-gradient(135deg,#FFF8E1,#fff);border-radius:14px;padding:12px;margin-top:10px;box-shadow:0 2px 10px rgba(244,185,66,0.08);border-left:3px solid #F4B942;">
+              <div style="font-size:11px;color:#C8853E;font-weight:700;margin-bottom:6px;">💡 一些有趣的发现</div>
+              <div style="font-size:11px;color:#5C6178;line-height:1.7;">
+                • 你最早完成全部任务的一天是 <b style="color:#3A5A8C;">周一</b>（上午 10:30）<br>
+                • 周六你一直到 <b style="color:#EF5350;">晚上 9 点</b> 才完成——是去公园玩了吧？ 🪁<br>
+                • 每次完成<b>阅读</b>之后，作业也做得更快 ✨<br>
+                • 这周的费曼反馈中，你最常用的词是 <b>"因为"</b>（出现了 8 次）
+              </div>
+            </div>
+
+            <!-- 新增：分类连续记录 -->
+            <div style="display:flex;gap:6px;margin-top:10px;">
+              <div style="flex:1;background:#E3F2FD;border-radius:10px;padding:8px;text-align:center;">
+                <div style="font-size:9px;color:#5B9BD5;font-weight:700;">📖 阅读</div>
+                <div style="font-size:20px;font-weight:800;color:#3A5A8C;">12<span style="font-size:10px;color:#999;">天</span></div>
+                <div style="font-size:8px;color:#999;">连续打卡</div>
+              </div>
+              <div style="flex:1;background:#E8F5E9;border-radius:10px;padding:8px;text-align:center;">
+                <div style="font-size:9px;color:#81C784;font-weight:700;">💪 运动</div>
+                <div style="font-size:20px;font-weight:800;color:#3A5A8C;">3<span style="font-size:10px;color:#999;">天</span></div>
+                <div style="font-size:8px;color:#999;">需要坚持</div>
+              </div>
+              <div style="flex:1;background:#FFF8E1;border-radius:10px;padding:8px;text-align:center;">
+                <div style="font-size:9px;color:#C8853E;font-weight:700;">✒️ 练字</div>
+                <div style="font-size:20px;font-weight:800;color:#3A5A8C;">7<span style="font-size:10px;color:#999;">天</span></div>
+                <div style="font-size:8px;color:#999;">本周全勤</div>
+              </div>
+            </div>
+
+            <!-- 金句卡片（保持） -->
+            <div class="quote-card">
+              <div class="q-icon">❝</div>
+              <div class="q-text">我知道了水为什么从高处流向低处——因为地球有引力，它把水往下拉。</div>
+              <div class="q-source">—— 小明 · 本周金句 · 作业反馈</div>
+            </div>
+
+            <!-- 新增：阅读书目 -->
+            <div style="background:#FDFBF7;border-radius:14px;padding:12px;margin-top:10px;box-shadow:0 2px 10px rgba(74,144,226,0.05);text-align:center;">
+              <div style="font-size:11px;color:#999;font-weight:600;margin-bottom:4px;">📚 本周在读书目</div>
+              <div style="font-size:14px;font-weight:700;color:#333;">《西游记》</div>
+              <div style="font-size:10px;color:#999;margin-top:2px;">读到第 5 回 · 完成了 2 篇阅读笔记</div>
+            </div>
+
+            <div class="footer">日常 · 小程序</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 新增维度详解 -->
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;">
+      <div style="flex:1;min-width:180px;background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 12px rgba(74,144,226,0.05);">
+        <div style="font-size:18px;margin-bottom:6px;">⏱️</div>
+        <div style="font-size:14px;font-weight:800;color:#333;margin-bottom:6px;">时间投入仪表盘</div>
+        <div style="font-size:11px;color:#999;line-height:1.6;">
+          按分类聚合本周累计时长，以横向堆叠条展示比例。<br>
+          <em>数据源：routine.duration，前端按 category 聚合</em><br>
+          <em>妈妈看到的是："阅读占了一半时间，真的很投入"</em>
+        </div>
+      </div>
+      <div style="flex:1;min-width:180px;background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 12px rgba(74,144,226,0.05);">
+        <div style="font-size:18px;margin-bottom:6px;">🌙</div>
+        <div style="font-size:14px;font-weight:800;color:#333;margin-bottom:6px;">每日完成节奏</div>
+        <div style="font-size:11px;color:#999;line-height:1.6;">
+          7 天柱状图，颜色区分完成时段（上午/下午/晚上）。<br>
+          <em>数据源：routine.finishTime，前端按小时分段</em><br>
+          <em>揭示孩子的时间偏好，"周五拖到晚上"是共鸣点</em>
+        </div>
+      </div>
+      <div style="flex:1;min-width:180px;background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 12px rgba(74,144,226,0.05);">
+        <div style="font-size:18px;margin-bottom:6px;">💡</div>
+        <div style="font-size:14px;font-weight:800;color:#333;margin-bottom:6px;">趣味发现</div>
+        <div style="font-size:11px;color:#999;line-height:1.6;">
+          数据中不严肃的观察：最早/最晚完成日、费曼高频词、任务链规律。<br>
+          <em>数据源：全部任务字段，前端做规则匹配</em><br>
+          <em>"每次完成阅读后作业也更快"是妈妈最爱转述的</em>
+        </div>
+      </div>
+      <div style="flex:1;min-width:180px;background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 12px rgba(74,144,226,0.05);">
+        <div style="font-size:18px;margin-bottom:6px;">📊</div>
+        <div style="font-size:14px;font-weight:800;color:#333;margin-bottom:6px;">分类连续记录</div>
+        <div style="font-size:11px;color:#999;line-height:1.6;">
+          不只总连续天数，还展示每个任务分类的连续打卡天数。<br>
+          <em>数据源：routine.stat + 按类别回溯日期</em><br>
+          <em>"阅读连续 12 天"比"连续 7 天"更值得炫耀</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据挖掘能力表 -->
+    <div class="compare-table">
+      <table>
+        <tr><th style="width:18%;">数据维度</th><th style="width:28%;">可挖掘的内容</th><th style="width:28%;">妈妈感兴趣的点</th><th style="width:26%;">数据来源</th></tr>
+        <tr>
+          <td><strong>duration</strong><br>（计划时长）</td>
+          <td>本周累计投入时间，按分类占比，环比上周变化</td>
+          <td>"哇，这周花了 4 小时在阅读上"</td>
+          <td>前端聚合</td>
+        </tr>
+        <tr>
+          <td><strong>finishTime</strong><br>（完成时间）</td>
+          <td>每日完成节奏（早/中/晚），最早/最晚完成日</td>
+          <td>"周二就拖到晚上才做完"</td>
+          <td>前端按时段分组</td>
+        </tr>
+        <tr>
+          <td><strong>remark</strong><br>（费曼反馈）</td>
+          <td>总字数、高频知识关键词（"因为""所以""知道"）、最长反馈</td>
+          <td>"这周写了 850 字的思考！"</td>
+          <td>前端文本分析</td>
+        </tr>
+        <tr>
+          <td><strong>content</strong><br>（任务内容）</td>
+          <td>书名提取（《XXX》）、有趣的任务名、主题词云</td>
+          <td>"这周在读《西游记》"</td>
+          <td>正则 / NLP</td>
+        </tr>
+        <tr>
+          <td><strong>category 交叉</strong></td>
+          <td>分类型连续打卡天数、最弱项提醒</td>
+          <td>"阅读 12 天连续，运动只有 3 天"</td>
+          <td>前端按类别回溯</td>
+        </tr>
+        <tr>
+          <td><strong>任务完成关联</strong></td>
+          <td>任务链规律（完成 A 之后 B 也更快）、相邻任务顺序</td>
+          <td>"每次先完成阅读，作业也快了"</td>
+          <td>排序 + 时间差</td>
+        </tr>
+        <tr>
+          <td><strong>本周 vs 上周</strong></td>
+          <td>完成数、时长、分类偏好的环比变化</td>
+          <td>"比上周多完成了 2 个任务"</td>
+          <td>拉两周数据对比</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="analysis" style="margin-top:16px;">
+      <h3>结论：周报可以有三层信息结构</h3>
+      <p>
+        <span class="tag good">第一层：核心数据</span> —— 完成天数 + 任务数 + 连续打卡（一目了然，3 秒读完）<br><br>
+        <span class="tag warn">第二层：深度洞察</span> —— 时间投入 + 每日节奏 + 分类连续 + 书目/金句（值得细看，妈妈会截图转述）<br><br>
+        <span class="tag bad">第三层：趣味点缀</span> —— 最早/最晚 + 高频词 + 任务链规律（令人会心一笑，是传播的钩子）<br><br>
+        三层的共同特点：<b>都是数据驱动，自动生成，不靠人工运营</b>。
+        不需要新增接口，现有 <code>Routine.list</code> + <code>Routine.stat</code> 已覆盖所有数据源，
+        纯前端计算 + 简单的规则匹配即可产出。
+        <br><br>
+        最关键的取舍：<b>不是所有维度都放</b>。增强版手机预览中放了约 7-8 个模块，实际发布时建议精简到 5-6 个——
+        比如英雄区 + 时间仪表盘 + 节奏图 + 趣味发现（挑 2-3 条）+ 金句 + 分类连续。
+        其他内容（书目、词云等）可以在后续版本按用户反馈逐步加入。
+      </p>
+    </div>
+  </div>
+
+  <div class="analysis" style="background:#FFF8E1;">
+    <h3>周报需要的数据（现有接口 + 前端聚合）</h3>
+    <p>
+      <b>已有接口即可覆盖：</b><br>
+      • <code>Routine.stat()</code> → 累计完成数、连续天数、最长连续<br>
+      • <code>Routine.list(date)</code> → 遍历本周 7 天，获取每日任务完成情况<br>
+      • <code>Routine.list(date).remark</code> → 提取费曼反馈作为金句候选<br><br>
+
+      <b>前端聚合即可算出：</b><br>
+      • 本周完成任务数（7 天 sum）<br>
+      • 对比上周的差值（再拉上周数据算一次）<br>
+      • 最坚持的分类（7 天按 category 分组统计）<br>
+      • 每日完成柱状数据（每天 total / finished）<br>
+      • 选择最佳金句（按 remark 长度、是否有"因为/所以/知道"等知识关键词排序）<br><br>
+
+      <b>不需要新增接口。</b>当前 Routine 服务层已足够支撑三个版本的周报数据。
+    </p>
+  </div>
+
+</div>
+
+</body>
+</html>

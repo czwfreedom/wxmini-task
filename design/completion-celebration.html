@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>任务完成庆祝 · 设计稿</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    background: #E8EFF5;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    padding: 40px 24px;
+    display: flex; flex-wrap: wrap; gap: 32px; justify-content: center;
+  }
+
+  .section { width: 100%; max-width: 780px; }
+
+  .section h2 {
+    font-size: 22px; font-weight: 800; color: #3A5A8C;
+    margin-bottom: 20px; padding-left: 14px; border-left: 4px solid #F4B942;
+  }
+  .section h3 {
+    font-size: 16px; font-weight: 700; color: #5C6178;
+    margin: 28px 0 14px;
+    padding-bottom: 6px; border-bottom: 1px dashed rgba(0,0,0,0.08);
+  }
+
+  /* ===== 帧包装 ===== */
+  .scene-row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+  .frame-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .frame-label {
+    font-size: 12px; font-weight: 800; color: #5C6178;
+    background: #fff; padding: 6px 16px; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.08);
+  }
+
+  /* ===== 手机框 ===== */
+  .phone {
+    width: 320px; height: 520px;
+    background: #F2F5F8; border-radius: 36px; overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 3px #1A1A1A, 0 0 0 6px #2D2D2D, 0 16px 48px rgba(0,0,0,0.3);
+  }
+  .phone_status {
+    height: 36px; background: #B8DAF5;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 22px; font-size: 11px; color: #fff; font-weight: 600;
+  }
+  .phone_content {
+    height: calc(100% - 36px);
+    overflow: hidden;
+    background: linear-gradient(180deg, #B8DAF5, #F2F5F8 30%);
+    padding: 16px 14px;
+    position: relative;
+  }
+
+  /* ===== ① 流程示意 ===== */
+  .flow-steps { display: flex; gap: 0; align-items: center; margin-bottom: 24px; }
+  .flow-step {
+    flex: 1; text-align: center; position: relative; font-size: 13px; color: #5C6178;
+  }
+  .flow-step .dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, #F4B942, #FFD54F);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800; color: #fff;
+    margin-bottom: 6px;
+  }
+  .flow-arrow {
+    width: 40px; height: 1px; background: #D9D9D9;
+    margin: 0 4px; position: relative; top: -12px;
+  }
+  .flow-arrow::after {
+    content: ''; width: 6px; height: 6px;
+    border-top: 1.5px solid #D9D9D9; border-right: 1.5px solid #D9D9D9;
+    transform: rotate(45deg); position: absolute; right: 0; top: -3px;
+  }
+
+  /* ===== ② 庆祝卡片（Phone 内） ===== */
+  .celebration-overlay {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: rgba(255, 245, 230, 0.96);
+    z-index: 10;
+  }
+  .celebration_card {
+    width: 250px;
+    background: #FFFFFF;
+    border-radius: 24px;
+    padding: 28px 20px 20px;
+    text-align: center;
+    box-shadow: 0 12px 36px rgba(244,185,66,0.25);
+    position: relative;
+  }
+  .celebration_icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, #FFD54F, #F4B942);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px; font-size: 28px;
+    box-shadow: 0 6px 16px rgba(244,185,66,0.3);
+  }
+  .celebration_msg {
+    font-size: 14px; font-weight: 700; color: #3A5A8C; line-height: 1.6;
+  }
+  .celebration_msg .big {
+    display: block; font-size: 24px; font-weight: 800;
+    margin-bottom: 4px; color: #F4B942;
+  }
+  .celebration_actions {
+    margin-top: 16px; display: flex; gap: 12px;
+  }
+  .celebration_btn {
+    flex: 1; padding: 10px 0; border-radius: 18px;
+    font-size: 13px; font-weight: 700; text-align: center;
+  }
+  .celebration_btn.primary {
+    background: linear-gradient(135deg, #F4B942, #FFD54F); color: #fff;
+  }
+  .celebration_btn.secondary {
+    background: #F2F5F8; color: #5C6178;
+  }
+
+  /* 撒花粒子示意 */
+  .confetti-dot {
+    position: absolute; border-radius: 50%; pointer-events: none;
+  }
+
+  /* ===== ③ 场景表格 ===== */
+  .scenario-table {
+    width: 100%; background: #fff; border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+    overflow: hidden; font-size: 13px;
+  }
+  .scenario-table table { width: 100%; border-collapse: collapse; }
+  .scenario-table th {
+    background: #F2F5F8; padding: 10px 12px; text-align: left;
+    font-size: 12px; font-weight: 700; color: #5C6178;
+  }
+  .scenario-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(0,0,0,0.04); color: #333; }
+  .scenario-table tr:last-child td { border-bottom: none; }
+  .scenario-table .emoji { font-size: 18px; }
+
+  /* ===== ④ 视觉设计规范 ===== */
+  .spec-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+  .spec-card {
+    background: #fff; border-radius: 16px; padding: 18px;
+    flex: 1; min-width: 220px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+  }
+  .spec-card h4 {
+    font-size: 14px; font-weight: 700; color: #3A5A8C; margin-bottom: 10px;
+  }
+  .spec-card .spec-item {
+    font-size: 12px; color: #5C6178; padding: 4px 0;
+  }
+  .spec-card .spec-item span { font-weight: 700; color: #333; }
+  .color-swatch {
+    display: inline-block; width: 14px; height: 14px; border-radius: 3px;
+    vertical-align: -2px; margin-right: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="section">
+
+  <!-- ================================ -->
+  <!-- 一、交互流程示意 -->
+  <!-- ================================ -->
+  <h2>1. 任务完成庆祝 · 交互流程</h2>
+
+  <div class="flow-steps">
+    <div class="flow-step"><div class="dot">1</div>填写反馈</div>
+    <div class="flow-arrow"></div>
+    <div class="flow-step"><div class="dot">2</div>点击完成</div>
+    <div class="flow-arrow"></div>
+    <div class="flow-step"><div class="dot">3</div>庆祝弹出</div>
+    <div class="flow-arrow"></div>
+    <div class="flow-step"><div class="dot">4</div>返回日常</div>
+  </div>
+
+  <div class="scene-row">
+
+    <!-- 帧 A：庆祝瞬间 -->
+    <div class="frame-col">
+      <div class="frame-label">帧 A · 庆祝瞬间</div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <!-- 撒花粒子 -->
+          <span class="confetti-dot" style="background:#F4B942;width:8px;height:8px;top:30px;left:60px;"></span>
+          <span class="confetti-dot" style="background:#FFD54F;width:6px;height:6px;top:50px;left:200px;"></span>
+          <span class="confetti-dot" style="background:#81C784;width:7px;height:7px;top:70px;left:120px;"></span>
+          <span class="confetti-dot" style="background:#5B9BD5;width:6px;height:6px;top:40px;left:260px;"></span>
+          <span class="confetti-dot" style="background:#FFD54F;width:9px;height:9px;top:90px;left:80px;"></span>
+          <span class="confetti-dot" style="background:#F4B942;width:5px;height:5px;top:110px;left:240px;"></span>
+          <span class="confetti-dot" style="background:#81C784;width:8px;height:8px;top:130px;left:160px;"></span>
+          <span class="confetti-dot" style="background:#5B9BD5;width:7px;height:7px;top:60px;left:180px;"></span>
+
+          <div class="celebration-overlay">
+            <div class="celebration_card">
+              <div class="celebration_icon">📖</div>
+              <div class="celebration_msg">
+                <span class="big">完成了！</span>
+                书里藏着一个更大的世界
+              </div>
+              <div class="celebration_actions">
+                <span class="celebration_btn secondary">再完成一个</span>
+                <span class="celebration_btn primary">👍 好的</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 帧 B：全部完成 -->
+    <div class="frame-col">
+      <div class="frame-label">帧 B · 今日全部完成</div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <span class="confetti-dot" style="background:#F4B942;width:8px;height:8px;top:30px;left:60px;"></span>
+          <span class="confetti-dot" style="background:#FFD54F;width:9px;height:9px;top:50px;left:200px;"></span>
+          <span class="confetti-dot" style="background:#81C784;width:7px;height:7px;top:70px;left:120px;"></span>
+          <span class="confetti-dot" style="background:#5B9BD5;width:6px;height:6px;top:40px;left:260px;"></span>
+          <span class="confetti-dot" style="background:#FFD54F;width:10px;height:10px;top:80px;left:50px;"></span>
+          <span class="confetti-dot" style="background:#F4B942;width:7px;height:7px;top:100px;left:240px;"></span>
+          <span class="confetti-dot" style="background:#81C784;width:8px;height:8px;top:120px;left:140px;"></span>
+          <span class="confetti-dot" style="background:#EF5350;width:6px;height:6px;top:90px;left:190px;"></span>
+
+          <div class="celebration-overlay">
+            <div class="celebration_card">
+              <div class="celebration_icon">🎉</div>
+              <div class="celebration_msg">
+                <span class="big">全部完成！</span>
+                太厉害了！今天所有任务<br>都完成了<br><br>
+                <span style="font-size:12px; color:#999;">连续打卡 <b style="color:#F4B942;">7</b> 天</span>
+              </div>
+              <div class="celebration_actions">
+                <span class="celebration_btn primary">📸 分享成就</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 帧 C：里程碑 -->
+    <div class="frame-col">
+      <div class="frame-label">帧 C · 里程碑时刻</div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <span class="confetti-dot" style="background:#F4B942;width:8px;height:8px;top:30px;left:60px;"></span>
+          <span class="confetti-dot" style="background:#FFD54F;width:6px;height:6px;top:50px;left:200px;"></span>
+          <span class="confetti-dot" style="background:#81C784;width:7px;height:7px;top:70px;left:120px;"></span>
+          <span class="confetti-dot" style="background:#5B9BD5;width:6px;height:6px;top:40px;left:260px;"></span>
+          <span class="confetti-dot" style="background:#F4B942;width:10px;height:10px;top:80px;left:70px;"></span>
+          <span class="confetti-dot" style="background:#FFD54F;width:8px;height:8px;top:110px;left:230px;"></span>
+          <span class="confetti-dot" style="background:#EF5350;width:7px;height:7px;top:130px;left:150px;"></span>
+          <span class="confetti-dot" style="background:#81C784;width:9px;height:9px;top:60px;left:180px;"></span>
+
+          <div class="celebration-overlay">
+            <div class="celebration_card" style="border: 2px solid #FFD54F;">
+              <div class="celebration_icon" style="background: linear-gradient(135deg, #EF5350, #F4B942);">🏆</div>
+              <div class="celebration_msg">
+                <span class="big" style="color: #EF5350;">30 天！</span>
+                一个月了！<br>习惯已经长在你身上了
+              </div>
+              <div class="celebration_actions">
+                <span class="celebration_btn primary">🏅 领取勋章</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 二、鼓励语文案体系 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>2. 鼓励语文案体系</h2>
+
+  <h3>A. 按任务分类的完成鼓励语</h3>
+  <p style="font-size:12px;color:#999;margin-bottom:10px;">根据任务分类，完成时展示不同的鼓励语。设计原则：肯定努力 + 赋予意义 + 轻幽默。</p>
+
+  <div class="scenario-table">
+    <table>
+      <tr><th>分类</th><th>表情</th><th>完成鼓励语</th><th>情感基调</th></tr>
+      <tr><td>阅读 Reading</td><td class="emoji">📖</td><td>书里藏着一个更大的世界</td><td>探索感</td></tr>
+      <tr><td>作业 Homework</td><td class="emoji">✏️</td><td>今天的难题，明天的底气</td><td>成长感</td></tr>
+      <tr><td>运动 Exercise</td><td class="emoji">💪</td><td>每一滴汗水都在说：我在变强</td><td>力量感</td></tr>
+      <tr><td>家务 Chores</td><td class="emoji">🧹</td><td>家里有你更温暖了</td><td>归属感</td></tr>
+      <tr><td>游戏 Game</td><td class="emoji">🎮</td><td>会玩的人，更会生活</td><td>轻松感</td></tr>
+      <tr><td>练字 Handwriting</td><td class="emoji">🖊️</td><td>一撇一捺，都是你的印记</td><td>沉淀感</td></tr>
+      <tr><td>音乐 Instrument</td><td class="emoji">🎵</td><td>你弹的每个音符都会发芽</td><td>美感</td></tr>
+      <tr><td>绘画 Drawing</td><td class="emoji">🎨</td><td>这张画里有你的想象</td><td>创造力</td></tr>
+      <tr><td>编程 Coding</td><td class="emoji">⌨️</td><td>你写下的代码会让世界运转</td><td>未来感</td></tr>
+      <tr><td>社会实践 Practice</td><td class="emoji">🏃</td><td>走出去，世界就变大了</td><td>开放感</td></tr>
+      <tr><td>问答 QA</td><td class="emoji">❓</td><td>每一个问号都是好奇的种子</td><td>求知欲</td></tr>
+      <tr><td>工作 Job</td><td class="emoji">💼</td><td>今天的努力，明天的从容</td><td>责任感</td></tr>
+      <tr><td>拍摄 Shoot</td><td class="emoji">📷</td><td>你按下快门的瞬间，时间停住了</td><td>记录感</td></tr>
+      <tr><td>其他 Other</td><td class="emoji">⭐</td><td>又完成了一项，你真棒</td><td>通用鼓励</td></tr>
+    </table>
+  </div>
+
+  <h3>B. 特殊场景的强化鼓励语（叠加展示）</h3>
+  <p style="font-size:12px;color:#999;margin-bottom:10px;">以下场景优先于分类鼓励语，展示在主文案上。</p>
+
+  <div class="scenario-table">
+    <table>
+      <tr><th>触发条件</th><th>视觉强化</th><th>主文案</th><th>副文案</th></tr>
+      <tr><td>今天第一个完成</td><td>🌅 浅金底</td><td>好的开始！</td><td>今天的第一项已完成</td></tr>
+      <tr><td>今天全部完成</td><td>🎉 金渐变底 + 更多撒花</td><td>全部完成！</td><td>太厉害了，今天可以骄傲一下</td></tr>
+      <tr><td>连续 7 天</td><td>✨ 金边卡片</td><td>7 天小里程碑</td><td>坚持的力量，你感受到了吗？</td></tr>
+      <tr><td>连续 30 天</td><td>🏆 金+红渐变边 + 勋章动画</td><td>一个月了！</td><td>习惯已经长在你身上了</td></tr>
+      <tr><td>连续 100 天</td><td>👑 全屏金粉 + 专属勋章</td><td>100 天！你是冠军</td><td>这件事已经成了你的一部分</td></tr>
+      <tr><td>累计第 50 个任务</td><td>🎖️ 银边卡片</td><td>第 50 个！</td><td>你已经完成了 50 个任务</td></tr>
+      <tr><td>累计第 100 个任务</td><td>🏅 金边卡片</td><td>第 100 个！</td><td>你是坚持的冠军</td></tr>
+    </table>
+  </div>
+
+  <h3>C. 庆祝卡片按钮策略</h3>
+  <div class="scenario-table">
+    <table>
+      <tr><th>场景</th><th>主按钮</th><th>次按钮</th></tr>
+      <tr><td>普通完成（今天还有未完成）</td><td>👍 好的（关闭）</td><td>再完成一个（跳转下一个待完成）</td></tr>
+      <tr><td>全部完成</td><td>📸 分享成就（触发分享）</td><td>👍 好的（关闭）</td></tr>
+      <tr><td>里程碑（7/30/50/100…）</td><td>🏅 领取勋章 / 📸 分享</td><td>继续加油（关闭）</td></tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 三、动效规范 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>3. 动效与视觉设计规范</h2>
+
+  <div class="spec-grid">
+    <div class="spec-card">
+      <h4>时间节奏</h4>
+      <div class="spec-item"><span>250ms</span> — 遮罩渐入（ease-out）</div>
+      <div class="spec-item"><span>350ms</span> — 卡片从底部弹入（cubic-bezier 0.34, 1.56, 0.64, 1）</div>
+      <div class="spec-item"><span>400ms</span> — 撒花粒子飞出 + 消散（整体持续 1.5s）</div>
+      <div class="spec-item"><span>150ms</span> — 表情缩放出现</div>
+      <div class="spec-item"><span>自动关闭</span> — 3 秒后自动淡出，或点按钮/遮罩关闭</div>
+    </div>
+
+    <div class="spec-card">
+      <h4>色彩规范</h4>
+      <div class="spec-item">
+        <span class="color-swatch" style="background:linear-gradient(135deg,#FFD54F,#F4B942)"></span>
+        <span>金星 + 卡片强调</span> — $gradient
+      </div>
+      <div class="spec-item">
+        <span class="color-swatch" style="background:#81C784"></span>
+        <span>完成绿</span> — $green
+      </div>
+      <div class="spec-item">
+        <span class="color-swatch" style="background:#5B9BD5"></span>
+        <span>冷静蓝（撒花粒子）</span> — $blue
+      </div>
+      <div class="spec-item">
+        <span class="color-swatch" style="background:#EF5350"></span>
+        <span>里程碑红</span> — $red
+      </div>
+      <div class="spec-item">
+        <span class="color-swatch" style="background:rgba(255,245,230,0.96)"></span>
+        <span>遮罩层</span> — rgba(255,245,230,0.96)
+      </div>
+    </div>
+
+    <div class="spec-card">
+      <h4>撒花粒子</h4>
+      <div class="spec-item"><span>数量</span> — 普通 15-20 个，全部完成 30-40 个，里程碑 50+ 个</div>
+      <div class="spec-item"><span>形状</span> — 圆点 + 四角星（两种交替）</div>
+      <div class="spec-item"><span>颜色</span> — 金 #F4B942 / 浅金 #FFD54F / 绿 #81C784 / 蓝 #5B9BD5</div>
+      <div class="spec-item"><span>运动</span> — 从中心向四周爆开（半径 120-200px），带轻微旋转 + 淡出</div>
+      <div class="spec-item"><span>规范</span> — 使用 CSS animation + 随机 delay/方向，不依赖第三方库</div>
+    </div>
+
+    <div class="spec-card">
+      <h4>庆祝卡片</h4>
+      <div class="spec-item"><span>宽度</span> — 260px（占手机宽度约 70%）</div>
+      <div class="spec-item"><span>圆角</span> — 24px</div>
+      <div class="spec-item"><span>底色</span> — 纯白 #FFF + 金色柔阴影</div>
+      <div class="spec-item"><span>表情</span> — 56px 金底圆，表情字号 28px</div>
+      <div class="spec-item"><span>主文案</span> — 24px 800 权重，金色 $main</div>
+      <div class="spec-item"><span>副文案</span> — 14px 700 权重，深蓝 $blue-dark</div>
+      <div class="spec-item"><span>里程碑</span> — 边框 2px #FFD54F，表情底色改为红金渐变</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

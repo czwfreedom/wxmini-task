@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>习惯模板市场 · 设计稿</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body {
+    background: #E8EFF5;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    padding: 36px 24px;
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
+  }
+
+  h2 {
+    font-size: 22px; font-weight: 800; color: #3A5A8C;
+    margin-bottom: 16px; padding-left: 14px; border-left: 4px solid #F4B942;
+    width: 100%; max-width: 840px;
+  }
+  h3 {
+    font-size: 15px; font-weight: 700; color: #5C6178;
+    margin-bottom: 10px;
+    padding-bottom: 5px; border-bottom: 1px dashed rgba(0,0,0,0.08);
+  }
+  .section { width: 100%; max-width: 840px; }
+
+  /* ===== What & Why 卡片 ===== */
+  .explain-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .explain-card {
+    flex: 1; min-width: 240px; background: #fff; border-radius: 14px;
+    padding: 18px; box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+  }
+  .explain-card h4 { font-size: 14px; font-weight: 800; color: #333; margin-bottom: 8px; }
+  .explain-card p { font-size: 12px; color: #5C6178; line-height: 1.7; }
+
+  blockquote {
+    background: #FFF8E1; border-left: 4px solid #F4B942;
+    padding: 12px 16px; border-radius: 0 8px 8px 0;
+    font-size: 13px; color: #5C6178; line-height: 1.7; margin: 16px 0;
+  }
+
+  /* ===== 手机框 ===== */
+  .phone {
+    width: 320px; height: 540px;
+    background: #F2F5F8; border-radius: 36px; overflow: hidden;
+    position: relative; flex-shrink: 0;
+    box-shadow: 0 0 0 3px #1A1A1A, 0 0 0 6px #2D2D2D, 0 16px 40px rgba(0,0,0,0.25);
+  }
+  .phone_status {
+    height: 36px; background: #B8DAF5;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 22px; font-size: 11px; color: #fff; font-weight: 600;
+  }
+  .phone_content {
+    height: calc(100% - 36px);
+    overflow-y: auto; background: linear-gradient(180deg, #B8DAF5, #F2F5F8 28%);
+    padding: 16px 16px 24px; position: relative;
+  }
+  .phone_content::-webkit-scrollbar { width: 0; }
+
+  .scene-row { display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
+  .frame-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .frame-label {
+    font-size: 12px; font-weight: 800; color: #5C6178;
+    background: #fff; padding: 6px 16px; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.08);
+  }
+  .frame-label .sub { display: block; font-size: 10px; color: #999; font-weight: 500; margin-top: 2px; }
+
+  /* ===== 模板卡片 ===== */
+  .tpl-card {
+    background: #FDFBF7; border-radius: 16px; padding: 14px;
+    box-shadow: 0 2px 10px rgba(74,144,226,0.05);
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .tpl-card .badge {
+    position: absolute; top: -6px; right: 14px;
+    background: linear-gradient(135deg, #F4B942, #FFD54F);
+    color: #fff; font-size: 9px; font-weight: 800;
+    padding: 3px 10px; border-radius: 10px;
+  }
+  .tpl-card .tpl-title {
+    font-size: 14px; font-weight: 800; color: #333; margin-bottom: 4px;
+  }
+  .tpl-card .tpl-tags { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+  .tpl-card .tpl-tag {
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 8px;
+  }
+  .tpl-card .tpl-tag.blue { background: #E3F2FD; color: #5B9BD5; }
+  .tpl-card .tpl-tag.gold { background: #FFF8E1; color: #C8853E; }
+  .tpl-card .tpl-tag.green{ background: #E8F5E9; color: #81C784; }
+  .tpl-card .tpl-tag.gray { background: #F2F5F8; color: #999; }
+  .tpl-card .tpl-meta {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 10px; color: #999; margin-top: 6px;
+  }
+  .tpl-card .tpl-meta .user { font-weight: 700; color: #5C6178; }
+  .tpl-card .tpl-btn {
+    display: inline-block; margin-top: 8px;
+    background: linear-gradient(135deg, #F4B942, #FFD54F);
+    color: #fff; font-size: 11px; font-weight: 700;
+    padding: 6px 16px; border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(244,185,66,0.25);
+  }
+  .tpl-card .tpl-btn.used {
+    background: #E8F5E9; color: #81C784; box-shadow: none;
+    font-weight: 600;
+  }
+
+  /* 过滤条 */
+  .filter-bar {
+    display: flex; gap: 6px; margin-top: 8px; margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    font-size: 11px; font-weight: 700; padding: 5px 12px;
+    border-radius: 12px; background: rgba(255,255,255,0.7);
+    color: #5C6178;
+  }
+  .filter-chip.active {
+    background: linear-gradient(135deg, #F4B942, #FFD54F);
+    color: #fff; box-shadow: 0 2px 6px rgba(244,185,66,0.2);
+  }
+
+  /* 详情页 */
+  .detail-hero {
+    background: linear-gradient(135deg, #5B9BD5, #3A5A8C);
+    border-radius: 18px; padding: 18px 16px;
+    color: #fff; margin-bottom: 12px;
+    box-shadow: 0 6px 16px rgba(74,144,226,0.2);
+  }
+  .detail-hero .d-title { font-size: 17px; font-weight: 800; }
+  .detail-hero .d-meta { font-size: 10px; opacity: 0.8; margin-top: 4px; }
+  .detail-task {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; border-bottom: 0.5px solid rgba(0,0,0,0.04);
+  }
+  .detail-task:last-child { border-bottom: none; }
+  .detail-task .d-icon {
+    width: 32px; height: 32px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .detail-task .d-name { font-size: 13px; font-weight: 700; color: #333; }
+  .detail-task .d-dur { font-size: 11px; color: #999; }
+  .detail-cta {
+    margin-top: 14px; background: linear-gradient(135deg, #F4B942, #FFD54F);
+    border-radius: 14px; padding: 12px; text-align: center;
+    font-size: 15px; font-weight: 800; color: #fff;
+    box-shadow: 0 6px 16px rgba(244,185,66,0.3);
+  }
+
+  /* 发布页 */
+  .publish-card {
+    background: #FDFBF7; border-radius: 16px; padding: 14px;
+    box-shadow: 0 2px 10px rgba(74,144,226,0.05);
+  }
+  .publish-input {
+    width: 100%; border: 1px dashed #D9D9D9;
+    border-radius: 12px; padding: 10px 14px;
+    font-size: 13px; color: #999;
+    margin-top: 8px; background: #fff;
+  }
+  .publish-hint {
+    font-size: 11px; color: #C5C5C5; margin-top: 6px;
+  }
+
+  /* ===== 模板海报 ===== */
+  .tpl-poster {
+    width: 220px; height: 320px; border-radius: 16px;
+    background: linear-gradient(160deg, #5B9BD5, #3A5A8C);
+    padding: 20px 16px; color: #fff; text-align: center;
+    flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(74,144,226,0.2);
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .tpl-poster .ps-title { font-size: 14px; font-weight: 800; margin-bottom: 10px; }
+  .tpl-poster .ps-tasks { font-size: 10px; opacity: 0.85; line-height: 1.6; }
+  .tpl-poster .ps-count {
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 6px 0;
+    font-size: 11px; font-weight: 700;
+  }
+  .tpl-poster .ps-cta {
+    background: #F4B942; border-radius: 10px;
+    padding: 8px 0; font-size: 12px; font-weight: 800;
+    color: #fff;
+  }
+
+  /* ===== 表格 ===== */
+  .spec-table {
+    width: 100%; background: #fff; border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+    overflow: hidden; font-size: 13px;
+  }
+  .spec-table table { width: 100%; border-collapse: collapse; }
+  .spec-table th {
+    background: #F2F5F8; padding: 10px 12px; text-align: left;
+    font-size: 12px; font-weight: 700; color: #5C6178;
+  }
+  .spec-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(0,0,0,0.04); color: #333; }
+  .spec-table tr:last-child td { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<!-- ================================ -->
+<!-- 是什么 & 为什么 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>什么是「习惯模板市场」？</h2>
+  <div class="explain-row">
+    <div class="explain-card">
+      <h4>🤔 问题</h4>
+      <p>
+        妈妈 A 第一次打开小程序，看到空白的任务页。<br>
+        她不知道要给孩子设置什么任务——<br>
+        "阅读？多久？练字？什么频率？"<br><br>
+        于是困惑 → 随便点了几下 → 离开了 → 再也没回来。
+      </p>
+    </div>
+    <div class="explain-card">
+      <h4>💡 解法 — 模板市场</h4>
+      <p>
+        就像一个"任务菜单商店"。<br>
+        其他妈妈已经做好的任务方案陈列在里面，<br>
+        按年龄 / 类型 / 热度排序。<br><br>
+        新手妈妈进来 → 浏览 → 看中一个 → 一键复制 → <br>
+        孩子立刻有了 3-5 个任务 → 开始打卡。
+      </p>
+    </div>
+    <div class="explain-card">
+      <h4>🔄 为什么能裂变</h4>
+      <p>
+        有经验的妈妈把自己训练出来的任务方案<br>
+        "上架"到模板市场。<br><br>
+        她会分享一张"我的模板被 128 位妈妈使用"<br>
+        的海报到妈妈群。<br><br>
+        <em>这不是广告，这是育儿经验的可复制化。</em>
+      </p>
+    </div>
+  </div>
+
+  <blockquote>
+    <strong>核心逻辑</strong>：把"给孩子定任务"这个冷启动难题，从每个人自己想 → 变成可以从别人的方案里挑。
+    同时给了有经验妈妈一个"输出"的出口——她们的模板被人使用，本身就是一种认可。
+  </blockquote>
+</div>
+
+
+<!-- ================================ -->
+<!-- 四个关键页面 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>四个关键页面设计</h2>
+
+  <div class="scene-row">
+
+    <!-- A：入口 & 浏览 -->
+    <div class="frame-col">
+      <div class="frame-label">A · 模板市场首页<span class="sub">浏览 + 筛选 + 一键导入</span></div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div style="font-size:17px;font-weight:800;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.1);margin-bottom:12px;">
+            🌟 习惯模板市场
+          </div>
+
+          <!-- 过滤条 -->
+          <div class="filter-bar">
+            <span class="filter-chip active">全部</span>
+            <span class="filter-chip">6-8岁</span>
+            <span class="filter-chip">9-12岁</span>
+            <span class="filter-chip">学习类</span>
+            <span class="filter-chip">综合类</span>
+          </div>
+
+          <!-- 模板卡片 1 -->
+          <div class="tpl-card">
+            <span class="badge">🔥 热门</span>
+            <div class="tpl-title">学霸日常 · 三件套</div>
+            <div class="tpl-tags">
+              <span class="tpl-tag blue">📖 阅读 30min</span>
+              <span class="tpl-tag gold">✏️ 作业</span>
+              <span class="tpl-tag gray">✒️ 练字 15min</span>
+            </div>
+            <div class="tpl-meta">
+              <span>⭐ 128 人在用</span>
+              <span class="user">小明妈妈</span>
+            </div>
+            <span class="tpl-btn">一键导入</span>
+          </div>
+
+          <!-- 模板卡片 2 -->
+          <div class="tpl-card">
+            <div class="tpl-title">活力少年 · 动静结合</div>
+            <div class="tpl-tags">
+              <span class="tpl-tag blue">📖 阅读 20min</span>
+              <span class="tpl-tag green">💪 运动 30min</span>
+              <span class="tpl-tag gold">🎵 练琴 20min</span>
+            </div>
+            <div class="tpl-meta">
+              <span>⭐ 89 人在用</span>
+              <span class="user">朵朵妈妈</span>
+            </div>
+            <span class="tpl-btn">一键导入</span>
+          </div>
+
+          <!-- 模板卡片 3 -->
+          <div class="tpl-card">
+            <div class="tpl-title">暑假充电计划</div>
+            <div class="tpl-tags">
+              <span class="tpl-tag blue">📖 阅读 40min</span>
+              <span class="tpl-tag gold">✏️ 暑假作业</span>
+              <span class="tpl-tag green">🎨 画画 20min</span>
+              <span class="tpl-tag gray">⌨️ 编程</span>
+            </div>
+            <div class="tpl-meta">
+              <span>⭐ 231 人在用</span>
+              <span class="user" style="color:#F4B942;">官方推荐</span>
+            </div>
+            <span class="tpl-btn">一键导入</span>
+          </div>
+
+          <!-- 模板卡片 4 -->
+          <div class="tpl-card">
+            <div class="tpl-title">周末轻松版</div>
+            <div class="tpl-tags">
+              <span class="tpl-tag blue">📖 阅读 15min</span>
+              <span class="tpl-tag green">🎮 游戏</span>
+              <span class="tpl-tag gray">🧹 家务</span>
+            </div>
+            <div class="tpl-meta">
+              <span>⭐ 56 人在用</span>
+              <span class="user">轩轩妈妈</span>
+            </div>
+            <span class="tpl-btn">一键导入</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B：详情 & 一键导入 -->
+    <div class="frame-col">
+      <div class="frame-label">B · 模板详情页<span class="sub">点击某个模板 → 预览所有任务 → 确认导入</span></div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <!-- 返回 -->
+          <div style="font-size:16px;color:#fff;margin-bottom:8px;font-weight:700;">‹ 模板详情</div>
+
+          <div class="detail-hero">
+            <div class="d-title">学霸日常 · 三件套</div>
+            <div class="d-meta">⭐ 128 人在用 · 来自 小明妈妈 · 适合 6-10 岁</div>
+          </div>
+
+          <!-- 任务列表 -->
+          <div style="background:#FDFBF7;border-radius:14px;padding:12px 14px;">
+            <div class="detail-task">
+              <div class="d-icon" style="background:#E3F2FD;">📖</div>
+              <div>
+                <div class="d-name">每日阅读</div>
+                <div class="d-dur">30 分钟 · 自由选择书目</div>
+              </div>
+            </div>
+            <div class="detail-task">
+              <div class="d-icon" style="background:#FFF8E1;">✏️</div>
+              <div>
+                <div class="d-name">完成作业</div>
+                <div class="d-dur">不限时长 · 检查完成</div>
+              </div>
+            </div>
+            <div class="detail-task">
+              <div class="d-icon" style="background:#F3E5F5;">✒️</div>
+              <div>
+                <div class="d-name">硬笔练字</div>
+                <div class="d-dur">15 分钟 · 每日一页</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 小明妈妈的推荐语 -->
+          <div style="background:#FFF8E1;border-radius:12px;padding:10px 12px;margin-top:10px;font-size:11px;color:#5C6178;line-height:1.6;">
+            <span style="font-weight:700;color:#C8853E;">💬 发布者说：</span><br>
+            "我家小明用这个方案坚持了三个月，阅读习惯已经完全养成了。三个任务不多不少，刚好能完成，孩子也不会觉得累。"
+          </div>
+
+          <!-- CTA -->
+          <div class="detail-cta">一键导入这 3 个任务</div>
+          <div style="font-size:10px;color:#C5C5C5;text-align:center;margin-top:4px;">
+            导入后可在「今日日常」中自由调整
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C：发布模板 -->
+    <div class="frame-col">
+      <div class="frame-label">C · 发布模板<span class="sub">我今天的任务 → 一键上架到市场</span></div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;">‹ 发布模板</div>
+
+          <div class="publish-card">
+            <div style="font-size:14px;font-weight:800;color:#333;">📤 把你今天的任务上架</div>
+            <div style="font-size:11px;color:#999;margin-top:4px;">让其他妈妈也能用上这份方案</div>
+
+            <div class="publish-input">给你的模板起个名字，如"学霸日常·三件套"</div>
+
+            <div style="margin-top:10px;font-size:12px;color:#5C6178;">
+              <span style="font-weight:700;">包含以下任务：</span>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:10px;margin-top:6px;">
+              <div class="detail-task">
+                <div class="d-icon" style="background:#E3F2FD;font-size:14px;">📖</div>
+                <div><div style="font-size:12px;font-weight:700;color:#333;">每日阅读</div><div style="font-size:10px;color:#999;">30 分钟</div></div>
+              </div>
+              <div class="detail-task">
+                <div class="d-icon" style="background:#FFF8E1;font-size:14px;">✏️</div>
+                <div><div style="font-size:12px;font-weight:700;color:#333;">完成作业</div><div style="font-size:10px;color:#999;">不限时长</div></div>
+              </div>
+              <div class="detail-task">
+                <div class="d-icon" style="background:#F3E5F5;font-size:14px;">✒️</div>
+                <div><div style="font-size:12px;font-weight:700;color:#333;">硬笔练字</div><div style="font-size:10px;color:#999;">15 分钟</div></div>
+              </div>
+            </div>
+
+            <div class="publish-input" style="height:50px;">写一句推荐语（可选），如"小明用了三个月，阅读习惯养成了"</div>
+            <div class="publish-hint">发布后其他妈妈可以在市场里搜到你的模板</div>
+
+            <div style="display:flex;gap:10px;margin-top:10px;">
+              <span style="flex:1;background:#F2F5F8;border-radius:12px;text-align:center;padding:10px 0;font-size:12px;font-weight:700;color:#999;">取消</span>
+              <span style="flex:1;background:linear-gradient(135deg,#F4B942,#FFD54F);border-radius:12px;text-align:center;padding:10px 0;font-size:12px;font-weight:700;color:#fff;box-shadow:0 4px 12px rgba(244,185,66,0.3);">发布到市场</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 分享海报 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>模板分享海报</h2>
+  <p style="font-size:12px;color:#999;margin-bottom:14px;">
+    发布模板后自动生成一张海报，妈妈可以分享到微信群。海报不是广告——是"我设计了这份方案，被很多人用"的社交证明。
+  </p>
+
+  <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
+    <div class="tpl-poster">
+      <div>
+        <div class="ps-title">🌟 学霸日常·三件套</div>
+        <div class="ps-tasks">
+          📖 每日阅读 30min<br>
+          ✏️ 完成作业<br>
+          ✒️ 硬笔练字 15min
+        </div>
+      </div>
+      <div>
+        <div class="ps-count">⭐ 已被 128 位妈妈使用</div>
+        <div style="font-size:10px;opacity:0.7;margin-top:6px;">来自 小明妈妈 的育儿方案</div>
+        <div class="ps-cta" style="margin-top:10px;">点击查看 → 一键导入</div>
+        <div style="font-size:9px;opacity:0.5;margin-top:6px;">日常 · 小程序</div>
+      </div>
+    </div>
+
+    <div style="flex:1;min-width:260px;">
+      <p style="font-size:13px;color:#5C6178;line-height:1.8;">
+        <strong>这张海报为什么能传播：</strong><br>
+        • "128 位妈妈使用"是强社交证明——不是广告，是口碑<br>
+        • "来自小明妈妈"是个人品牌——育儿经验被认可的满足感<br>
+        • 色彩克制，不像商业广告（降低防御心理）<br>
+        • "一键导入"降低行动门槛<br>
+        • 不直接宣传小程序，而是宣传"这份育儿方案"
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 入口 & 引导 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>入口与引导策略</h2>
+
+  <div class="spec-table">
+    <table>
+      <tr><th style="width:20%;">入口位置</th><th style="width:45%;">展示方式</th><th style="width:35%;">触发时机</th></tr>
+      <tr>
+        <td><strong>创建任务页</strong></td>
+        <td>在"选择分类"下方增加一行「🎯 或者从模板市场挑选一套方案 →」</td>
+        <td>每次打开创建页时</td>
+      </tr>
+      <tr>
+        <td><strong>空状态页</strong></td>
+        <td>当天没有任何任务时，在空白处展示「看看其他妈妈怎么做」入口，3 个推荐模板</td>
+        <td>新用户首次打开 / 某天空白</td>
+      </tr>
+      <tr>
+        <td><strong>"我的"页面</strong></td>
+        <td>菜单中增加「我的模板」入口，查看已发布和已导入的模板</td>
+        <td>始终可见</td>
+      </tr>
+      <tr>
+        <td><strong>任务卡片底部</strong></td>
+        <td>完成当天的所有任务后，弹出「你的方案很适合分享给其他妈妈」引导</td>
+        <td>当天全部完成后</td>
+      </tr>
+      <tr>
+        <td><strong>分享卡片</strong></td>
+        <td>在已有的"邀请伙伴围观"分享之外，增加"分享我的育儿方案"选项</td>
+        <td>点击分享按钮时二选一</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 规则 & 数据 -->
+<!-- ================================ -->
+<div class="section" style="margin-bottom:20px;">
+  <h2>规则与数据</h2>
+  <div class="explain-row">
+    <div class="explain-card">
+      <h4>📋 模板规则</h4>
+      <p>
+        • 一个模板 = 一组任务（2-5 个）<br>
+        • 包含名称、适用年龄、分类标签<br>
+        • 可选推荐语（发布者自己的使用感受）<br>
+        • 导入时会保留任务名 + 分类 + 时长，但不会带历史数据<br>
+        • 每个模板独立计数"使用人数"<br>
+        • 发布者可以编辑/下架自己的模板
+      </p>
+    </div>
+    <div class="explain-card">
+      <h4>🔢 数据需求</h4>
+      <p>
+        <b>新增服务</b> <code>server/template.ts</code>：<br>
+        • <code>Template.list(tag, age, page)</code> — 浏览市场<br>
+        • <code>Template.create(data)</code> — 发布模板<br>
+        • <code>Template.import(tplId)</code> — 导入（调用 Routine.create 批量）<br>
+        • <code>Template.stat(tplId)</code> — 使用人数 + 趋势<br><br>
+        <b>模板数据结构</b>：<br>
+        <code>{ id, userId, name, desc?, ageRange?, tasks: [{name,category,duration}], useCount, createTime }</code>
+      </p>
+    </div>
+    <div class="explain-card">
+      <h4>🔄 导入后的体验</h4>
+      <p>
+        • 一键导入 = 后台调用 <code>Routine.create</code> 批量创建<br>
+        • 导入后弹出轻提示「已添加 3 个任务，去调整→」<br>
+        • 导入的任务默认状态为 Pending（待完成）<br>
+        • 可以在"今日日常"中删除/编辑导入的任务<br>
+        • 导入某个模板后，该模板的使用人数 + 1<br>
+        • 同一用户可以重复导入同一个模板（如换一天想再用）
+      </p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

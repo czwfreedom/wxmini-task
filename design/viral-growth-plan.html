@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>裂变传播设计 · 以妈妈为传播节点</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    background: #E8EFF5;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    padding: 40px 24px;
+    display: flex; flex-wrap: wrap; gap: 32px; justify-content: center;
+  }
+
+  .section { width: 100%; max-width: 820px; }
+  .section h2 {
+    font-size: 22px; font-weight: 800; color: #3A5A8C;
+    margin-bottom: 20px; padding-left: 14px; border-left: 4px solid #F4B942;
+  }
+  .section h3 {
+    font-size: 16px; font-weight: 700; color: #5C6178;
+    margin: 28px 0 14px;
+    padding-bottom: 6px; border-bottom: 1px dashed rgba(0,0,0,0.08);
+  }
+
+  p.desc { font-size: 13px; color: #5C6178; line-height: 1.8; margin-bottom: 14px; }
+
+  /* ===== 牌组 ===== */
+  .card-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+  .strat-card {
+    background: #fff; border-radius: 16px; padding: 20px;
+    flex: 1; min-width: 240px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .strat-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%;
+  }
+  .strat-card.p0::before { background: #EF5350; }
+  .strat-card.p1::before { background: #F4B942; }
+  .strat-card.p2::before { background: #5B9BD5; }
+
+  .strat-card .pri {
+    position: absolute; top: 16px; right: 16px;
+    font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 6px;
+  }
+  .strat-card.p0 .pri { background: #FFEBEE; color: #EF5350; }
+  .strat-card.p1 .pri { background: #FFF8E1; color: #C8853E; }
+  .strat-card.p2 .pri { background: #E3F2FD; color: #5B9BD5; }
+
+  .strat-card .emoji { font-size: 28px; margin-bottom: 8px; display: block; }
+  .strat-card h4 { font-size: 16px; font-weight: 800; color: #333; margin-bottom: 8px; }
+  .strat-card .why { font-size: 12px; color: #999; line-height: 1.6; }
+
+  /* ===== 场景表 ===== */
+  .scenario-table {
+    width: 100%; background: #fff; border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+    overflow: hidden; font-size: 13px;
+  }
+  .scenario-table table { width: 100%; border-collapse: collapse; }
+  .scenario-table th {
+    background: #F2F5F8; padding: 10px 12px; text-align: left;
+    font-size: 12px; font-weight: 700; color: #5C6178;
+  }
+  .scenario-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(0,0,0,0.04); color: #333; vertical-align: top; }
+  .scenario-table tr:last-child td { border-bottom: none; }
+
+  /* ===== 裂变回路图 ===== */
+  .loop-diagram {
+    background: #fff; border-radius: 16px; padding: 24px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+  }
+  .loop-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 10px 0; }
+  .loop-node {
+    background: linear-gradient(135deg, #F4B942, #FFD54F);
+    border-radius: 12px; padding: 12px 16px;
+    font-size: 13px; font-weight: 800; color: #fff;
+    box-shadow: 0 4px 12px rgba(244,185,66,0.25);
+    min-width: 120px;
+  }
+  .loop-node.sub {
+    background: linear-gradient(135deg, #5B9BD5, #4A90E2);
+    box-shadow: 0 4px 12px rgba(74,144,226,0.25);
+  }
+  .loop-arrow { font-size: 20px; color: #C5C5C5; font-weight: 800; }
+
+  /* ===== 海报预览框 ===== */
+  .poster-thumb {
+    width: 180px; height: 260px;
+    border-radius: 14px; background: linear-gradient(160deg, #FFCB6B, #FF9F5A);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 12px;
+    box-shadow: 0 8px 28px rgba(255,140,70,0.25);
+    position: relative; overflow: hidden;
+    color: #fff; text-align: center; font-size: 11px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .poster-thumb .star { font-size: 36px; }
+  .poster-row { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-top: 14px; }
+
+  /* 引用块 */
+  blockquote {
+    background: #FFF8E1; border-left: 4px solid #F4B942;
+    padding: 12px 16px; border-radius: 0 8px 8px 0;
+    font-size: 13px; color: #5C6178; line-height: 1.7;
+    margin: 12px 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========================================= -->
+<!-- 总览 -->
+<!-- ========================================= -->
+<div class="section">
+  <h2>为什么是妈妈？</h2>
+  <p class="desc">
+    妈妈是育儿消费决策的核心。她们在微信群高度活跃（班级群 / 妈妈群 / 兴趣群），
+    有强烈的"晒娃 + 互助 + 焦虑缓解"内容需求。<br><br>
+    让妈妈主动传播的三个引擎：
+    <strong style="color:#EF5350;">炫耀</strong>（孩子进步可视化）、
+    <strong style="color:#F4B942;">互助</strong>（习惯养成经验分享）、
+    <strong style="color:#5B9BD5;">组队</strong>（拉其他妈妈一起，互相督促）。
+  </p>
+
+  <h3>裂变回路核心模型</h3>
+  <p class="desc">一条典型的妈妈传播链路：</p>
+
+  <div class="loop-diagram">
+    <div class="loop-row">
+      <span class="loop-node">孩子完成打卡</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-node sub">生成成长周报</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-node">妈妈分享到群</span>
+    </div>
+    <div class="loop-arrow" style="display:block;">↓</div>
+    <div class="loop-row">
+      <span class="loop-node">其他妈妈看到</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-node sub">点击卡片进入</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-node">创建孩子任务</span>
+    </div>
+    <div style="margin-top:12px; font-size:11px; color:#999;">
+      每完成一次"生成→分享→进入→创建"，就多一个活跃用户。多次循环产生指数增长。
+    </div>
+  </div>
+</div>
+
+
+<!-- ========================================= -->
+<!-- 六大裂变策略 -->
+<!-- ========================================= -->
+<div class="section">
+  <h2>六大裂变策略（按优先级排列）</h2>
+
+  <!-- P0-1 -->
+  <div class="card-grid">
+    <div class="strat-card p0">
+      <span class="pri">P0</span>
+      <span class="emoji">📊</span>
+      <h4>1. 成长周报</h4>
+      <div class="why">
+        <strong>自动生成，自动想分享。</strong><br><br>
+        每周末生成一张精美卡片：孩子本周完成了哪些任务、哪个做得最好、
+        一句来自费曼反馈的金句引用（如"我知道了水为什么从高处流向低处"）、
+        对比上周的进步、连续打卡天数。<br><br>
+        <em>妈妈看到的是孩子一周的成果浓缩，几乎一定会保存并分享到朋友圈/群。</em>
+      </div>
+    </div>
+
+    <div class="strat-card p0">
+      <span class="pri">P0</span>
+      <span class="emoji">👩‍👩‍👧</span>
+      <h4>2. 组队挑战</h4>
+      <div class="why">
+        <strong>裂变核心引擎，类似"拼团"但用于习惯养成。</strong><br><br>
+        妈妈发起一个 3-5 人小队挑战（如"7天阅读挑战"），
+        生成邀请卡片发到妈妈群。其他妈妈点卡加入，各自给孩子创建阅读任务。
+        小队看板显示所有人的进度和完成情况。<br><br>
+        <em>本质是社交契约：拉人进来 = 帮朋友的孩子养成习惯，拒绝成本极高。</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- P0-2 -->
+  <div class="card-grid">
+    <div class="strat-card p0">
+      <span class="pri">P0</span>
+      <span class="emoji">📋</span>
+      <h4>3. 习惯模板市场</h4>
+      <div class="why">
+        <strong>新手妈妈不知道"该给孩子定什么任务"。</strong><br><br>
+        提供一个模板库（按年龄/类型分类），每个模板一套预制任务。
+        妈妈可以把自己的定制模板"发布到模板市场"，
+        其他妈妈一键导入，同时看到"本模板已被 128 位家长使用"。<br><br>
+        <em>模板 = 育儿经验的实体化。分享模板带来的社交货币比分享任务更高。</em>
+      </div>
+    </div>
+
+    <div class="strat-card p1">
+      <span class="pri">P1</span>
+      <span class="emoji">🏅</span>
+      <h4>4. 里程碑海报</h4>
+      <div class="why">
+        <strong>每个关键节点生成一张可分享的海报：</strong><br>
+        连续 7 天 · 30 天 · 100 天<br>
+        累计完成 50 · 100 · 500 个任务<br>
+        单类任务突破（阅读 30 天 / 练字 50 页）<br><br>
+        海报上包含孩子的「成就数据」+ 一句总结 + 小程序二维码。
+        妈妈在纪念日式的节点上分享，传播转化率最高。
+      </div>
+    </div>
+  </div>
+
+  <!-- P1 -->
+  <div class="card-grid">
+    <div class="strat-card p1">
+      <span class="pri">P1</span>
+      <span class="emoji">📖</span>
+      <h4>5. 费曼金句集</h4>
+      <div class="why">
+        <strong>孩子完成任务的"费曼反馈"是天然的内容资产。</strong><br><br>
+        自动收集孩子写过的最好的反馈，生成"小明的知识成长语录"。
+        比如阅读笔记：「我最喜欢孙悟空，因为他从不放弃」，
+        配上精美的卡片排版。<br><br>
+        <em>这种内容既有教育意义又有情感温度，妈妈分享的动机极强——它不是广告，是孩子的成长印记。</em>
+      </div>
+    </div>
+
+    <div class="strat-card p2">
+      <span class="pri">P2</span>
+      <span class="emoji">🎁</span>
+      <h4>6. 邀请奖励</h4>
+      <div class="why">
+        <strong>轻量物质激励 + 精神激励结合：</strong><br>
+        每成功邀请一位妈妈，解锁一个新主题皮肤 / 贴纸 / 勋章。
+        注意避免做成"拉人头"的感觉，
+        奖励物是孩子喜欢的（可爱主题、趣味音效），
+        而非现金红包（会降低调性）。<br><br>
+        <em>让孩子说"妈妈，我想换个海洋主题，你帮我邀请阿姨吧"——这才是最强驱动力。</em>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========================================= -->
+<!-- 组队挑战的详细设计（最核心功能） -->
+<!-- ========================================= -->
+<div class="section">
+  <h2>🎯 核心裂变功能：组队挑战（详细设计）</h2>
+  <p class="desc">
+    这是六个策略中爆发力最强的一个。因为它复用微信群已有的社交关系，
+    且每一步都有自然的分享节点。
+  </p>
+
+  <h3>A. 挑战类型</h3>
+  <div class="scenario-table">
+    <table>
+      <tr><th style="width:20%;">类型</th><th style="width:35%;">示例</th><th>说明</th></tr>
+      <tr>
+        <td><strong>主题挑战</strong></td>
+        <td>「7天阅读挑战」「14天运动挑战」「30天练字挑战」</td>
+        <td>单类别聚焦，适合拉刚需妈妈。系统预制模板 + 妈妈可自定义名称和天数。</td>
+      </tr>
+      <tr>
+        <td><strong>全能挑战</strong></td>
+        <td>「学霸一周挑战」：每天完成阅读+作业+练字</td>
+        <td>多任务组合，适合已有使用经验的妈妈。模板市场提供这类组合。</td>
+      </tr>
+      <tr>
+        <td><strong>亲子挑战</strong></td>
+        <td>「妈妈也运动」：孩子运动 + 妈妈也每天走 8000 步</td>
+        <td>妈妈参与进来，社交属性翻倍。妈妈自己也是"队员"。</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>B. 完整流程</h3>
+  <p class="desc">
+    <strong>发起 → 邀请 → 加入 → 打卡 → 互看 → 结算 → 分享</strong>
+  </p>
+  <div class="scenario-table">
+    <table>
+      <tr><th>步骤</th><th>操作</th><th>裂变节点</th></tr>
+      <tr><td><strong>① 发起</strong></td><td>妈妈在挑战中心选择一个挑战模板（或自定义），系统自动给孩子创建对应任务。</td><td>—</td></tr>
+      <tr><td><strong>② 邀请</strong></td><td>生成挑战邀请卡片（包含挑战名称+发起人+已加入人数+二维码），分享到微信群。</td><td>🧨 <em>第一次传播：群内曝光</em></td></tr>
+      <tr><td><strong>③ 加入</strong></td><td>其他妈妈点击卡片，进入小程序，自动加入挑战，系统也帮她的孩子创建同样任务。</td><td>🧨 <em>无门槛转化：点即创建</em></td></tr>
+      <tr><td><strong>④ 打卡</strong></td><td>每天孩子完成任务后，挑战看板更新每个人的完成状态（仅显示完成/未完成，不暴露具体内容）。</td><td>—</td></tr>
+      <tr><td><strong>⑤ 互看</strong></td><td>群内妈妈可以看挑战看板——"小明已完成 ✅ / 小芳还没做 ⏳"。自然产生群内讨论。</td><td>🧨 <em>第二次传播：群内讨论带量</em></td></tr>
+      <tr><td><strong>⑥ 结算</strong></td><td>挑战结束时生成"挑战报告"：全员完成率、谁是坚持冠军、最晚打卡记录等趣味数据。</td><td>🧨 <em>第三次传播：报告截图到群</em></td></tr>
+      <tr><td><strong>⑦ 二次分享</strong></td><td>结算后弹出"发起新一轮挑战"引导，并展示"最近热门的挑战"供参考。</td><td>🧨 <em>持续的传播循环</em></td></tr>
+    </table>
+  </div>
+
+  <h3>C. 邀请卡设计要点</h3>
+  <blockquote>
+    邀请卡是这个功能裂变胜负的关键。它不是广告，而是"帮朋友的孩子变好"的邀请函。
+  </blockquote>
+  <div class="poster-row">
+    <div class="poster-thumb">
+      <span class="star">📚</span>
+      <div>7天阅读挑战</div>
+      <div style="font-size:9px;font-weight:500;opacity:0.85;">发起人：小明妈妈</div>
+      <div style="font-size:9px;font-weight:500;opacity:0.85;">已加入 2 / 5 人</div>
+      <div style="background:rgba(255,255,255,0.9);color:#C8853E;border-radius:10px;padding:4px 10px;font-size:10px;">点击加入挑战</div>
+    </div>
+    <div style="flex:1;min-width:280px;">
+      <p style="font-size:13px;color:#5C6178;line-height:1.8;">
+        <strong>设计要点：</strong><br>
+        • 突出挑战主题 + 天数，信息一目了然<br>
+        • 展示"已加入人数"，制造从众效应<br>
+        • 文案体现邀请者的身份（"小明妈妈"），增加信任<br>
+        • 点击即加入（如果首次使用，先引导创建昵称 + 自动创建任务）<br>
+        • 不要做成"广告"，而是一张"小队召集令"
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========================================= -->
+<!-- 为妈妈定制的海报体系 -->
+<!-- ========================================= -->
+<div class="section">
+  <h2>🖼️ 为妈妈定制的海报体系</h2>
+  <p class="desc">
+    所有海报设计原则：不要品牌露出过度（小程序名小字即可），
+    重点是孩子的成长数据和内容，妈妈分享时感到的是"晒娃"而非"推广"。
+  </p>
+
+  <h3>海报矩阵</h3>
+  <div class="scenario-table">
+    <table>
+      <tr><th>触发时机</th><th>海报主题</th><th>核心内容</th><th>妈妈分享理由</th></tr>
+      <tr>
+        <td>每周日晚 8 点</td>
+        <td>「小明的一周成长报告」</td>
+        <td>完成 5/7 天 + 最爱阅读 + 一句金句</td>
+        <td>"看看我家孩子这周的进步"</td>
+      </tr>
+      <tr>
+        <td>连续打卡 7/30/100 天</td>
+        <td>「坚持 × 天的力量」</td>
+        <td>数字 + 变化（读了 X 本书 / 写了 X 页字）</td>
+        <td>"坚持真的能看到变化"</td>
+      </tr>
+      <tr>
+        <td>每完成一次组队挑战</td>
+        <td>「我们做到了！」</td>
+        <td>小队全员打卡记录 + 趣味数据</td>
+        <td>"和姐妹们一起坚持下来了"</td>
+      </tr>
+      <tr>
+        <td>开学季 / 寒暑假</td>
+        <td>「小明的暑假成长记」</td>
+        <td>假期累计数据 + 最高光的费曼反馈</td>
+        <td>"一个暑假的变化"</td>
+      </tr>
+      <tr>
+        <td>妈妈自定义</td>
+        <td>「分享我的育儿利器」</td>
+        <td>小程序卡片 + 个人使用数据</td>
+        <td>"这个小程序真好用，推荐给大家"</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>周报海报结构示意</h3>
+  <div class="poster-row">
+    <div class="poster-thumb" style="background:linear-gradient(160deg,#5B9BD5,#3A5A8C);">
+      <span class="star">🌟</span>
+      <div style="font-size:14px;font-weight:800;">小明的<br>一周成长报告</div>
+      <div style="font-size:9px;font-weight:500;opacity:0.85;">8/4 — 8/10</div>
+      <div style="font-size:9px;font-weight:500;opacity:0.85;">完成 6 / 7 天</div>
+      <div style="font-size:9px;font-weight:500;opacity:0.85;">阅读 4 次 · 最坚持</div>
+      <div style="font-size:9px;line-height:1.4;background:rgba(255,255,255,0.15);padding:4px 8px;border-radius:6px;margin-top:4px;font-style:italic;">"我知道了水为什么<br>从高处流向低处"</div>
+      <div style="font-size:8px;opacity:0.6;margin-top:6px;">日常 · 小程序</div>
+    </div>
+    <div style="flex:1;min-width:280px;">
+      <p style="font-size:13px;color:#5C6178;line-height:1.8;">
+        <strong>为什么妈妈会分享这张海报？</strong><br><br>
+        它不是广告——它是一份温柔的教育成果。<br>
+        孩子的一周努力被浓缩成了可保存的纪念卡片。<br>
+        那句"我知道了水为什么从高处流向低处"——<br>
+        这是只有妈妈能感受到的骄傲。<br><br>
+        <em style="color:#999;">小程序名只是角落里的四号字，但妈妈的朋友圈已经被它刷屏了。</em>
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========================================= -->
+<!-- 优先级与投入产出 -->
+<!-- ========================================= -->
+<div class="section">
+  <h2>📐 优先级与投入产出评估</h2>
+
+  <div class="scenario-table">
+    <table>
+      <tr><th>功能</th><th>裂变强度</th><th>开发成本</th><th>优先级</th><th>理由</th></tr>
+      <tr>
+        <td>组队挑战</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>中高</td>
+        <td><strong style="color:#EF5350;">P0</strong></td>
+        <td>裂变引擎，一个挑战 = 3-5 个新用户，且有多次传播节点</td>
+      </tr>
+      <tr>
+        <td>成长周报</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>低</td>
+        <td><strong style="color:#EF5350;">P0</strong></td>
+        <td>自动触发、低开发量、高分享率，ROI 最高</td>
+      </tr>
+      <tr>
+        <td>里程碑海报</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>低</td>
+        <td><strong style="color:#EF5350;">P0</strong></td>
+        <td>在已有数据基础上多几张海报模板，边际成本极低</td>
+      </tr>
+      <tr>
+        <td>习惯模板市场</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>中</td>
+        <td><strong style="color:#F4B942;">P1</strong></td>
+        <td>解决冷启动内容，但需要运营维护模板质量</td>
+      </tr>
+      <tr>
+        <td>费曼金句集</td>
+        <td>⭐⭐⭐</td>
+        <td>低</td>
+        <td><strong style="color:#F4B942;">P1</strong></td>
+        <td>自然内容资产，自动生成，但依赖孩子的长篇反馈</td>
+      </tr>
+      <tr>
+        <td>邀请奖励</td>
+        <td>⭐⭐⭐</td>
+        <td>中</td>
+        <td><strong style="color:#5B9BD5;">P2</strong></td>
+        <td>锦上添花，调性需控制，避免变成"拉人头"</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>建议首批落地（P0 三项）</h3>
+  <p class="desc">
+    这三项有协同效应：<strong>组队挑战</strong>带来新用户 → 
+    <strong>成长周报</strong>让老用户持续分享 → 
+    <strong>里程碑海报</strong>在关键节点放大传播。<br><br>
+    三管齐下，可在 2-3 周内完成开发，用一个版本打出裂变闭环。
+  </p>
+</div>
+
+</body>
+</html>

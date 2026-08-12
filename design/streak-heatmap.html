@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>打卡热力图 · 设计稿</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    background: #E8EFF5;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    padding: 40px 24px;
+    display: flex; flex-wrap: wrap; gap: 32px; justify-content: center;
+  }
+
+  .section { width: 100%; max-width: 800px; }
+  .section h2 {
+    font-size: 22px; font-weight: 800; color: #3A5A8C;
+    margin-bottom: 20px; padding-left: 14px; border-left: 4px solid #F4B942;
+  }
+  .section h3 {
+    font-size: 16px; font-weight: 700; color: #5C6178;
+    margin: 28px 0 14px;
+    padding-bottom: 6px; border-bottom: 1px dashed rgba(0,0,0,0.08);
+  }
+
+  /* ===== 帧包装 ===== */
+  .scene-row { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+  .frame-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .frame-label {
+    font-size: 12px; font-weight: 800; color: #5C6178;
+    background: #fff; padding: 6px 16px; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.08);
+  }
+
+  /* ===== 手机框 ===== */
+  .phone {
+    width: 320px; height: 520px;
+    background: #F2F5F8; border-radius: 36px; overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 3px #1A1A1A, 0 0 0 6px #2D2D2D, 0 16px 48px rgba(0,0,0,0.3);
+  }
+  .phone_status {
+    height: 36px; background: #B8DAF5;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 22px; font-size: 11px; color: #fff; font-weight: 600;
+  }
+  .phone_content {
+    height: calc(100% - 36px);
+    overflow: hidden;
+    background: linear-gradient(180deg, #B8DAF5, #F2F5F8 30%);
+    padding: 16px 14px;
+    position: relative;
+  }
+
+  /* ===== Hero 区入口 ===== */
+  .hero-stats {
+    display: flex; align-items: center; gap: 12px;
+    background: #FDFBF7; border-radius: 16px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 12px rgba(74,144,226,0.06);
+  }
+  .hero-stat {
+    text-align: center; flex: 1;
+  }
+  .hero-stat-val {
+    font-size: 20px; font-weight: 800; color: #3A5A8C; line-height: 1.1;
+  }
+  .hero-stat-label {
+    font-size: 11px; color: #5C6178; font-weight: 600;
+  }
+  .hero-stat-divider {
+    width: 0.5px; height: 30px; background: rgba(0,0,0,0.08);
+  }
+  .hero-calendar-entry {
+    background: linear-gradient(135deg, #F4B942, #FFD54F);
+    border-radius: 12px; padding: 8px 10px;
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 4px 8px rgba(244,185,66,0.25);
+    cursor: pointer;
+  }
+  .hero-calendar-entry svg { width: 18px; height: 18px; }
+
+  /* ===== 热力图面板（浮层形式） ===== */
+  .heatmap-overlay {
+    position: absolute; inset: 0; z-index: 10;
+    background: rgba(0,0,0,0.3);
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .heatmap-panel {
+    background: #FDFBF7;
+    border-radius: 24px 24px 0 0;
+    padding: 20px 18px 30px;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.1);
+    max-height: 440px;
+  }
+  .heatmap-handle {
+    width: 36px; height: 5px; border-radius: 3px;
+    background: #D9D9D9; margin: 0 auto 16px;
+  }
+
+  .heatmap-month-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .heatmap-month-label {
+    font-size: 16px; font-weight: 800; color: #333;
+  }
+  .heatmap-month-arrow {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #F2F5F8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #999; cursor: pointer;
+  }
+
+  /* 7 列网格 */
+  .heatmap-weekdays {
+    display: flex; margin-bottom: 8px;
+  }
+  .heatmap-weekdays span {
+    flex: 1; text-align: center; font-size: 11px;
+    font-weight: 600; color: #C5C5C5;
+  }
+
+  .heatmap-grid {
+    display: flex; flex-wrap: wrap;
+  }
+  .heatmap-cell {
+    width: calc(100% / 7); aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .heatmap-dot {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 800; color: #fff;
+  }
+  .heatmap-dot.empty   { background: #F0F0F0; }
+  .heatmap-dot.partial { background: #FFE08A; color: #C8853E; }
+  .heatmap-dot.done    { background: #81C784; }
+  .heatmap-dot.miss    { background: #FEE4E4; color: #EF5350; font-size: 10px; }
+
+  /* 今天标识 */
+  .heatmap-cell.today .heatmap-dot {
+    box-shadow: 0 0 0 3px #F4B942, 0 0 0 6px rgba(244,185,66,0.25);
+  }
+
+  /* 图例 */
+  .heatmap-legend {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin-top: 14px; font-size: 11px; color: #999;
+  }
+  .heatmap-legend .leg-dot {
+    width: 12px; height: 12px; border-radius: 50%; display: inline-block;
+    vertical-align: -2px; margin-right: 3px;
+  }
+
+  /* 底部统计卡 */
+  .heatmap-stats {
+    margin-top: 16px; display: flex; gap: 10px;
+  }
+  .heatmap-stat-card {
+    flex: 1; background: #F2F5F8; border-radius: 14px;
+    padding: 12px 0; text-align: center;
+  }
+  .heatmap-stat-card .val {
+    font-size: 22px; font-weight: 800; color: #3A5A8C; line-height: 1.1;
+  }
+  .heatmap-stat-card .lbl {
+    font-size: 11px; color: #999; font-weight: 600; margin-top: 2px;
+  }
+
+  /* ===== 规格表 ===== */
+  .scenario-table {
+    width: 100%; background: #fff; border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+    overflow: hidden; font-size: 13px;
+  }
+  .scenario-table table { width: 100%; border-collapse: collapse; }
+  .scenario-table th {
+    background: #F2F5F8; padding: 10px 12px; text-align: left;
+    font-size: 12px; font-weight: 700; color: #5C6178;
+  }
+  .scenario-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(0,0,0,0.04); color: #333; }
+  .scenario-table tr:last-child td { border-bottom: none; }
+
+  .spec-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+  .spec-card {
+    background: #fff; border-radius: 16px; padding: 18px;
+    flex: 1; min-width: 200px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+  }
+  .spec-card h4 {
+    font-size: 14px; font-weight: 700; color: #3A5A8C; margin-bottom: 10px;
+  }
+  .spec-card .spec-item {
+    font-size: 12px; color: #5C6178; padding: 4px 0;
+  }
+  .spec-card .spec-item span { font-weight: 700; color: #333; }
+  .color-swatch {
+    display: inline-block; width: 14px; height: 14px; border-radius: 50%;
+    vertical-align: -2px; margin-right: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="section">
+  <h2>1. 入口设计</h2>
+  <p style="font-size:12px;color:#999;margin-bottom:14px;">
+    在 Hero 统计区的"连续天数"旁增加日历图标按钮。
+    点击后底部滑出热力图面板。统计区布局不变，只把"连续 x 天"可点击化。
+  </p>
+
+  <div class="scene-row">
+    <div class="frame-col">
+      <div class="frame-label">A · Hero 日常态</div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:10px;text-shadow:0 2px 4px rgba(0,0,0,0.1);">今日日常</div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="hero-stat-val">3</div>
+              <div class="hero-stat-label">已规划</div>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <div class="hero-stat-val">1</div>
+              <div class="hero-stat-label">待反馈</div>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <div class="hero-stat-val">2</div>
+              <div class="hero-stat-label">已完成</div>
+            </div>
+            <!-- 日历入口 -->
+            <div class="hero-calendar-entry" style="flex-shrink:0;">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="4" width="18" height="18" rx="3" stroke="#fff" stroke-width="2" fill="none"/>
+                <line x1="3" y1="10" x2="21" y2="10" stroke="#fff" stroke-width="2"/>
+                <line x1="8" y1="2" x2="8" y2="6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                <line x1="16" y1="2" x2="16" y2="6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span style="font-size:18px;font-weight:800;color:#fff;">7</span>
+              <span style="font-size:10px;font-weight:600;color:rgba(255,255,255,0.8);">天</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 热力图面板 -->
+    <div class="frame-col">
+      <div class="frame-label">B · 打开热力图浮层</div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:10px;text-shadow:0 2px 4px rgba(0,0,0,0.1);">今日日常</div>
+          <div class="hero-stats" style="opacity:0.4;">
+            <div class="hero-stat"><div class="hero-stat-val">3</div><div class="hero-stat-label">已规划</div></div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat"><div class="hero-stat-val">1</div><div class="hero-stat-label">待反馈</div></div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat"><div class="hero-stat-val">2</div><div class="hero-stat-label">已完成</div></div>
+          </div>
+
+          <div class="heatmap-overlay">
+            <div class="heatmap-panel">
+              <div class="heatmap-handle"></div>
+
+              <div class="heatmap-month-row">
+                <span class="heatmap-month-arrow">‹</span>
+                <span class="heatmap-month-label">2026 年 8 月</span>
+                <span class="heatmap-month-arrow">›</span>
+              </div>
+
+              <div class="heatmap-weekdays">
+                <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+              </div>
+
+              <!-- 8月日历: 1号是周六, 31天 -->
+              <div class="heatmap-grid">
+                <!-- 空位: 8/1 before 为周一到周五，8/1 = Sat (index 6) -->
+                <span class="heatmap-cell" style="opacity:0;"></span>
+                <span class="heatmap-cell" style="opacity:0;"></span>
+                <span class="heatmap-cell" style="opacity:0;"></span>
+                <span class="heatmap-cell" style="opacity:0;"></span>
+                <span class="heatmap-cell" style="opacity:0;"></span>
+                <span class="heatmap-cell" style="opacity:0;"></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty">1</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot partial">2</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot done">3</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot done">4</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot done">5</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot done">6</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot done">7</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot done">8</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot partial">9</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty">10</span></span>
+                <span class="heatmap-cell class=today"><span class="heatmap-dot done">11</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">12</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">13</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">14</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">15</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">16</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">17</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">18</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">19</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">20</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">21</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">22</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">23</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">24</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">25</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">26</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">27</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">28</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">29</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">30</span></span>
+                <span class="heatmap-cell"><span class="heatmap-dot empty" style="opacity:0.35;">31</span></span>
+              </div>
+
+              <div class="heatmap-legend">
+                <span><span class="leg-dot" style="background:#F0F0F0;"></span>未打卡</span>
+                <span><span class="leg-dot" style="background:#FFE08A;"></span>部分完成</span>
+                <span><span class="leg-dot" style="background:#81C784;"></span>全部完成</span>
+                <span><span class="leg-dot" style="background:#FEE4E4;"></span>未完成</span>
+              </div>
+
+              <!-- 统计卡片 -->
+              <div class="heatmap-stats">
+                <div class="heatmap-stat-card">
+                  <div class="val">32</div>
+                  <div class="lbl">累计打卡（天）</div>
+                </div>
+                <div class="heatmap-stat-card">
+                  <div class="val">15</div>
+                  <div class="lbl">最长连续（天）</div>
+                </div>
+                <div class="heatmap-stat-card">
+                  <div class="val">8/12</div>
+                  <div class="lbl">本月完成 / 任务</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 二、点日期的交互 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>2. 点击日期的交互</h2>
+  <p style="font-size:12px;color:#999;margin-bottom:14px;">
+    点击热力图中已过去的日期，关闭面板同时跳转到该日期的任务列表（只读查看，不可编辑）。
+    未来日期不可点击。今天点日期等同于关闭面板。
+  </p>
+
+  <div class="scene-row">
+    <div class="frame-col">
+      <div class="frame-label">点击过去某天 → 跳转到该日</div>
+      <div class="phone">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div style="text-align:center;color:#5C6178;font-size:13px;">
+            <span style="display:block;font-size:36px;margin-bottom:8px;">📅</span>
+            点击 8 月 6 日<br>
+            <span style="font-weight:800;color:#3A5A8C;">2026-08-06</span><br>
+            <span style="font-size:11px;color:#999;">跳转到该日任务列表（只读）</span>
+            <br><br>
+            <span style="display:inline-block;background:linear-gradient(135deg,#F4B942,#FFD54F);color:#fff;padding:6px 14px;border-radius:12px;font-size:11px;">关闭面板 → navigateTo 历史日</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 三、设计规范 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>3. 热力图视觉与数据规范</h2>
+
+  <h3>A. 颜色语义</h3>
+  <div class="scenario-table">
+    <table>
+      <tr><th>状态</th><th>颜色</th><th>圆点样式</th><th>触发条件</th></tr>
+      <tr><td>未打卡（无任务）</td><td><span class="color-swatch" style="background:#F0F0F0;"></span> #F0F0F0</td><td>空心浅灰</td><td>当天没有创建任何任务</td></tr>
+      <tr><td>部分完成</td><td><span class="color-swatch" style="background:#FFE08A;"></span> #FFE08A</td><td>金色底，白色数字</td><td>有任务已完成，但有未完成的</td></tr>
+      <tr><td>全部完成</td><td><span class="color-swatch" style="background:#81C784;"></span> #81C784</td><td>绿色底，白色数字</td><td>当天所有任务均已完成</td></tr>
+      <tr><td>未完成（过期）</td><td><span class="color-swatch" style="background:#FEE4E4;"></span> #FEE4E4</td><td>浅红底，红色「✕」</td><td>当天有任务但一个都没完成（已过期）</td></tr>
+      <tr><td>今天</td><td>—</td><td>金色双层描边</td><td>高亮今日日期，指导当前焦点</td></tr>
+      <tr><td>未来日期</td><td>—</td><td>不渲染 content，占位</td><td>不可点击，轻浅显示（opacity 0.35）</td></tr>
+    </table>
+  </div>
+
+  <h3>B. 交互规则</h3>
+  <div class="scenario-table">
+    <table>
+      <tr><th>动作</th><th>行为</th></tr>
+      <tr><td>点击 Hero 区的日历图标 / 连续天数</td><td>底部滑出热力图面板（遮罩 + 从底部向上 slide-up，300ms cubic-bezier）</td></tr>
+      <tr><td>点击遮罩或下拉手柄</td><td>面板滑回关闭</td></tr>
+      <tr><td>左右箭头切换月份</td><td>切换热力图网格数据（只展示有历史数据的月份，最大回溯 12 个月）</td></tr>
+      <tr><td>点击过去某个日期圆点</td><td>关闭面板，调用 router.navigateTo 跳转到该日任务列表（只读模式，无操作按钮）</td></tr>
+      <tr><td>点击今天圆点</td><td>关闭面板，等同于留在当前页面</td></tr>
+      <tr><td>点击未来日期 / 空白占位</td><td>无响应</td></tr>
+    </table>
+  </div>
+
+  <h3>C. 数据来源</h3>
+  <p style="font-size:12px;color:#5C6178;line-height:1.7;margin-top:8px;">
+    <span style="font-weight:700;">接口</span>：现有 <code>Routine.stat</code> 返回 <code>Stat { total, finished, days?, rowDays? }</code>
+    需要扩展为按日期聚合的数组 <code>StatRecord[] { date, total, finished }</code>，
+    或前端在获取列表时本地计算。
+    热力图只需要 <code>date + status(全部完成/部分完成/未完成)</code>，
+    一次批量获取近 12 个月的数据（最多 365 条，数据量极小）。
+  </p>
+
+  <h3>D. 动效规范</h3>
+  <div class="spec-grid">
+    <div class="spec-card">
+      <h4>面板进出</h4>
+      <div class="spec-item"><span>进入</span> — translateY(100%) → 0, 300ms, ease-out</div>
+      <div class="spec-item"><span>退出</span> — translateY(0) → 100%, 250ms, ease-in</div>
+      <div class="spec-item"><span>遮罩</span> — opacity 0 → 0.3, 同步 300ms</div>
+      <div class="spec-item"><span>手柄</span> — 哑光灰 #D9，高度 5px，宽 36px，表明可拖拽</div>
+    </div>
+    <div class="spec-card">
+      <h4>圆点高亮</h4>
+      <div class="spec-item"><span>今天描边动画</span> — 金色描边从 3px 脉动到 6px（2s 循环）</div>
+      <div class="spec-item"><span>悬停态</span> — 圆点 scale(1.15) + 轻微发光 (150ms)</div>
+      <div class="spec-item"><span>历史日点击</span> — 圆点短暂亮起 (scale 1.2 → 1.0, 200ms) 后关闭面板</div>
+    </div>
+  </div>
+
+  <h3>E. 布局数值</h3>
+  <div class="spec-grid">
+    <div class="spec-card">
+      <h4>圆点参数</h4>
+      <div class="spec-item"><span>圆点直径</span> — 28px（375px 宽设备下），跟随屏幕比例缩放</div>
+      <div class="spec-item"><span>列间距</span> — flex 均分，约 4-6px gap（或使用 calc 计算）</div>
+      <div class="spec-item"><span>行间距</span> — aspect-ratio: 1，正方形格子自然形成行列间距</div>
+      <div class="spec-item"><span>数字字号</span> — 10px（圆点内日期数字）</div>
+    </div>
+    <div class="spec-card">
+      <h4>入口参数</h4>
+      <div class="spec-item"><span>日历图标尺寸</span> — 56×40px，圆角 12px</div>
+      <div class="spec-item"><span>连续天数显示</span> — 18px 粗体 + "天" 字 10px</div>
+      <div class="spec-item"><span>入口气泡色</span> — $gradient，柔阴影</div>
+      <div class="spec-item"><span>可选</span> — 如果连续天数已达里程碑（7/30/100），图标旁加 ✨ 小标记</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
