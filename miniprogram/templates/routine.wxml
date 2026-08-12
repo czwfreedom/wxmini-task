@@ -66,7 +66,7 @@
               <view wx:if="{{ !item.holder }}" class="routine_card_sub">
                 {{ item.detail }}
               </view>
-              <view wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</view>
+              <text wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</text>
             </view>
             <view
               wx:if="{{ updateable }}"

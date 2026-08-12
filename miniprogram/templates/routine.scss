@@ -222,6 +222,8 @@
     }
 
     &_remark {
+      display: block;
+      text-align: left;
       font-size: 24rpx;
       color: $green;
       margin-top: 16rpx;

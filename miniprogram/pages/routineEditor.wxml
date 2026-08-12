@@ -34,7 +34,7 @@
 
       <!-- 2. 任务内容 -->
       <view class="croutine_section">
-        <view class="croutine_section_title">{{ finishing ? '任务反馈' : '写下来吧 ✍️' }}</view>
+        <view class="croutine_section_title">{{ finishing ? '任务反馈' : '写具体点吧 ✍️' }}</view>
 
         <view wx:if="{{ contentHint }}" class="croutine_detail_hint">{{ contentHint }}</view>
         <view class="croutine_detail">
