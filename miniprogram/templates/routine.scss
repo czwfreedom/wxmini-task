@@ -164,10 +164,14 @@
     position: relative;
     @include card;
     padding: 32rpx 32rpx 32rpx 0;
-    display: flex;
-    align-items: center;
+    @include flex-layout(column, flex-start, flex-start);
     overflow: hidden;
     margin-top: 28rpx;
+
+    &_main {
+      width: 100%;
+      @include flex-layout;
+    }
 
     &:first-child {
       margin-top: 0;
@@ -222,11 +226,15 @@
     }
 
     &_remark {
+      &_container {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 16rpx 0 0 32rpx;
+      }
       display: block;
       text-align: left;
       font-size: 24rpx;
       color: $green;
-      margin-top: 16rpx;
       padding: 12rpx 20rpx;
       background: $background-green-light;
       border-radius: 16rpx;

@@ -60,29 +60,35 @@
             data-id="{{ item.id }}"
             hover-class="{{ addable && !item.holder? 'press' : '' }}"
           >
-            <view class="routine_card_accent" style="background:{{ item.color }};"></view>
-            <view class="routine_card_icon">
-              <image src="{{ item.icon }}" class="routine_card_icon_img" mode="aspectFit" />
-            </view>
-            <view class="routine_card_body">
-              <view class="routine_card_title">{{ item.name }}</view>
-              <view wx:if="{{ !item.holder }}" class="routine_card_sub">
-                {{ item.detail }}
+            <view class="routine_card_main">
+              <view class="routine_card_accent" style="background:{{ item.color }};"></view>
+              <view class="routine_card_icon">
+                <image src="{{ item.icon }}" class="routine_card_icon_img" mode="aspectFit" />
               </view>
-              <text wx:if="{{ item.remark }}" class="routine_card_remark">"{{ item.remark }}"</text>
+              <view class="routine_card_body">
+                <view class="routine_card_title">{{ item.name }}</view>
+                <view wx:if="{{ !item.holder }}" class="routine_card_sub">
+                  {{ item.detail }}
+                </view>
+              </view>
+              <view
+                wx:if="{{ updateable }}"
+                class="routine_card_action"
+                catch:tap="onItemTap"
+                data-id="{{ item.id }}"
+                data-button="next"
+                hover-class="press"
+                hover-stop-propagation="true"
+              >
+                <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
+                <view wx:elif="{{ !item.done }}" class="routine_card_btn">去完成</view>
+              </view>
             </view>
-            <view
-              wx:if="{{ updateable }}"
-              class="routine_card_action"
-              catch:tap="onItemTap"
-              data-id="{{ item.id }}"
-              data-button="next"
-              hover-class="press"
-              hover-stop-propagation="true"
-            >
-              <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
-              <view wx:elif="{{ !item.done }}" class="routine_card_btn">去完成</view>
+
+            <view wx:if="{{ item.remark }}" class="routine_card_remark_container">
+              <text class="routine_card_remark">{{ item.remark }}</text>
             </view>
+
             <view wx:if="{{ item.done }}" class="routine_card_stamp">
               <image
                 class="routine_card_stamp_img"
@@ -95,7 +101,7 @@
           <!-- 空状态 -->
           <view wx:if="{{ records.length === 0 }}" class="routine_empty">
             <text class="routine_empty_text">
-              {{ addable ? '还没有任务，去创建吧 🎉' : '这一天还没有记录' }}
+              {{ addable ? '还没有任务，去创建吧 🎉' : '这一天没有记录' }}
             </text>
           </view>
 
