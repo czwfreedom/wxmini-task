@@ -283,7 +283,9 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     this.hideLoading();
 
     if ('number' === typeof res) {
-      this.showErrToast(res);
+      this.showToast(
+        res === Err.Code.OverLimited ? '过犹不及，今天的任务太多啦' : Err.getMessage(res)
+      );
       return;
     }
 
