@@ -24,12 +24,14 @@ export namespace RoutineEditorUI {
     /** 常用分类列表，最后一个是“更多”选项 */
     categories: Category[];
 
+    // 很想把这个统统放到一个结构里。
     /** 任务内容 */
     contentHint?: string;
     contentHolder?: string;
-
     contentText: string;
     contentMaxLength: number;
+    contentStyle?: string;
+
     contentCharCount: number;
     /** 示例提示词（数据驱动，可能为空） */
     contentExamples: Example[];

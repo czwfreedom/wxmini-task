@@ -39,7 +39,7 @@
         <view wx:if="{{ contentHint }}" class="croutine_detail_hint">{{ contentHint }}</view>
         <view class="croutine_detail">
           <textarea
-            class="croutine_detail_input"
+            class="croutine_detail_input {{ contentStyle || '' }}"
             placeholder="{{  contentHolder || (selectedCategoryId ? '想做什么呢？' : '请先选择任务类型') }}"
             maxlength="{{ contentMaxLength }}"
             value="{{ contentText }}"

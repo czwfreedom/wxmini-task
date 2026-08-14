@@ -117,6 +117,10 @@
       color: $gray-33;
       line-height: 1.4;
       min-height: 96rpx;
+
+      &.h {
+        min-height: 192rpx;
+      }
     }
     &_footer {
       display: flex;

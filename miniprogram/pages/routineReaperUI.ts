@@ -34,6 +34,7 @@ export class RoutineReaperUI extends RoutineEditorUI {
       contentCharCount: remark.length,
       contentHolder: config.finish || '说说做了什么吧',
       contentHint: `任务：${info.detail}`,
+      contentStyle: 'h',
       menus: this.getMenus(),
     });
     return 0;
