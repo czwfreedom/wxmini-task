@@ -22,12 +22,16 @@ export namespace Relation {
     userCount: number;
   }
 
+  export interface ListRequest extends Info {
+    withStat: boolean;
+  }
+
   export interface ListResponse {
     data: Info[];
     users: User[];
   }
 
-  export async function list(data: Partial<Info>): Promise<number | ListResponse> {
+  export async function list(data: Partial<ListRequest>): Promise<number | ListResponse> {
     const res = await Network.post<Info[]>(Api.ListRelation, data);
     if (res?.errcode !== 0) {
       Logger.warn('List relation failed', res);

@@ -20,7 +20,7 @@ export class RelationsAdapter {
 
   public async load(): Promise<number> {
     const userId = Context.getUserId();
-    const params = this.canManage() ? { userId } : { useeId: userId };
+    const params = this.canManage() ? { userId, withStat: true } : { useeId: userId };
 
     const result = await Relation.list(params);
     if ('number' === typeof result) return result;

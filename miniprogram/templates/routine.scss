@@ -7,6 +7,10 @@
   @include flex-container;
   background: $background-gradient;
 
+  &.embed {
+    height: 100%;
+  }
+
   &_content {
     @include flex-scaleable-content;
   }

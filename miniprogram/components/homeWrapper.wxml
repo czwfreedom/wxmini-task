@@ -1,5 +1,9 @@
 <import src="../templates/routine.wxml"></import>
 <import src="../templates/mine.wxml"></import>
 
-<template wx:if="{{ type === 'routine' }}" is="routine" data="{{ ...routine }}"></template>
+<template
+  wx:if="{{ type === 'routine' }}"
+  is="routine"
+  data="{{ ...routine, style: 'embed' }}"
+></template>
 <template wx:if="{{ type === 'mine' }}" is="mine" data="{{ ...mine }}"></template>

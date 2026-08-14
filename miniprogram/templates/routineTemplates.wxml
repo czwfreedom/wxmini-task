@@ -1,1 +1,68 @@
-<template name="routineTemplates"></template>
+<!--
+  RoutineTemplates 日程模板底部弹窗
+  设计参考：schedule-template.html 帧 1
+  结构：遮罩 + 底部滑出面板（把手 / 标题 / 说明 / 模板卡片列表）
+  数据驱动：items 模板列表、每个模板含 name/desc/tag/used/items
+  按钮事件 onTemplateUseTap 预留为空
+-->
+<template name="routineTemplates">
+  <view class="rtemplate">
+    <!-- 遮罩 -->
+    <view class="rtemplate_mask" catch:tap="onTemplateMaskTap"></view>
+
+    <!-- 底部弹窗面板 -->
+    <view class="rtemplate_sheet">
+      <!-- 把手 -->
+      <view class="rtemplate_handle"></view>
+
+      <!-- 标题 -->
+      <view class="rtemplate_title">{{ name }}</view>
+
+      <!-- 说明 -->
+      <view wx:if="{{ desc }}" class="rtemplate_desc">{{ desc }}</view>
+
+      <!-- 模板列表 -->
+      <view class="rtemplate_list">
+        <view wx:for="{{ items }}" wx:key="id" class="rtemplate_card" data-id="{{ item.id }}">
+          <!-- 头部：名称 + 标签 -->
+          <view class="rtemplate_card_head">
+            <view class="rtemplate_card_name">{{ item.name }}</view>
+            <view wx:if="{{ item.tag }}" class="rtemplate_card_tag {{ item.tag }}">
+              {{ item.tag === 'hot' ? '热门' : '官方' }}
+            </view>
+          </view>
+
+          <!-- 描述 -->
+          <view wx:if="{{ item.desc }}" class="rtemplate_card_desc">{{ item.desc }}</view>
+
+          <!-- 任务项 chips -->
+          <view class="rtemplate_card_items">
+            <view
+              wx:for="{{ item.items }}"
+              wx:for-item="task"
+              wx:for-index="tindex"
+              wx:key="tindex"
+              class="rtemplate_card_task"
+            >
+              <view class="rtemplate_card_task_dot" style="background: {{ task.color }};"></view>
+              <text>{{ task.name }}</text>
+            </view>
+          </view>
+
+          <!-- 底部：使用人数 + 按钮 -->
+          <view class="rtemplate_card_foot">
+            <view class="rtemplate_card_used">{{ item.used || '' }}</view>
+            <view
+              class="rtemplate_card_btn"
+              catch:tap="onTemplateUseTap"
+              data-id="{{ item.id }}"
+              hover-class="press"
+            >
+              选这个
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>

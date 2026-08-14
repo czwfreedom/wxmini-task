@@ -17,6 +17,7 @@ export namespace RoutineUI {
   export interface Data extends SubUI.Data {
     updateable: boolean;
     addable: boolean;
+    finishable: boolean;
     /** 今天的任务是否已全部完成 */
     isAllDone: boolean;
     /** 任务列表 */
@@ -95,6 +96,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       abortMessage: '',
       updateable: false,
       addable: false,
+      finishable: false,
       isAllDone: false,
       records: [],
       isToday: true,
@@ -129,7 +131,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     this.setData({
       loaded: true,
       isToday,
-      dateLabel: isToday ? '今天是' : '回顾',
+      dateLabel: isToday ? '今天是' : this.date > today ? '提前规划' : '回顾',
       dateMain: DateUtils.formatDate(this.date, 'M月d日 周E'),
       pickerValue: DateUtils.formatDate(this.date, 'yyyy-MM-dd'),
       pickerEnd: DateUtils.formatDate(today, 'yyyy-MM-dd'),
@@ -149,8 +151,13 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   protected onNextDay() {
     Logger.info('onNextDay');
     const today = DateUtils.getStartMillisOfDay(Date.now());
-    const next = this.date + 24 * 3600 * 1000;
-    if (next > today) return;
+    const next = this.date + DateUtils.sDayMillis;
+    const isSelf = this.userId === Context.getUserId();
+    const pre = isSelf ? DateUtils.sDayMillis : 0;
+    if (next > today + pre) {
+      if (isSelf) this.showToast('只支持提前一天规划任务');
+      return;
+    }
     this.loadDate(next);
   }
 
@@ -212,7 +219,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     if (vm && !info) {
       if (id.startsWith('holder')) {
         Intent.navigateTo(Constants.Page.CreateRoutine, {
-          data: { category: vm.category },
+          data: { category: vm.category, date: this.date },
         } as Intent.Wrap<Partial<Routine.Info>>);
       }
     } else if (info) {

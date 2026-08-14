@@ -1,7 +1,7 @@
 <template name="routine">
   <import src="../templates/abort.wxml"></import>
   <import src="../templates/dialog.wxml"></import>
-  <view class="routine">
+  <view class="routine {{ style || '' }}">
     <view class="routine_content">
       <scroll-view wx:if="{{ loaded }}" class="routine_scroll" scroll-y="true">
         <!-- Hero 顶部（历史态加 past 褪色） -->
@@ -81,7 +81,9 @@
                 hover-stop-propagation="true"
               >
                 <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
-                <view wx:elif="{{ !item.done }}" class="routine_card_btn">去完成</view>
+                <view wx:elif="{{ !item.done && finishable }}" class="routine_card_btn">
+                  去完成
+                </view>
               </view>
             </view>
 

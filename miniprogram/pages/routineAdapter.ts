@@ -9,7 +9,7 @@ export class RoutineAdapter {
   protected infos: Routine.Info[] = [];
   protected updateable = false;
   protected addable = false;
-
+  protected finishable = false;
   protected date = 0;
 
   protected defaults = RoutineAdapter.getDefaults();
@@ -31,7 +31,9 @@ export class RoutineAdapter {
   public async load(date: number, userId?: string): Promise<number> {
     this.date = date;
     this.updateable = !userId || userId === Context.getUserId();
-    this.addable = this.updateable && date === DateUtils.getStartMillisOfDay(Date.now());
+    const today = DateUtils.getStartMillisOfDay(Date.now());
+    this.addable = this.updateable && date >= today;
+    this.finishable = this.updateable && date <= today;
     const result = await Routine.list(date, userId);
     if (typeof result === 'number') return result;
     this.infos = result;
@@ -90,6 +92,7 @@ export class RoutineAdapter {
     return {
       updateable: this.updateable,
       addable: this.addable,
+      finishable: this.finishable,
       isAllDone,
       records,
       stats: [
