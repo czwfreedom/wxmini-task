@@ -1,4 +1,5 @@
 export namespace DateUtils {
+  export const sDayMillis = 86400000;
   const sWeekDay = ['日', '一', '二', '三', '四', '五', '六'];
 
   export function getStartMillisOfDay(millis: number): number {

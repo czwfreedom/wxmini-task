@@ -1,7 +1,10 @@
 import { Constants } from '../constant/common';
+import { Event } from '../core/event';
+import { EventBus } from '../core/eventBus';
 import { Intent } from '../core/intent';
 import { Entity } from '../model/entity';
 import { MenuUI } from '../ui/menuUI';
+import { Logger } from '../utils/logger';
 import { WxUtils } from '../utils/wxUtils';
 
 Page({
@@ -10,6 +13,9 @@ Page({
     tabs: { id: '', items: [] } as MenuUI.ImageTabs,
     isTabVisible: true,
   },
+
+  // 双击检测：记录上一次点击的 tab 与时间。
+  _lastTabTime: 0,
 
   onLoad() {
     this.init();
@@ -37,6 +43,7 @@ Page({
 
   onTabTap(e: WechatMiniprogram.TouchEvent) {
     const { id } = e.currentTarget.dataset;
+    let tapMillis = 0;
     if (id === 'add') {
       WxUtils.hapticLight();
       Intent.navigateTo(Constants.Page.CreateRoutine);
@@ -44,8 +51,23 @@ Page({
       const res = Entity.find(this.getRealTabs(), id);
       if (res.item && res.index !== this.data.current) {
         this.setCurrent(res.index);
+      } else if (res.item && res.index === this.data.current) {
+        const ms = this._lastTabTime;
+        const now = Date.now();
+        if (ms && now - ms < 300) {
+          this.onTabDoubleTap(e);
+        } else {
+          tapMillis = now;
+        }
       }
     }
+    this._lastTabTime = tapMillis;
+  },
+
+  onTabDoubleTap(e: WechatMiniprogram.TouchEvent) {
+    const { id } = e.currentTarget.dataset;
+    Logger.info('onDoubleTap', 'home', id);
+    EventBus.emit(Event.Name.OnDoubleTap, { from: 'home', button: id });
   },
 
   init() {

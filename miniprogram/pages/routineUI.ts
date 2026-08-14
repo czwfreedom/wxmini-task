@@ -60,14 +60,14 @@ export namespace RoutineUI {
 
 export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   protected adapter = new RoutineAdapter();
-  protected date: number;
+  protected date: number = 0;
+  protected isToday: boolean = true;
+  protected timer?: number;
   protected userId: string;
 
   public constructor(component: any, subDataKey = '', userId?: string) {
     super(component, subDataKey);
-
-    this.date = DateUtils.getStartMillisOfDay(Date.now());
-    this.userId = userId || Context.getUserId();
+    this.userId = this.userId = userId || Context.getUserId();
 
     this.bindEvent('onItemTap', this.onItemTap);
     this.bindEvent('onShareTap', this.onShareTap);
@@ -80,6 +80,11 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       if (ev?.id && ev?.userId === this.userId && this.date === ev.date) {
         this.adapter.addInfo(ev);
         this.updateView();
+      }
+    });
+    this.registerEventBus(Event.Name.OnDoubleTap, (ev: Event.DoubleTap) => {
+      if (ev?.button === 'routine' && ev?.from === 'home' && this.getData().loaded) {
+        this.loadData();
       }
     });
   }
@@ -101,18 +106,26 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     };
   }
 
+  /**
+   * @override
+   */
+  public release(): void {
+    this.resetTimer(true);
+    super.release();
+  }
+
   public async loadData(): Promise<number> {
-    return this.loadDate(this.date);
+    return this.loadDate(Date.now());
   }
 
   /** 加载指定日期并刷新视图，供翻页/选择器/回到今天复用 */
   protected async loadDate(date: number): Promise<number> {
-    this.date = date;
+    this.updateDate(date);
     const errcode = await this.adapter.load(this.date, this.userId);
     if (errcode !== Err.Code.OK) return this.abort(errcode);
 
     const today = DateUtils.getStartMillisOfDay(Date.now());
-    const isToday = this.date === today;
+    const isToday = this.isToday;
     this.setData({
       loaded: true,
       isToday,
@@ -122,6 +135,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       pickerEnd: DateUtils.formatDate(today, 'yyyy-MM-dd'),
       ...this.adapter.adapt(),
     });
+    this.resetTimer();
     return 0;
   }
 
@@ -152,7 +166,37 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   /** 回到今天 */
   protected onBackToday() {
     Logger.info('onBackToday');
-    this.loadDate(DateUtils.getStartMillisOfDay(Date.now()));
+    this.loadDate(Date.now());
+  }
+
+  /**
+   * 跨天的情况下，没有自动刷新，所以自己引入一个计时器。
+   */
+  protected resetTimer(force = false) {
+    if (!this.isToday || force) {
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = undefined;
+      }
+    } else {
+      if (!this.timer) {
+        const date = this.date;
+        const millis = this.date + DateUtils.sDayMillis - Date.now();
+        if (millis > 0) {
+          this.timer = setTimeout(() => {
+            this.timer = undefined;
+            if (this.isToday && date === this.date) {
+              this.loadData();
+            }
+          }, millis);
+        }
+      }
+    }
+  }
+
+  protected updateDate(ms: number, format = true) {
+    this.date = format ? DateUtils.getStartMillisOfDay(ms) : ms;
+    this.isToday = this.date === DateUtils.getStartMillisOfDay(Date.now());
   }
 
   protected updateView() {
