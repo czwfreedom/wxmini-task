@@ -174,12 +174,12 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
    */
   protected resetTimer(force = false) {
     if (!this.isToday || force) {
-      if (this.timer) {
+      if (this.timer !== undefined) {
         clearTimeout(this.timer);
         this.timer = undefined;
       }
     } else {
-      if (!this.timer) {
+      if (this.timer === undefined && this.userId === Context.getUserId()) {
         const date = this.date;
         const millis = this.date + DateUtils.sDayMillis - Date.now();
         if (millis > 0) {
