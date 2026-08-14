@@ -1,0 +1,21 @@
+@import '../assets/style/var.scss';
+@import '../assets/style/mixin.scss';
+
+.rtemplate {
+  // ---- 遮罩 ----
+  &_mask {
+    height: 320rpx;
+    background: $black4;
+  }
+
+  @include flex-container;
+  background: $background-gradient;
+
+  &_content {
+    @include flex-scaleable-content;
+  }
+
+  &_scroll {
+    @include flex-scaleable-scroll-view;
+  }
+}
