@@ -46,7 +46,7 @@ Page({
     let tapMillis = 0;
     if (id === 'add') {
       WxUtils.hapticLight();
-      Intent.navigateTo(Constants.Page.CreateRoutine);
+      EventBus.emit(Event.Name.onAddTap);
     } else {
       const res = Entity.find(this.getRealTabs(), id);
       if (res.item && res.index !== this.data.current) {

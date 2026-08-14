@@ -10,6 +10,10 @@ export namespace DateUtils {
     return date.getTime();
   }
 
+  export function getToday(): number {
+    return getStartMillisOfDay(Date.now());
+  }
+
   export function formatTime(timestamp: number) {
     return formatDate(timestamp, 'yyyy-MM-dd hh:mm:ss');
   }

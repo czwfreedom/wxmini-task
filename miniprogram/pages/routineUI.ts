@@ -15,9 +15,24 @@ import { UserUpdaterUI } from '../ui/userUpdaterUI';
 
 export namespace RoutineUI {
   export interface Data extends SubUI.Data {
+    /**
+     * 是否可以更新。自己的，且今天及之后可以更新。
+     */
     updateable: boolean;
+    /**
+     * 是否可以添加。自己的，且今天及之后可以添加。
+     */
     addable: boolean;
+    /**
+     * 是否可以完成。自己的，且今天及之前的可以完成。
+     */
     finishable: boolean;
+
+    /**
+     * 是否可以“下一天”
+     */
+    nextable: boolean;
+
     /** 今天的任务是否已全部完成 */
     isAllDone: boolean;
     /** 任务列表 */
@@ -61,14 +76,12 @@ export namespace RoutineUI {
 
 export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   protected adapter = new RoutineAdapter();
-  protected date: number = 0;
-  protected isToday: boolean = true;
+  protected date = 0;
   protected timer?: number;
-  protected userId: string;
 
   public constructor(component: any, subDataKey = '', userId?: string) {
     super(component, subDataKey);
-    this.userId = this.userId = userId || Context.getUserId();
+    this.adapter.userId = userId || Context.getUserId();
 
     this.bindEvent('onItemTap', this.onItemTap);
     this.bindEvent('onShareTap', this.onShareTap);
@@ -78,10 +91,16 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     this.bindEvent('onBackToday', this.onBackToday);
 
     this.registerEventBus(Event.Name.RoutineUpdated, (ev: Routine.Info) => {
-      if (ev?.id && ev?.userId === this.userId && this.date === ev.date) {
+      if (ev?.id && ev?.userId === this.adapter?.userId && this.date === ev.date) {
         this.adapter.addInfo(ev);
         this.updateView();
       }
+    });
+    this.registerEventBus(Event.Name.onAddTap, () => {
+      const date = this.adapter.isFuture() ? this.date : this.adapter.getToday();
+      Intent.navigateTo(Constants.Page.CreateRoutine, {
+        data: { date: date },
+      } as Intent.Wrap<Partial<Routine.Info>>);
     });
     this.registerEventBus(Event.Name.OnDoubleTap, (ev: Event.DoubleTap) => {
       if (ev?.button === 'routine' && ev?.from === 'home' && this.getData().loaded) {
@@ -97,6 +116,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       updateable: false,
       addable: false,
       finishable: false,
+      nextable: false,
       isAllDone: false,
       records: [],
       isToday: true,
@@ -122,21 +142,11 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
 
   /** 加载指定日期并刷新视图，供翻页/选择器/回到今天复用 */
   protected async loadDate(date: number): Promise<number> {
-    this.updateDate(date);
-    const errcode = await this.adapter.load(this.date, this.userId);
+    date = DateUtils.getStartMillisOfDay(date);
+    this.date = date; // 有太多引用了，故也保存在这里。
+    const errcode = await this.adapter.load(date);
     if (errcode !== Err.Code.OK) return this.abort(errcode);
-
-    const today = DateUtils.getStartMillisOfDay(Date.now());
-    const isToday = this.isToday;
-    this.setData({
-      loaded: true,
-      isToday,
-      dateLabel: isToday ? '今天是' : this.date > today ? '提前规划' : '回顾',
-      dateMain: DateUtils.formatDate(this.date, 'M月d日 周E'),
-      pickerValue: DateUtils.formatDate(this.date, 'yyyy-MM-dd'),
-      pickerEnd: DateUtils.formatDate(today, 'yyyy-MM-dd'),
-      ...this.adapter.adapt(),
-    });
+    this.setData({ loaded: true, ...this.adapter.adapt() });
     this.resetTimer();
     return 0;
   }
@@ -150,11 +160,10 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   /** 后一天，今天已到上限则禁用（WXML 同步置灰） */
   protected onNextDay() {
     Logger.info('onNextDay');
-    const today = DateUtils.getStartMillisOfDay(Date.now());
     const next = this.date + DateUtils.sDayMillis;
-    const isSelf = this.userId === Context.getUserId();
-    const pre = isSelf ? DateUtils.sDayMillis : 0;
-    if (next > today + pre) {
+    const max = this.adapter.getMaxMillis();
+    if (next > max) {
+      const isSelf = this.adapter.isSelf();
       if (isSelf) this.showToast('只支持提前一天规划任务');
       return;
     }
@@ -180,30 +189,23 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
    * 跨天的情况下，没有自动刷新，所以自己引入一个计时器。
    */
   protected resetTimer(force = false) {
-    if (!this.isToday || force) {
-      if (this.timer !== undefined) {
-        clearTimeout(this.timer);
-        this.timer = undefined;
-      }
-    } else {
-      if (this.timer === undefined && this.userId === Context.getUserId()) {
-        const date = this.date;
-        const millis = this.date + DateUtils.sDayMillis - Date.now();
-        if (millis > 0) {
-          this.timer = setTimeout(() => {
-            this.timer = undefined;
-            if (this.isToday && date === this.date) {
-              this.loadData();
-            }
-          }, millis);
-        }
+    if (this.timer !== undefined) {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+    }
+
+    if (this.adapter.isSelf() && this.adapter.isToday && !force) {
+      const date = this.date;
+      const millis = date + DateUtils.sDayMillis - Date.now();
+      if (millis > 0) {
+        this.timer = setTimeout(() => {
+          this.timer = undefined;
+          if (this.adapter.isToday && date === this.date) {
+            this.loadData();
+          }
+        }, millis);
       }
     }
-  }
-
-  protected updateDate(ms: number, format = true) {
-    this.date = format ? DateUtils.getStartMillisOfDay(ms) : ms;
-    this.isToday = this.date === DateUtils.getStartMillisOfDay(Date.now());
   }
 
   protected updateView() {
@@ -213,7 +215,6 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   /** 切换任务状态：进行中 ↔ 已完成 */
   protected async onItemTap(e: WechatMiniprogram.TouchEvent) {
     const { id, button } = e.currentTarget.dataset;
-
     const vm = Entity.find(this.getData().records, id).item;
     const info = this.adapter.getInfo(id);
     if (vm && !info) {
@@ -224,12 +225,8 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       }
     } else if (info) {
       const edit = button !== 'next';
-      if (edit) {
-        const day = DateUtils.getStartMillisOfDay(Date.now());
-        // 不是当天的任务不能更新。
-        if (day !== info.date) return;
-      }
-      if (this.getData().updateable) {
+      if (edit && !this.getData().updateable) return;
+      if (this.getData().updateable || this.getData().finishable) {
         Intent.navigateTo(Constants.Page.CreateRoutine, {
           type: Routine.isDone(info) || !edit ? Entity.Action.Finish : Entity.Action.Update,
           data: info,

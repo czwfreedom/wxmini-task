@@ -7,15 +7,21 @@ import { RoutineUI } from './routineUI';
 
 export class RoutineAdapter {
   protected infos: Routine.Info[] = [];
-  protected updateable = false;
-  protected addable = false;
-  protected finishable = false;
-  protected date = 0;
+  public updateable = false;
+  public addable = false;
+  public finishable = false;
+  public isToday = false;
+  public date = 0;
+  public userId = Context.getUserId();
 
   protected defaults = RoutineAdapter.getDefaults();
 
   public getInfo(id: string): Routine.Info | undefined {
     return Entity.find(this.infos, id).item;
+  }
+
+  public isSelf(): boolean {
+    return this.userId === Context.getUserId();
   }
 
   public addInfo(info: Routine.Info) {
@@ -28,13 +34,16 @@ export class RoutineAdapter {
   }
 
   /** 加载指定日期的任务数据，返回错误码 */
-  public async load(date: number, userId?: string): Promise<number> {
+  public async load(date: number): Promise<number> {
+    const today = this.getToday();
+    const isSelf = this.isSelf();
+
     this.date = date;
-    this.updateable = !userId || userId === Context.getUserId();
-    const today = DateUtils.getStartMillisOfDay(Date.now());
-    this.addable = this.updateable && date >= today;
-    this.finishable = this.updateable && date <= today;
-    const result = await Routine.list(date, userId);
+    this.isToday = date === today;
+    this.updateable = isSelf && date >= today;
+    this.addable = isSelf && date >= today;
+    this.finishable = isSelf && date <= today;
+    const result = await Routine.list(date, this.userId);
     if (typeof result === 'number') return result;
     this.infos = result;
     return Err.Code.OK;
@@ -89,10 +98,20 @@ export class RoutineAdapter {
 
     const isAllDone = count > 0 && doneCount === count;
 
+    const isToday = this.isToday;
+    const date = this.date;
+    const today = this.getToday();
+    const maxMillis = this.getMaxMillis(today);
     return {
       updateable: this.updateable,
       addable: this.addable,
       finishable: this.finishable,
+      nextable: maxMillis > date,
+      isToday,
+      dateLabel: isToday ? '今天是' : date > today ? '提前规划' : '回顾',
+      dateMain: DateUtils.formatDate(date, 'M月d日 周E'),
+      pickerValue: DateUtils.formatDate(date, 'yyyy-MM-dd'),
+      pickerEnd: DateUtils.formatDate(maxMillis, 'yyyy-MM-dd'),
       isAllDone,
       records,
       stats: [
@@ -101,6 +120,19 @@ export class RoutineAdapter {
         { id: 'done', name: `已完成 ${doneCount}`, style: 'done' },
       ],
     };
+  }
+
+  public getToday(): number {
+    return DateUtils.getToday();
+  }
+
+  public isFuture(): boolean {
+    return this.date > this.getToday();
+  }
+
+  public getMaxMillis(today?: number): number {
+    if (!today) today = this.getToday();
+    return today + (this.isSelf() ? DateUtils.sDayMillis : 0);
   }
 
   protected getHolder(category: Routine.Category): Routine.Info {

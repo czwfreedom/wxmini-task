@@ -2,6 +2,8 @@ export namespace Event {
   export const enum Name {
     OnDoubleTap = 'OnDoubleTap',
 
+    onAddTap = 'OnAddTap',
+
     /**
      * 任务创建、更新成功
      */

@@ -14,7 +14,7 @@
                 class="routine_hero_datewrap"
                 mode="date"
                 value="{{ pickerValue }}"
-                start="2026-07-01"
+                start="2026-08-01"
                 end="{{ pickerEnd }}"
                 bindchange="onDatePicked"
               >
@@ -22,12 +22,12 @@
                 <view class="routine_hero_date">{{ dateMain }}</view>
               </picker>
               <!-- prettier-ignore -->
-              <view class="routine_hero_arrow {{ isToday ? 'disabled' : '' }}" catch:tap="onNextDay" hover-class="press">›</view>
+              <view class="routine_hero_arrow {{ !nextable ? 'disabled' : '' }}" catch:tap="onNextDay" hover-class="press">›</view>
             </view>
 
             <!-- prettier-ignore -->
             <view class="routine_hero_motto {{ isAllDone ? 'celebrate' : '' }}">
-              ✦ {{ isAllDone ? '今天全搞定，太厉害了！🎉' : (isToday ? '又是闪闪发光的一天！⭐' : '每一步都算数') }}
+              ✦ {{ isAllDone ? '今天全搞定，太厉害了！🎉' : (addable ? '又是闪闪发光的一天！⭐' : '每一步都算数') }}
             </view>
             <view wx:if="{{ stats && stats.length}}" class="routine_hero_stats">
               <view
@@ -56,9 +56,9 @@
             wx:for="{{ records }}"
             wx:key="id"
             class="routine_card {{ item.style || '' }} {{ isToday && item.done ? 'harvest' : '' }}"
-            catch:tap="{{ addable && !item.holder? 'onItemTap' : '' }}"
+            catch:tap="{{ updateable && !item.holder? 'onItemTap' : '' }}"
             data-id="{{ item.id }}"
-            hover-class="{{ addable && !item.holder? 'press' : '' }}"
+            hover-class="{{ updateable && !item.holder? 'press' : '' }}"
           >
             <view class="routine_card_main">
               <view class="routine_card_accent" style="background:{{ item.color }};"></view>
@@ -72,7 +72,7 @@
                 </view>
               </view>
               <view
-                wx:if="{{ updateable }}"
+                wx:if="{{ addable || finishable }}"
                 class="routine_card_action"
                 catch:tap="onItemTap"
                 data-id="{{ item.id }}"
@@ -109,7 +109,7 @@
 
           <!-- 分享入口卡（仅今天态） -->
           <view
-            wx:if="{{ addable }}"
+            wx:if="{{ isToday && addable }}"
             class="routine_share"
             catch:tap="onShareTap"
             hover-class="press"

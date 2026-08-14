@@ -88,10 +88,11 @@ export class RoutineEditorAdapter {
   }
 
   /** 获取计划时间选项 VM 列表（按当前小时过滤已过时间 + 带选中态），末尾为自定义入口 */
-  public adaptTimes(planTime?: number): Partial<RoutineEditorUI.Data> {
+  public adaptTimes(planTime?: number, isFuture = false): Partial<RoutineEditorUI.Data> {
     const now = new Date();
-    const hour = now.getHours();
+    const hour = !isFuture ? now.getHours() : 0;
     const filtered = RoutineEditorAdapter.sTimes.filter((item) => {
+      if (isFuture && item.id === 'now') return false;
       if (item.id === 'now' || item.id === 'custom') return true;
       const itemHour = parseInt(item.id.split(':')[0], 10);
       return itemHour > hour;

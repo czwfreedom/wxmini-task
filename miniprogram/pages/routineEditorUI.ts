@@ -69,6 +69,7 @@ export namespace RoutineEditorUI {
 export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
   private adapter = new RoutineEditorAdapter();
   protected entry?: Partial<Routine.Info>;
+  protected isFuture: boolean;
 
   public static readonly sContentMaxLength = 128;
 
@@ -76,6 +77,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     super(component);
 
     this.entry = intent;
+    this.isFuture = (intent?.date || 0) > Date.now();
 
     this.bindEvent('onCategoryTap', this.onCategoryTap);
     this.bindEvent('onContentInput', this.onContentInput);
@@ -121,7 +123,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     const entry = this.entry;
     const categories = this.adapter.adaptCategories();
     const durations = this.adapter.adaptDurations((entry?.duration || 0) / 60000 || 30);
-    const times = this.adapter.adaptTimes(entry?.planTime);
+    const times = this.adapter.adaptTimes(entry?.planTime, this.isFuture);
 
     const detail = entry?.detail || '';
     this.setData(
@@ -255,7 +257,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
   }
 
   protected updating() {
-    return !!this.entry?.id && DateUtils.getStartMillisOfDay(Date.now()) === this.entry.date;
+    return !!this.entry?.id && (this.isFuture || DateUtils.getToday() === this.entry.date);
   }
 
   protected async commit() {
@@ -264,7 +266,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
 
     const updating = this.updating();
     if (this.entry?.id && !updating) {
-      this.showToast('只能修改当天的任务');
+      this.showToast('过去的任务不能修改');
       // 隔天的处理。
       this.setData({ menus: this.getMenus() });
       return;
@@ -359,7 +361,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
   }
 
   private formatPlanTime(v: string): number {
-    const date = new Date(Date.now());
+    const date = new Date(this.entry?.date || Date.now());
     if (v === 'now') {
       date.setSeconds(0, 0);
     } else {
