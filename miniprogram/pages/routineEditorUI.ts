@@ -363,7 +363,8 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
   private formatPlanTime(v: string): number {
     const date = new Date(this.entry?.date || Date.now());
     if (v === 'now') {
-      date.setSeconds(0, 0);
+      const now = new Date();
+      date.setHours(now.getHours(), now.getMinutes(), 0, 0);
     } else {
       const arr = v.split(':');
       const h = arr.length === 2 ? Utils.ZNumber(arr[0], 9) : 9;
