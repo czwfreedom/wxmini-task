@@ -65,6 +65,7 @@
       <view
         wx:if="{{ limited === 1 }}"
         class="common_dialog_cancel"
+        hover-class="press"
         catch:tap="onChoicesMenuTap"
         data-button="cancel"
       >

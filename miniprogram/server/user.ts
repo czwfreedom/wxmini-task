@@ -4,7 +4,6 @@ import { Network } from '../core/network';
 import { Logger } from '../utils/logger';
 import { Entity } from '../model/entity';
 import { Config } from './config';
-import { Routine } from './routine';
 
 export namespace User {
   export interface Info extends Entity.Info {
@@ -12,9 +11,13 @@ export namespace User {
     loginTime?: number;
   }
 
+  export interface RawExtra extends Entity.Id {
+    routineTemplate?: string;
+  }
+
   export interface Extra {
-    data: Config.Info;
-    routineTemplate: Partial<Routine.Info>;
+    data: RawExtra;
+    routineTemplate: Config.Info;
   }
 
   export const sSystem = '1';
@@ -41,12 +44,22 @@ export namespace User {
   }
 
   export async function listInfo(userId: string): Promise<number | Partial<Extra>> {
-    const res = await Network.post<any>(Api.UpdateUser, { id: userId });
+    const res = await Network.post<any>(Api.ListUserInfo, { id: userId });
     if (res.errcode !== 0) {
       Logger.info('Update user info failed', res);
       return res.errcode || Err.Code.Network;
     }
 
+    delete res.errcode;
+    return res;
+  }
+
+  export async function updateInfo(data: Partial<RawExtra>): Promise<number | Partial<Extra>> {
+    const res = await Network.post<any>(Api.UpdateUserInfo, data);
+    if (res.errcode !== 0) {
+      Logger.info('Update user info failed', res);
+      return res.errcode || Err.Code.Network;
+    }
     delete res.errcode;
     return res;
   }

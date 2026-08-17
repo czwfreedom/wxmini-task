@@ -110,6 +110,13 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
         this.loadData();
       }
     });
+    this.registerEventBus(Event.Name.TemplateUpdated, async () => {
+      if (this.getData().loaded) {
+        await this.adapter.loadTemplate(true);
+        this.setData({ loaded: true, ...this.adapter.adapt() });
+      }
+      this.loadData();
+    });
   }
 
   public static defaultData(): RoutineUI.Data {

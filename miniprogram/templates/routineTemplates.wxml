@@ -65,7 +65,12 @@
         </view>
       </view>
       <!-- 单选：底部取消按钮 -->
-      <view class="common_dialog_cancel" catch:tap="onTemplateMenuTap" data-button="cancel">
+      <view
+        class="common_dialog_cancel"
+        hover-class="press"
+        catch:tap="onTemplateMenuTap"
+        data-button="cancel"
+      >
         取消
       </view>
     </view>

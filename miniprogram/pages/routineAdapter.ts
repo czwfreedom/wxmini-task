@@ -1,7 +1,9 @@
 import { Err } from '../constant/error';
 import { Context } from '../core/context';
 import { Entity } from '../model/entity';
+import { Config } from '../server/config';
 import { Routine } from '../server/routine';
+import { User } from '../server/user';
 import { DateUtils } from '../utils/dateUtils';
 import { RoutineUI } from './routineUI';
 
@@ -14,8 +16,7 @@ export class RoutineAdapter {
   public date = 0;
   public userId = Context.getUserId();
 
-  protected defaults = RoutineAdapter.getDefaults();
-
+  public template?: Config.Template;
   public getInfo(id: string): Routine.Info | undefined {
     return Entity.find(this.infos, id).item;
   }
@@ -37,6 +38,8 @@ export class RoutineAdapter {
   public async load(date: number): Promise<number> {
     const today = this.getToday();
     const isSelf = this.isSelf();
+
+    await this.loadTemplate();
 
     this.date = date;
     this.isToday = date === today;
@@ -150,14 +153,33 @@ export class RoutineAdapter {
     };
   }
 
+  public async loadTemplate(reload = true): Promise<number> {
+    if (reload) this.template = undefined;
+    if (this.template || !this.isSelf()) return 0;
+    const exist = Context.get().routineTemplate;
+    const res = exist ? { routineTemplate: exist } : await User.listInfo(Context.getUserId());
+    if ('number' === typeof res) return res;
+    if (res?.routineTemplate) {
+      const items = Config.parseTemplate([res.routineTemplate]);
+      if (items?.length) {
+        this.template = items[0];
+        if (!exist) Context.get().routineTemplate = this.template;
+      }
+    }
+    return 0;
+  }
+
   protected fillHolders(): Routine.Info[] {
     const result = [...this.infos];
     if (!this.addable) return result;
     // 也不非要默认的不可，超过3个以上，就当作有数据了
-    if (result.length >= 3) return result;
+    if (result.length >= 3 && !this.template) return result;
 
     const exists = result.map((item) => item.category);
-    for (const category of this.defaults) {
+    const defaults = this.template?.items?.length
+      ? this.template.items.map((o) => o.category!)
+      : RoutineAdapter.getDefaults();
+    for (const category of defaults) {
       if (!exists.includes(category)) {
         result.push(this.getHolder(category));
       }

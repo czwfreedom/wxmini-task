@@ -1,0 +1,112 @@
+@import './var.scss';
+@import './mixin.scss';
+
+.common_dialog {
+  @include mask($black4);
+  @include flex-layout(column);
+  z-index: 200;
+
+  &_mask {
+    width: 100%;
+    flex: 1 0 88rpx;
+  }
+
+  &_content {
+    box-sizing: border-box;
+    width: 100%;
+    @include flex-layout(column);
+    border-radius: 48rpx 48rpx 0 0;
+    background: $background-white;
+    // padding: 20rpx 24rpx 32rpx;
+    box-shadow: 0 -16rpx 64rpx $black1;
+    animation: dialogSlideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  &_pre {
+    @include flex-layout(column);
+    padding: 0 0 28rpx 0;
+  }
+
+  &_handle {
+    width: 72rpx;
+    height: 8rpx;
+    border-radius: 4rpx;
+    background: $gray-e5;
+    margin: 24rpx 0;
+  }
+
+  &_title {
+    &_container {
+      text-align: center;
+    }
+
+    @include section-title;
+    @include flex-layout;
+  }
+
+  &_desc {
+    font-size: 22rpx;
+    color: $gray-99;
+  }
+
+  &_header {
+    @include flex-layout(row, space-between, center);
+    margin-bottom: 28rpx;
+
+    &_title {
+      font-size: 34rpx;
+      font-weight: 700;
+      color: $gray-33;
+      text-align: center;
+      flex: 1;
+    }
+
+    &_cancel {
+      font-size: 30rpx;
+      color: $gray-99;
+    }
+
+    &_confirm {
+      font-size: 30rpx;
+      font-weight: 600;
+      color: $main;
+    }
+  }
+
+  &_tip {
+    text-align: center;
+    font-size: 22rpx;
+    color: $gray-99;
+    margin-top: 24rpx;
+  }
+
+  /** 单选：底部取消按钮 */
+  &_cancel {
+    margin-top: 16rpx;
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+    border-top: 1rpx solid $border;
+    padding: 28rpx;
+    text-align: center;
+    font-size: 32rpx;
+    font-weight: 500;
+    color: $gray-99;
+  }
+
+  &_items {
+    width: 100%;
+    overflow: scroll;
+    max-height: 70vh;
+    box-sizing: border-box;
+  }
+}
+
+@keyframes dialogSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

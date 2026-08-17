@@ -1,4 +1,6 @@
 import { Err } from '../constant/error';
+import { Context } from '../core/context';
+import { Event } from '../core/event';
 import { SubUI } from '../core/subUI';
 import { Entity } from '../model/entity';
 import { RoutineAdapter } from '../pages/routineAdapter';
@@ -101,9 +103,21 @@ export class RoutineTemplatesUI extends SubUI<RoutineTemplatesUI.WrapData> {
   }
 
   /** 点击「选这个」按钮（预留，行为待定） */
-  protected onUseTap(e: WechatMiniprogram.TouchEvent) {
+  protected async onUseTap(e: WechatMiniprogram.TouchEvent) {
     const { id } = e.currentTarget.dataset;
     Logger.info('onTemplateUseTap', id);
-    // TODO 选中模板后的行为待定
+
+    if (Context.get().routineTemplate?.id !== id) {
+      this.showLoading();
+      const res = await User.updateInfo({ id: Context.getUserId(), routineTemplate: id });
+      this.hideLoading();
+      if ('number' === typeof res) {
+        this.showErrToast(res);
+      } else if (res?.routineTemplate) {
+        Context.get().routineTemplate = res.routineTemplate;
+        this.postEvent(Event.Name.TemplateUpdated);
+      }
+    }
+    this.hide();
   }
 }

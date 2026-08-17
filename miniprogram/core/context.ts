@@ -1,8 +1,10 @@
+import { Config } from '../server/config';
 import { User } from '../server/user';
 
 export namespace Context {
   export interface Info {
     user: User.Info;
+    routineTemplate?: Config.Info;
   }
 
   export function get(): Info {

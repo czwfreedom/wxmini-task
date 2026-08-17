@@ -13,6 +13,11 @@ export namespace Event {
      * 其他地方也得更新。
      */
     RelationUpdated = 'RelationUpdated',
+
+    /**
+     * 模板更新。
+     */
+    TemplateUpdated = 'templateUpdated',
   }
 
   export interface DoubleTap {
