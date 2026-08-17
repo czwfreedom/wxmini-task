@@ -45,9 +45,7 @@ export class ChoicesUI extends SubUI<ChoicesUI.WrapData> {
     super(component);
 
     this.bindEvent('onChoicesItemTap', this.onItemTap);
-    this.bindEvent('onChoicesMaskTap', this.onMaskTap);
-    this.bindEvent('onChoicesCloseTap', this.onCloseTap);
-    this.bindEvent('onChoicesConfirmTap', this.onConfirmTap);
+    this.bindEvent('onChoicesMenuTap', this.onMenuTap);
   }
 
   public static defaultData(): ChoicesUI.Data {
@@ -114,17 +112,13 @@ export class ChoicesUI extends SubUI<ChoicesUI.WrapData> {
     }
   }
 
-  protected onMaskTap() {
-    const data = this.getData().choices;
-    if (!data.modal) this.hide();
-  }
-
-  protected onCloseTap() {
-    this.hide();
-  }
-
-  protected onConfirmTap() {
-    this.listener?.onChoicesDialogConfirmTap?.();
-    this.hide();
+  protected onMenuTap(e: WechatMiniprogram.TouchEvent) {
+    const { button } = e.currentTarget.dataset;
+    if (button === 'cancel') {
+      this.hide();
+    } else if (button === 'confirm') {
+      this.listener?.onChoicesDialogConfirmTap?.();
+      this.hide();
+    }
   }
 }

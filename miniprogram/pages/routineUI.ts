@@ -12,6 +12,7 @@ import { Constants } from '../constant/common';
 import { DialogUI } from '../ui/dialogUI';
 import { WxUtils } from '../utils/wxUtils';
 import { UserUpdaterUI } from '../ui/userUpdaterUI';
+import { RoutineTemplatesUI } from '../ui/routineTemplatesUI';
 
 export namespace RoutineUI {
   export interface Data extends SubUI.Data {
@@ -51,6 +52,7 @@ export namespace RoutineUI {
     stats: Entity.Label[];
 
     dialog?: DialogUI.Data;
+    templates?: RoutineTemplatesUI.Data;
   }
 
   /** ViewModel，仅包含 UI 渲染需要的字段 */
@@ -244,8 +246,16 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   }
 
   /** 模板入口（预留，行为待定） */
-  protected onTemplateTap() {
+  protected async onTemplateTap() {
     Logger.info('onTemplateTap');
-    // TODO
+    this.showLoading();
+    const data = await RoutineTemplatesUI.load();
+    this.hideLoading();
+    if ('number' === typeof data) {
+      this.showErrToast(data);
+      return;
+    }
+    const dialog = new RoutineTemplatesUI(this.component, this.subDataKey);
+    dialog.show(data);
   }
 }

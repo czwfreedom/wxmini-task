@@ -1,6 +1,7 @@
 <template name="routine">
   <import src="../templates/abort.wxml"></import>
   <import src="../templates/dialog.wxml"></import>
+  <import src="../templates/routineTemplates.wxml"></import>
   <view class="routine {{ style || '' }}">
     <view class="routine_content">
       <scroll-view wx:if="{{ loaded }}" class="routine_scroll" scroll-y="true">
@@ -49,7 +50,12 @@
         <!-- 任务列表 -->
         <view class="routine_section {{ isAllDone ? 'celebrate' : '' }}">
           {{ isToday ? (addable? '今天做点啥？' : '伙伴在做啥？') : '当日任务' }}
-          <view wx:if="{{ addable }}" class="routine_section_tpl" catch:tap="onTemplateTap" hover-class="press">
+          <view
+            wx:if="{{ addable }}"
+            class="routine_section_tpl"
+            catch:tap="onTemplateTap"
+            hover-class="press"
+          >
             <text class="routine_section_tpl_star">✦</text>
             <text>模板</text>
           </view>
@@ -144,6 +150,11 @@
     </view>
   </view>
 
+  <template
+    wx:if="{{ templates && templates.id }}"
+    is="routineTemplates"
+    data="{{ ...templates }}"
+  ></template>
   <template wx:if="{{ dialog && dialog.id }}" is="dialog" data="{{ ...dialog }}"></template>
 
   <template

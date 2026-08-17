@@ -1,9 +1,13 @@
+import { Err } from '../constant/error';
 import { SubUI } from '../core/subUI';
 import { Entity } from '../model/entity';
+import { RoutineAdapter } from '../pages/routineAdapter';
+import { Config } from '../server/config';
+import { User } from '../server/user';
 import { Logger } from '../utils/logger';
 
 export namespace RoutineTemplatesUI {
-  export interface Data extends SubUI.Data {
+  export interface Data {
     /** 弹窗 ID，空字符串表示不展示 */
     id: string;
     /** 弹窗标题，如「选个日程模板」 */
@@ -40,19 +44,41 @@ export namespace RoutineTemplatesUI {
 }
 
 export class RoutineTemplatesUI extends SubUI<RoutineTemplatesUI.WrapData> {
-  public constructor(component: any) {
-    super(component);
+  public constructor(component: any, subDataKey = '') {
+    super(component, subDataKey);
     this.bindEvent('onTemplateMaskTap', this.onMaskTap);
     this.bindEvent('onTemplateUseTap', this.onUseTap);
   }
 
   public static defaultData(): RoutineTemplatesUI.Data {
+    return { id: '', name: '', items: [] };
+  }
+
+  public static async load(): Promise<number | RoutineTemplatesUI.Data> {
+    const res = await Config.list({
+      userIds: [User.sSystem],
+      types: [Config.Type.RoutineTemplate],
+    });
+    if ('number' === typeof res) return res;
+
+    const tpls = Config.parseTemplate(res);
+    if (!tpls?.length) return Err.Code.InvalidConfig;
+
+    const vms: RoutineTemplatesUI.Template[] = [];
+    for (const tpl of tpls) {
+      const items: RoutineTemplatesUI.Item[] = [];
+      for (const c of tpl?.items || []) {
+        const config = RoutineAdapter.findConfig(c.category || 0);
+        items.push({ name: config.name, color: config.color });
+      }
+      vms.push({ id: tpl.id, name: tpl.name, desc: tpl.detail, items: items });
+    }
+    debugger;
     return {
-      id: '',
-      loaded: false,
-      abortMessage: '',
-      name: '',
-      items: [],
+      id: 'tpl',
+      name: '选个常用的任务模板',
+      desc: '只提醒，不强制，可随时更换',
+      items: vms,
     };
   }
 

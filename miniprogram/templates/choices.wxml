@@ -4,33 +4,42 @@
   统一选中态：.sel.selected → #F4B942 描边 + #FFFDF8 底 + $gradient 打勾
 -->
 <template name="choices">
-  <view wx:if="{{ id }}" class="choices">
+  <view wx:if="{{ id }}" class="common_dialog">
     <!-- 遮罩 -->
-    <view class="choices_mask" catch:tap="onChoicesMaskTap"></view>
-
+    <view class="common_dialog_mask" catch:tap="onChoicesMenuTap" data-button="cancel"></view>
     <!-- 底部弹窗面板 -->
-    <view class="choices_sheet">
-      <!-- 把手 -->
-      <view class="choices_handle"></view>
-
-      <!-- 单选：居中标题 + 关闭 -->
-      <view wx:if="{{ limited === 1 && title }}" class="choices_sheet_title_row">
-        <view class="choices_title">{{ title }}</view>
-      </view>
-
-      <!-- 多选：Header（取消 | 标题 | 确认） -->
-      <view wx:else class="choices_header">
-        <view class="choices_header_cancel" catch:tap="onChoicesCloseTap">取消</view>
-        <view class="choices_header_title">{{ title }}</view>
-        <view class="choices_header_confirm" catch:tap="onChoicesConfirmTap">
-          {{ confirm || '确定' }}
+    <view class="common_dialog_content">
+      <view class="common_dialog_pre">
+        <!-- 把手 -->
+        <view class="common_dialog_handle"></view>
+        <!-- 单选：居中标题 + 关闭 -->
+        <view wx:if="{{ limited === 1 && title }}" class="common_dialog_title_container">
+          <view class="common_dialog_title">{{ title }}</view>
         </view>
+
+        <!-- 多选：Header（取消 | 标题 | 确认） -->
+        <view wx:else class="common_dialog_header">
+          <view
+            class="common_dialog_header_cancel"
+            catch:tap="onChoicesMenuTap"
+            data-button="cancel"
+          >
+            取消
+          </view>
+          <view class="common_dialog_header_title">{{ title }}</view>
+          <view
+            class="common_dialog_header_confirm"
+            catch:tap="onChoicesMenuTap"
+            data-button="confirm"
+          >
+            {{ confirm || '确定' }}
+          </view>
+        </view>
+
+        <!-- tips（items 上方） -->
+        <view wx:if="{{ tips }}" class="common_dialog_tip">{{ tips }}</view>
       </view>
 
-      <!-- tips（items 上方） -->
-      <view wx:if="{{ tips }}" class="choices_tip">{{ tips }}</view>
-
-      <!-- grid 网格 -->
       <view class="choices_grid {{ grid? 'grid' + grid : '' }}">
         <view
           wx:for="{{ items }}"
@@ -39,7 +48,6 @@
           catch:tap="onChoicesItemTap"
           data-id="{{ item.id }}"
         >
-          <!-- grid='3': 大图标卡片模式 -->
           <view wx:if="{{ item.avatar }}" class="choices_item_avatar_container">
             <image src="{{ item.avatar }}" class="choices_item_avatar" mode="aspectFit" />
           </view>
@@ -53,9 +61,13 @@
           <view wx:if="{{ item.selected && limited > 1 }}" class="choices_checked">✓</view>
         </view>
       </view>
-
       <!-- 单选：底部取消按钮 -->
-      <view wx:if="{{ limited === 1 }}" class="choices_sheet_cancel" catch:tap="onChoicesCloseTap">
+      <view
+        wx:if="{{ limited === 1 }}"
+        class="common_dialog_cancel"
+        catch:tap="onChoicesMenuTap"
+        data-button="cancel"
+      >
         取消
       </view>
     </view>

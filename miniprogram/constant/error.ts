@@ -15,6 +15,7 @@ export namespace Err {
     WxAPIFailed = 10005,
     OverLimited = 10006,
     WXLoginFailed = 30001,
+    InvalidConfig = 30002,
     ServerFailed = 40001,
     Unknown = 50000,
   }
@@ -31,6 +32,7 @@ export namespace Err {
     [Code.OverLimited]: '超出限制',
 
     [Code.WXLoginFailed]: '微信登录失败',
+    [Code.InvalidConfig]: '无效设置，功能未准备好',
     [Code.ServerFailed]: '服务器异常',
   };
 
