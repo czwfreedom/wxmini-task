@@ -77,7 +77,7 @@
               </view>
               <view class="routine_card_body">
                 <view class="routine_card_title">{{ item.name }}</view>
-                <view wx:if="{{ !item.holder }}" class="routine_card_sub">
+                <view wx:if="{{ item.detail }}" class="routine_card_sub">
                   {{ item.detail }}
                 </view>
               </view>

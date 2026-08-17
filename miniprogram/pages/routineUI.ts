@@ -229,8 +229,9 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     const info = this.adapter.getInfo(id);
     if (vm && !info) {
       if (id.startsWith('holder')) {
+        const template = this.adapter.findTemplate(vm.category);
         Intent.navigateTo(Constants.Page.CreateRoutine, {
-          data: { category: vm.category, date: this.date },
+          data: { category: vm.category, date: this.date, duration: template?.duration },
         } as Intent.Wrap<Partial<Routine.Info>>);
       }
     } else if (info) {

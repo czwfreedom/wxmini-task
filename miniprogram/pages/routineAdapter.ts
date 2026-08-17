@@ -72,8 +72,12 @@ export class RoutineAdapter {
           pendingCount++;
         }
       }
-
-      const detail = `${config.name} · ${DateUtils.formatDate(info.planTime || Date.now(), 'hh:mm')}开始 · ${Math.floor(info.duration || 1800000) / 60000}分钟`;
+      let detail = '';
+      if (!holder) {
+        detail = `${config.name} · ${DateUtils.formatDate(info.planTime || Date.now(), 'hh:mm')}开始 · ${Math.floor(info.duration || 1800000) / 60000}分钟`;
+      } else if (info?.duration) {
+        detail = `${Math.floor(info.duration) / 60000}分钟`;
+      }
 
       const record: RoutineUI.Record = {
         id: info.id,
@@ -140,6 +144,7 @@ export class RoutineAdapter {
 
   protected getHolder(category: Routine.Category): Routine.Info {
     const config = RoutineAdapter.findConfig(category);
+    const template = this.findTemplate(category);
     return {
       id: 'holder' + category,
       name: '',
@@ -149,6 +154,7 @@ export class RoutineAdapter {
       userId: '',
       date: this.date,
       transaction: '',
+      duration: template?.duration,
       createTime: Date.now(),
     };
   }
@@ -167,6 +173,10 @@ export class RoutineAdapter {
       }
     }
     return 0;
+  }
+
+  public findTemplate(category: number): Partial<Routine.Info> | undefined {
+    return this.template?.items?.find((o) => o.category === category);
   }
 
   protected fillHolders(): Routine.Info[] {
