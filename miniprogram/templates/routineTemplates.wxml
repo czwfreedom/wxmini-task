@@ -6,23 +6,24 @@
   按钮事件 onTemplateUseTap 预留为空
 -->
 <template name="routineTemplates">
-  <view class="rtemplate">
+  <view class="common_dialog">
     <!-- 遮罩 -->
-    <view class="rtemplate_mask" catch:tap="onTemplateMaskTap"></view>
-
+    <view class="common_dialog_mask" catch:tap="onTemplateMenuTap" data-button="cancel"></view>
     <!-- 底部弹窗面板 -->
-    <view class="rtemplate_sheet">
-      <!-- 把手 -->
-      <view class="rtemplate_handle"></view>
+    <view class="common_dialog_content">
+      <view class="common_dialog_pre">
+        <!-- 把手 -->
+        <view class="common_dialog_handle"></view>
 
-      <!-- 标题 -->
-      <view class="rtemplate_title">{{ name }}</view>
+        <view class="common_dialog_title_container">
+          <view class="common_dialog_title">{{ name }}</view>
+        </view>
 
-      <!-- 说明 -->
-      <view wx:if="{{ desc }}" class="rtemplate_desc">{{ desc }}</view>
-
+        <!-- 说明 -->
+        <view wx:if="{{ desc }}" class="common_dialog_desc">{{ desc }}</view>
+      </view>
       <!-- 模板列表 -->
-      <view class="rtemplate_list">
+      <view class="common_dialog_items rtemplate_items">
         <view wx:for="{{ items }}" wx:key="id" class="rtemplate_card" data-id="{{ item.id }}">
           <!-- 头部：名称 + 标签 -->
           <view class="rtemplate_card_head">
@@ -62,6 +63,10 @@
             </view>
           </view>
         </view>
+      </view>
+      <!-- 单选：底部取消按钮 -->
+      <view class="common_dialog_cancel" catch:tap="onTemplateMenuTap" data-button="cancel">
+        取消
       </view>
     </view>
   </view>

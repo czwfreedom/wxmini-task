@@ -1,65 +1,23 @@
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
+@import '../assets/style/dialog.scss';
 
 /* ==========================================================
    RoutineTemplates 日程模板底部弹窗
    配色全部引用 var.scss 变量
    ========================================================== */
 .rtemplate {
-  @include mask(100);
+  &_items {
+    padding: 0 24rpx;
 
-  &_mask {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: $black4;
-  }
-
-  &_sheet {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: $background-white;
-    border-radius: 48rpx 48rpx 0 0;
-    padding: 20rpx 24rpx 32rpx;
-    box-shadow: 0 -16rpx 64rpx $black1;
-    animation: rtemplateSlideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-    max-height: 80vh;
+    // 纯文本列表（纵向单列）
     display: flex;
     flex-direction: column;
   }
 
-  &_handle {
-    width: 72rpx;
-    height: 8rpx;
-    border-radius: 4rpx;
-    background: $gray-e5;
-    margin: 0 auto 28rpx;
-  }
-
-  &_title {
-    @include section-title;
-    @include flex-layout(row, flex-start);
-    margin-bottom: 8rpx;
-  }
-
-  &_desc {
-    font-size: 22rpx;
-    color: $gray-99;
-    margin-bottom: 24rpx;
-  }
-
-  &_list {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-  }
-
   &_card {
     @include card;
+    border: 1rpx solid $border;
     padding: 28rpx;
     margin-bottom: 20rpx;
 
@@ -145,14 +103,5 @@
       letter-spacing: 1rpx;
       @include press;
     }
-  }
-}
-
-@keyframes rtemplateSlideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
   }
 }

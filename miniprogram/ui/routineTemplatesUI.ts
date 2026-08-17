@@ -46,7 +46,7 @@ export namespace RoutineTemplatesUI {
 export class RoutineTemplatesUI extends SubUI<RoutineTemplatesUI.WrapData> {
   public constructor(component: any, subDataKey = '') {
     super(component, subDataKey);
-    this.bindEvent('onTemplateMaskTap', this.onMaskTap);
+    this.bindEvent('onTemplateMenuTap', this.onMenuTap);
     this.bindEvent('onTemplateUseTap', this.onUseTap);
   }
 
@@ -69,14 +69,14 @@ export class RoutineTemplatesUI extends SubUI<RoutineTemplatesUI.WrapData> {
       const items: RoutineTemplatesUI.Item[] = [];
       for (const c of tpl?.items || []) {
         const config = RoutineAdapter.findConfig(c.category || 0);
-        items.push({ name: config.name, color: config.color });
+        const min = c.duration ? c.duration / 60000 : 0;
+        items.push({ name: `${config.name}${min ? ' ' + min + '分钟' : ''}`, color: config.color });
       }
       vms.push({ id: tpl.id, name: tpl.name, desc: tpl.detail, items: items });
     }
-    debugger;
     return {
       id: 'tpl',
-      name: '选个常用的任务模板',
+      name: '每天做点什么呢？',
       desc: '只提醒，不强制，可随时更换',
       items: vms,
     };
@@ -93,8 +93,11 @@ export class RoutineTemplatesUI extends SubUI<RoutineTemplatesUI.WrapData> {
   }
 
   /** 点击遮罩关闭 */
-  protected onMaskTap() {
-    this.hide();
+  protected onMenuTap(e: WechatMiniprogram.TouchEvent) {
+    const { button } = e.currentTarget.dataset;
+    if (button === 'cancel') {
+      this.hide();
+    }
   }
 
   /** 点击「选这个」按钮（预留，行为待定） */

@@ -40,7 +40,7 @@
         <view wx:if="{{ tips }}" class="common_dialog_tip">{{ tips }}</view>
       </view>
 
-      <view class="choices_grid {{ grid? 'grid' + grid : '' }}">
+      <view class="common_dialog_items choices_grid {{ grid? 'grid' + grid : '' }}">
         <view
           wx:for="{{ items }}"
           wx:key="id"

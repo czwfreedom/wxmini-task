@@ -10,12 +10,7 @@
 .choices {
   // ===== Grid 布局 =====
   &_grid {
-    width: 100%;
-    overflow: scroll;
-    max-height: 840rpx;
-    box-sizing: border-box;
-    margin: 16rpx 0;
-    padding: 16rpx 24rpx;
+    padding: 0 24rpx;
 
     // 纯文本列表（纵向单列）
     display: flex;
@@ -119,14 +114,5 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  // ===== tips =====
-  &_tips {
-    text-align: center;
-    font-size: 22rpx;
-    color: $gray-99;
-    margin-top: 8rpx;
-    margin-bottom: 12rpx;
   }
 }
