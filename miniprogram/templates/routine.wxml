@@ -49,6 +49,10 @@
         <!-- 任务列表 -->
         <view class="routine_section {{ isAllDone ? 'celebrate' : '' }}">
           {{ isToday ? (addable? '今天做点啥？' : '伙伴在做啥？') : '当日任务' }}
+          <view wx:if="{{ addable }}" class="routine_section_tpl" catch:tap="onTemplateTap" hover-class="press">
+            <text class="routine_section_tpl_star">✦</text>
+            <text>模板</text>
+          </view>
         </view>
 
         <view class="routine_cards">

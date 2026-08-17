@@ -155,6 +155,25 @@
         background: $green;
       }
     }
+
+    // 「模板」入口胶囊（仅今天 + 本人可见）
+    &_tpl {
+      margin-left: auto;
+      @include flex-layout(row, flex-start, center);
+      font-size: 22rpx;
+      font-weight: 600;
+      color: $gray-33;
+      background: $background-white;
+      border: 2rpx solid $gold4;
+      border-radius: 24rpx;
+      padding: 6rpx 20rpx;
+
+      &_star {
+        color: $main;
+        margin-right: 6rpx;
+        line-height: 1;
+      }
+    }
   }
 
   // ===== Task Cards =====

@@ -85,6 +85,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
 
     this.bindEvent('onItemTap', this.onItemTap);
     this.bindEvent('onShareTap', this.onShareTap);
+    this.bindEvent('onTemplateTap', this.onTemplateTap);
     this.bindEvent('onPrevDay', this.onPrevDay);
     this.bindEvent('onNextDay', this.onNextDay);
     this.bindEvent('onDatePicked', this.onDatePicked);
@@ -240,5 +241,11 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     WxUtils.hapticLight();
     Logger.info('onShareTap');
     this.share();
+  }
+
+  /** 模板入口（预留，行为待定） */
+  protected onTemplateTap() {
+    Logger.info('onTemplateTap');
+    // TODO
   }
 }
