@@ -99,14 +99,13 @@
 
             <view wx:if="{{ item.remark }}" class="routine_card_remark_container">
               <text class="routine_card_remark">{{ item.remark }}</text>
-            </view>
-
-            <view wx:if="{{ item.done }}" class="routine_card_stamp">
-              <image
-                class="routine_card_stamp_img"
-                src="/assets/imgs/ic-stamp-done.svg"
-                mode="aspectFit"
-              />
+              <view wx:if="{{ item.done }}" class="routine_card_stamp">
+                <image
+                  class="routine_card_stamp_img"
+                  src="/assets/imgs/ic-stamp-done.svg"
+                  mode="aspectFit"
+                />
+              </view>
             </view>
           </view>
 
