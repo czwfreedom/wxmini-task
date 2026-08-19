@@ -486,17 +486,24 @@
     }
 
     &_head {
+      width: 100%;
       display: flex;
-      align-items: baseline;
+      align-items: center;
     }
 
     &_name {
       font-size: 26rpx;
       font-weight: 600;
       color: $gray-33;
+      max-width: 280rpx;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     &_time {
+      flex: 1 1 auto;
+      text-align: left;
       margin-left: 12rpx;
       font-size: 22rpx;
       color: $gray-99;
@@ -512,14 +519,8 @@
       white-space: normal;
     }
 
-    &_actions {
-      display: flex;
-      align-items: center;
-      margin-left: auto;
-      flex-shrink: 0;
-    }
-
     &_action {
+      flex-shrink: 0;
       box-sizing: content-box;
       width: 36rpx;
       height: 36rpx;

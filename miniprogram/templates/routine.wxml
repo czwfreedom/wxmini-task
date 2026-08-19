@@ -149,32 +149,32 @@
                       <view class="routine_comment_head">
                         <text class="routine_comment_name">{{ c.name }}</text>
                         <text class="routine_comment_time">{{ c.hint }}</text>
+                        <image
+                          wx:if="{{ c.editable }}"
+                          class="routine_comment_action"
+                          src="../assets/imgs/ic-delete.svg"
+                          mode="aspectFit"
+                          catch:tap="onItemMenuTap"
+                          data-id="{{ item.id }}"
+                          data-subid="{{ c.id }}"
+                          data-button="deleteComment"
+                          hover-class="press"
+                          hover-stop-propagation="true"
+                        />
+                        <image
+                          wx:if="{{ c.editable }}"
+                          class="routine_comment_action"
+                          src="../assets/imgs/ic-edit.svg"
+                          mode="aspectFit"
+                          catch:tap="onItemMenuTap"
+                          data-id="{{ item.id }}"
+                          data-subid="{{ c.id }}"
+                          data-button="editComment"
+                          hover-class="press"
+                          hover-stop-propagation="true"
+                        />
                       </view>
                       <text class="routine_comment_text">{{ c.desc }}</text>
-                    </view>
-                    <view wx:if="{{ c.editable }}" class="routine_comment_actions">
-                      <image
-                        class="routine_comment_action"
-                        src="../assets/imgs/ic-delete.svg"
-                        mode="aspectFit"
-                        catch:tap="onItemMenuTap"
-                        data-id="{{ item.id }}"
-                        data-subid="{{ c.id }}"
-                        data-button="deleteComment"
-                        hover-class="press"
-                        hover-stop-propagation="true"
-                      />
-                      <image
-                        class="routine_comment_action"
-                        src="../assets/imgs/ic-edit.svg"
-                        mode="aspectFit"
-                        catch:tap="onItemMenuTap"
-                        data-id="{{ item.id }}"
-                        data-subid="{{ c.id }}"
-                        data-button="editComment"
-                        hover-class="press"
-                        hover-stop-propagation="true"
-                      />
                     </view>
                   </view>
                 </block>
