@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>点赞 + 评论 · 基于现有 routine UI 的设计</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:16px}
+  body{background:#E8EFF5;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;padding:32px 24px}
+  .section{width:100%;max-width:920px;margin:0 auto 36px}
+  h2{font-size:21px;font-weight:800;color:#3A5A8C;margin-bottom:14px;padding-left:12px;border-left:4px solid #F4B942}
+  p.desc{font-size:12px;color:#5C6178;line-height:1.8;margin-bottom:14px}
+
+  /* ===== 手机框 ===== */
+  .phone-row{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
+  .phone-col{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .phone-label{font-size:11px;font-weight:800;color:#5C6178;background:#fff;padding:5px 14px;border-radius:10px;box-shadow:0 2px 8px rgba(74,144,226,0.08);text-align:center}
+  .phone{width:300px;height:560px;background:#F2F5F8;border-radius:32px;overflow:hidden;position:relative;box-shadow:0 0 0 3px #1A1A1A,0 0 0 6px #2D2D2D,0 12px 32px rgba(0,0,0,0.22)}
+  .phone-status{height:32px;background:#B8DAF5;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:10px;color:#fff;font-weight:600}
+  .phone-body{height:calc(100% - 32px);overflow-y:auto;background:linear-gradient(180deg,#B8DAF5,#F2F5F8 26%);padding:14px 14px 20px;position:relative}
+  .phone-body::-webkit-scrollbar{width:0}
+
+  /* ===== 还原 routine 真实视觉 ===== */
+  .hero{background:linear-gradient(160deg,#b5d9f8,#a0cdf5 50%,#c5e3fa);border-radius:0 0 16px 16px;padding:14px 16px;margin-bottom:14px}
+  .hero-nav{display:flex;align-items:center;gap:10px}
+  .hero-arrow{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff}
+  .hero-date{flex:1;text-align:center}
+  .hero-label{font-size:10px;color:rgba(255,255,255,0.85)}
+  .hero-main{font-size:22px;font-weight:800;color:#fff}
+  .hero-motto{font-size:11px;color:rgba(255,255,255,0.85);margin-top:2px}
+  .hero-stats{display:flex;gap:8px;margin-top:10px}
+  .hero-stat{font-size:10px;font-weight:600;color:#333;background:rgba(255,255,255,0.6);padding:5px 12px;border-radius:14px;display:flex;align-items:center;gap:5px}
+  .dot{width:7px;height:7px;border-radius:50%;background:#5B9BD5}
+  .dot.pending{background:#F4B942}
+  .dot.done{background:#81C784}
+
+  .section-title{font-size:16px;font-weight:700;color:#333;display:flex;align-items:center;margin:0 6px 12px}
+  .section-title::before{content:'';margin-right:8px;width:4px;height:18px;background:#F4B942;border-radius:2px}
+
+  /* ===== 任务卡片（还原 routine_card） ===== */
+  .card{background:#FDFBF7;border-radius:14px;padding:12px 14px 12px 0;margin:0 6px 10px;position:relative;box-shadow:0 2px 10px rgba(74,144,226,0.05);display:flex;flex-direction:column;overflow:hidden}
+  .card-main{display:flex;align-items:center;gap:10px}
+  .card-accent{position:absolute;left:0;top:14px;bottom:14px;width:8px;border-radius:0 4px 4px 0}
+  .card-icon{font-size:20px;padding:0 8px}
+  .card-body{flex:1;min-width:0}
+  .card-title{font-size:13px;font-weight:600;color:#333}
+  .card-sub{font-size:10px;color:#999;margin-top:2px}
+  .card-btn{font-size:11px;font-weight:600;padding:7px 14px;border-radius:14px;background:linear-gradient(135deg,#F4B942,#FFD54F);color:#fff;box-shadow:0 3px 10px rgba(244,185,66,0.4);flex-shrink:0}
+
+  /* done 态卡片 */
+  .card.done{background:#FFFDF8;border:2px solid rgba(200,180,150,0.4)}
+  .card.done .card-title{color:#444}
+
+  /* remark 绿色引文 */
+  .remark{width:100%;box-sizing:border-box;padding:8px 0 0 24px}
+  .remark-text{font-size:11px;color:#81C784;padding:6px 10px;background:rgba(129,199,132,0.12);border-radius:8px;font-style:italic;line-height:1.5;border-left:3px solid rgba(129,199,132,0.4)}
+
+  /* stamp 印章右上角 */
+  .stamp{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#81C784,#66BB6A);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:900;box-shadow:0 3px 8px rgba(129,199,132,0.3)}
+
+  /* ===== 新增互动条 ===== */
+  .interact{display:flex;align-items:center;padding:10px 0 0 24px}
+  .interact-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:#999;padding:4px 10px;border-radius:12px;transition:color .15s}
+  .interact-btn svg{width:16px;height:16px}
+  .interact-btn.liked{color:#EF5350}
+  .interact-btn.liked .like-fill{fill:#EF5350;stroke:#EF5350}
+
+  /* ===== 评论列表 ===== */
+  .comments{margin:10px 0 0 24px;padding:8px 10px;background:#F2F5F8;border-radius:10px;display:flex;flex-direction:column}
+  .comment-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0}
+  .comment-item + .comment-item{border-top:0.5px solid rgba(0,0,0,0.05)}
+  .comment-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+  .comment-body{flex:1;min-width:0}
+  .comment-name{font-size:10px;color:#999;font-weight:600}
+  .comment-text{font-size:11px;color:#5C6178;line-height:1.5}
+
+  /* ===== 评论输入弹窗（复用 dialog） ===== */
+  .overlay{position:absolute;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:10}
+  .dialog{width:260px;background:#FBFCFE;border-radius:18px;padding:20px 18px;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,0.2)}
+  .dialog-title{font-size:15px;font-weight:700;color:#333;margin-bottom:6px}
+  .dialog-input{width:100%;background:#F2F5F8;border-radius:10px;padding:8px 12px;font-size:12px;color:#333;text-align:left;margin:10px 0}
+  .dialog-actions{display:flex;gap:10px;margin-top:4px}
+  .dialog-btn{flex:1;padding:9px 0;border-radius:14px;font-size:13px;font-weight:700;text-align:center}
+  .dialog-btn.cancel{background:#F2F5F8;color:#999}
+  .dialog-btn.confirm{background:linear-gradient(135deg,#F4B942,#FFD54F);color:#fff;box-shadow:0 4px 12px rgba(244,185,66,0.3)}
+</style>
+</head>
+<body>
+
+<!-- ================= 场景 A：围观伙伴（互动主场景） ================= -->
+<div class="section">
+  <h2>场景 A · 围观伙伴的任务（互动主入口）</h2>
+  <p class="desc">
+    通过 <code>routine?uid=xxx</code> 进入伙伴页，<code>addable=false</code>、<code>updateable=false</code>。
+    已完成的卡片底部新增「互动条」，点赞、评论两个入口，未点赞是灰色，印章仍在右上角。
+  </p>
+
+  <div class="phone-row">
+    <!-- 未互动 -->
+    <div class="phone-col">
+      <div class="phone-label">已完成卡片 · 默认态</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="hero">
+            <div class="hero-nav">
+              <span class="hero-arrow">‹</span>
+              <div class="hero-date"><div class="hero-label">回顾</div><div class="hero-main">8月17日 周一</div></div>
+              <span class="hero-arrow">›</span>
+            </div>
+            <div class="hero-motto">✦ 每一步都算数</div>
+          </div>
+          <div class="section-title">伙伴在做啥？</div>
+
+          <!-- done 卡片 1 -->
+          <div class="card done">
+            <span class="card-accent" style="background:#F4B942;"></span>
+            <div class="card-main">
+              <span class="card-icon">📖</span>
+              <div class="card-body">
+                <div class="card-title">读《西游记》</div>
+                <div class="card-sub">阅读 · 30分钟</div>
+              </div>
+            </div>
+            <div class="remark"><div class="remark-text">孙悟空被压五指山，是因为他太骄傲了</div></div>
+            <div class="stamp">✓</div>
+
+            <!-- 互动条（新增） -->
+            <div class="interact">
+              <span class="interact-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M12 21C7 16 3.5 12.6 3.5 8.9 3.5 6.2 5.7 4 8.4 4c1.5 0 2.9.7 3.6 1.8C12.7 4.7 14.1 4 15.6 4 18.3 4 20.5 6.2 20.5 8.9c0 3.7-3.5 7.1-8.5 12.1z"/></svg>
+                <text>点赞</text>
+              </span>
+              <span class="interact-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H8a5 5 0 0 1-5-5v-1.5A2.5 2.5 0 0 1 5.5 11H8l-2-4a2.2 2.2 0 0 1 2.2-3h.3a2.6 2.6 0 0 1 2.6 2.6L11 9h7.5A2.5 2.5 0 0 1 21 11.5z"/></svg>
+                <text>评论</text>
+              </span>
+            </div>
+          </div>
+
+          <!-- done 卡片 2 -->
+          <div class="card done">
+            <span class="card-accent" style="background:#64B5F6;"></span>
+            <div class="card-main">
+              <span class="card-icon">✏️</span>
+              <div class="card-body">
+                <div class="card-title">完成数学练习</div>
+                <div class="card-sub">作业 · 45分钟</div>
+              </div>
+            </div>
+            <div class="remark"><div class="remark-text">学会了分数加减，要先找公分母</div></div>
+            <div class="stamp">✓</div>
+
+            <div class="interact">
+              <span class="interact-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M12 21C7 16 3.5 12.6 3.5 8.9 3.5 6.2 5.7 4 8.4 4c1.5 0 2.9.7 3.6 1.8C12.7 4.7 14.1 4 15.6 4 18.3 4 20.5 6.2 20.5 8.9c0 3.7-3.5 7.1-8.5 12.1z"/></svg>
+                <text>点赞</text>
+              </span>
+              <span class="interact-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H8a5 5 0 0 1-5-5v-1.5A2.5 2.5 0 0 1 5.5 11H8l-2-4a2.2 2.2 0 0 1 2.2-3h.3a2.6 2.6 0 0 1 2.6 2.6L11 9h7.5A2.5 2.5 0 0 1 21 11.5z"/></svg>
+                <text>评论</text>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 点赞后 -->
+    <div class="phone-col">
+      <div class="phone-label">点赞后 · liked 态</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="hero">
+            <div class="hero-nav"><span class="hero-arrow">‹</span><div class="hero-date"><div class="hero-label">回顾</div><div class="hero-main">8月17日 周一</div></div><span class="hero-arrow">›</span></div>
+            <div class="hero-motto">✦ 每一步都算数</div>
+          </div>
+          <div class="section-title">伙伴在做啥？</div>
+
+          <div class="card done">
+            <span class="card-accent" style="background:#F4B942;"></span>
+            <div class="card-main">
+              <span class="card-icon">📖</span>
+              <div class="card-body">
+                <div class="card-title">读《西游记》</div>
+                <div class="card-sub">阅读 · 30分钟</div>
+              </div>
+            </div>
+            <div class="remark"><div class="remark-text">孙悟空被压五指山，是因为他太骄傲了</div></div>
+            <div class="stamp">✓</div>
+
+            <!-- 点赞后：红色爱心 + 数字 -->
+            <div class="interact">
+              <span class="interact-btn liked">
+                <svg class="like-fill" viewBox="0 0 24 24" fill="none" stroke="#EF5350" stroke-width="2"><path d="M12 21C7 16 3.5 12.6 3.5 8.9 3.5 6.2 5.7 4 8.4 4c1.5 0 2.9.7 3.6 1.8C12.7 4.7 14.1 4 15.6 4 18.3 4 20.5 6.2 20.5 8.9c0 3.7-3.5 7.1-8.5 12.1z"/></svg>
+                <text>1</text>
+              </span>
+              <span class="interact-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H8a5 5 0 0 1-5-5v-1.5A2.5 2.5 0 0 1 5.5 11H8l-2-4a2.2 2.2 0 0 1 2.2-3h.3a2.6 2.6 0 0 1 2.6 2.6L11 9h7.5A2.5 2.5 0 0 1 21 11.5z"/></svg>
+                <text>评论</text>
+              </span>
+            </div>
+          </div>
+
+          <!-- 震动 + 数字跳动示意 -->
+          <div style="text-align:center;font-size:11px;color:#999;margin-top:10px;">
+            💡 点赞时 <span style="color:#F4B942;font-weight:700;">hapticLight</span> 轻震，<br>爱心由灰变红，数字 +1
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 自己视角 -->
+    <div class="phone-col">
+      <div class="phone-label">自己的任务（今天）</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="hero">
+            <div class="hero-nav"><span class="hero-arrow">‹</span><div class="hero-date"><div class="hero-label">今天是</div><div class="hero-main">8月17日 周一</div></div><span class="hero-arrow" style="opacity:0.5;">›</span></div>
+            <div class="hero-motto">✦ 又是闪闪发光的一天！⭐</div>
+          </div>
+          <div class="section-title">今天做点啥？</div>
+
+          <div class="card done">
+            <span class="card-accent" style="background:#F4B942;"></span>
+            <div class="card-main">
+              <span class="card-icon">📖</span>
+              <div class="card-body">
+                <div class="card-title">读《西游记》</div>
+                <div class="card-sub">阅读 · 30分钟</div>
+              </div>
+            </div>
+            <div class="remark"><div class="remark-text">孙悟空被压五指山，是因为他太骄傲了</div></div>
+            <div class="stamp">✓</div>
+
+            <!-- 自己视角：点赞只显示数字，不可点 -->
+            <div class="interact">
+              <span class="interact-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M12 21C7 16 3.5 12.6 3.5 8.9 3.5 6.2 5.7 4 8.4 4c1.5 0 2.9.7 3.6 1.8C12.7 4.7 14.1 4 15.6 4 18.3 4 20.5 6.2 20.5 8.9c0 3.7-3.5 7.1-8.5 12.1z"/></svg>
+                <text>1</text>
+              </span>
+              <span class="interact-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H8a5 5 0 0 1-5-5v-1.5A2.5 2.5 0 0 1 5.5 11H8l-2-4a2.2 2.2 0 0 1 2.2-3h.3a2.6 2.6 0 0 1 2.6 2.6L11 9h7.5A2.5 2.5 0 0 1 21 11.5z"/></svg>
+                <text>2</text>
+              </span>
+            </div>
+          </div>
+
+          <div style="text-align:center;font-size:11px;color:#999;margin-top:10px;">
+            💡 自己赞自己没意义，<br>点赞项只显示数字，不可点
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 场景 B：评论列表展开 ================= -->
+<div class="section">
+  <h2>场景 B · 评论列表展开</h2>
+  <p class="desc">
+    点「评论」图标后，在卡片底部展开评论列表。每条 = 首字头像（复用 relations 的彩色圆底）+ 昵称 + 内容。
+    视觉沿用 remark 的「底部浅色块」语言，用 <code>$gray-ee</code> 底区分主人与伙伴的发言。
+  </p>
+
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">评论列表展开态</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="hero">
+            <div class="hero-nav"><span class="hero-arrow">‹</span><div class="hero-date"><div class="hero-label">回顾</div><div class="hero-main">8月17日 周一</div></div><span class="hero-arrow">›</span></div>
+            <div class="hero-motto">✦ 每一步都算数</div>
+          </div>
+          <div class="section-title">伙伴在做啥？</div>
+
+          <div class="card done">
+            <span class="card-accent" style="background:#F4B942;"></span>
+            <div class="card-main">
+              <span class="card-icon">📖</span>
+              <div class="card-body">
+                <div class="card-title">读《西游记》</div>
+                <div class="card-sub">阅读 · 30分钟</div>
+              </div>
+            </div>
+            <div class="remark"><div class="remark-text">孙悟空被压五指山，是因为他太骄傲了</div></div>
+            <div class="stamp">✓</div>
+
+            <div class="interact">
+              <span class="interact-btn liked">
+                <svg class="like-fill" viewBox="0 0 24 24" fill="none" stroke="#EF5350" stroke-width="2"><path d="M12 21C7 16 3.5 12.6 3.5 8.9 3.5 6.2 5.7 4 8.4 4c1.5 0 2.9.7 3.6 1.8C12.7 4.7 14.1 4 15.6 4 18.3 4 20.5 6.2 20.5 8.9c0 3.7-3.5 7.1-8.5 12.1z"/></svg>
+                <text>2</text>
+              </span>
+              <span class="interact-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H8a5 5 0 0 1-5-5v-1.5A2.5 2.5 0 0 1 5.5 11H8l-2-4a2.2 2.2 0 0 1 2.2-3h.3a2.6 2.6 0 0 1 2.6 2.6L11 9h7.5A2.5 2.5 0 0 1 21 11.5z"/></svg>
+                <text>2</text>
+              </span>
+            </div>
+
+            <!-- 评论列表 -->
+            <div class="comments">
+              <div class="comment-item">
+                <span class="comment-avatar" style="background:#5B9BD5;">明</span>
+                <div class="comment-body">
+                  <div class="comment-name">小明妈妈</div>
+                  <div class="comment-text">这个理解很到位！今天也读西游记了吗？</div>
+                </div>
+              </div>
+              <div class="comment-item">
+                <span class="comment-avatar" style="background:#F4B942;">朵</span>
+                <div class="comment-body">
+                  <div class="comment-name">朵朵妈妈</div>
+                  <div class="comment-text">我家孩子也说孙悟空太冲动了 😄</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-col">
+      <div class="phone-label">写评论 · 复用 dialog</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="hero">
+            <div class="hero-nav"><span class="hero-arrow">‹</span><div class="hero-date"><div class="hero-label">回顾</div><div class="hero-main">8月17日 周一</div></div><span class="hero-arrow">›</span></div>
+            <div class="hero-motto">✦ 每一步都算数</div>
+          </div>
+          <div class="section-title">伙伴在做啥？</div>
+
+          <div class="card done" style="opacity:0.6;">
+            <span class="card-accent" style="background:#F4B942;"></span>
+            <div class="card-main">
+              <span class="card-icon">📖</span>
+              <div class="card-body">
+                <div class="card-title">读《西游记》</div>
+                <div class="card-sub">阅读 · 30分钟</div>
+              </div>
+            </div>
+            <div class="remark"><div class="remark-text">孙悟空被压五指山，是因为他太骄傲了</div></div>
+            <div class="stamp">✓</div>
+          </div>
+
+          <!-- 复用 dialog 的评论输入弹窗 -->
+          <div class="overlay">
+            <div class="dialog">
+              <div class="dialog-title">评论</div>
+              <div class="dialog-input">写得真好，我也这么觉得</div>
+              <div class="dialog-actions">
+                <span class="dialog-btn cancel">取消</span>
+                <span class="dialog-btn confirm">发表</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

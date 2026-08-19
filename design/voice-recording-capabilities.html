@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语音反馈 · 能力需求分析</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:16px;}
+  body{background:#E8EFF5;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;padding:36px 24px;}
+  h2{font-size:22px;font-weight:800;color:#3A5A8C;margin-bottom:14px;padding-left:14px;border-left:4px solid #F4B942;}
+  h3{font-size:16px;font-weight:700;color:#5C6178;margin:28px 0 10px;padding-bottom:5px;border-bottom:1px dashed rgba(0,0,0,0.08);}
+  .section{width:100%;max-width:860px;margin:0 auto 36px;}
+  p.desc{font-size:13px;color:#5C6178;line-height:1.9;margin-bottom:14px;}
+
+  .cap-table{width:100%;background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(74,144,226,0.06);overflow:hidden;font-size:13px;}
+  .cap-table table{width:100%;border-collapse:collapse;}
+  .cap-table th{background:#F2F5F8;padding:10px 12px;text-align:left;font-size:12px;font-weight:700;color:#5C6178;}
+  .cap-table td{padding:10px 12px;border-bottom:0.5px solid rgba(0,0,0,0.04);color:#333;vertical-align:top;line-height:1.7;}
+  .cap-table tr:last-child td{border-bottom:none;}
+  .cap-table code{background:#F2F5F8;padding:1px 5px;border-radius:3px;font-size:11px;}
+
+  .flow-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:16px 0;}
+  .flow-box{background:#fff;border-radius:12px;padding:12px 16px;text-align:center;box-shadow:0 3px 12px rgba(74,144,226,0.06);min-width:90px;}
+  .flow-box .step{font-size:10px;color:#999;font-weight:600;}
+  .flow-box .label{font-size:13px;font-weight:800;color:#333;margin-top:2px;}
+  .flow-arrow{font-size:18px;color:#C5C5C5;font-weight:800;}
+
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;}
+  .tag.g{background:#E8F5E9;color:#81C784;}
+  .tag.r{background:#FFEBEE;color:#EF5350;}
+  .tag.y{background:#FFF8E1;color:#C8853E;}
+  .tag.b{background:#E3F2FD;color:#5B9BD5;}
+  .tag.na{background:#F2F5F8;color:#999;}
+
+  .side-row{display:flex;gap:16px;flex-wrap:wrap;}
+  .side-card{flex:1;min-width:200px;background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 12px rgba(74,144,226,0.05);}
+  .side-card h4{font-size:14px;font-weight:800;color:#333;margin-bottom:8px;}
+  .side-card p{font-size:11px;color:#5C6178;line-height:1.7;}
+
+  .warning-box{background:#FFF8E1;border:1px solid #FFD54F;border-radius:12px;padding:14px 18px;margin:14px 0;}
+  .warning-box p{font-size:12px;color:#C8853E;line-height:1.8;}
+  .warning-box strong{color:#B8823A;}
+</style>
+</head>
+<body>
+
+<div class="section">
+  <h2>语音反馈 · 全链路能力分析</h2>
+  <p class="desc">
+    把"打字填反馈"改成"按住说话"，涉及<strong>前端录音 → 文件上传 → 服务端存储 → 回放加载</strong>四个环节。
+    下面逐层拆解每层需要的具体能力。
+  </p>
+
+  <h3>核心流程</h3>
+  <div class="flow-row">
+    <div class="flow-box"><div class="step">① 前端</div><div class="label">按下录音</div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><div class="step">② 微信 API</div><div class="label">获取音频文件</div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><div class="step">③ 网络</div><div class="label">上传到服务器</div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><div class="step">④ 服务端</div><div class="label">存储 + 转文字</div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><div class="step">⑤ 前端</div><div class="label">加载回放</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>第一层：前端录音能力（小程序端）</h2>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:22%;">能力点</th><th style="width:42%;">微信 API / 方案</th><th style="width:22%;">状态</th><th>备注</th></tr>
+      <tr>
+        <td><strong>录音核心</strong></td>
+        <td><code>wx.getRecorderManager()</code></td>
+        <td class="tag g">原生支持</td>
+        <td>微信官方录音管理器，全局唯一实例</td>
+      </tr>
+      <tr>
+        <td><strong>录音格式</strong></td>
+        <td><code>format: 'mp3' | 'aac'</code></td>
+        <td class="tag g">原生支持</td>
+        <td>建议 mp3，兼容性最好，文件也小</td>
+      </tr>
+      <tr>
+        <td><strong>麦克风权限</strong></td>
+        <td><code>scope.record</code></td>
+        <td class="tag g">原生支持</td>
+        <td>首次使用会弹系统授权弹窗，用户拒绝后需引导去设置页</td>
+      </tr>
+      <tr>
+        <td><strong>开始/停止录音</strong></td>
+        <td><code>recorder.start()</code> / <code>recorder.stop()</code></td>
+        <td class="tag g">原生支持</td>
+        <td>绑定按下/松手手势：touchstart → start，touchend → stop</td>
+      </tr>
+      <tr>
+        <td><strong>录音时长限制</strong></td>
+        <td><code>duration: 60000</code>（毫秒）</td>
+        <td class="tag g">原生支持</td>
+        <td>建议限制 60 秒，小朋友一句话够了。超时自动触发 onStop</td>
+      </tr>
+      <tr>
+        <td><strong>实时音量帧</strong></td>
+        <td><code>recorder.onFrameRecorded(res)</code></td>
+        <td class="tag g">原生支持</td>
+        <td>每帧返回音量数据，可驱动声波动画（如 V2 设计的波纹条）</td>
+      </tr>
+      <tr>
+        <td><strong>录音状态回调</strong></td>
+        <td><code>onStart / onStop / onPause / onError</code></td>
+        <td class="tag g">原生支持</td>
+        <td>onStop 回调中得到 <code>tempFilePath</code>（临时音频文件路径）</td>
+      </tr>
+      <tr>
+        <td><strong>手势长按</strong></td>
+        <td>WXML <code>bindtouchstart</code> / <code>bindtouchend</code></td>
+        <td class="tag g">原生支持</td>
+        <td>"按住说话"的标准实现：touchstart=开始录音，touchend=停止并上传</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="warning-box">
+    <p>
+      <strong>需要注意的坑：</strong><br>
+      ① <code>RecorderManager</code> 不支持暂停/恢复（pause/resume 在旧版基础库有兼容问题），建议只做"按住录、松手停"的简单模式。<br>
+      ② iOS 和 Android 的录音格式行为不完全一致，建议统一指定 <code>format: 'mp3'</code> + <code>sampleRate: 16000</code> + <code>encodeBitRate: 48000</code>。<br>
+      ③ 录音过程中如果微信进入后台或被电话打断，<code>onError</code> 会触发，需要有降级提示。
+    </p>
+  </div>
+</div>
+
+<div class="section">
+  <h2>第二层：录音播放（回放自己的声音）</h2>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:22%;">能力点</th><th style="width:42%;">微信 API / 方案</th><th style="width:22%;">状态</th><th>备注</th></tr>
+      <tr>
+        <td><strong>本地临时文件播放</strong></td>
+        <td><code>wx.createInnerAudioContext()</code></td>
+        <td class="tag g">原生支持</td>
+        <td>录音完成拿到 tempFilePath 后，立即用 InnerAudioContext 播放</td>
+      </tr>
+      <tr>
+        <td><strong>远程文件播放</strong></td>
+        <td>同上，src 指定为远程 URL</td>
+        <td class="tag g">原生支持</td>
+        <td>历史反馈的音频需要从服务器加载，src 设为 CDN 地址</td>
+      </tr>
+      <tr>
+        <td><strong>播放状态监听</strong></td>
+        <td><code>onPlay / onEnded / onError / onStop</code></td>
+        <td class="tag g">原生支持</td>
+        <td>驱动播放按钮的 UI 状态变化</td>
+      </tr>
+      <tr>
+        <td><strong>播放完成后的自动 UI</strong></td>
+        <td><code>onEnded</code> 回调触发"完成 ✓"按钮出现</td>
+        <td class="tag g">前端逻辑</td>
+        <td>听完自己的声音后，自动展示"完成"和"重新说"两个按钮</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <h2>第三层：文件上传</h2>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:22%;">能力点</th><th style="width:42%;">微信 API / 方案</th><th style="width:22%;">状态</th><th>备注</th></tr>
+      <tr>
+        <td><strong>上传到服务器</strong></td>
+        <td><code>wx.uploadFile({ url, filePath, name })</code></td>
+        <td class="tag g">原生支持</td>
+        <td>把录音的 tempFilePath 通过 uploadFile 发到后端</td>
+      </tr>
+      <tr>
+        <td><strong>上传进度</strong></td>
+        <td><code>uploadTask.onProgressUpdate()</code></td>
+        <td class="tag g">原生支持</td>
+        <td>小文件（几十 KB）基本瞬间传完，进度条可能一闪而过</td>
+      </tr>
+      <tr>
+        <td><strong>上传与 completion 的耦合</strong></td>
+        <td>上传完成 → 获得音频 URL → 赋值到 remark 字段一起提交</td>
+        <td class="tag y">需设计</td>
+        <td>流程：上传音频 → 拿到 URL → <code>Routine.update({ id, mediaRemark: url })</code></td>
+      </tr>
+      <tr>
+        <td><strong>网络异常容错</strong></td>
+        <td>uploadFile 失败 → 保留 tempFilePath → 允许重试</td>
+        <td class="tag y">需设计</td>
+        <td>录音已产生，不能因为上传失败就丢了。需要在本地暂存并重试</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="warning-box">
+    <p>
+      <strong>上传策略建议：</strong><br>
+      ① 录音文件很小（60 秒 mp3 约 100-200KB），上传通常秒级完成。<br>
+      ② 建议上传到独立的媒体文件接口（如 <code>/v1/media/upload</code>），返回 CDN URL 后，再将 URL 写入 <code>Routine.update({ mediaRemark: url })</code>。<br>
+      ③ 也可以直接把音频文件附加在 <code>Routine.update</code> 请求里用 multipart 上传，看后端现有架构。如果后端只接受 JSON，就需要先走独立上传接口。
+    </p>
+  </div>
+</div>
+
+<div class="section">
+  <h2>第四层：服务端能力</h2>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:22%;">能力点</th><th style="width:32%;">需要什么</th><th style="width:18%;">当前有无</th><th>备注</th></tr>
+      <tr>
+        <td><strong>音频文件接收</strong></td>
+        <td>接口接受 multipart/form-data，接收 mp3 文件</td>
+        <td class="tag na">未知</td>
+        <td>现有的 Network.post 是 JSON 传输，需要新增文件上传接口</td>
+      </tr>
+      <tr>
+        <td><strong>文件持久存储</strong></td>
+        <td>对象存储（OSS/S3/CDN），返回可访问的 URL</td>
+        <td class="tag na">需新增</td>
+        <td>小程序内播放需要 HTTPS 的公网 URL</td>
+      </tr>
+      <tr>
+        <td><strong>转文字（可选）</strong></td>
+        <td>语音识别服务——微信有"同声传译"插件或第三方 ASR</td>
+        <td class="tag na">需新增</td>
+        <td>把录音自动转成文字，并存到 remark 字段，便于搜索和回顾</td>
+      </tr>
+      <tr>
+        <td><strong>字段扩展</strong></td>
+        <td>Routine.Info 新增 <code>mediaRemark</code> 字段（已预留！）</td>
+        <td class="tag g">已预留</td>
+        <td><code>server/routine.ts</code> 中 Routine.Info 已有 mediaRemark 字段</td>
+      </tr>
+      <tr>
+        <td><strong>音频 CDN 回源</strong></td>
+        <td>存储到 CDN 后，播放端通过 HTTPS 直接拉取</td>
+        <td class="tag na">需配置</td>
+        <td>标准 CDN 配置即可</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="warning-box">
+    <p>
+      <strong>关于语音转文字（ASR）：</strong><br>
+      ① 如果后端加了语音识别，录完音上传后自动转成文字存到 <code>remark</code> 字段——用户看到的是文字，想听可以点播放听原声。这是最理想的体验。<br>
+      ② <strong>小程序端也有方案</strong>：微信有"同声传译"插件（WechatSI），可调用微信的语音识别，无需后端开发。但准确率和可用性需要测试。<br>
+      ③ 如果暂时不做 ASR，音频就只作为 <code>mediaRemark</code> 存储在卡片上——卡片展示一个播放按钮，点一下听原声。也不差。
+    </p>
+  </div>
+</div>
+
+<div class="section">
+  <h2>第五层：数据模型与 UI</h2>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:22%;">能力点</th><th style="width:42%;">方案</th><th style="width:22%;">状态</th><th>备注</th></tr>
+      <tr>
+        <td><strong>存储模型</strong></td>
+        <td><code>Routine.Info.mediaRemark</code> 存音频 URL<br><code>Routine.Info.remark</code> 存转写后的文字（或空）</td>
+        <td class="tag g">字段已预留</td>
+        <td>mediaRemark 在 routine.ts 58 行已定义</td>
+      </tr>
+      <tr>
+        <td><strong>卡片 UI</strong></td>
+        <td>已完成的卡片上，反馈区域从纯文本 → 播放按钮 + 转写文字</td>
+        <td class="tag y">需开发</td>
+        <td>如果只有音频没有文字，卡片展示▶️ 播放图标 + "点击听反馈"</td>
+      </tr>
+      <tr>
+        <td><strong>历史兼容</strong></td>
+        <td>老任务只有 remark 文字，没有 mediaRemark → 正常显示文字</td>
+        <td class="tag g">天然兼容</td>
+        <td>新字段不影响老数据</td>
+      </tr>
+      <tr>
+        <td><strong>降级策略</strong></td>
+        <td>如果不想说话 → 仍可以点击切换到文字输入模式</td>
+        <td class="tag y">需设计</td>
+        <td>语音是默认推荐方式，但文字输入作为备选始终保留</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <h2>能力清单总结</h2>
+
+  <div class="side-row">
+    <div class="side-card">
+      <h4><span class="tag g">小程序端 · 全原生支持</span></h4>
+      <p>
+        ✅ 录音（RecorderManager）<br>
+        ✅ 播放（InnerAudioContext）<br>
+        ✅ 手势（touchstart/touchend）<br>
+        ✅ 文件上传（uploadFile）<br>
+        ✅ 录音权限（scope.record）<br>
+        ✅ 音量帧（onFrameRecorded）<br>
+        <br>
+        <em>前端开发量集中在 UI 和手势交互上，微信 API 已全覆盖。</em>
+      </p>
+    </div>
+    <div class="side-card">
+      <h4><span class="tag na">需后端新增</span></h4>
+      <p>
+        ❓ 文件上传接口（multipart）<br>
+        ❓ 对象存储（OSS/S3）<br>
+        ❓ CDN 域名配置<br>
+        ❓ （可选）语音转文字<br>
+        <br>
+        <em>核心是新增一个媒体上传接口 + OSS。</em>
+      </p>
+    </div>
+    <div class="side-card">
+      <h4><span class="tag y">需前端新增</span></h4>
+      <p>
+        🔨 录制页 UI（麦克风按钮+声波）<br>
+        🔨 回放页 UI（播放按钮+转写文字）<br>
+        🔨 权限引导弹窗<br>
+        🔨 卡片上的播放图标<br>
+        🔨 文字模式降级入口<br>
+        <br>
+        <em>最大工作量是 UI 打磨，逻辑不复杂。</em>
+      </p>
+    </div>
+  </div>
+
+  <div class="warning-box" style="margin-top:16px;">
+    <p>
+      <strong>最小可行版本（MVP）建议：</strong><br><br>
+      <strong>第一期：</strong>只做录音 + 上传 + 回放。卡片上显示播放按钮，不转文字。<br>
+      后端新增一个 <code>/v1/media/upload</code> 接口，接收 mp3 文件，存 OSS 返回 URL。<br>
+      小程序用 <code>RecorderManager</code> + <code>uploadFile</code> + <code>InnerAudioContext</code> 即可闭环。<br><br>
+      <strong>第二期：</strong>接入微信"同声传译"插件做语音转文字，存入 <code>remark</code>。<br>
+      卡片上同时显示文字摘要 + 可点击播放原声。<br><br>
+      <em>第一期预估前端 3-4 天 + 后端 1-2 天即可完成。微信生态对录音的支持非常成熟。</em>
+    </p>
+  </div>
+</div>
+
+</body>
+</html>

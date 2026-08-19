@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>有效阅读 · 方法论与小程序结合设计</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:16px}
+  body{background:#E8EFF5;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;padding:36px 24px}
+  h2{font-size:22px;font-weight:800;color:#3A5A8C;margin-bottom:14px;padding-left:14px;border-left:4px solid #F4B942}
+  h3{font-size:16px;font-weight:700;color:#5C6178;margin:28px 0 10px;padding-bottom:5px;border-bottom:1px dashed rgba(0,0,0,0.08)}
+  .section{width:100%;max-width:880px;margin:0 auto 36px}
+  p.desc{font-size:13px;color:#5C6178;line-height:1.9;margin-bottom:14px}
+
+  blockquote{background:#FFF8E1;border-left:4px solid #F4B942;padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:#5C6178;line-height:1.8;margin:14px 0}
+
+  .insight-box{background:linear-gradient(135deg,#3A5A8C,#1A365D);border-radius:16px;padding:22px 20px;color:#fff;margin:16px 0}
+  .insight-box .label{font-size:11px;opacity:0.7;letter-spacing:2px;margin-bottom:8px}
+  .insight-box .main{font-size:18px;font-weight:800;line-height:1.6;margin-bottom:8px}
+  .insight-box .sub{font-size:12px;opacity:0.75;line-height:1.8}
+
+  .cap-table{width:100%;background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(74,144,226,0.06);overflow:hidden;font-size:13px}
+  .cap-table table{width:100%;border-collapse:collapse}
+  .cap-table th{background:#F2F5F8;padding:10px 12px;text-align:left;font-size:12px;font-weight:700;color:#5C6178}
+  .cap-table td{padding:10px 12px;border-bottom:0.5px solid rgba(0,0,0,0.04);color:#333;vertical-align:top;line-height:1.7}
+  .cap-table tr:last-child td{border-bottom:none}
+  .cap-table code{background:#F2F5F8;padding:1px 5px;border-radius:3px;font-size:11px}
+
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap}
+  .tag.g{background:#E8F5E9;color:#81C784}
+  .tag.r{background:#FFEBEE;color:#EF5350}
+  .tag.y{background:#FFF8E1;color:#C8853E}
+  .tag.b{background:#E3F2FD;color:#5B9BD5}
+
+  /* 手机示意 */
+  .phone-row{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+  .phone-col{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .phone-label{font-size:11px;font-weight:800;color:#5C6178;background:#fff;padding:5px 14px;border-radius:10px;box-shadow:0 2px 8px rgba(74,144,226,0.08)}
+  .phone{width:280px;height:460px;background:#F2F5F8;border-radius:28px;overflow:hidden;box-shadow:0 0 0 3px #1A1A1A,0 0 0 6px #2D2D2D,0 12px 32px rgba(0,0,0,0.22);position:relative}
+  .phone-status{height:28px;background:#B8DAF5;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:9px;color:#fff;font-weight:600}
+  .phone-body{height:calc(100% - 28px);overflow-y:auto;background:linear-gradient(180deg,#B8DAF5,#F2F5F8 26%);padding:12px 12px 16px}
+  .phone-body::-webkit-scrollbar{width:0}
+  .p-title{font-size:13px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.1);margin-bottom:8px}
+  .p-card{background:#FDFBF7;border-radius:12px;padding:10px 12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(74,144,226,0.05);font-size:11px}
+  .p-card .c-label{font-size:9px;color:#999;font-weight:600;margin-bottom:3px}
+  .p-card .c-title{font-size:12px;font-weight:700;color:#333;margin-bottom:3px}
+  .p-card .c-body{font-size:10px;color:#5C6178;line-height:1.6}
+  .p-tag{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:5px;margin-right:3px}
+
+  /* 阅读流程环 */
+  .loop-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:14px 0}
+  .loop-node{background:#fff;border-radius:12px;padding:10px 14px;text-align:center;box-shadow:0 3px 10px rgba(74,144,226,0.06);min-width:70px}
+  .loop-node .n-step{font-size:9px;color:#999;font-weight:600}
+  .loop-node .n-name{font-size:12px;font-weight:800;color:#3A5A8C;margin-top:2px}
+  .loop-arrow{font-size:16px;color:#C5C5C5;font-weight:800}
+
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:700}
+  .pill.b{background:#E3F2FD;color:#5B9BD5}
+  .pill.g{background:#E8F5E9;color:#81C784}
+  .pill.y{background:#FFF8E1;color:#C8853E}
+</style>
+</head>
+<body>
+
+<div class="section">
+  <h2>现状诊断：阅读被当成"打卡"了</h2>
+  <p class="desc">
+    当前小程序里，阅读和其他 12 种任务（作业、运动、家务…）共用同一套流程：<br>
+    创建「阅读 30 分钟」→ 到时完成 → 写一句费曼反馈（<code>remark</code>，上限 400 字）。<br><br>
+    这套流程对"运动 30 分钟""练字 15 分钟"这种<strong>过程型任务</strong>是合适的——做完就是做完。<br>
+    但对"阅读"这种<strong>理解型任务</strong>，它丢掉了最关键的东西：
+  </p>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:18%;">有效阅读环节</th><th style="width:38%;">它在解决什么</th><th style="width:44%;">现有小程序的空缺</th></tr>
+      <tr><td><strong>选书 · 带目的</strong></td><td>先问"我为什么读这本书"，避免盲目翻</td><td>创建任务只填书名和时长，<strong>没有"为什么读"</strong></td></tr>
+      <tr><td><strong>预读</strong></td><td>看目录/序言，先提出问题，带着问题读</td><td><strong>完全没有</strong>——直接进入"读30分钟"</td></tr>
+      <tr><td><strong>笔记</strong></td><td>摘录 + 思考，把书变成自己的</td><td>只有完成时写一句反馈，<strong>读的过程没有笔记入口</strong></td></tr>
+      <tr><td><strong>专题输出</strong></td><td>读完整合成一篇"这本书教了我什么"</td><td><strong>没有</strong>——读完就结束了，散落的反馈没归档</td></tr>
+      <tr><td><strong>巩固</strong></td><td>间隔复习，让知识留下来</td><td><strong>没有</strong>——没有复习提醒机制</td></tr>
+    </table>
+  </div>
+
+  <div class="insight-box">
+    <div class="label">核心判断</div>
+    <div class="main">别把"有效阅读"做成六个孤立新功能，而是让现有闭环"变深"。</div>
+    <div class="sub">
+      现有闭环：<strong>创建 → 阅读 → 完成反馈 → 统计</strong>，已经能承载方法论，只是每步"浅"了。<br>
+      正确做法是<b>在每个已有节点上，把一次提问变成一段引导</b>，渐进式加深，而不是一次性堆砌。
+    </div>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>方法论 → 产品功能的映射</h2>
+
+  <div class="loop-row">
+    <div class="loop-node"><div class="n-step">读前</div><div class="n-name">选书带目的</div></div>
+    <span class="loop-arrow">→</span>
+    <div class="loop-node"><div class="n-step">读前</div><div class="n-name">预读提问</div></div>
+    <span class="loop-arrow">→</span>
+    <div class="loop-node"><div class="n-step">读中</div><div class="n-name">做笔记</div></div>
+    <span class="loop-arrow">→</span>
+    <div class="loop-node"><div class="n-step">读后</div><div class="n-name">专题输出</div></div>
+    <span class="loop-arrow">→</span>
+    <div class="loop-node"><div class="n-step">读后</div><div class="n-name">巩固复习</div></div>
+  </div>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:14%;">环节</th><th style="width:26%;">产品功能</th><th style="width:30%;">如何与现有小程序结合</th><th style="width:14%;">新增/优化</th><th style="width:16%;">优先级</th></tr>
+      <tr>
+        <td><strong>选书带目的</strong></td>
+        <td>创建阅读任务时，加一个可选字段「读它想弄懂什么」</td>
+        <td>复用 <code>routineEditor</code> 创建页，在"任务内容"下追加一个可折叠的「阅读目的」输入</td>
+        <td class="tag b">优化</td>
+        <td class="tag r">P0</td>
+      </tr>
+      <tr>
+        <td><strong>预读提问</strong></td>
+        <td>阅读任务开始前，引导"看目录 → 提 1 个问题"</td>
+        <td>在任务卡片上，阅读任务多一个「先热身」入口，点开是 3 步引导（看目录/预测/提问）</td>
+        <td class="tag b">新增</td>
+        <td class="tag r">P0</td>
+      </tr>
+      <tr>
+        <td><strong>做笔记</strong></td>
+        <td>阅读过程支持"摘录 + 思考"两条笔记</td>
+        <td>把完成时的费曼反馈升级为"结构化笔记"：摘录一段 + 写一句思考（两条都可选）</td>
+        <td class="tag b">优化</td>
+        <td class="tag r">P0</td>
+      </tr>
+      <tr>
+        <td><strong>专题输出</strong></td>
+        <td>一本书/一个专题读完，整合成一篇小结</td>
+        <td>新增"阅读专题"容器，把同专题的多条笔记汇成一篇"这本书教会了我什么"</td>
+        <td class="tag y">新增</td>
+        <td class="tag y">P1</td>
+      </tr>
+      <tr>
+        <td><strong>巩固复习</strong></td>
+        <td>基于笔记间隔复习（1/3/7/30 天）</td>
+        <td>复用推送提醒能力，到点推送"复习一下你记过的这句话"</td>
+        <td class="tag y">新增</td>
+        <td class="tag y">P1</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>三个 P0 功能的具体设计（手机示意）</h2>
+
+  <h3>① 创建阅读任务：加「阅读目的」</h3>
+  <p class="desc">
+    在创建页的"任务内容"下方，当分类是"阅读"时，追加一个轻量的可折叠输入——不强制，但给一个引导句降低门槛。
+  </p>
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">创建页 · 选"阅读"时</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="p-title">创建任务</div>
+          <div class="p-card">
+            <div class="c-label">分类</div>
+            <div class="c-title"><span class="p-tag" style="background:#E3F2FD;color:#5B9BD5;">📖 阅读</span> 已选</div>
+          </div>
+          <div class="p-card">
+            <div class="c-label">任务内容</div>
+            <div class="c-title">读《小王子》</div>
+          </div>
+          <div class="p-card" style="border:1.5px dashed #FFD54F;background:#FFFDF5;">
+            <div class="c-label" style="color:#C8853E;">✨ 可选 · 读它想弄懂什么？</div>
+            <div class="c-body">比如：<em>"小王子为什么要离开他的星球？"</em></div>
+            <div class="c-body" style="color:#C5C5C5;margin-top:2px;">（带着问题读，读得更深）</div>
+          </div>
+          <div class="p-card">
+            <div class="c-label">计划时长</div>
+            <div class="c-title">30 分钟</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-col">
+      <div class="phone-label">阅读任务卡片 · 带目的</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="p-title">今日日常</div>
+          <div class="p-card" style="border-left:3px solid #5B9BD5;">
+            <div class="c-label">📖 阅读 · 30分钟</div>
+            <div class="c-title">读《小王子》</div>
+            <div class="c-body" style="background:#F0F6FC;border-radius:6px;padding:4px 8px;margin-top:4px;">
+              🎯 想弄懂：小王子为什么要离开他的星球？
+            </div>
+          </div>
+          <div class="p-card">
+            <div class="c-label">✏️ 作业 · 待完成</div>
+            <div class="c-title">数学练习</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>② 预读热身：看目录 → 预测 → 提问</h3>
+  <p class="desc">
+    阅读任务卡片上多一个「先热身」入口（可选，约 30 秒）。三步引导，产出"我猜 + 我问"，作为阅读时的靶子。
+  </p>
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">热身 · 第1步 看目录</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="p-title">阅读热身</div>
+          <div class="p-card" style="text-align:center;padding:16px;">
+            <div style="font-size:22px;margin-bottom:6px;">📑</div>
+            <div class="c-title">先看看目录 / 序言</div>
+            <div class="c-body">翻一下这本书讲了什么，有哪些章节</div>
+            <div style="margin-top:10px;">
+              <span class="pill b">← 上一步</span>
+              <span class="pill b" style="margin-left:8px;">下一步 →</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">热身 · 第2步 猜一猜</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="p-title">阅读热身</div>
+          <div class="p-card" style="text-align:center;padding:16px;">
+            <div style="font-size:22px;margin-bottom:6px;">🔮</div>
+            <div class="c-title">猜猜这本书会讲什么？</div>
+            <div class="c-body" style="color:#999;margin-top:4px;">输入你的预测（一句话）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">热身 · 第3步 提问</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="p-title">阅读热身</div>
+          <div class="p-card" style="text-align:center;padding:16px;">
+            <div style="font-size:22px;margin-bottom:6px;">❓</div>
+            <div class="c-title">带着这个问题去读</div>
+            <div class="c-body" style="background:#F0F6FC;border-radius:6px;padding:6px;margin-top:6px;">
+              小王子为什么要离开他的星球？
+            </div>
+            <div class="c-body" style="color:#999;margin-top:4px;">这是你阅读时的"靶子"</div>
+            <div style="margin-top:10px;"><span class="pill g">开始阅读 →</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>③ 笔记：摘录 + 思考（两条可选）</h3>
+  <p class="desc">
+    完成阅读任务时，把原来单一的"费曼反馈"升级为结构化的两条笔记：一条<strong>摘录</strong>（书里打动你的原句），一条<strong>思考</strong>（你自己的话）。两条都可留空，不增加负担。
+  </p>
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">完成阅读 · 记笔记</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="p-title">完成阅读</div>
+          <div class="p-card">
+            <div class="c-label">📌 摘录（可选）</div>
+            <div class="c-body">书里哪句话最打动你？</div>
+            <div class="c-body" style="background:#F0F6FC;border-radius:6px;padding:6px;margin-top:4px;font-style:italic;">
+              "真正重要的东西，用眼睛是看不见的。"
+            </div>
+          </div>
+          <div class="p-card">
+            <div class="c-label">💭 我的思考（可选）</div>
+            <div class="c-body" style="color:#999;">用自己的话说说你明白了什么…</div>
+          </div>
+          <div class="p-card" style="background:linear-gradient(135deg,#F4B942,#FFD54F);text-align:center;color:#fff;font-weight:800;font-size:12px;">
+            完成 ✓
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">完成后 · 卡片展示笔记</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="p-title">今日日常</div>
+          <div class="p-card" style="background:#F5F9F5;">
+            <div class="c-label" style="color:#81C784;">✓ 已完成 · 阅读</div>
+            <div class="c-title">读《小王子》</div>
+            <div class="c-body" style="border-left:2px solid #81C784;padding-left:6px;margin-top:4px;">
+              📌 "真正重要的东西，用眼睛是看不见的。"
+            </div>
+            <div class="c-body" style="color:#5C6178;margin-top:3px;">
+              💭 我明白了友情比看得见的东西更重要
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>P1 功能：阅读专题 + 巩固复习</h2>
+
+  <div class="insight-box">
+    <div class="label">阅读专题的本质</div>
+    <div class="main">把"一本书"当成一个长周期的"项目"，而不是一次任务。</div>
+    <div class="sub">
+      现有模型里，一本书可能被拆成多个"读30分钟"任务，但它们彼此孤立。<br>
+      阅读专题把它们串起来：同一个 <code>subcategory</code>（书名/专题名）的任务归到一组，<br>
+      读完后自动生成"这本书教会了我什么"的专题小结。
+    </div>
+  </div>
+
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">阅读专题 · 聚合视图</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="p-title">📖 《小王子》专题</div>
+          <div class="p-card" style="text-align:center;">
+            <div class="c-label">进度</div>
+            <div style="font-size:18px;font-weight:800;color:#3A5A8C;">读至第 12 章 / 27 章</div>
+            <div style="height:8px;background:#F0F0F0;border-radius:4px;margin-top:6px;overflow:hidden;">
+              <div style="height:100%;width:44%;background:linear-gradient(90deg,#5B9BD5,#42A5F5);border-radius:4px;"></div>
+            </div>
+            <div class="c-body" style="margin-top:6px;">累计 2.5 小时 · 笔记 6 条</div>
+          </div>
+          <div class="p-card">
+            <div class="c-label">🎯 阅读目的</div>
+            <div class="c-body">小王子为什么要离开他的星球？</div>
+          </div>
+          <div class="p-card">
+            <div class="c-label">📝 笔记（6条）</div>
+            <div class="c-body" style="border-bottom:0.5px solid rgba(0,0,0,0.04);padding-bottom:4px;">📌 "重要的东西眼睛看不见"</div>
+            <div class="c-body" style="border-bottom:0.5px solid rgba(0,0,0,0.04);padding:4px 0;">📌 "驯养就是建立联系"</div>
+            <div class="c-body" style="padding-top:4px;color:#999;">… 还有 4 条</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">读完 · 专题输出</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="p-title">读完啦 🎉</div>
+          <div class="p-card" style="text-align:center;padding:14px;">
+            <div style="font-size:24px;margin-bottom:6px;">📕</div>
+            <div class="c-title">《小王子》读完了</div>
+            <div class="c-body">把散落的 6 条笔记，整合成一篇小结吧</div>
+          </div>
+          <div class="p-card">
+            <div class="c-label">这本书教会了我什么？（专题输出）</div>
+            <div class="c-body" style="background:#F0F6FC;border-radius:6px;padding:6px;line-height:1.8;">
+              小王子离开星球，是为了理解"驯养"和"责任"。他明白了最重要的东西眼睛看不见，要用"心"去看。狐狸告诉他，被驯养之后，就要对彼此负责…
+            </div>
+          </div>
+          <div class="p-card" style="background:linear-gradient(135deg,#F4B942,#FFD54F);text-align:center;color:#fff;font-weight:800;font-size:12px;">
+            保存小结
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-col">
+      <div class="phone-label">巩固 · 间隔复习</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="p-title">复习提醒</div>
+          <div class="p-card" style="text-align:center;padding:14px;">
+            <div style="font-size:22px;margin-bottom:6px;">🔁</div>
+            <div class="c-title">还记得这句话吗？</div>
+          </div>
+          <div class="p-card">
+            <div class="c-body" style="background:#F0F6FC;border-radius:6px;padding:8px;font-style:italic;font-size:11px;">
+              "真正重要的东西，用眼睛是看不见的。"
+            </div>
+            <div class="c-body" style="margin-top:6px;">这句话出自哪本书？你还记得你的思考吗？</div>
+          </div>
+          <div class="p-card">
+            <div class="c-label">复习节奏</div>
+            <div class="c-body">
+              第 1 天 ✓ · 第 3 天 · 第 7 天 · 第 30 天<br>
+              <span style="color:#999;">（间隔拉长，记忆越牢）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>数据模型：复用预留字段，最小改动</h2>
+
+  <p class="desc">
+    好消息是 <code>server/routine.ts</code> 的 <code>Routine.Info</code> 已经预留了所需字段，基本不需要动后端结构。
+  </p>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:24%;">预留字段</th><th style="width:16%;">类型</th><th style="width:60%;">如何承载阅读方法论</th></tr>
+      <tr>
+        <td><code>subcategory</code></td>
+        <td>number</td>
+        <td>阅读专题的标识（书名/专题 ID）——同 <code>subcategory</code> 的阅读任务归为一组，组成"阅读专题"</td>
+      </tr>
+      <tr>
+        <td><code>detail</code></td>
+        <td>string</td>
+        <td>任务内容 = 书名。阅读目的可以存成一个约定格式，或单独字段</td>
+      </tr>
+      <tr>
+        <td><code>remark</code></td>
+        <td>string</td>
+        <td>结构化笔记——用约定分隔符同时承载「摘录 + 思考」两条，或拆成两个字段</td>
+      </tr>
+      <tr>
+        <td><code>mediaRemark</code></td>
+        <td>string</td>
+        <td>笔记的图片/语音（拍下书页、录一句感想）——配合之前的语音方案</td>
+      </tr>
+      <tr>
+        <td><code>medias</code></td>
+        <td>string</td>
+        <td>预留，可存笔记的多张图片</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="cap-table" style="margin-top:12px;">
+    <table>
+      <tr><th style="width:20%;">新增需求</th><th style="width:40%;">建议方案</th><th style="width:40%;">说明</th></tr>
+      <tr>
+        <td><strong>阅读目的</strong></td>
+        <td>新增 <code>readingPurpose?: string</code> 字段，或在 <code>detail</code> 内约定</td>
+        <td>建议独立字段，语义更清晰</td>
+      </tr>
+      <tr>
+        <td><strong>摘录 vs 思考</strong></td>
+        <td>新增 <code>quote?: string</code>（摘录），<code>remark</code> 保留为"思考"</td>
+        <td>复用现有 remark 作为思考，仅新增一个 quote 字段</td>
+      </tr>
+      <tr>
+        <td><strong>预读问题</strong></td>
+        <td>可复用阅读目的字段，或新增 <code>preQuestions?: string</code></td>
+        <td>预读问题本质就是阅读目的的一种形态</td>
+      </tr>
+      <tr>
+        <td><strong>复习节奏</strong></td>
+        <td>前端基于 <code>finishTime</code> 计算间隔，配合推送能力</td>
+        <td>不需要新增字段，前端算 1/3/7/30 天即可</td>
+      </tr>
+    </table>
+  </div>
+
+  <blockquote>
+    <strong>后端改动可以极小。</strong><br>
+    核心只新增 1-2 个可选字段（<code>readingPurpose</code>、<code>quote</code>），<br>
+    阅读专题用 <code>subcategory</code> 分组，复习用 <code>finishTime</code> 前端计算。<br>
+    剩下的全是前端交互和 UI 的工作。
+  </blockquote>
+</div>
+
+
+<div class="section">
+  <h2>与"好奇清单 / 问答任务"的联动</h2>
+  <p class="desc">
+    之前设计的"好奇捕捉器"和"问答任务"在这里形成了闭环——它们天然是阅读的"上游"和"下游"：
+  </p>
+
+  <div class="loop-row">
+    <div class="loop-node"><div class="n-step">好奇清单</div><div class="n-name">捕捉好奇</div></div>
+    <span class="loop-arrow">→</span>
+    <div class="loop-node"><div class="n-step">阅读目的</div><div class="n-name">选书带问题</div></div>
+    <span class="loop-arrow">→</span>
+    <div class="loop-node"><div class="n-step">阅读笔记</div><div class="n-name">摘录+思考</div></div>
+    <span class="loop-arrow">→</span>
+    <div class="loop-node"><div class="n-step">问答输出</div><div class="n-name">回答/巩固</div></div>
+  </div>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:22%;">联动点</th><th style="width:48%;">怎么连</th><th style="width:30%;">价值</th></tr>
+      <tr>
+        <td><strong>好奇 → 阅读目的</strong></td>
+        <td>创建阅读任务时，可以直接从"好奇清单"里选一个问题作为阅读目的</td>
+        <td>回答"为什么读"的答案，来自之前积累的好奇——选书不再盲目</td>
+      </tr>
+      <tr>
+        <td><strong>阅读笔记 → 问答</strong></td>
+        <td>笔记里"我的思考"如果是个疑问，可以一键转成"问答任务"去深挖</td>
+        <td>阅读中产生的新问题，进入问答任务，形成知识延展</td>
+      </tr>
+      <tr>
+        <td><strong>巩固 → 好奇心再触发</strong></td>
+        <td>复习时如果又冒出新的"咦"，回到好奇清单</td>
+        <td>形成"好奇→阅读→输出→新好奇"的飞轮</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="insight-box">
+    <div class="label">完整飞轮</div>
+    <div class="main">好奇 → 选书带问题 → 阅读记笔记 → 专题输出 → 复习巩固 → 冒出新好奇。</div>
+    <div class="sub">
+      这六个环节串起来，恰好把小程序从"打卡工具"升级成"学习闭环工具"。<br>
+      而每一步都建立在现有能力上，不是另起炉灶。
+    </div>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>落地优先级建议</h2>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:12%;">阶段</th><th style="width:30%;">做什么</th><th style="width:34%;">改动量</th><th style="width:24%;">为什么是这一步</th></tr>
+      <tr>
+        <td><span class="tag r">第一批</span></td>
+        <td><strong>笔记结构化</strong>（摘录+思考）+ <strong>阅读目的</strong></td>
+        <td>前端为主，后端 +1 字段</td>
+        <td>改动最小，但立刻让"阅读"和其他任务有了本质区别</td>
+      </tr>
+      <tr>
+        <td><span class="tag r">第一批</span></td>
+        <td><strong>预读热身</strong>（3 步引导）</td>
+        <td>纯前端</td>
+        <td>零后端成本，直接引入"带着问题读"</td>
+      </tr>
+      <tr>
+        <td><span class="tag y">第二批</span></td>
+        <td><strong>阅读专题</strong>（聚合 + 专题输出）</td>
+        <td>前端 + subcategory 分组逻辑</td>
+        <td>需要先有笔记，专题才有东西可聚合</td>
+      </tr>
+      <tr>
+        <td><span class="tag y">第二批</span></td>
+        <td><strong>巩固复习</strong>（间隔提醒）</td>
+        <td>前端 + 推送能力</td>
+        <td>依赖推送能力（P0 已规划）就绪</td>
+      </tr>
+    </table>
+  </div>
+
+  <blockquote>
+    <strong>一句话总结：</strong><br>
+    不要新增一个"阅读 App"——而是让"阅读任务"这一格，在现有闭环里<strong>变得更深</strong>。<br>
+    先做<strong>笔记结构化 + 阅读目的 + 预读热身</strong>这三件轻量的事，<br>
+    就能让"读 30 分钟"从打卡，变成一次真正的有效阅读。
+  </blockquote>
+</div>
+
+</body>
+</html>

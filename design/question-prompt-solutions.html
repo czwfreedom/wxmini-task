@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问答任务 · 降低提问门槛 · 产品方案</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:16px}
+  body{background:#E8EFF5;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;padding:36px 24px}
+  h2{font-size:22px;font-weight:800;color:#3A5A8C;margin-bottom:14px;padding-left:14px;border-left:4px solid #F4B942}
+  h3{font-size:16px;font-weight:700;color:#5C6178;margin:28px 0 10px;padding-bottom:5px;border-bottom:1px dashed rgba(0,0,0,0.08)}
+  .section{width:100%;max-width:860px;margin:0 auto 36px}
+  p.desc{font-size:13px;color:#5C6178;line-height:1.9;margin-bottom:14px}
+
+  blockquote{background:#FFF8E1;border-left:4px solid #F4B942;padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:#5C6178;line-height:1.8;margin:14px 0}
+
+  .insight-box{background:linear-gradient(135deg,#3A5A8C,#1A365D);border-radius:16px;padding:22px 20px;color:#fff;margin:16px 0}
+  .insight-box .label{font-size:11px;opacity:0.7;letter-spacing:2px;margin-bottom:8px}
+  .insight-box .main{font-size:18px;font-weight:800;line-height:1.6;margin-bottom:8px}
+  .insight-box .sub{font-size:12px;opacity:0.75;line-height:1.8}
+
+  .cap-table{width:100%;background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(74,144,226,0.06);overflow:hidden;font-size:13px}
+  .cap-table table{width:100%;border-collapse:collapse}
+  .cap-table th{background:#F2F5F8;padding:10px 12px;text-align:left;font-size:12px;font-weight:700;color:#5C6178}
+  .cap-table td{padding:10px 12px;border-bottom:0.5px solid rgba(0,0,0,0.04);color:#333;vertical-align:top;line-height:1.7}
+  .cap-table tr:last-child td{border-bottom:none}
+  .cap-table code{background:#F2F5F8;padding:1px 5px;border-radius:3px;font-size:11px}
+
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
+  .tag.g{background:#E8F5E9;color:#81C784}
+  .tag.r{background:#FFEBEE;color:#EF5350}
+  .tag.y{background:#FFF8E1;color:#C8853E}
+  .tag.b{background:#E3F2FD;color:#5B9BD5}
+
+  .side-row{display:flex;gap:16px;flex-wrap:wrap}
+  .side-card{flex:1;min-width:220px;background:#fff;border-radius:14px;padding:18px;box-shadow:0 3px 12px rgba(74,144,226,0.05);position:relative}
+  .side-card .num{position:absolute;top:14px;right:16px;font-size:28px;font-weight:800;color:#F0F0F0;font-family:Georgia,serif}
+  .side-card h4{font-size:14px;font-weight:800;color:#333;margin-bottom:8px;padding-right:30px}
+  .side-card p{font-size:11px;color:#5C6178;line-height:1.8}
+
+  .flow-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:16px 0}
+  .flow-box{background:#fff;border-radius:12px;padding:12px 16px;text-align:center;box-shadow:0 3px 12px rgba(74,144,226,0.06);min-width:90px}
+  .flow-box .step{font-size:10px;color:#999;font-weight:600}
+  .flow-box .label{font-size:13px;font-weight:800;color:#333;margin-top:2px}
+  .flow-arrow{font-size:18px;color:#C5C5C5;font-weight:800}
+
+  .dice-demo{background:#FDFBF7;border-radius:16px;padding:18px;text-align:center;box-shadow:0 4px 16px rgba(74,144,226,0.08);margin:10px 0}
+  .dice-demo .dice{font-size:40px;margin:8px 0}
+  .dice-demo .result{font-size:14px;font-weight:700;color:#3A5A8C}
+  .dice-demo .hint{font-size:10px;color:#999;margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="section">
+  <h2>为什么"早上问一个问题"这么难？</h2>
+
+  <div class="insight-box">
+    <div class="label">核心洞察</div>
+    <div class="main">问题不是"想"出来的，是"撞"出来的。</div>
+    <div class="sub">
+      好奇心不是大脑主动生成的，而是被外界刺激唤醒的。<br>
+      你在早上脑袋空空，不是因为你不会提问，而是因为——<strong>早上没有值得问的东西。</strong><br><br>
+      问题诞生的真正时机是白天：看到蚂蚁搬家、听到打雷、闻到桂花香、玩积木塌了……<br>
+      这些"撞见奇怪的事"的瞬间，才是问题冒出来的地方。
+    </div>
+  </div>
+
+  <p class="desc">
+    所以现在产品的问题不是"缺少提问的模板"，而是<strong>把"提问"放在了错误的时机</strong>：
+    要求用户在早上（刺激最少的时候）凭空想出一个问题（需要刺激才能产生）。<br><br>
+    就像要求一个人"现在立刻感动一下"——感动是情境触发的，问题也是。
+  </p>
+
+  <blockquote>
+    <strong>产品要解决的核心矛盾：</strong><br>
+    时机错位 —— 早上没有刺激，却要生成问题。<br>
+    → 解法不是"让早上更容易想"，而是<strong>"让白天更容易记，让早上更容易选"</strong>。
+  </blockquote>
+</div>
+
+
+<div class="section">
+  <h2>方案总览：从"硬想"到"捕捉 + 挑选"</h2>
+
+  <div class="flow-row">
+    <div class="flow-box" style="background:#E8F5E9;border:2px solid #81C784;"><div class="step">白天 · 随时</div><div class="label">好奇捕捉</div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box" style="background:#E8F5E9;border:2px solid #81C784;"><div class="step">随时 · 零门槛</div><div class="label">存进好奇清单</div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box" style="background:#FFF8E1;border:2px solid #FFD54F;"><div class="step">早上 · 规划</div><div class="label">从清单里挑一个</div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box" style="background:#FFF8E1;border:2px solid #FFD54F;"><div class="step">当天 · 探索</div><div class="label">回答/研究它</div></div>
+  </div>
+
+  <p class="desc">
+    把"提问"拆成两个阶段：<strong>捕捉</strong>（白天，看到什么记什么，不做评判）和<strong>挑选</strong>（早上，从清单里选一个今天想深挖的）。
+    这样早上就不再是"凭空硬想"，而是"从自己的好奇清单里挑一颗种子"。
+  </p>
+</div>
+
+
+<div class="section">
+  <h2>七个具体功能建议</h2>
+
+  <div class="side-row">
+    <div class="side-card" style="border-left:4px solid #EF5350;">
+      <div class="num">1</div>
+      <h4>好奇捕捉器（核心）</h4>
+      <p>
+        <strong>随时记录"我好奇"的瞬间。</strong><br><br>
+        在首页放一个常驻的"💭 我刚才好奇了"入口，点一下就能记一句话（或拍张照、录一句语音）。<br><br>
+        不要求完整问题，只要求"记下那个让你停下来的东西"。<br>
+        比如："蚂蚁为什么排队走""桂花好香""积木为什么倒"。<br><br>
+        关键词：<strong>零评判、零格式、零门槛</strong>——哪怕只拍一张照片都算。
+      </p>
+    </div>
+
+    <div class="side-card" style="border-left:4px solid #F4B942;">
+      <div class="num">2</div>
+      <h4>问题种子库</h4>
+      <p>
+        <strong>提供"问题引子"，不是标准答案。</strong><br><br>
+        按主题分类的开放式引子：<br>
+        🌍 关于世界："如果天空不是蓝色的呢？"<br>
+        🐛 关于生命："蚂蚁是怎么找到回家的路的？"<br>
+        🔢 关于数字："0 是发明出来的还是被发现的？"<br><br>
+        每天随机推送一个"今日好奇"，也可以按分类浏览。<br>
+        关键词：<strong>给起点，不给答案</strong>。
+      </p>
+    </div>
+
+    <div class="side-card" style="border-left:4px solid #5B9BD5;">
+      <div class="num">3</div>
+      <h4>提问脚手架</h4>
+      <p>
+        <strong>用框架帮大脑填空。</strong><br><br>
+        提供一个"问题公式"：<br>
+        【为什么 + 一个你最近看到的东西】<br>
+        【如果 + 一个不可能的事】<br>
+        【怎么 + 一个你想学会的事】<br><br>
+        用户只需要填空，不用从零构造。<br>
+        例如"为什么 + ____ "→"为什么彩虹有七种颜色"。<br><br>
+        关键词：<strong>降低认知负荷</strong>。
+      </p>
+    </div>
+
+    <div class="side-card" style="border-left:4px solid #81C784;">
+      <div class="num">4</div>
+      <h4>消解"没意义"的恐惧</h4>
+      <p>
+        <strong>没有"笨问题"，只有"还没被问过的问题"。</strong><br><br>
+        设计上做几件事：<br>
+        • 每个问题都获得"好奇徽章"，不因"深浅"分级<br>
+        • 展示名人问过的"傻问题"："牛顿为什么苹果往下掉？"<br>
+        • 移除任何"优秀问题/普通问题"的排序，只有"你的问题"<br><br>
+        关键词：<strong>去羞耻化</strong>。
+      </p>
+    </div>
+
+    <div class="side-card" style="border-left:4px solid #CE93D8;">
+      <div class="num">5</div>
+      <h4>问题接龙（知识线）</h4>
+      <p>
+        <strong>让问题延续，而不是孤立。</strong><br><br>
+        昨天的答案，往往引出今天的问题。<br>
+        "为什么蚂蚁排队走" → 查到了"信息素" → "信息素是什么味道？"<br><br>
+        系统在回答完一个问题后，提示"接着问"的入口，把散落的问题串成一条知识线。<br><br>
+        关键词：<strong>建立连续性</strong>。
+      </p>
+    </div>
+
+    <div class="side-card" style="border-left:4px solid #FF7043;">
+      <div class="num">6</div>
+      <h4>好奇骰子（游戏化）</h4>
+      <p>
+        <strong>把"选题"变成"掷骰子"。</strong><br><br>
+        一个骰子决定主题（天空/动物/食物/身体…），<br>
+        一个骰子决定问法（为什么/如果/怎么/真的吗…）。<br><br>
+        掷出"动物 × 如果"→"如果动物会说话，第一句会说什么？"<br><br>
+        关键词：<strong>随机带来惊喜，消除选择焦虑</strong>。
+      </p>
+    </div>
+
+    <div class="side-card" style="border-left:4px solid #B0BEC5;">
+      <div class="num">7</div>
+      <h4>AI 灵感助手（可选）</h4>
+      <p>
+        <strong>给一个词，AI 帮你想几个方向。</strong><br><br>
+        用户输入任意一个词（"恐龙"），AI 返回 3-5 个不同角度的开放式问题。<br><br>
+        降低"从零开始"的阻力，但仍保留用户的主动选择权。<br><br>
+        关键词：<strong>兜底方案</strong>，放最后，不是主力。
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>优先级与组合建议</h2>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:14%;">优先级</th><th style="width:26%;">功能</th><th style="width:34%;">解决什么</th><th style="width:26%;">理由</th></tr>
+      <tr>
+        <td><span class="tag r">P0</span></td>
+        <td><strong>好奇捕捉器</strong></td>
+        <td>时机错位——白天捕捉，早上挑选</td>
+        <td>从根上解决问题，不只是打补丁</td>
+      </tr>
+      <tr>
+        <td><span class="tag r">P0</span></td>
+        <td><strong>提问脚手架</strong></td>
+        <td>脑袋空空——用公式填空</td>
+        <td>极低成本，立刻降低认知负荷</td>
+      </tr>
+      <tr>
+        <td><span class="tag y">P1</span></td>
+        <td><strong>问题种子库</strong></td>
+        <td>没有起点——给引子</td>
+        <td>需要内容运营，但有长期价值</td>
+      </tr>
+      <tr>
+        <td><span class="tag y">P1</span></td>
+        <td><strong>去羞耻化设计</strong></td>
+        <td>担心问题"没意义"——移除评判</td>
+        <td>设计语言层面，渗透到每个功能</td>
+      </tr>
+      <tr>
+        <td><span class="tag b">P2</span></td>
+        <td><strong>好奇骰子</strong></td>
+        <td>选择焦虑——随机化</td>
+        <td>有趣，但属于锦上添花</td>
+      </tr>
+      <tr>
+        <td><span class="tag b">P2</span></td>
+        <td><strong>问题接龙</strong></td>
+        <td>问题孤立——连续性</td>
+        <td>需要先有回答/探索功能支撑</td>
+      </tr>
+      <tr>
+        <td><span class="tag b">P3</span></td>
+        <td><strong>AI 灵感助手</strong></td>
+        <td>兜底</td>
+        <td>成本高，先做前六个验证需求</td>
+      </tr>
+    </table>
+  </div>
+
+  <blockquote>
+    <strong>我的核心建议：</strong><br><br>
+    别把精力放在"让早上更容易想出问题"上——那是治标。<br>
+    把精力放在<strong>"好奇捕捉器"</strong>上——这是治本。<br><br>
+    因为真正的问题不是"如何生成一个问题"，而是<strong>"如何养成注意到好奇的习惯"</strong>。<br>
+    一个孩子如果养成了"看到奇怪的事就停下来记一笔"的习惯，<br>
+    那"问答任务"就不再是负担，而是一个<strong>期待已久的表达出口</strong>。<br><br>
+    <em style="color:#999;">如果只做一件事：做一个常驻的"💭 我刚才好奇了"按钮，点一下就能记一句话或拍张照。这件事做透了，早上的问题自然就有了。</em>
+  </blockquote>
+</div>
+
+</body>
+</html>

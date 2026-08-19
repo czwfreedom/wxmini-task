@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微信同声传译插件 · 分析</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:16px}
+  body{background:#E8EFF5;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;padding:36px 24px}
+  h2{font-size:22px;font-weight:800;color:#3A5A8C;margin-bottom:14px;padding-left:14px;border-left:4px solid #F4B942}
+  h3{font-size:16px;font-weight:700;color:#5C6178;margin:28px 0 10px;padding-bottom:5px;border-bottom:1px dashed rgba(0,0,0,0.08)}
+  .section{width:100%;max-width:860px;margin:0 auto 36px}
+  p.desc{font-size:13px;color:#5C6178;line-height:1.9;margin-bottom:14px}
+
+  .cap-table{width:100%;background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(74,144,226,0.06);overflow:hidden;font-size:13px;}
+  .cap-table table{width:100%;border-collapse:collapse}
+  .cap-table th{background:#F2F5F8;padding:10px 12px;text-align:left;font-size:12px;font-weight:700;color:#5C6178}
+  .cap-table td{padding:10px 12px;border-bottom:0.5px solid rgba(0,0,0,0.04);color:#333;vertical-align:top;line-height:1.7}
+  .cap-table tr:last-child td{border-bottom:none}
+  .cap-table code{background:#F2F5F8;padding:1px 5px;border-radius:3px;font-size:11px;white-space:nowrap}
+
+  .code-block{background:#1A365D;color:#E3F2FD;border-radius:12px;padding:16px;font-size:12px;line-height:1.8;overflow-x:auto;margin:10px 0}
+  .code-block .comment{color:#81C784}
+  .code-block .keyword{color:#FFD54F}
+  .code-block .string{color:#FFCC80}
+  .code-block .func{color:#64B5F6}
+
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
+  .tag.g{background:#E8F5E9;color:#81C784}
+  .tag.r{background:#FFEBEE;color:#EF5350}
+  .tag.y{background:#FFF8E1;color:#C8853E}
+  .tag.b{background:#E3F2FD;color:#5B9BD5}
+
+  .flow-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:16px 0}
+  .flow-box{background:#fff;border-radius:12px;padding:12px 16px;text-align:center;box-shadow:0 3px 12px rgba(74,144,226,0.06);min-width:90px}
+  .flow-box .step{font-size:10px;color:#999;font-weight:600}
+  .flow-box .label{font-size:13px;font-weight:800;color:#333;margin-top:2px}
+  .flow-arrow{font-size:18px;color:#C5C5C5;font-weight:800}
+
+  .highlight-box{background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:12px;padding:14px 18px;margin:14px 0}
+  .highlight-box p{font-size:12px;color:#2E7D32;line-height:1.8}
+  .highlight-box strong{color:#1B5E20}
+
+  .warning-box{background:#FFF8E1;border:1px solid #FFD54F;border-radius:12px;padding:14px 18px;margin:14px 0}
+  .warning-box p{font-size:12px;color:#C8853E;line-height:1.8}
+
+  .side-row{display:flex;gap:16px;flex-wrap:wrap}
+  .side-card{flex:1;min-width:200px;background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 12px rgba(74,144,226,0.05)}
+  .side-card h4{font-size:14px;font-weight:800;color:#333;margin-bottom:8px}
+  .side-card p{font-size:11px;color:#5C6178;line-height:1.7}
+</style>
+</head>
+<body>
+
+<div class="section">
+  <h2>微信同声传译插件（WechatSI）</h2>
+  <p class="desc">
+    插件 ID <code>wx069ba97219f66d99</code>，微信官方自研。<strong>录音 + 实时语音识别 + 翻译 + 语音合成</strong>四合一，
+    不需要任何后端 ASR 服务，全部能力在微信侧完成。
+  </p>
+</div>
+
+<div class="section">
+  <h2>对我们最有用的能力：语音输入（ASR）</h2>
+
+  <p class="desc">
+    插件提供 <code>RecordRecognitionManager</code>——它比原生 <code>RecorderManager</code> 多了一层实时语音转文字。
+    孩子按住说话的同时，识别结果会逐句流式返回，松手后拿到最终全文。
+  </p>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:18%;">能力</th><th style="width:52%;">说明</th><th style="width:14%;">限制</th><th>与我们需求的匹配</th></tr>
+      <tr>
+        <td><strong>录音 + 识别</strong></td>
+        <td>调用 <code>start({duration, lang})</code> 开始录音并进行实时语音转文字</td>
+        <td>最长 60s</td>
+        <td class="tag g">完美——孩子一句话 15-30s 足够</td>
+      </tr>
+      <tr>
+        <td><strong>流式结果</strong></td>
+        <td><code>onRecognize(res)</code> 每识别出一句就回调一次，<code>res.result</code> 是当前累计文本</td>
+        <td>—</td>
+        <td class="tag g">完美——可以在录音过程中实时显示文字，体验极好</td>
+      </tr>
+      <tr>
+        <td><strong>最终结果</strong></td>
+        <td><code>onStop({ tempFilePath, result, duration })</code> —— 拿到录音文件路径 + 完整识别文字 + 时长</td>
+        <td>—</td>
+        <td class="tag g">一举三得——音频 + 文字 + 时长都在一个回调里</td>
+      </tr>
+      <tr>
+        <td><strong>语言支持</strong></td>
+        <td><code>zh_CN</code>（默认）/ <code>en_US</code> / <code>zh_HK</code> / <code>sichuanhua</code></td>
+        <td>4 种方言</td>
+        <td class="tag g">默认 zh_CN 即可</td>
+      </tr>
+      <tr>
+        <td><strong>调用配额</strong></td>
+        <td>250 次/分钟，30,000 次/天</td>
+        <td>按小程序计</td>
+        <td class="tag g">远超需求——日活 1000 人每人说 30 句才刚够</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="highlight-box">
+    <p>
+      <strong>核心优势：不需要后端 ASR 服务。</strong><br>
+      之前的分析说需要"后端接入语音识别服务"，现在不需要了——<br>
+      微信把录音 + 识别合在一起，<strong>一次 API 调用</strong>就拿到录音文件和识别文字。<br>
+      这对我们的价值：开发成本砍半，而且微信的 ASR 引擎对小朋友的中文识别准确率远高于通用引擎。
+    </p>
+  </div>
+</div>
+
+<div class="section">
+  <h2>接入方式（只需三步）</h2>
+
+  <h3>第一步：在 app.json 中声明插件</h3>
+  <div class="code-block">
+    <span class="comment">// miniprogram/app.json</span><br>
+    {<br>
+    &nbsp;&nbsp;<span class="string">"plugins"</span>: {<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"WechatSI"</span>: {<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"version"</span>: <span class="string">"0.3.6"</span>,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"provider"</span>: <span class="string">"wx069ba97219f66d99"</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+    &nbsp;&nbsp;}<br>
+    }
+  </div>
+
+  <h3>第二步：在页面中获取管理器</h3>
+  <div class="code-block">
+    <span class="keyword">const</span> plugin = <span class="func">requirePlugin</span>(<span class="string">"WechatSI"</span>);<br>
+    <span class="keyword">const</span> manager = plugin.<span class="func">getRecordRecognitionManager</span>();
+  </div>
+
+  <h3>第三步：绑定事件 + 开始录音</h3>
+  <div class="code-block">
+    <span class="comment">// 流式识别——录音过程中实时返回文字</span><br>
+    manager.<span class="func">onRecognize</span> = (<span class="keyword">res</span>) => {<br>
+    &nbsp;&nbsp;<span class="comment">// res.result: 当前累计识别文本，用于实时显示</span><br>
+    &nbsp;&nbsp;<span class="keyword">this</span>.<span class="func">setData</span>({ transcript: res.result });<br>
+    };<br><br>
+    <span class="comment">// 录音过程中出错</span><br>
+    manager.<span class="func">onError</span> = (<span class="keyword">res</span>) => {<br>
+    &nbsp;&nbsp;<span class="comment">// res.retcode + res.msg，常见错误：无网络、权限被拒</span><br>
+    &nbsp;&nbsp;<span class="func">console</span>.<span class="func">error</span>(res);<br>
+    };<br><br>
+    <span class="comment">// 松手停止——拿到最终文字 + 录音文件</span><br>
+    manager.<span class="func">onStop</span> = (<span class="keyword">res</span>) => {<br>
+    &nbsp;&nbsp;<span class="comment">// res.result:       最终识别文字（简体中文）</span><br>
+    &nbsp;&nbsp;<span class="comment">// res.tempFilePath: 录音文件的临时路径（mp3）</span><br>
+    &nbsp;&nbsp;<span class="comment">// res.duration:     录音时长（毫秒）</span><br><br>
+    &nbsp;&nbsp;<span class="comment">// 保存到任务反馈</span><br>
+    &nbsp;&nbsp;<span class="keyword">const</span> remark = res.result;<br>
+    &nbsp;&nbsp;<span class="keyword">const</span> audioPath = res.tempFilePath;<br>
+    &nbsp;&nbsp;<span class="comment">// → Routine.update({ id, remark }) 直接存文字</span><br>
+    };
+  </div>
+</div>
+
+<div class="section">
+  <h2>这如何简化我们的"声音回响"方案</h2>
+
+  <div class="flow-row">
+    <div class="flow-box"><div class="step">之前想的两步</div><div class="label">RecorderManager 录音</div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><div class="step">之前想的两步</div><div class="label">后端 ASR 识别</div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box"><div class="step">之前想的两步</div><div class="label">获取文字</div></div>
+  </div>
+
+  <p style="text-align:center;font-size:20px;margin:10px 0;">⬇ 被 WechatSI 简化成 ⬇</p>
+
+  <div class="flow-row">
+    <div class="flow-box" style="background:#E8F5E9;border:2px solid #81C784;"><div class="step">现在只需一步</div><div class="label">RecordRecognitionManager</div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-box" style="background:#E8F5E9;border:2px solid #81C784;"><div class="step">一次拿到</div><div class="label">录音文件 + 识别文字</div></div>
+  </div>
+
+  <div class="highlight-box">
+    <p>
+      <strong>对 V2 "声音回响"方案的直接收益：</strong><br>
+      ① 录音过程中可以<b>实时显示识别文字</b>（onRecognize 流式回调）——孩子看着自己的话变成字，本身就是一种即时反馈<br>
+      ② 不需要后端 ASR 服务——文字直接从插件获取，保存到 <code>remark</code> 字段即可<br>
+      ③ 音频文件路径在 <code>tempFilePath</code> 中——如果想保留原声播放，还是需要上传（但 MVP 可以只保留文字，不上传音频）<br>
+      ④ 微信的中文儿童语音识别经过大量训练，准确率比通用方案高
+    </p>
+  </div>
+</div>
+
+<div class="section">
+  <h2>更新后的 MVP 方案</h2>
+
+  <div class="side-row">
+    <div class="side-card" style="border-left:4px solid #81C784;">
+      <h4><span class="tag g">仅文字模式（最简 MVP）</span></h4>
+      <p>
+        ① WechatSI 录音 + 识别<br>
+        ② 拿到 <code>res.result</code><br>
+        ③ 存储到 <code>remark</code> 字段<br>
+        ④ 卡片上展示文字<br><br>
+        <strong>不需要后端任何改动。</strong><br>
+        <em>预估前端工作量：1-2 天。</em>
+      </p>
+    </div>
+    <div class="side-card" style="border-left:4px solid #F4B942;">
+      <h4><span class="tag y">文字 + 音频模式（完整版）</span></h4>
+      <p>
+        ① WechatSI 录音 + 识别<br>
+        ② <code>res.result</code> → 存 <code>remark</code><br>
+        ③ <code>res.tempFilePath</code> → uploadFile 上传 → 返回 CDN URL → 存 <code>mediaRemark</code><br>
+        ④ 卡片上：文字 + ▶️ 播放按钮<br><br>
+        <strong>需要后端新增上传接口。 </strong><br>
+        <em>预估算上前端共 4-5 天。</em>
+      </p>
+    </div>
+    <div class="side-card" style="border-left:4px solid #5B9BD5;">
+      <h4><span class="tag b">进度：实时文字 + 声波</span></h4>
+      <p>
+        录音过程中利用两件事：<br>
+        ① <code>onRecognize</code> → 实时滚动显示识别中的文字<br>
+        ② <code>RecorderManager.onFrameRecorded</code> → 同时获取音量帧 → 驱动声波跳动<br><br>
+        <strong>两个 API 可以共存。 </strong><br>
+        WechatSI 底层也用了 RecorderManager，可以同时绑。
+      </p>
+    </div>
+  </div>
+
+  <div class="warning-box">
+    <p>
+      <strong>需要注意的点：</strong><br>
+      ① WechatSI 插件需要在小程序后台先添加（设置 → 第三方服务 → 插件管理 → 搜索 "微信同声传译" 添加）<br>
+      ② 插件版本号建议锁定（如 <code>0.3.6</code>），不要用 <code>latest</code><br>
+      ③ 基础库版本要求 ≥ 1.9.94（当前小程序配置已远超此版本）<br>
+      ④ 首次使用会弹出麦克风授权，需要在授权被拒时引导去设置页<br>
+      ⑤ 录音过程中如果微信切后台或被电话打断，onError 会触发，需要有降级提示<br>
+      ⑥ <strong>关键：WechatSI 的 onStop 回调拿到的文字已经是最终版，识别准确率很高，不需要再做后处理</strong>
+    </p>
+  </div>
+</div>
+
+</body>
+</html>

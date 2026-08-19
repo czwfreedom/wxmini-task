@@ -24,7 +24,7 @@ export namespace Network {
     return new Promise((resolve) => {
       const option = buildPostRequest(url, data);
       // 这个接口有是会打特别多日志，所以排除。不想序列化降低性能，只用用这种土办法。
-      Logger.info('Requesting', option.url, option.data);
+      Logger.info('Requesting', url, option.data);
 
       option.success = (res) => {
         if (res.statusCode !== 200 || !res.data) {

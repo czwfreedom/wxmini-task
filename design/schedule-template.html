@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日程模板 · 第一期设计</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:16px}
+  body{background:#E8EFF5;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;padding:36px 24px}
+  h2{font-size:22px;font-weight:800;color:#3A5A8C;margin-bottom:14px;padding-left:14px;border-left:4px solid #F4B942}
+  h3{font-size:16px;font-weight:700;color:#5C6178;margin:28px 0 10px;padding-bottom:5px;border-bottom:1px dashed rgba(0,0,0,0.08)}
+  .section{width:100%;max-width:900px;margin:0 auto 36px}
+  p.desc{font-size:13px;color:#5C6178;line-height:1.9;margin-bottom:14px}
+  blockquote{background:#FFF8E1;border-left:4px solid #F4B942;padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;color:#5C6178;line-height:1.8;margin:14px 0}
+
+  .cap-table{width:100%;background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(74,144,226,0.06);overflow:hidden;font-size:13px}
+  .cap-table table{width:100%;border-collapse:collapse}
+  .cap-table th{background:#F2F5F8;padding:10px 12px;text-align:left;font-size:12px;font-weight:700;color:#5C6178}
+  .cap-table td{padding:10px 12px;border-bottom:0.5px solid rgba(0,0,0,0.04);color:#333;vertical-align:top;line-height:1.7}
+  .cap-table tr:last-child td{border-bottom:none}
+  .cap-table code{background:#F2F5F8;padding:1px 5px;border-radius:3px;font-size:11px}
+
+  /* 手机示意 */
+  .phone-row{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
+  .phone-col{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .phone-label{font-size:11px;font-weight:800;color:#5C6178;background:#fff;padding:5px 14px;border-radius:10px;box-shadow:0 2px 8px rgba(74,144,226,0.08);text-align:center}
+  .phone{width:300px;height:520px;background:#F2F5F8;border-radius:32px;overflow:hidden;position:relative;box-shadow:0 0 0 3px #1A1A1A,0 0 0 6px #2D2D2D,0 12px 32px rgba(0,0,0,0.22)}
+  .phone-status{height:32px;background:#B8DAF5;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:10px;color:#fff;font-weight:600}
+  .phone-body{height:calc(100% - 32px);overflow:hidden;background:linear-gradient(180deg,#B8DAF5,#F2F5F8 26%);position:relative}
+
+  .hero{background:linear-gradient(160deg,#b5d9f8,#a0cdf5 50%,#c5e3fa);border-radius:0 0 16px 16px;padding:14px 16px;margin-bottom:14px}
+  .hero-nav{display:flex;align-items:center;gap:10px}
+  .hero-arrow{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff}
+  .hero-date{flex:1;text-align:center}
+  .hero-label{font-size:10px;color:rgba(255,255,255,0.85)}
+  .hero-main{font-size:22px;font-weight:800;color:#fff}
+  .hero-motto{font-size:11px;color:rgba(255,255,255,0.85);margin-top:2px}
+  .hero-stats{display:flex;gap:8px;margin-top:10px}
+  .hero-stat{font-size:10px;font-weight:600;color:#333;background:rgba(255,255,255,0.6);padding:5px 12px;border-radius:14px;display:flex;align-items:center;gap:5px}
+  .dot{width:7px;height:7px;border-radius:50%;background:#5B9BD5}
+  .dot.pending{background:#F4B942}
+  .dot.done{background:#81C784}
+
+  .section-title{font-size:16px;font-weight:700;color:#333;display:flex;align-items:center;margin:0 18px 12px}
+  .section-title::before{content:'';margin-right:8px;width:4px;height:18px;background:#F4B942;border-radius:2px}
+
+  .tpl-entry{margin-left:auto;display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;color:#B8823A;background:#FFF8E1;border:1px solid rgba(244,185,66,0.45);border-radius:12px;padding:3px 10px}
+  .tpl-entry .star{color:#F4B942}
+
+  .card{background:#FDFBF7;border-radius:14px;padding:12px 14px;margin:0 12px 10px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 10px rgba(74,144,226,0.05)}
+  .card-accent{width:8px;height:36px;border-radius:4px;flex-shrink:0}
+  .card-body{flex:1;min-width:0}
+  .card-title{font-size:13px;font-weight:600;color:#333}
+  .card-sub{font-size:10px;color:#999;margin-top:2px}
+  .card-btn{font-size:11px;font-weight:600;padding:7px 14px;border-radius:14px;background:linear-gradient(135deg,#F4B942,#FFD54F);color:#fff;box-shadow:0 3px 10px rgba(244,185,66,0.4);flex-shrink:0}
+
+  /* 底部弹窗 */
+  .overlay{position:absolute;inset:0;background:rgba(0,0,0,0.4);display:flex;flex-direction:column;justify-content:flex-end}
+  .sheet{background:#FFFDF8;border-radius:22px 22px 0 0;padding:14px 14px 20px;max-height:76%;display:flex;flex-direction:column}
+  .handle{width:36px;height:4px;border-radius:2px;background:#E5E5E5;margin:0 auto 14px}
+  .sheet-title{font-size:17px;font-weight:700;color:#333;display:flex;align-items:center;margin-bottom:4px}
+  .sheet-title::before{content:'';margin-right:8px;width:4px;height:18px;background:#F4B942;border-radius:2px}
+  .sheet-sub{font-size:11px;color:#999;margin-bottom:12px}
+  .sheet-list{overflow-y:auto;flex:1}
+  .sheet-list::-webkit-scrollbar{width:0}
+
+  .tpl-card{background:#FDFBF7;border-radius:16px;padding:12px 14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(74,144,226,0.04);position:relative}
+  .tpl-card.sel{border:2px solid #F4B942;background:#FFFDF8}
+  .tpl-head{display:flex;align-items:center;gap:8px}
+  .tpl-name{font-size:14px;font-weight:700;color:#333}
+  .tpl-tag{font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px}
+  .tpl-tag.hot{background:#FFF3E0;color:#C8853E}
+  .tpl-tag.official{background:#E3F2FD;color:#5B9BD5}
+  .tpl-desc{font-size:11px;color:#999;margin-top:4px}
+  .tpl-tasks{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .tpl-task{display:flex;align-items:center;gap:4px;font-size:10px;color:#5C6178;background:#F2F5F8;border-radius:8px;padding:3px 8px}
+  .tpl-task .tdot{width:6px;height:6px;border-radius:50%}
+  .tpl-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+  .tpl-used{font-size:10px;color:#999}
+  .tpl-use-btn{font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#F4B942,#FFD54F);border-radius:12px;padding:5px 14px;box-shadow:0 3px 10px rgba(244,185,66,0.3)}
+
+  .code-block{background:#1A365D;color:#E3F2FD;border-radius:12px;padding:14px;font-size:11px;line-height:1.8;overflow-x:auto;margin:10px 0}
+  .code-block .c{color:#81C784}
+  .code-block .k{color:#FFD54F}
+  .code-block .s{color:#FFCC80}
+</style>
+</head>
+<body>
+
+<div class="section">
+  <h2>现状：后端已就绪，只差前端与内容</h2>
+  <p class="desc">
+    通过梳理代码，发现<strong>后端能力已经全部就位</strong>，本期实际工作集中在「内置模板内容」和「前端交互」两块：
+  </p>
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:22%;">能力</th><th style="width:48%;">现有实现</th><th style="width:30%;">本期是否要动</th></tr>
+      <tr><td><strong>接口</strong></td><td><code>Api.ListConfig = '/v1/config/list'</code> 已定义</td><td>否，直接用</td></tr>
+      <tr><td><strong>服务层</strong></td><td><code>server/config.ts</code> 的 <code>Config.list()</code> 已实现</td><td>否，直接用</td></tr>
+      <tr><td><strong>类型</strong></td><td><code>Config.Type.RoutineTemplate = 1</code> 已定义</td><td>否，直接用</td></tr>
+      <tr><td><strong>解析</strong></td><td><code>Config.parseTemplate()</code> 已把 <code>value</code> JSON 转成任务数组</td><td>否，直接用</td></tr>
+      <tr><td><strong>模板内容</strong></td><td>—</td><td><span style="color:#C8853E;font-weight:700;">要新增（后台配置）</span></td></tr>
+      <tr><td><strong>入口 + 列表 UI</strong></td><td>—</td><td><span style="color:#C8853E;font-weight:700;">要新增（前端）</span></td></tr>
+    </table>
+  </div>
+  <blockquote>
+    <strong>数据模型（复用 <code>Config.Info</code>，不动结构）：</strong><br>
+    一个模板 = 一条 <code>Config.Info</code>：<code>type=1</code>、<code>name</code> 模板名、<code>tag</code> 标签、<code>value</code> 存任务 JSON、<code>used</code> 使用人数、<code>proirity</code> 排序。
+  </blockquote>
+</div>
+
+
+<div class="section">
+  <h2>一、内置模板内容设计（6 个）</h2>
+  <p class="desc">
+    模板复用现有 14 个分类枚举，每个模板 = 2~3 个任务（含分类 + 内容 + 时长）。按"孩子的一天"场景组织。
+  </p>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:16%;">模板名</th><th style="width:12%;">标签</th><th style="width:24%;">一句话描述</th><th style="width:36%;">包含任务（分类 · 内容 · 时长）</th><th style="width:12%;">排序</th></tr>
+      <tr><td><strong>学霸日常三件套</strong></td><td>热门</td><td>每天必做的基础学习，不多不少刚刚好</td><td>📖 阅读 30分钟 · ✏️ 作业 45分钟 · ✒️ 练字 15分钟</td><td>1</td></tr>
+      <tr><td><strong>活力早晨</strong></td><td>官方</td><td>起床后先动一动，一天都精神</td><td>💪 运动 20分钟 · 📖 阅读 20分钟</td><td>2</td></tr>
+      <tr><td><strong>专注学习日</strong></td><td>—</td><td>需要静下心来攻克难点的日子</td><td>✏️ 作业 60分钟 · ⌨️ 编程 30分钟 · 📖 阅读 20分钟</td><td>3</td></tr>
+      <tr><td><strong>轻松周末</strong></td><td>—</td><td>周末放松，也别忘了动手动脑</td><td>🧹 家务 15分钟 · 🎨 绘画 30分钟 · 🎮 游戏 30分钟</td><td>4</td></tr>
+      <tr><td><strong>小小探索家</strong></td><td>—</td><td>带着好奇心，问问题、看世界</td><td>❓ 问答 15分钟 · 📖 阅读 20分钟 · 📷 拍摄 15分钟</td><td>5</td></tr>
+      <tr><td><strong>音乐时光</strong></td><td>—</td><td>练琴也别忘了读书</td><td>🎵 练琴 30分钟 · 📖 阅读 15分钟</td><td>6</td></tr>
+    </table>
+  </div>
+
+  <h3>模板在 Config 里的 value 结构（以「学霸日常三件套」为例）</h3>
+  <div class="code-block">
+    <span class="c">// Config.Info.value —— 一个模板的 JSON 字符串，parseTemplate() 会解析成 Partial&lt;Routine.Info&gt;[]</span><br>
+    [<br>
+    &nbsp;&nbsp;{ <span class="s">"category"</span>: 1, <span class="s">"detail"</span>: <span class="s">"读《今天读的这本书》"</span>, <span class="s">"duration"</span>: 1800000 },<br>
+    &nbsp;&nbsp;{ <span class="s">"category"</span>: 2, <span class="s">"detail"</span>: <span class="s">"完成作业"</span>, <span class="s">"duration"</span>: 2700000 },<br>
+    &nbsp;&nbsp;{ <span class="s">"category"</span>: 6, <span class="s">"detail"</span>: <span class="s">"练字一页"</span>, <span class="s">"duration"</span>: 900000 }<br>
+    ]
+  </div>
+  <p class="desc" style="font-size:12px;color:#999;">
+    说明：<code>duration</code> 单位是毫秒（30分钟=1800000）。分类 <code>category</code> 用 <code>Routine.Category</code> 枚举值。点击模板后，这些内容作为<strong>预填参考</strong>进入创建页，用户亲手确认修改后保存。
+  </p>
+</div>
+
+
+<div class="section">
+  <h2>二、Routine 页入口设计</h2>
+  <p class="desc">
+    在「今天做点啥？」标题右侧，加一个轻量胶囊入口「✦ 模板」。<br>
+    <strong>显示条件</strong>：仅在 <code>addable</code>（今天 + 本人）时出现，历史日期和围观伙伴页不显示。
+  </p>
+
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">Routine 页 · 今天态（有入口）</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="hero">
+            <div class="hero-nav">
+              <span class="hero-arrow">‹</span>
+              <div class="hero-date"><div class="hero-label">今天是</div><div class="hero-main">8月14日 周五</div></div>
+              <span class="hero-arrow" style="opacity:0.5;">›</span>
+            </div>
+            <div class="hero-motto">✦ 又是闪闪发光的一天！⭐</div>
+            <div class="hero-stats">
+              <span class="hero-stat"><span class="dot"></span>已规划 2</span>
+              <span class="hero-stat"><span class="dot pending"></span>待反馈 1</span>
+              <span class="hero-stat"><span class="dot done"></span>已完成 1</span>
+            </div>
+          </div>
+
+          <div class="section-title">
+            今天做点啥？
+            <span class="tpl-entry"><span class="star">✦</span>模板</span>
+          </div>
+
+          <div class="card">
+            <span class="card-accent" style="background:#F4B942;"></span>
+            <div class="card-body"><div class="card-title">读《小王子》</div><div class="card-sub">阅读 · 10:00开始 · 30分钟</div></div>
+            <span class="card-btn">去完成</span>
+          </div>
+          <div class="card">
+            <span class="card-accent" style="background:#64B5F6;"></span>
+            <div class="card-body"><div class="card-title">完成数学练习</div><div class="card-sub">作业 · 16:00开始 · 45分钟</div></div>
+            <span class="card-btn">去完成</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-col">
+      <div class="phone-label">历史日 / 围观页（无入口）</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="hero" style="box-shadow:inset 0 0 0 999px rgba(255,255,255,0.3);">
+            <div class="hero-nav">
+              <span class="hero-arrow">‹</span>
+              <div class="hero-date"><div class="hero-label">回顾</div><div class="hero-main">8月13日 周四</div></div>
+              <span class="hero-arrow">›</span>
+            </div>
+            <div class="hero-motto">✦ 每一步都算数</div>
+          </div>
+
+          <div class="section-title">当日任务</div>
+
+          <div class="card" style="opacity:0.7;">
+            <span class="card-accent" style="background:#F4B942;"></span>
+            <div class="card-body"><div class="card-title">读《小王子》</div><div class="card-sub">阅读 · 已完成</div></div>
+            <span style="font-size:14px;">✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <blockquote>
+    <strong>入口视觉规范：</strong><br>
+    • 胶囊底色 <code>#FFF8E1</code>（浅金）+ 描边 <code>rgba(#F4B942, 0.45)</code>，文字 <code>#B8823A</code>，前置「✦」用 <code>#F4B942</code><br>
+    • 全部色值均取自现有 <code>var.scss</code>，<strong>不引入新色值</strong><br>
+    • 位置：靠右（<code>margin-left: auto</code>），与「今天做点啥？」标题同排<br>
+    • 点击后触发拉取 <code>Config.list({ type: RoutineTemplate })</code>
+  </blockquote>
+</div>
+
+
+<div class="section">
+  <h2>三、模板列表弹窗设计</h2>
+  <p class="desc">
+    点击入口 → 拉取模板数据 → 底部弹出列表（复用 choices 弹窗的遮罩 + 底部滑出 + 把手交互），
+    以卡片式列表展示，用户点选其一。
+  </p>
+
+  <div class="phone-row">
+    <div class="phone-col">
+      <div class="phone-label">帧 1 · 弹出列表</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div class="hero">
+            <div class="hero-nav"><span class="hero-arrow">‹</span><div class="hero-date"><div class="hero-label">今天是</div><div class="hero-main">8月14日 周五</div></div><span class="hero-arrow" style="opacity:0.5;">›</span></div>
+            <div class="hero-motto">✦ 又是闪闪发光的一天！⭐</div>
+          </div>
+          <div class="section-title">今天做点啥？<span class="tpl-entry"><span class="star">✦</span>模板</span></div>
+          <div class="card"><span class="card-accent" style="background:#F4B942;"></span><div class="card-body"><div class="card-title">读《小王子》</div><div class="card-sub">阅读 · 30分钟</div></div><span class="card-btn">去完成</span></div>
+
+          <div class="overlay">
+            <div class="sheet">
+              <div class="handle"></div>
+              <div class="sheet-title">选个日程模板</div>
+              <div class="sheet-sub">选中后填入创建页，可自行修改</div>
+              <div class="sheet-list">
+                <div class="tpl-card">
+                  <div class="tpl-head"><span class="tpl-name">学霸日常三件套</span><span class="tpl-tag hot">热门</span></div>
+                  <div class="tpl-desc">每天必做的基础学习，不多不少刚刚好</div>
+                  <div class="tpl-tasks">
+                    <span class="tpl-task"><span class="tdot" style="background:#F4B942;"></span>阅读 30'</span>
+                    <span class="tpl-task"><span class="tdot" style="background:#64B5F6;"></span>作业 45'</span>
+                    <span class="tpl-task"><span class="tdot" style="background:#4DB6AC;"></span>练字 15'</span>
+                  </div>
+                  <div class="tpl-foot"><span class="tpl-used">⭐ 128 人在用</span><span class="tpl-use-btn">选这个</span></div>
+                </div>
+                <div class="tpl-card">
+                  <div class="tpl-head"><span class="tpl-name">活力早晨</span><span class="tpl-tag official">官方</span></div>
+                  <div class="tpl-desc">起床后先动一动，一天都精神</div>
+                  <div class="tpl-tasks">
+                    <span class="tpl-task"><span class="tdot" style="background:#81C784;"></span>运动 20'</span>
+                    <span class="tpl-task"><span class="tdot" style="background:#F4B942;"></span>阅读 20'</span>
+                  </div>
+                  <div class="tpl-foot"><span class="tpl-used">⭐ 89 人在用</span><span class="tpl-use-btn">选这个</span></div>
+                </div>
+                <div class="tpl-card">
+                  <div class="tpl-head"><span class="tpl-name">轻松周末</span></div>
+                  <div class="tpl-desc">周末放松，也别忘了动手动脑</div>
+                  <div class="tpl-tasks">
+                    <span class="tpl-task"><span class="tdot" style="background:#BA68C8;"></span>家务 15'</span>
+                    <span class="tpl-task"><span class="tdot" style="background:#FFD54F;"></span>绘画 30'</span>
+                    <span class="tpl-task"><span class="tdot" style="background:#F06292;"></span>游戏 30'</span>
+                  </div>
+                  <div class="tpl-foot"><span class="tpl-used">⭐ 56 人在用</span><span class="tpl-use-btn">选这个</span></div>
+                </div>
+                <div class="tpl-card">
+                  <div class="tpl-head"><span class="tpl-name">小小探索家</span></div>
+                  <div class="tpl-desc">带着好奇心，问问题、看世界</div>
+                  <div class="tpl-tasks">
+                    <span class="tpl-task"><span class="tdot" style="background:#7986CB;"></span>问答 15'</span>
+                    <span class="tpl-task"><span class="tdot" style="background:#F4B942;"></span>阅读 20'</span>
+                    <span class="tpl-task"><span class="tdot" style="background:#EF5350;"></span>拍摄 15'</span>
+                  </div>
+                  <div class="tpl-foot"><span class="tpl-used">⭐ 31 人在用</span><span class="tpl-use-btn">选这个</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-col">
+      <div class="phone-label">帧 2 · 选中 → 进入创建页（预填）</div>
+      <div class="phone">
+        <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="phone-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <span style="font-size:14px;color:#fff;font-weight:700;">‹</span>
+            <span style="font-size:15px;font-weight:800;color:#fff;">创建任务</span>
+            <span style="width:28px;"></span>
+          </div>
+
+          <!-- 模板来源提示 -->
+          <div style="background:#FFF8E1;border-left:3px solid #F4B942;border-radius:0 8px 8px 0;padding:8px 10px;font-size:10px;color:#C8853E;margin:0 12px 10px;">
+            ✦ 来自模板「学霸日常三件套」· 1/3
+          </div>
+
+          <div style="background:#FDFBF7;border-radius:14px;padding:12px 14px;margin:0 12px 10px;box-shadow:0 2px 10px rgba(74,144,226,0.05);">
+            <div style="font-size:10px;color:#999;font-weight:600;margin-bottom:6px;">分类（已预填，可改）</div>
+            <div style="font-size:13px;color:#333;font-weight:600;background:#E3F2FD;border-radius:8px;padding:8px 12px;">📖 阅读</div>
+          </div>
+
+          <div style="background:#FDFBF7;border-radius:14px;padding:12px 14px;margin:0 12px 10px;box-shadow:0 2px 10px rgba(74,144,226,0.05);">
+            <div style="font-size:10px;color:#999;font-weight:600;margin-bottom:6px;">任务内容（示例，请改成你自己的）</div>
+            <div style="font-size:13px;color:#C5C5C5;font-weight:600;background:#fff;border:1px solid #E5E5E5;border-radius:8px;padding:8px 12px;">读《今天读的这本书》</div>
+            <div style="font-size:10px;color:#5B9BD5;margin-top:4px;">← 改成你真正要读的书</div>
+          </div>
+
+          <div style="background:#FDFBF7;border-radius:14px;padding:12px 14px;margin:0 12px 10px;box-shadow:0 2px 10px rgba(74,144,226,0.05);">
+            <div style="font-size:10px;color:#999;font-weight:600;margin-bottom:6px;">计划时长（已预填，可改）</div>
+            <div style="font-size:13px;color:#333;font-weight:600;background:#fff;border:1px solid #E5E5E5;border-radius:8px;padding:8px 12px;">30 分钟</div>
+          </div>
+
+          <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(135deg,#F4B942,#FFD54F);padding:14px;text-align:center;color:#fff;font-weight:800;font-size:15px;box-shadow:0 -4px 16px rgba(0,0,0,0.08);">
+            保存这个任务
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section">
+  <h2>四、交互流程与状态</h2>
+
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:20%;">步骤</th><th style="width:52%;">行为</th><th style="width:28%;">备注</th></tr>
+      <tr><td><strong>① 点入口</strong></td><td>点击「✦ 模板」→ 显示 loading → <code>Config.list({ type: 1 })</code> 拉取</td><td>失败走现有 <code>abort</code> / toast</td></tr>
+      <tr><td><strong>② 展示列表</strong></td><td>底部弹窗列出模板卡片，按 <code>proirity</code> 排序</td><td>数据为 0 时提示「暂无模板」</td></tr>
+      <tr><td><strong>③ 选一个</strong></td><td>点某模板的「选这个」→ 该卡片高亮选中态</td><td>选中态 = <code>#F4B942</code> 描边 + <code>#FFFDF8</code> 底</td></tr>
+      <tr><td><strong>④ 预填</strong></td><td>关闭弹窗 → 跳创建页，Intent 预填 <code>{ category, detail, duration }</code></td><td>复用 <code>Intent.navigateTo(CreateRoutine, { data })</code></td></tr>
+      <tr><td><strong>⑤ 填写保存</strong></td><td>用户在创建页亲手改成自己的内容 → 保存</td><td>分类/时长也可改，内容由用户确认</td></tr>
+      <tr><td><strong>⑥ 刷新</strong></td><td>保存后 → 广播 <code>RoutineUpdated</code> → 列表刷新</td><td>复用现有 EventBus 机制</td></tr>
+    </table>
+  </div>
+
+  <blockquote>
+    <strong>关于模板里有多个任务：</strong><br>
+    一个模板含 2~3 个任务。点模板后，先预填<strong>第一个任务</strong>进创建页（提示「1/3」）。<br>
+    用户保存第一个后，可再次点入口选同一模板，预填第二个（「2/3」）……<br>
+    或者简化：点模板后，把模板的第一个任务预填，其余任务作为创建页里的"下一步建议"顺延。<br>
+    <strong>本期不自动创建，逐个填写是关键。</strong>
+  </blockquote>
+</div>
+
+
+<div class="section">
+  <h2>五、本期范围与不做的事</h2>
+  <div class="cap-table">
+    <table>
+      <tr><th style="width:50%;">本期做</th><th style="width:50%;">本期不做（留后续）</th></tr>
+      <tr><td>✓ 6 个内置模板后台配置</td><td>✕ 用户自定义/发布模板</td></tr>
+      <tr><td>✓ Routine 页「✦ 模板」入口</td><td>✕ 一键批量创建任务</td></tr>
+      <tr><td>✓ 底部弹窗列表 + 选一个 + 预填进创建页</td><td>✕ 模板多选 / 预览详情页</td></tr>
+      <tr><td>✓ 复用 Config.list / parseTemplate / 创建页预填</td><td>✕ 模板搜索 / 分类筛选 / 分页</td></tr>
+      <tr><td>✓ 用户亲手填写确认后保存</td><td>✕ 进度持久化（先做轻量）</td></tr>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

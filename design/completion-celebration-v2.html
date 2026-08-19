@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>完成反馈 · 动机驱动 · 三版方案</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    background: #E8EFF5;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    padding: 36px 24px;
+  }
+  h2 {
+    font-size: 22px; font-weight: 800; color: #3A5A8C;
+    margin-bottom: 12px; padding-left: 14px; border-left: 4px solid #F4B942;
+  }
+  h3 {
+    font-size: 16px; font-weight: 700; color: #5C6178;
+    margin: 28px 0 10px;
+    padding-bottom: 5px; border-bottom: 1px dashed rgba(0,0,0,0.08);
+  }
+  .section { width: 100%; max-width: 900px; margin: 0 auto 40px; }
+
+  .scene-row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+  .frame-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .frame-label {
+    font-size: 12px; font-weight: 800; color: #5C6178;
+    background: #fff; padding: 6px 16px; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.08);
+    text-align: center;
+  }
+  .frame-label .sub { display: block; font-size: 10px; font-weight: 500; color: #999; margin-top: 2px; }
+
+  .phone {
+    width: 320px; height: 500px;
+    background: #F2F5F8; border-radius: 32px; overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 3px #1A1A1A, 0 0 0 6px #2D2D2D, 0 14px 40px rgba(0,0,0,0.25);
+  }
+  .phone_status {
+    height: 32px; background: #B8DAF5;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px; font-size: 10px; color: #fff; font-weight: 600;
+  }
+  .phone_content {
+    height: calc(100% - 32px); overflow: hidden;
+    background: linear-gradient(180deg, #B8DAF5, #F2F5F8 25%);
+    padding: 14px; position: relative;
+    display: flex; flex-direction: column;
+  }
+
+  .page-title {
+    font-size: 15px; font-weight: 800; color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 8px;
+  }
+  .task-card {
+    background: #FDFBF7; border-radius: 14px; padding: 12px 14px;
+    margin-bottom: 10px; position: relative;
+    box-shadow: 0 2px 10px rgba(74,144,226,0.05);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .tc-icon {
+    width: 36px; height: 36px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .tc-body { flex: 1; min-width: 0; }
+  .tc-cat  { font-size: 10px; color: #999; font-weight: 600; }
+  .tc-name { font-size: 13px; font-weight: 700; color: #333; }
+
+  p.desc {
+    font-size: 13px; color: #5C6178; line-height: 1.9; margin-bottom: 14px;
+  }
+  blockquote {
+    background: #FFF8E1; border-left: 4px solid #F4B942;
+    padding: 12px 16px; border-radius: 0 8px 8px 0;
+    font-size: 13px; color: #5C6178; line-height: 1.8; margin: 14px 0;
+  }
+
+  /* ===== V1：成长花园 ===== */
+  .garden-area {
+    margin-top: auto;
+    background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+    border-radius: 16px; padding: 10px 12px;
+    display: flex; align-items: flex-end; justify-content: center;
+    gap: 8px; min-height: 80px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    position: relative;
+  }
+  .garden-plant {
+    text-align: center; font-size: 28px;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+  }
+  .garden-plant.new {
+    animation: plantSprout 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .garden-plant .label {
+    font-size: 7px; color: #5C6178; font-weight: 600;
+    white-space: nowrap; margin-top: 2px;
+  }
+  .garden-plant .sparkle {
+    position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; animation: sparkUp 0.6s ease-out forwards;
+  }
+  @keyframes plantSprout {
+    0%   { transform: scale(0) translateY(10px); opacity: 0; }
+    60%  { transform: scale(1.3) translateY(-4px); }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  @keyframes sparkUp {
+    0%   { transform: translateX(-50%) translateY(0); opacity: 1; }
+    100% { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+  }
+
+  /* ===== V2：自己的声音 ===== */
+  .mic-area {
+    margin-top: auto;
+    background: linear-gradient(135deg, #FFF8E1, #FFE08A);
+    border-radius: 20px; padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(244,185,66,0.2);
+  }
+  .mic-button {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, #F4B942, #FFD54F);
+    display: flex; align-items: center; justify-content: center;
+    margin: 12px auto; font-size: 28px;
+    box-shadow: 0 6px 20px rgba(244,185,66,0.35);
+    transition: transform 0.2s;
+  }
+  .mic-button.pressed {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 8px rgba(244,185,66,0.15);
+  }
+  .mic-wave {
+    display: flex; align-items: flex-end; justify-content: center;
+    gap: 3px; height: 30px; margin: 10px 0;
+  }
+  .mic-wave .bar {
+    width: 4px; border-radius: 2px;
+    background: linear-gradient(180deg, #F4B942, #FFD54F);
+    animation: waveDance 0.6s ease-in-out infinite alternate;
+  }
+  .mic-wave .bar:nth-child(1) { height: 10px; animation-delay: 0s; }
+  .mic-wave .bar:nth-child(2) { height: 18px; animation-delay: 0.1s; }
+  .mic-wave .bar:nth-child(3) { height: 26px; animation-delay: 0.2s; }
+  .mic-wave .bar:nth-child(4) { height: 16px; animation-delay: 0.3s; }
+  .mic-wave .bar:nth-child(5) { height: 22px; animation-delay: 0.4s; }
+  .mic-wave .bar:nth-child(6) { height: 12px; animation-delay: 0.5s; }
+  .mic-wave .bar:nth-child(7) { height: 20px; animation-delay: 0.6s; }
+  @keyframes waveDance {
+    0%   { transform: scaleY(0.4); }
+    100% { transform: scaleY(1); }
+  }
+
+  /* ===== V3：RPG 能力条 ===== */
+  .stat-bar-card {
+    margin-top: auto;
+    background: #FDFBF7; border-radius: 16px;
+    padding: 16px; box-shadow: 0 4px 16px rgba(74,144,226,0.08);
+  }
+  .stat-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  }
+  .stat-row:last-child { margin-bottom: 0; }
+  .stat-icon-lab { font-size: 16px; width: 24px; text-align: center; }
+  .stat-label { font-size: 11px; color: #5C6178; font-weight: 600; width: 36px; }
+  .stat-bar-track {
+    flex: 1; height: 14px; background: #F0F0F0;
+    border-radius: 7px; overflow: hidden; position: relative;
+  }
+  .stat-bar-fill {
+    height: 100%; border-radius: 7px;
+    transition: width 0.8s cubic-bezier(0.22,1,0.36,1);
+  }
+  .stat-bar-fill.read { background: linear-gradient(90deg, #5B9BD5, #42A5F5); }
+  .stat-bar-fill.sport { background: linear-gradient(90deg, #81C784, #66BB6A); }
+  .stat-bar-fill.work { background: linear-gradient(90deg, #F4B942, #FFD54F); }
+  .stat-bar-num {
+    font-size: 11px; font-weight: 800; color: #333; width: 32px; text-align: right;
+  }
+  .xp-gain {
+    position: absolute; right: 8px; top: -14px;
+    font-size: 11px; font-weight: 800; color: #F4B942;
+    animation: xpFloat 1.2s ease-out forwards;
+    pointer-events: none;
+  }
+  @keyframes xpFloat {
+    0%   { opacity: 1; transform: translateY(0); }
+    50%  { opacity: 1; transform: translateY(-8px); }
+    100% { opacity: 0; transform: translateY(-16px); }
+  }
+
+  /* ===== 分析 ===== */
+  .compare-table {
+    width: 100%; background: #fff; border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+    overflow: hidden; font-size: 13px;
+  }
+  .compare-table table { width: 100%; border-collapse: collapse; }
+  .compare-table th {
+    background: #F2F5F8; padding: 10px 12px; text-align: left;
+    font-size: 12px; font-weight: 700; color: #5C6178;
+  }
+  .compare-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(0,0,0,0.04); color: #333; vertical-align: top; }
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+  .tag.g { background: #E8F5E9; color: #81C784; }
+  .tag.r { background: #FFEBEE; color: #EF5350; }
+  .tag.y { background: #FFF8E1; color: #C8853E; }
+  .tag.b { background: #E3F2FD; color: #5B9BD5; }
+</style>
+</head>
+<body>
+
+<!-- ================================ -->
+<!-- 问题诊断 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>为什么之前的反馈都不尽人意？</h2>
+  <p class="desc">
+    之前所有版本（弹窗 / 底部条 / 卡片内嵌 / Hero 庆祝 / 多米诺骨牌）都有一个共同问题：
+    <strong>孩子是被动的"看到者"而非主动的"参与者"。</strong><br><br>
+    福格说庆祝的关键是"行为发生那一刻的正向情绪"——它不是一条消息，而是一种<strong>身体感受</strong>。
+    弹出来的文字和 emoji 是冷的，因为孩子只是看到了它，没有为它做什么。<br><br>
+    下面的三个方案，核心原则是：<strong>让孩子在完成的那一刻做一个动作，由这个动作本身产生情绪。</strong>
+  </p>
+
+  <blockquote>
+    <strong>三个方案对应三种"孩子的主动动作"：</strong><br>
+    V1 — 种下一颗植物（触发了生长动画，这是"我种的"）<br>
+    V2 — 说一句话录下来（听到了自己的声音，这是"我说的"）<br>
+    V3 — 看到能力条涨了一点（参与了角色成长，这是"我练的"）
+  </blockquote>
+</div>
+
+
+<!-- ================================ -->
+<!-- V1：成长花园 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>方案 V1：成长花园 🌱</h2>
+  <p class="desc">
+    <strong>核心动作：每完成一个任务，在日常页底部自动种下代表该分类的植物。</strong><br>
+    不需要弹窗，不需要文字鼓励。种下的那一瞬间——植物从土里冒出来 + 小星星闪烁——就是庆祝。<br>
+    一天结束时，花园里长满了今天的成果。看一眼就知道"今天完成了什么"。
+  </p>
+
+  <div class="scene-row">
+    <div class="frame-col">
+      <div class="frame-label">完成 1 个<span class="sub">自动种下一株植物</span></div>
+      <div class="phone" style="height:460px;">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div class="page-title">今日日常</div>
+
+          <div class="task-card" style="opacity:0.6;">
+            <div class="tc-icon" style="background:#E3F2FD;">📖</div>
+            <div class="tc-body">
+              <div class="tc-cat">阅读</div>
+              <div class="tc-name">阅读《西游记》</div>
+            </div>
+            <span style="background:#81C784;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;">✓</span>
+          </div>
+          <div class="task-card">
+            <div class="tc-icon" style="background:#FFF8E1;">✏️</div>
+            <div class="tc-body">
+              <div class="tc-cat">作业</div>
+              <div class="tc-name">完成数学练习</div>
+            </div>
+          </div>
+
+          <!-- 花园 -->
+          <div class="garden-area" style="margin-top:auto;">
+            <div class="garden-plant">
+              🌱<div class="label">阅读</div>
+            </div>
+            <!-- 新冒出来的 -->
+            <div class="garden-plant new">
+              🌿
+              <span class="sparkle">✨</span>
+              <div class="label">作业 ✨</div>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:9px;color:#999;margin-top:4px;">完成一个 → 自动种下一株</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="frame-col">
+      <div class="frame-label">全满的样子<span class="sub">3 个任务 = 3 株植物</span></div>
+      <div class="phone" style="height:460px;">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div class="page-title">今日日常</div>
+
+          <div class="task-card" style="opacity:0.6;"><div class="tc-icon" style="background:#E8F5E9;">📖</div><div class="tc-body"><div class="tc-cat" style="color:#81C784;">已完成</div><div class="tc-name">阅读《西游记》</div></div><span style="font-size:14px;">🌱</span></div>
+          <div class="task-card" style="opacity:0.6;"><div class="tc-icon" style="background:#E8F5E9;">✏️</div><div class="tc-body"><div class="tc-cat" style="color:#81C784;">已完成</div><div class="tc-name">数学练习</div></div><span style="font-size:14px;">🌿</span></div>
+          <div class="task-card" style="opacity:0.6;"><div class="tc-icon" style="background:#E8F5E9;">💪</div><div class="tc-body"><div class="tc-cat" style="color:#81C784;">已完成</div><div class="tc-name">跳绳 200 个</div></div><span style="font-size:14px;">🌸</span></div>
+
+          <div class="garden-area" style="margin-top:auto;">
+            <div class="garden-plant">🌱<div class="label">阅读</div></div>
+            <div class="garden-plant">🌿<div class="label">作业</div></div>
+            <div class="garden-plant" style="font-size:32px;">🌸<div class="label">运动</div></div>
+          </div>
+          <div style="text-align:center;font-size:9px;color:#999;margin-top:4px;">全满时出现一朵小花</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="frame-col">
+      <div class="frame-label">设计要点</div>
+      <div style="background:#fff;border-radius:14px;padding:14px;width:280px;box-shadow:0 3px 12px rgba(74,144,226,0.06);">
+        <div style="font-size:11px;color:#5C6178;line-height:1.8;">
+          • 每种分类对应不同植物：📖→🌱、✏️→🌿、💪→🌸、🎮→🍀 等<br><br>
+          • 完成瞬间触发植物冒出的动画（0.5s），附带小星星向上飘散<br><br>
+          • 花园在日常页底部，始终可见——这是积累的"可见成果"<br><br>
+          • 每天刷新，新的一天新的花园<br><br>
+          • 全部完成后花园出现一只🦋蝴蝶或🌈彩虹，提示"今天完美"<br><br>
+          • 历史日的花园也可以回看（但枯萎状态，提醒"过去的美好"）
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- V2：自己的声音 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>方案 V2：声音回响 🎙️</h2>
+  <p class="desc">
+    <strong>核心动作：完成时，孩子对着手机说一句话录下来，说完之后听到自己的声音被回放。</strong><br>
+    这就是"费曼反馈"本身——但不再是"填一个文字框"，而是"说给自己听"。<br>
+    说完的那一刻，听到自己的声音："我知道了水为什么从高处流向低处"——这就是庆祝。<br>
+    因为说话的声调、停顿、语气里带着的是真实的思考，比打出来的文字有体温。
+  </p>
+
+  <div class="scene-row">
+    <div class="frame-col">
+      <div class="frame-label">步骤 1 · 点击完成<span class="sub">进入"说说你学到了什么"</span></div>
+      <div class="phone" style="height:460px;">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div style="font-size:14px;color:#fff;font-weight:700;margin-bottom:8px;">‹ 完成任务</div>
+          <div class="task-card" style="opacity:0.6;">
+            <div class="tc-icon" style="background:#E3F2FD;">📖</div>
+            <div class="tc-body"><div class="tc-cat">阅读</div><div class="tc-name">阅读《西游记》</div></div>
+          </div>
+
+          <div class="mic-area" style="margin-top:20px;">
+            <div style="font-size:15px;font-weight:800;color:#C8853E;">今天学到了什么？</div>
+            <div style="font-size:11px;color:#999;margin-top:4px;">按住话筒说出来吧</div>
+            <div class="mic-button">
+              🎤
+            </div>
+            <div style="font-size:10px;color:#C5C5C5;">按住录音，松开发送</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="frame-col">
+      <div class="frame-label">步骤 2 · 录音中<span class="sub">声波动画 = 即时反馈</span></div>
+      <div class="phone" style="height:460px;">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div style="font-size:14px;color:#fff;font-weight:700;margin-bottom:8px;">‹ 完成任务</div>
+          <div class="task-card" style="opacity:0.6;">
+            <div class="tc-icon" style="background:#E3F2FD;">📖</div>
+            <div class="tc-body"><div class="tc-cat">阅读</div><div class="tc-name">阅读《西游记》</div></div>
+          </div>
+
+          <div class="mic-area" style="margin-top:20px;">
+            <div style="font-size:12px;font-weight:700;color:#F4B942;">正在听…</div>
+            <div class="mic-wave">
+              <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+              <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+              <span class="bar"></span>
+            </div>
+            <div class="mic-button pressed">🎤</div>
+            <div style="font-size:10px;color:#999;">松开发送</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="frame-col">
+      <div class="frame-label">步骤 3 · 回放<span class="sub">听到自己的声音 = 庆祝</span></div>
+      <div class="phone" style="height:460px;">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div style="font-size:14px;color:#fff;font-weight:700;margin-bottom:8px;">‹ 完成任务</div>
+          <div class="task-card" style="opacity:0.6;">
+            <div class="tc-icon" style="background:#E8F5E9;">✅</div>
+            <div class="tc-body"><div class="tc-cat" style="color:#81C784;">已完成</div><div class="tc-name">阅读《西游记》</div></div>
+          </div>
+
+          <div class="mic-area" style="margin-top:20px;background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">
+            <div style="font-size:13px;font-weight:800;color:#43A047;margin-bottom:8px;">🎧 这是你说的</div>
+            <div style="font-size:12px;color:#5C6178;line-height:1.6;font-style:italic;background:rgba(255,255,255,0.6);border-radius:10px;padding:10px;margin:8px 0;">
+              "我知道了水为什么从高处流向低处，因为地球有引力，它把水往下拉。"
+            </div>
+            <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;">
+              <span style="background:#F2F5F8;border-radius:10px;padding:6px 14px;font-size:11px;color:#999;font-weight:700;">重新说</span>
+              <span style="background:linear-gradient(135deg,#F4B942,#FFD54F);border-radius:10px;padding:6px 14px;font-size:11px;color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(244,185,66,0.3);">完成 ✓</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <blockquote>
+    <strong>为什么声音比文字更有"庆祝感"？</strong><br>
+    文字是大脑加工过的产物，声音是身体的直接产物。孩子说"我知道了…"的时候，语气里带着的语气上扬、停顿、重复，这些是文字无法传递的。当他自己听到自己的声音被回放——这是一种自我确认："这是我思考过的，我说出来了，我听到了。" 这就是费曼学习法的本质，也是福格说的"庆祝"。
+  </blockquote>
+</div>
+
+
+<!-- ================================ -->
+<!-- V3：RPG 能力条 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>方案 V3：RPG 能力条 🎮</h2>
+  <p class="desc">
+    <strong>核心动作：完成一个任务后，Hero 区的属性条像游戏里升级一样涨了一截，跳出"+5 XP"。</strong><br>
+    这不是"被通知完成了一个任务"，而是"自己培养的角色变强了"。<br>
+    阅读让"知识力"涨了，运动让"体力值"涨了——孩子不是因为"该做"而做，而是因为想看能力条变满。
+  </p>
+
+  <div class="scene-row">
+    <div class="frame-col">
+      <div class="frame-label">完成前<span class="sub">能力条待填满</span></div>
+      <div class="phone" style="height:460px;">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div class="page-title">今日日常</div>
+
+          <div class="task-card" style="opacity:0.6;">
+            <div class="tc-icon" style="background:#E3F2FD;">📖</div>
+            <div class="tc-body"><div class="tc-cat">阅读</div><div class="tc-name">阅读《西游记》</div></div>
+            <span style="font-size:11px;color:#5B9BD5;font-weight:700;border:1px solid #5B9BD5;padding:5px 12px;border-radius:10px;">去完成 →</span>
+          </div>
+          <div class="task-card">
+            <div class="tc-icon" style="background:#FFF8E1;">✏️</div>
+            <div class="tc-body"><div class="tc-cat">作业</div><div class="tc-name">数学练习</div></div>
+          </div>
+          <div class="task-card">
+            <div class="tc-icon" style="background:#E8F5E9;">💪</div>
+            <div class="tc-body"><div class="tc-cat">运动</div><div class="tc-name">跳绳 200 个</div></div>
+          </div>
+
+          <div class="stat-bar-card">
+            <div style="font-size:12px;font-weight:800;color:#333;margin-bottom:10px;text-align:center;">今日能力成长</div>
+            <div class="stat-row">
+              <span class="stat-icon-lab">📖</span>
+              <span class="stat-label">知识</span>
+              <div class="stat-bar-track">
+                <div class="stat-bar-fill read" style="width:66%;"></div>
+              </div>
+              <span class="stat-bar-num">2/3</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-icon-lab">✏️</span>
+              <span class="stat-label">智慧</span>
+              <div class="stat-bar-track">
+                <div class="stat-bar-fill work" style="width:33%;"></div>
+              </div>
+              <span class="stat-bar-num">1/3</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-icon-lab">💪</span>
+              <span class="stat-label">体力</span>
+              <div class="stat-bar-track">
+                <div class="stat-bar-fill sport" style="width:66%;"></div>
+              </div>
+              <span class="stat-bar-num">2/3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="frame-col">
+      <div class="frame-label">完成一个之后<span class="sub">知识力 +1，"+5 XP" 飘出</span></div>
+      <div class="phone" style="height:460px;">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div class="page-title">今日日常</div>
+
+          <div class="task-card" style="opacity:0.6;background:#F5F9F5;">
+            <div class="tc-icon" style="background:#E8F5E9;">✅</div>
+            <div class="tc-body"><div class="tc-cat" style="color:#81C784;">已完成</div><div class="tc-name">阅读《西游记》</div></div>
+          </div>
+          <div class="task-card">
+            <div class="tc-icon" style="background:#FFF8E1;">✏️</div>
+            <div class="tc-body"><div class="tc-cat">作业</div><div class="tc-name">数学练习</div></div>
+          </div>
+          <div class="task-card">
+            <div class="tc-icon" style="background:#E8F5E9;">💪</div>
+            <div class="tc-body"><div class="tc-cat">运动</div><div class="tc-name">跳绳 200 个</div></div>
+          </div>
+
+          <div class="stat-bar-card">
+            <div style="font-size:12px;font-weight:800;color:#333;margin-bottom:10px;text-align:center;">今日能力成长</div>
+            <div class="stat-row">
+              <span class="stat-icon-lab">📖</span>
+              <span class="stat-label">知识</span>
+              <div class="stat-bar-track"><div class="stat-bar-fill read" style="width:100%;"></div><span class="xp-gain">+5 ⚡</span></div>
+              <span class="stat-bar-num" style="color:#F4B942;">3/3</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-icon-lab">✏️</span>
+              <span class="stat-label">智慧</span>
+              <div class="stat-bar-track"><div class="stat-bar-fill work" style="width:33%;"></div></div>
+              <span class="stat-bar-num">1/3</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-icon-lab">💪</span>
+              <span class="stat-label">体力</span>
+              <div class="stat-bar-track"><div class="stat-bar-fill sport" style="width:66%;"></div></div>
+              <span class="stat-bar-num">2/3</span>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:9px;color:#999;margin-top:4px;">知识力满！阅读类今日完美</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="frame-col">
+      <div class="frame-label">全部完成<span class="sub">三项全满 → 升级闪光</span></div>
+      <div class="phone" style="height:460px;">
+        <div class="phone_status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="phone_content">
+          <div class="page-title">今日日常</div>
+
+          <div class="task-card" style="opacity:0.6;background:#F5F9F5;"><div class="tc-icon" style="background:#E8F5E9;">✅</div><div class="tc-body"><div class="tc-cat" style="color:#81C784;">已完成</div><div class="tc-name">阅读《西游记》</div></div></div>
+          <div class="task-card" style="opacity:0.6;background:#F5F9F5;"><div class="tc-icon" style="background:#E8F5E9;">✅</div><div class="tc-body"><div class="tc-cat" style="color:#81C784;">已完成</div><div class="tc-name">数学练习</div></div></div>
+          <div class="task-card" style="opacity:0.6;background:#F5F9F5;"><div class="tc-icon" style="background:#E8F5E9;">✅</div><div class="tc-body"><div class="tc-cat" style="color:#81C784;">已完成</div><div class="tc-name">跳绳 200 个</div></div></div>
+
+          <div class="stat-bar-card" style="background:linear-gradient(135deg,#FFF8E1,#FFD54F);border:2px solid #F4B942;box-shadow:0 0 20px rgba(244,185,66,0.2);">
+            <div style="font-size:13px;font-weight:800;color:#C8853E;margin-bottom:8px;text-align:center;">🎉 今日全能力 MAX！</div>
+            <div class="stat-row"><span class="stat-icon-lab">📖</span><span class="stat-label">知识</span><div class="stat-bar-track"><div class="stat-bar-fill read" style="width:100%;"></div></div><span class="stat-bar-num">3/3 ✅</span></div>
+            <div class="stat-row"><span class="stat-icon-lab">✏️</span><span class="stat-label">智慧</span><div class="stat-bar-track"><div class="stat-bar-fill work" style="width:100%;"></div></div><span class="stat-bar-num">3/3 ✅</span></div>
+            <div class="stat-row"><span class="stat-icon-lab">💪</span><span class="stat-label">体力</span><div class="stat-bar-track"><div class="stat-bar-fill sport" style="width:100%;"></div></div><span class="stat-bar-num">3/3 ✅</span></div>
+            <div style="margin-top:8px;text-align:center;font-size:10px;color:#C8853E;font-weight:700;">连续打卡 5 天 · 累计 XP 120</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 对比分析 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>三版方案对比</h2>
+
+  <div class="compare-table">
+    <table>
+      <tr><th style="width:14%;">维度</th><th style="width:28%;">🌱 V1 成长花园</th><th style="width:28%;">🎙️ V2 声音回响</th><th style="width:28%;">🎮 V3 RPG 能力条</th></tr>
+      <tr>
+        <td><strong>孩子的动作</strong></td>
+        <td>完成 → 看到植物冒出来（被动，但视觉强烈）</td>
+        <td>完成 → 按住说话 → 听到自己的声音（主动）</td>
+        <td>完成 → 看到能力条增长 → "+5"飘出（被动，但像游戏）</td>
+      </tr>
+      <tr>
+        <td><strong>多巴胺来源</strong></td>
+        <td>收集欲——"想看花园长满"；视觉惊喜——植物冒出动画</td>
+        <td>自我确认——"这是我说的"；听觉冲击——声音比文字有温度</td>
+        <td>成长感——"我的角色变强了"；进度条填满的满足感</td>
+      </tr>
+      <tr>
+        <td><strong>与"费曼反馈"的关系</strong></td>
+        <td>独立于反馈——花园是额外的庆祝层</td>
+        <td>融为一体——录音本身就是反馈，庆祝也藏在录音里</td>
+        <td>独立于反馈——能力条是进度可视化</td>
+      </tr>
+      <tr>
+        <td><strong>持续吸引力</strong></td>
+        <td>高——每天的植物不一样，全满有彩蛋</td>
+        <td>中高——每次说的内容不同，新鲜感保持较久</td>
+        <td>中——如果没有"升级/新等级"，重复看填 bar 会疲劳</td>
+      </tr>
+      <tr>
+        <td><strong>开发成本</strong></td>
+        <td>低——纯 CSS 动画 + 几个 emoji/icon 素材，不依赖外部能力</td>
+        <td>中——需用 <code>wx.getRecorderManager</code>（微信原生录音 API），有权限获取和文件上传</td>
+        <td>低中——CSS 进度条动画是简单的，但需要与 stat 数据联动</td>
+      </tr>
+      <tr>
+        <td><strong>是否替换现有 UI</strong></td>
+        <td>不替换——在底部附加一个新区域</td>
+        <td>替换——把"文字反馈"改成"语音反馈"作为主路径（文字作为备选）</td>
+        <td>不替换——把 Hero 统计区改造成能力条样式</td>
+      </tr>
+      <tr>
+        <td><strong>最佳场景</strong></td>
+        <td>6 岁以下——小朋友最容易理解"种花"</td>
+        <td>小学低年级——开始能表达、乐于开口</td>
+        <td>小学中高年级——能理解 RPG 概念、追求数据</td>
+      </tr>
+    </table>
+  </div>
+
+  <blockquote>
+    <strong>这三者不是"三选一"的关系。</strong><br><br>
+    最理想的组合是：<br>
+    • <span class="tag g">V2 作为完成反馈的主交互</span>——用语音替代文字反馈，把"说"变成庆祝<br>
+    • <span class="tag y">V1 作为长期的额外动机层</span>——花园是每日积累的"视觉日记"，吸引每天回来看看<br>
+    • <span class="tag b">V3 作为每周/每月的回顾</span>——能力条不适合每天看（会腻），但在周报里展示本周能力成长图很适合<br><br>
+    <strong>如果只能先做一个：V2。</strong><br>
+    因为它同时解决了两个问题：① 费曼反馈太难（打字 → 说话）② 完成没有庆祝（录音后的回放就是庆祝）。一举两得。
+  </blockquote>
+</div>
+
+</body>
+</html>

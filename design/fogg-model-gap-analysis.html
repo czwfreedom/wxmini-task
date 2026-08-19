@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>福格行为模型 · 功能缺口分析</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body {
+    background: #E8EFF5;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    padding: 36px 24px;
+  }
+  h2 {
+    font-size: 22px; font-weight: 800; color: #3A5A8C;
+    margin-bottom: 16px; padding-left: 14px; border-left: 4px solid #F4B942;
+  }
+  h3 {
+    font-size: 16px; font-weight: 700; color: #5C6178;
+    margin: 28px 0 12px;
+    padding-bottom: 5px; border-bottom: 1px dashed rgba(0,0,0,0.08);
+  }
+  .section { width: 100%; max-width: 860px; margin: 0 auto 36px; }
+
+  p.desc {
+    font-size: 13px; color: #5C6178; line-height: 1.9; margin-bottom: 14px;
+  }
+
+  /* ===== 福格公式大卡 ===== */
+  .formula-card {
+    background: linear-gradient(135deg, #3A5A8C, #1A365D);
+    border-radius: 20px; padding: 28px 24px; text-align: center;
+    color: #fff; box-shadow: 0 8px 32px rgba(58,90,140,0.25);
+    margin-bottom: 20px;
+  }
+  .formula-card .big-eq {
+    font-size: 36px; font-weight: 800; letter-spacing: 3px; margin-bottom: 6px;
+    font-family: Georgia, serif;
+  }
+  .formula-card .eq-label {
+    font-size: 12px; opacity: 0.7; letter-spacing: 2px;
+  }
+
+  /* ===== MAP 三柱 ===== */
+  .map-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .map-col {
+    flex: 1; min-width: 220px;
+    background: #fff; border-radius: 16px; padding: 18px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+    position: relative; overflow: hidden;
+  }
+  .map-col::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+  }
+  .map-col.motivation::before { background: linear-gradient(90deg, #EF5350, #FF7043); }
+  .map-col.ability::before { background: linear-gradient(90deg, #F4B942, #FFD54F); }
+  .map-col.prompt::before { background: linear-gradient(90deg, #5B9BD5, #42A5F5); }
+
+  .map-col .letter {
+    font-size: 32px; font-weight: 800; font-family: Georgia, serif;
+    margin-bottom: 4px;
+  }
+  .map-col.motivation .letter { color: #EF5350; }
+  .map-col.ability .letter { color: #F4B942; }
+  .map-col.prompt .letter { color: #5B9BD5; }
+  .map-col .label { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 10px; }
+  .map-col .sub-label { font-size: 11px; color: #999; margin-bottom: 12px; line-height: 1.5; }
+
+  .gap-item {
+    font-size: 11px; padding: 6px 0; line-height: 1.6;
+    border-bottom: 0.5px solid rgba(0,0,0,0.04);
+  }
+  .gap-item:last-child { border-bottom: none; }
+  .gap-item .needed { color: #C8853E; font-weight: 700; }
+  .gap-item .yes { color: #81C784; font-weight: 600; }
+
+  /* ===== 缺口表格 ===== */
+  .gap-table {
+    width: 100%; background: #fff; border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.06);
+    overflow: hidden; font-size: 13px;
+  }
+  .gap-table table { width: 100%; border-collapse: collapse; }
+  .gap-table th {
+    background: #F2F5F8; padding: 10px 12px; text-align: left;
+    font-size: 12px; font-weight: 700; color: #5C6178;
+  }
+  .gap-table td { padding: 10px 12px; border-bottom: 0.5px solid rgba(0,0,0,0.04); color: #333; vertical-align: top; line-height: 1.6; }
+  .gap-table tr:last-child td { border-bottom: none; }
+
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 10px; font-weight: 700; vertical-align: 1px;
+  }
+  .tag.g { background: #E8F5E9; color: #81C784; }
+  .tag.r { background: #FFEBEE; color: #EF5350; }
+  .tag.y { background: #FFF8E1; color: #C8853E; }
+  .tag.b { background: #E3F2FD; color: #5B9BD5; }
+
+  blockquote {
+    background: #FFF8E1; border-left: 4px solid #F4B942;
+    padding: 12px 16px; border-radius: 0 8px 8px 0;
+    font-size: 13px; color: #5C6178; line-height: 1.8; margin: 14px 0;
+  }
+
+  /* 优先级矩阵 */
+  .matrix-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin: 14px 0;
+  }
+  .matrix-item {
+    background: #fff; border-radius: 12px; padding: 14px;
+    box-shadow: 0 3px 12px rgba(74,144,226,0.05);
+    border-left: 4px solid #E5E5E5;
+  }
+  .matrix-item.p0 { border-left-color: #EF5350; }
+  .matrix-item.p1 { border-left-color: #F4B942; }
+  .matrix-item.p2 { border-left-color: #5B9BD5; }
+  .matrix-item h4 { font-size: 13px; font-weight: 800; color: #333; margin-bottom: 4px; }
+  .matrix-item .why { font-size: 11px; color: #999; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<!-- ================================ -->
+<!-- 福格公式 -->
+<!-- ================================ -->
+<div class="section">
+  <div class="formula-card">
+    <div class="eq-label">BJ Fogg 行为模型</div>
+    <div class="big-eq">B = M A P</div>
+    <div class="eq-label" style="margin-top:4px;">行为 = 动机 × 能力 × 提示（三者同时出现）</div>
+    <div style="margin-top:12px;font-size:12px;opacity:0.75;line-height:1.7;">
+      习惯不是靠"意志力"坚持出来的，是靠设计出来的。<br>
+      当动机不高时（累了/烦了），降低能力门槛；当能力不足时（太难），强化提示。
+    </div>
+  </div>
+
+  <p class="desc">
+    用这个框架审视当前小程序的功能完整度：
+  </p>
+
+  <!-- 三柱概览 -->
+  <div class="map-row">
+    <div class="map-col motivation">
+      <div class="letter">M</div>
+      <div class="label">Motivation · 动机</div>
+      <div class="sub-label">"我为什么想做？"<br>包含：快乐/痛苦、希望/恐惧、归属/排斥</div>
+      <div class="gap-item"><span class="yes">✅ 完成即变绿，看得见的成就感</span></div>
+      <div class="gap-item"><span class="yes">✅ 伙伴围观，社交监督</span></div>
+      <div class="gap-item"><span class="yes">✅ Hero 统计区数字反馈</span></div>
+      <div class="gap-item"><span class="needed">✕ 完成瞬间的正向情绪触发（庆典/鼓励）</span></div>
+      <div class="gap-item"><span class="needed">✕ 里程碑与身份认同（"连续 30 天的人"）</span></div>
+      <div class="gap-item"><span class="needed">✕ 伙伴间的直接互动（赞/加油/认可）</span></div>
+      <div class="gap-item"><span class="needed">✕ 坚持"过程"的可视化（不只是结果）</span></div>
+    </div>
+
+    <div class="map-col ability">
+      <div class="letter">A</div>
+      <div class="label">Ability · 能力</div>
+      <div class="sub-label">"我做得到吗？"<br>包含：时间、脑力、体力、金钱、社会偏差</div>
+      <div class="gap-item"><span class="yes">✅ 3 步即可创建任务</span></div>
+      <div class="gap-item"><span class="yes">✅ 分类明确，不纠结</span></div>
+      <div class="gap-item"><span class="yes">✅ 一键完成，流程短</span></div>
+      <div class="gap-item"><span class="needed">✕ 没有"最小可行版"为坏日子降门槛</span></div>
+      <div class="gap-item"><span class="needed">✕ 没有新用户模板，第一次创建很难</span></div>
+      <div class="gap-item"><span class="needed">✕ 费曼反馈要求写文字，小朋友打不出来</span></div>
+      <div class="gap-item"><span class="needed">✕ 没有完成任务的"零阻力"形态</span></div>
+    </div>
+
+    <div class="map-col prompt">
+      <div class="letter">P</div>
+      <div class="label">Prompt · 提示</div>
+      <div class="sub-label">"我什么时候该做？"<br>包含：外部提醒、习惯锚点、环境线索</div>
+      <div class="gap-item"><span class="yes">✅ 打开就能看到今天的任务清单</span></div>
+      <div class="gap-item"><span class="yes">✅ 未完成卡片上有"去完成"按钮</span></div>
+      <div class="gap-item"><span class="needed">✕ 没有任何形式的提醒/通知</span></div>
+      <div class="gap-item"><span class="needed">✕ 没有定时推送（"你的阅读任务还没做"）</span></div>
+      <div class="gap-item"><span class="needed">✕ 没有"锚点"绑定（放学后 / 晚饭前）</span></div>
+      <div class="gap-item"><span class="needed">✕ 没有家长的"督促端"提示</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- 缺口清单 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>按福格模型三个维度的功能缺口清单</h2>
+
+  <div class="gap-table">
+    <table>
+      <tr><th style="width:10%;">维度</th><th style="width:22%;">缺口</th><th style="width:28%;">为什么重要（福格角度的理由）</th><th style="width:18%;">建议方案</th><th style="width:10%;">优先级</th></tr>
+
+      <!-- Motivation 缺口 -->
+      <tr>
+        <td><span class="tag r">动机 M</span></td>
+        <td><strong>完成瞬间无情绪反馈</strong></td>
+        <td>福格强调"在行为发生的瞬间给予愉悦感受"，这是强化行为的最强锚点。没有即刻的快乐，大脑就不会标记"这件事值得再做"。</td>
+        <td>完成时即刻触发的视觉/触觉反馈（印章弹出 + 鼓励语动画），不等弹窗，无延迟。</td>
+        <td class="tag r">P0</td>
+      </tr>
+      <tr>
+        <td><span class="tag r">动机 M</span></td>
+        <td><strong>缺少身份认同</strong></td>
+        <td>"我是一个每天阅读的人"比"我今天读了 30 分钟"更有持续性。里程碑是身份构建的工具——连续 30 天的人不会轻易打破节奏。</td>
+        <td>连续打卡展示 + 里程碑勋章 + 每条分类的独立连续计数（"阅读连续 12 天"）</td>
+        <td class="tag r">P0</td>
+      </tr>
+      <tr>
+        <td><span class="tag r">动机 M</span></td>
+        <td><strong>伙伴间无互动</strong></td>
+        <td>"归属"是福格动机三核心之一。只看不能互动，社交监督变成单向监控，失去了一半驱动力。</td>
+        <td>围观时可以发送"鼓励表情"，被鼓励方在任务卡片上看到小标记。</td>
+        <td class="tag y">P1</td>
+      </tr>
+      <tr>
+        <td><span class="tag r">动机 M</span></td>
+        <td><strong>看不到"进步曲线"</strong></td>
+        <td>动机不是恒定的。当孩子连续几天没完成，看到成就下降会产生"反正已经断了"的放弃心理（what-the-hell effect）。需要展示"你比上周进步了"而非"你今天只做了 1 个"。</td>
+        <td>周报：哪怕这周只完成了 3 天，也可以说"比 0 多了 3 天"。进步叙事比绝对数字重要。</td>
+        <td class="tag y">P1</td>
+      </tr>
+
+      <!-- Ability 缺口 -->
+      <tr>
+        <td><span class="tag y">能力 A</span></td>
+        <td><strong>没有"坏日子版本"</strong></td>
+        <td>福格的行为设计核心原则：<strong>让事情变得极其简单</strong>。Task 制定了"阅读 30 分钟"，但孩子今天生病在床——这时候"读 2 分钟也算"比"不做了"好 100 倍。不降低门槛就会产生"跳过"。</td>
+        <td>"今天特别累？切换轻量模式"：每个任务有"打折完成"选项（原 30min → 10min 即可标记完成，连续天数不中断，但图标变小表示"轻量完成"）</td>
+        <td class="tag y">P1</td>
+      </tr>
+      <tr>
+        <td><span class="tag y">能力 A</span></td>
+        <td><strong>费曼反馈太难</strong></td>
+        <td>小朋友打字慢，400 字反馈是"能力门槛"而非"习惯助力"。如果完成之后还要写作文，他会拖延完成这一步。</td>
+        <td>语音输入（微信自带语音转文字能力）、拍照替代文字、"一句话总结"模式降低到 50 字</td>
+        <td class="tag r">P0</td>
+      </tr>
+      <tr>
+        <td><span class="tag y">能力 A</span></td>
+        <td><strong>新用户无从下手</strong></td>
+        <td>福格说"找到对的锚点行为"是第一步。新手妈妈不知道该创建什么任务——这本质上是"能力"问题：认知成本太高。</td>
+        <td>习惯模板市场（已设计）：预置任务方案，一键导入</td>
+        <td class="tag y">P1</td>
+      </tr>
+      <tr>
+        <td><span class="tag y">能力 A</span></td>
+        <td><strong>任务太多时的崩溃感</strong></td>
+        <td>某天列了 5 个任务，看到一堆"未完成"的压力会降低动力。福格说"从小处开始"——展示也要"先小"。</td>
+        <td>默认只显示前 3 个任务，"展开更多"；或者用"优先级"标记：必做 vs 选做，视觉上区分</td>
+        <td class="tag b">P2</td>
+      </tr>
+
+      <!-- Prompt 缺口 -->
+      <tr>
+        <td><span class="tag b">提示 P</span></td>
+        <td><strong>没有任何提醒</strong></td>
+        <td>这是最大的缺口。福格说"没有提示，行为就不会发生"。孩子不是故意不做——是真的忘了。小程序躺在微信聊天列表里，没有主动跳出来的能力。</td>
+        <td>微信服务通知（需要用户主动订阅一次），在设定的时间点（放学后 16:00 / 晚饭后 19:00）推送一条"今天的阅读任务还没完成哦 📖"</td>
+        <td class="tag r">P0</td>
+      </tr>
+      <tr>
+        <td><span class="tag b">提示 P</span></td>
+        <td><strong>缺少"锚点"绑定</strong></td>
+        <td>福格的核心方法是"在现有习惯之后插入新习惯"（Anchor）。"做完作业 → 打开小程序完成阅读"比"下午 3 点提醒阅读"有效得多，因为锚点已经存在，不需要记忆。</td>
+        <td>允许给每个任务绑定一个小标签："放学后""晚饭前""睡前一小时"，每日清单按锚点分组展示，视觉上强化"该做哪个了"</td>
+        <td class="tag y">P1</td>
+      </tr>
+      <tr>
+        <td><span class="tag b">提示 P</span></td>
+        <td><strong>家长端无被动感知</strong></td>
+        <td>很多时候是家长看到孩子没做去提醒。但家长不会一直打开小程序看。家长需要被动地知道"孩子今天还没完成"，才能去做那个"提示者"。</td>
+        <td>家长关注孩子后，可以在晚上收到"今天小明还有 2 个任务没完成"的被动通知（需合规的订阅消息）</td>
+        <td class="tag y">P1</td>
+      </tr>
+      <tr>
+        <td><span class="tag b">提示 P</span></td>
+        <td><strong>环境线索为零</strong></td>
+        <td>福格强调"环境就是提示"。手机屏幕上什么都没有提醒孩子，但在家放一本书就能提醒阅读。小程序的"环境提示"可以做在微信生态内。</td>
+        <td>（长期）鼓励家长在家放实体线索：小程序内展示"今天放学回来后看到书桌了吗？"之类的环境中性提示。</td>
+        <td class="tag b">P2</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- ================================ -->
+<!-- 优先级总结 -->
+<!-- ================================ -->
+<div class="section">
+  <h2>按"投入产出 + 福格权重"的落地优先级</h2>
+
+  <div class="matrix-grid">
+    <div class="matrix-item p0">
+      <h4>P0-1 · 完成瞬间反馈</h4>
+      <div class="why">对应 M 动机 · 福格最核心的"愉悦即刻"原则。每次完成必须触发情绪高峰。目前卡在"设计方案不满意"，需要快速定案。</div>
+    </div>
+    <div class="matrix-item p0">
+      <h4>P0-2 · 费曼反馈降门槛</h4>
+      <div class="why">对应 A 能力 · 如果完成后的下一步"太难"，孩子会拖延完成。语音输入或拍照替代打字是最快方案。</div>
+    </div>
+    <div class="matrix-item p0">
+      <h4>P0-3 · 推送提醒</h4>
+      <div class="why">对应 P 提示 · 这是最大缺口。没有提示就没有行为。微信服务通知需用户主动订阅一次，合规可行。</div>
+    </div>
+    <div class="matrix-item p0">
+      <h4>P0-4 · 连续打卡可视化</h4>
+      <div class="why">对应 M 动机 · 热力图 + 分类连续天数 = 把"坚持"变成身份认同。"我不想断掉阅读的 12 天连续记录"。</div>
+    </div>
+    <div class="matrix-item p1">
+      <h4>P1-5 · 伙伴间鼓励互动</h4>
+      <div class="why">对应 M 动机 · 福格的"归属"维度。围观变互动，点赞成本极低，效果远大于单向监督。</div>
+    </div>
+    <div class="matrix-item p1">
+      <h4>P1-6 · "坏日子版本"（轻量完成）</h4>
+      <div class="why">对应 A 能力 · 保持连续比完美更重要。允许"打折完成"，防止放弃。</div>
+    </div>
+    <div class="matrix-item p1">
+      <h4>P1-7 · 习惯模板市场</h4>
+      <div class="why">对应 A 能力 · 新用户冷启动的最大障碍。已设计完毕，可直接开发。</div>
+    </div>
+    <div class="matrix-item p1">
+      <h4>P1-8 · 行为锚点标签</h4>
+      <div class="why">对应 P 提示 · 福格的核心方法论：在旧习惯后插入新习惯。任务绑定"放学后""晚饭前"等锚点。</div>
+    </div>
+  </div>
+
+  <blockquote>
+    <strong>福格行为模型给这个产品最大的启示：</strong><br><br>
+    当前产品在 <strong>Ability（能力）</strong> 维度做得最好——创建和完成任务都很简单。<br>
+    在 <strong>Motivation（动机）</strong> 维度做了基础——有数字反馈、有伙伴围观，但缺失"完成瞬间的正向情绪"和"身份认同构建"。<br>
+    在 <strong>Prompt（提示）</strong> 维度几乎空白——没有任何方式提醒孩子"该做了"。<br><br>
+    <strong>福格说：三个要素缺一不可。</strong> 能力再低门槛，动机再强，如果在需要行动的那个时刻没有提示——行为就不会发生。所以 P0 中推送提醒与完成反馈同等重要。<br><br>
+    <em style="color:#999;">另外：福格强调"庆祝"（Celebrate）是习惯养成的最后一公里。每次完成后的即刻庆祝（哪怕只对自己说"我做到了"），会在大脑中释放多巴胺，把行为和愉悦绑定在一起。目前这个产品最缺的就是这个——庆祝。</em>
+  </blockquote>
+</div>
+
+</body>
+</html>
