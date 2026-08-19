@@ -73,6 +73,35 @@ export namespace RoutineUI {
     finishTime?: number;
     /** 反馈内容 */
     remark?: string;
+
+    /**
+     * 若指定，展示底部的点赞/评论交互区
+     * id: like
+     * name: 文本
+     * avatar: 图标
+     */
+    footers?: Entity.Image[];
+
+    /**
+     * 若指定，展示出具体的评论区。每一item中的字段，空数组就展示出空状态。
+     */
+    comments?: Comment[];
+
+    /**
+     * 若指定，展示底下的评论输入区。
+     */
+    commentable?: boolean;
+  }
+
+  // id: 评论ID
+  // name: 评论人名字
+  // letterIndex: 名字首字
+  // avatarStyle： 名字背景色，与relationsAdapter生成的逻辑一致。
+  // desc: 评论具体内容
+  // hint: 评论时间
+  // editable: 自己的评论可以删除、修改。
+  export interface Comment extends Entity.Image {
+    editable: boolean;
   }
 }
 
