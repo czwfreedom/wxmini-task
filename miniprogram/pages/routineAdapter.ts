@@ -1,9 +1,11 @@
 import { Err } from '../constant/error';
 import { Context } from '../core/context';
 import { Entity } from '../model/entity';
+import { Comment } from '../server/comment';
 import { Config } from '../server/config';
 import { Routine } from '../server/routine';
 import { User } from '../server/user';
+import { AvatarUtils } from '../utils/avatarUtils';
 import { DateUtils } from '../utils/dateUtils';
 import { RoutineUI } from './routineUI';
 
@@ -17,8 +19,15 @@ export class RoutineAdapter {
   public userId = Context.getUserId();
 
   public template?: Config.Template;
+
+  protected comments: Map<string, Comment.ListResponse> = new Map();
+
   public getInfo(id: string): Routine.Info | undefined {
     return Entity.find(this.infos, id).item;
+  }
+
+  public getComments(id: string): Comment.ListResponse | undefined {
+    return this.comments.get(id);
   }
 
   public isSelf(): boolean {
@@ -50,6 +59,49 @@ export class RoutineAdapter {
     if (typeof result === 'number') return result;
     this.infos = result;
     return Err.Code.OK;
+  }
+
+  public async loadComments(id: string, reload = false): Promise<number> {
+    const info = this.getInfo(id);
+    if (!info) return Err.Code.Unknown;
+    // 如果明确没有数据，不用拉。
+    if (!info?.stat?.comment) return 0;
+    if (!reload && this.getComments(id)) return 0;
+
+    const res = await Comment.list({ ref: id });
+    if ('number' === typeof res) return res;
+
+    this.comments.set(id, res);
+    return 0;
+  }
+
+  public adaptComments(vm: RoutineUI.Record): RoutineUI.Record {
+    const userId = Context.getUserId();
+    const comments = this.getComments(vm.id);
+    const commentVms: RoutineUI.Comment[] = [];
+    const visible = !vm.commentVisible;
+    let commentalbe = true;
+    if (visible) {
+      for (const item of comments?.data || []) {
+        if (!Comment.hasComment(item)) continue;
+        const user = Entity.find(comments?.users, item.userId).item;
+        const name = user?.name || '未知';
+        commentVms.push({
+          id: item.id,
+          name: name,
+          letterIndex: name.charAt(0),
+          avatarStyle: AvatarUtils.randomColor(user?.id),
+          desc: item.detail,
+          hint: DateUtils.formatRelative(item.commentTime || item.createTime),
+          editable: userId === item.userId,
+        });
+        if (userId === item.userId) commentalbe = false;
+      }
+    }
+    vm.commentVisible = visible;
+    vm.comments = commentVms;
+    vm.commentable = visible && commentalbe;
+    return vm;
   }
 
   /** 将加载到的数据转换为 ViewModel，按状态排序：进行中 > 已完成 */

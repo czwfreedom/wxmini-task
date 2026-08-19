@@ -16,4 +16,8 @@ export const Api = {
   StatRelation: '/v1/relation/stat',
 
   ListConfig: '/v1/config/list',
+
+  ListComment: '/v1/comment/list',
+  CreateComment: '/v1/comment/create',
+  UpdateComment: '/v1/comment/update',
 };

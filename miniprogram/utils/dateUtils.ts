@@ -37,4 +37,16 @@ export namespace DateUtils {
       return match;
     });
   }
+
+  export function formatRelative(millis: number): string {
+    const now = Date.now();
+    if (millis + 600000 > now) return '刚刚';
+    if (millis + 3600000 > now) return `${Math.floor((now - millis) / 60000)} 分钟前`;
+
+    const day = getStartMillisOfDay(now);
+    const y = day - sDayMillis;
+    if (millis >= y && millis < day) return formatDate(millis, '昨天  hh:mm');
+    if (millis + sDayMillis > now) `${Math.floor((now - millis) / 3600000)} 小时前`;
+    return formatDate(millis, 'MM月dd日');
+  }
 }

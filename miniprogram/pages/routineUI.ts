@@ -106,7 +106,7 @@ export namespace RoutineUI {
   // hint: 评论时间
   // editable: 自己的评论可以删除、修改。
   export interface Comment extends Entity.Image {
-    editable: boolean;
+    editable?: boolean;
   }
 }
 
@@ -126,6 +126,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     this.bindEvent('onNextDay', this.onNextDay);
     this.bindEvent('onDatePicked', this.onDatePicked);
     this.bindEvent('onBackToday', this.onBackToday);
+    this.bindEvent('onItemMenuTap', this.onItemMenuTap);
 
     this.registerEventBus(Event.Name.RoutineUpdated, (ev: Routine.Info) => {
       if (ev?.id && ev?.userId === this.adapter?.userId && this.date === ev.date) {
@@ -227,6 +228,30 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   protected onBackToday() {
     Logger.info('onBackToday');
     this.loadDate(Date.now());
+  }
+
+  protected onItemMenuTap(e: WechatMiniprogram.TouchEvent) {
+    const { id, button } = e.currentTarget.dataset;
+    Logger.info('onMenuTap', id, button);
+
+    if (button === 'comment') {
+      this.toggleComment(id);
+    }
+  }
+
+  protected async toggleComment(id: string) {
+    const vm = Entity.find(this.getData().records, id);
+    if (!vm.item) return;
+    this.showLoading();
+    const res = await this.adapter.loadComments(id);
+    this.hideLoading();
+    if (res !== 0) {
+      this.showErrToast(res);
+      return;
+    }
+
+    const newVM = this.adapter.adaptComments(vm.item);
+    this.setKvData(`records[${vm.index}]`, newVM);
   }
 
   /**
