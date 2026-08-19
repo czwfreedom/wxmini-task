@@ -1,5 +1,6 @@
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
+@import '../assets/style/avatar.scss';
 @import '../templates/abort.scss';
 @import '../templates/dialog.scss';
 @import '../templates/routineTemplates.scss';
@@ -318,6 +319,39 @@
     &.harvest {
       box-shadow: inset 0 0 0 999rpx rgba($green, 0.06);
     }
+
+    // ===== 互动区：点赞 / 评论 =====
+    &_footer {
+      @include flex-layout(row, flex-start, flex-start);
+      border-top: 1rpx solid $border;
+
+      &_container {
+        box-sizing: border-box;
+        width: 100%;
+        margin-top: 24rpx;
+        padding-left: 32rpx;
+      }
+
+      &_item {
+        @include flex-layout(row);
+        padding: 12rpx 24rpx 0 24rpx;
+      }
+
+      &_icon {
+        width: 40rpx;
+        height: 40rpx;
+        margin-right: 8rpx;
+      }
+
+      &_num {
+        font-size: 26rpx;
+        line-height: 26rpx;
+        color: $gray-99;
+        &.active {
+          color: $main;
+        }
+      }
+    }
   }
 
   // ===== 空状态 =====
@@ -415,6 +449,103 @@
       font-weight: 700;
       color: $foreground-sub;
       letter-spacing: 1rpx;
+    }
+
+    // ===== 评论关联面板（展开时） =====
+    &_discuss {
+      margin-top: 16rpx;
+      @include card;
+      padding: 8rpx 32rpx 24rpx;
+    }
+
+    &_comment {
+      display: flex;
+      align-items: flex-start;
+      padding: 20rpx 0;
+      border-bottom: 1rpx solid $border;
+
+      &_avatar {
+        width: 64rpx;
+        height: 64rpx;
+        border-radius: 50%;
+        @include flex-layout;
+        font-size: 28rpx;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+      }
+
+      &_main {
+        flex: 1;
+        min-width: 0;
+        margin: 0 16rpx;
+      }
+
+      &_head {
+        display: flex;
+        align-items: baseline;
+      }
+
+      &_name {
+        font-size: 26rpx;
+        font-weight: 600;
+        color: $gray-33;
+      }
+
+      &_time {
+        margin-left: 12rpx;
+        font-size: 22rpx;
+        color: $gray-99;
+      }
+
+      &_text {
+        display: block;
+        margin-top: 6rpx;
+        font-size: 26rpx;
+        color: $foreground-sub;
+        line-height: 1.5;
+        word-wrap: break-word;
+        white-space: normal;
+      }
+
+      &_actions {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+
+      &_action {
+        width: 36rpx;
+        height: 36rpx;
+        margin-left: 20rpx;
+        @include press;
+      }
+    }
+
+    &_comment_empty {
+      padding: 20rpx 0;
+      font-size: 26rpx;
+      color: $gray-99;
+    }
+
+    // ===== 写评论入口（吸底常驻） =====
+    &_composer {
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+      margin-top: 16rpx;
+      display: flex;
+      align-items: center;
+      background: $gray-ee;
+      border-radius: 44rpx;
+      padding: 18rpx 28rpx;
+      box-shadow: 0 -8rpx 20rpx -8rpx $border;
+
+      &_ph {
+        font-size: 22rpx;
+        color: $gray-99;
+      }
     }
   }
 }

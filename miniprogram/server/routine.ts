@@ -88,6 +88,15 @@ export namespace Routine {
     createTime: number;
     /** 完成时间 */
     finishTime?: number;
+
+    stat?: Comment;
+  }
+
+  export interface Comment {
+    count: number;
+    comment: number;
+    liked: number;
+    commented: number;
   }
 
   export interface Stat extends Entity.Id {
@@ -110,8 +119,12 @@ export namespace Routine {
   /**
    * 获取指定日期的任务列表
    */
-  export async function list(date: number, userId?: string): Promise<number | Info[]> {
-    const res = await Network.post<Info[]>(Api.ListRoutine, { date, userId });
+  export async function list(
+    date: number,
+    userId?: string,
+    withStat?: boolean
+  ): Promise<number | Info[]> {
+    const res = await Network.post<Info[]>(Api.ListRoutine, { date, userId, withStat });
     if (res?.errcode !== 0) {
       Logger.warn('List routine failed', res);
       return res?.errcode || Err.Code.Network;

@@ -100,11 +100,14 @@
   .comment-op.edit:hover{background:rgba(91,155,213,0.12);color:#5B9BD5}
   .comment-op.del:hover{background:rgba(239,83,80,0.1);color:#EF5350}
 
-  /* 写评论入口（展开区底部常驻；无评论时也是唯一入口） */
+  /* 写评论入口 —— 吸底常驻：展开评论后钉在底部，长列表滚动时始终可见
+     （解决「评论很长时找不到输入点」；其余图标/列表/编辑删除均不动） */
   .composer{
+    position:sticky;bottom:0;z-index:2;
     margin-top:12px;display:flex;align-items:center;gap:8px;
     background:#F2F5F8;border-radius:22px;padding:9px 14px;
     color:#999;font-size:11px;cursor:pointer;
+    box-shadow:0 -6px 10px -4px #F2F5F8; /* 上沿渐隐，避免与评论文字重叠 */
   }
   .composer svg{width:15px;height:15px;color:#C5C5C5}
   .composer:active{opacity:0.7}
@@ -259,7 +262,7 @@
       </div>
       <div class="mini-box">
         <b>展开态（点评论后）</b>
-        评论列表（含相对时间）+ 底部「写评论…」入口。<br>再次点评论图标或点遮罩外区域可收起。
+        评论列表（含相对时间）+ <strong>底部常驻「写评论…」入口（吸底）</strong>。<br>列表再长，输入框也钉在底部始终可见。<br>再次点评论图标或点遮罩外区域可收起。
       </div>
     </div>
 
@@ -274,7 +277,12 @@
     本人的评论底色用浅金 <code>#FFFDF6</code> 轻微区分。
 
     <h3>没有评论时，「写评论」入口在哪？</h3>
-    核心思路：<strong>写入口就在展开区里，不依赖评论数量。</strong>
+    核心思路：<strong>写入口就在展开区里，不依赖评论数量。</strong>同一种「吸底常驻」形态，无论有无评论都在同一位置，认知一致。
+
+    <h3>④ 本次优化：长列表找不到输入点</h3>
+    旧方案把「写评论」放在评论列表<strong>末尾</strong>，评论一长就被推到屏幕外、看不见。<br>
+    改为 <code>position:sticky; bottom:0</code> <strong>吸底常驻</strong>：展开评论后，输入框始终钉在卡片底部，浏览多长列表都不用翻到底。仅改动这一处，图标 / 评论列表 / 编辑删除全部不动。<br>
+    另可考虑的替代方案：<b>B 顶部常驻</b>（输入框放列表最上方，一展开即见，但阅读流略反直觉）；<b>C 全局底部输入条</b>（从屏幕最底浮出，最像微信，但需动页面级布局，超出本次范围）。
     <div class="mini">
       <div class="mini-box">
         <b>有评论</b>

@@ -2,6 +2,7 @@ import { Err } from '../constant/error';
 import { Context } from '../core/context';
 import { Entity } from '../model/entity';
 import { Relation } from '../server/relation';
+import { AvatarUtils } from '../utils/avatarUtils';
 import { RelationsUI } from './relationsUI';
 
 export class RelationsAdapter {
@@ -37,7 +38,7 @@ export class RelationsAdapter {
         name: u.nickname || u.name || '',
         letterIndex: (u.nickname || u.name || '?')[0],
         desc: m ? `今日任务 ${u.routine?.count || 0} 个` : '',
-        avatarStyle: this.randomColor(u.id),
+        avatarStyle: AvatarUtils.randomColor(u.id),
       })),
     };
   }
@@ -54,16 +55,6 @@ export class RelationsAdapter {
       if (relation?.index >= 0) this.relations.splice(relation.index, 1);
     }
     return res;
-  }
-
-  private randomColor(seed?: string): string {
-    const colors = ['c1', 'c2', 'c3', 'c4'];
-    if (!seed) return colors[0];
-    let hash = 0;
-    for (let i = 0; i < seed.length; i++) {
-      hash = seed.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return colors[Math.abs(hash) % colors.length];
   }
 
   protected canManage() {

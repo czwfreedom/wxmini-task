@@ -1,5 +1,6 @@
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
+@import '../assets/style/avatar.scss';
 @import '../templates/abort.scss';
 @import '../templates/bottomBar.scss';
 @import '../templates/choices.scss';
@@ -62,19 +63,6 @@
     font-weight: 700;
     color: white;
     flex-shrink: 0;
-
-    &.c1 {
-      background: linear-gradient(135deg, #64b5f6, #42a5f5);
-    }
-    &.c2 {
-      background: linear-gradient(135deg, #f06292, #ec407a);
-    }
-    &.c3 {
-      background: linear-gradient(135deg, #81c784, #66bb6a);
-    }
-    &.c4 {
-      background: linear-gradient(135deg, #ba68c8, #ab47bc);
-    }
   }
 
   &_info {

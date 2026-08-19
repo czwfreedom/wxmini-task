@@ -75,12 +75,17 @@ export namespace RoutineUI {
     remark?: string;
 
     /**
-     * 若指定，展示底部的点赞/评论交互区
+     * 若指定，展示底部的点赞/评论交互区，否则留空。（看自己的routine时，如果没有数据，没必要展示出来占地方）
      * id: like
      * name: 文本
      * avatar: 图标
      */
     footers?: Entity.Image[];
+
+    /**
+     * 控制整个评论区的可见性。
+     */
+    commentVisible?: boolean;
 
     /**
      * 若指定，展示出具体的评论区。每一item中的字段，空数组就展示出空状态。

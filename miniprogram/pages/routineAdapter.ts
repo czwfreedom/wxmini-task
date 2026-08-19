@@ -46,7 +46,7 @@ export class RoutineAdapter {
     this.updateable = isSelf && date >= today;
     this.addable = isSelf && date >= today;
     this.finishable = isSelf && date <= today;
-    const result = await Routine.list(date, this.userId);
+    const result = await Routine.list(date, this.userId, true);
     if (typeof result === 'number') return result;
     this.infos = result;
     return Err.Code.OK;
@@ -92,6 +92,7 @@ export class RoutineAdapter {
         holder: holder,
         done,
         style: done ? 'done' : holder ? 'holder' : '',
+        footers: this.adaptFooters(info),
       };
       records.push(record);
     }
@@ -195,6 +196,25 @@ export class RoutineAdapter {
       }
     }
     return result;
+  }
+
+  protected adaptFooters(info: Routine.Info): Entity.Image[] {
+    const stat = info.stat;
+    const isSelf = this.isSelf();
+    if (!stat?.comment && !stat?.count && isSelf) return [];
+
+    return [
+      {
+        id: 'like',
+        name: '' + (stat?.count || 0),
+        avatar: '../assets/imgs/ic-like-' + (stat?.liked ? 'selected' : 'normal') + '.svg',
+      },
+      {
+        id: 'comment',
+        name: (stat?.comment || 0) + ' 条评论',
+        avatar: '../assets/imgs/ic-comment-' + (stat?.commented ? 'selected' : 'normal') + '.svg',
+      },
+    ];
   }
 }
 

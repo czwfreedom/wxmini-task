@@ -107,6 +107,81 @@
                 />
               </view>
             </view>
+
+            <!-- 互动区：点赞 / 评论（仅 footer 数据存在时） -->
+            <view
+              wx:if="{{ item.footers && item.footers.length }}"
+              class="routine_card_footer_container"
+            >
+              <view class="routine_card_footer">
+                <view
+                  wx:for="{{ item.footers }}"
+                  wx:for-item="f"
+                  wx:key="id"
+                  class="routine_card_footer_item"
+                  catch:tap="onItemMenuTap"
+                  data-id="{{ item.id }}"
+                  data-button="{{ f.id }}"
+                  hover-class="press"
+                  hover-stop-propagation="true"
+                >
+                  <image class="routine_card_footer_icon" src="{{ f.avatar }}" mode="aspectFit" />
+                  <!-- prettier-ignore -->
+                  <text class="routine_card_footer_num {{ f.selected? 'active' : '' }}">{{ f.name }}</text>
+                </view>
+              </view>
+            </view>
+
+            <!-- 评论区（展开时展示，关联面板；吸底输入条可常驻） -->
+            <view wx:if="{{ item.commentVisible }}" class="routine_discuss">
+              <block wx:if="{{ item.comments && item.comments.length }}">
+                <view
+                  wx:for="{{ item.comments }}"
+                  wx:for-item="c"
+                  wx:key="id"
+                  class="routine_comment"
+                >
+                  <view class="routine_comment_avatar {{ c.avatarStyle || 'c1' }}">
+                    <text>{{ c.letterIndex }}</text>
+                  </view>
+                  <view class="routine_comment_main">
+                    <view class="routine_comment_head">
+                      <text class="routine_comment_name">{{ c.name }}</text>
+                      <text class="routine_comment_time">{{ c.hint }}</text>
+                    </view>
+                    <text class="routine_comment_text">{{ c.desc }}</text>
+                  </view>
+                  <view wx:if="{{ c.editable }}" class="routine_comment_actions">
+                    <image
+                      class="routine_comment_action"
+                      src="../assets/imgs/ic-edit.svg"
+                      mode="aspectFit"
+                      catch:tap="onCommentEdit"
+                      data-id="{{ c.id }}"
+                      hover-class="press"
+                    />
+                    <image
+                      class="routine_comment_action"
+                      src="../assets/imgs/ic-delete.svg"
+                      mode="aspectFit"
+                      catch:tap="onCommentDelete"
+                      data-id="{{ c.id }}"
+                      hover-class="press"
+                    />
+                  </view>
+                </view>
+              </block>
+              <view wx:else class="routine_comment_empty">还没有评论，写下第一条吧</view>
+
+              <view
+                wx:if="{{ item.commentable }}"
+                class="routine_composer"
+                catch:tap="onComposerTap"
+                hover-class="press"
+              >
+                <text class="routine_composer_ph">写评论…</text>
+              </view>
+            </view>
           </view>
 
           <!-- 空状态 -->
