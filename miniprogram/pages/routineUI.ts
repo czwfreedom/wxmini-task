@@ -258,6 +258,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   }
 
   protected async toggleLike(id: string) {
+    if (this.adapter.isSelf()) return;
     const vm = Entity.find(this.getData().records, id);
     if (!vm.item) return;
 
@@ -289,6 +290,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   }
 
   protected createComment(id: string) {
+    if (this.adapter.isSelf()) return;
     const dialog = this.getDialog();
     const comment = this.adapter.getComment(id, Context.getUserId());
     dialog.show(

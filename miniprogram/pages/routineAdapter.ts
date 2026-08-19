@@ -93,13 +93,15 @@ export class RoutineAdapter {
     if (!info) return Err.Code.Unknown;
 
     const liked = !info?.stat?.liked ? 1 : 0;
-    const res = await Comment.create({ ref: id, praise: liked });
+    const comment = this.getComment(id, Context.getUserId());
+    const res = comment
+      ? await Comment.update({ id: comment.id, praise: liked })
+      : await Comment.create({ ref: id, praise: liked });
     if ('number' === typeof res) return res;
 
     if (!info.stat) info.stat = this.defaultStat();
     info.stat.count += liked ? 1 : -1;
     info.stat.liked = liked;
-    const comment = this.getComment(id, Context.getUserId());
     if (comment) comment.praise = liked;
     return 0;
   }
@@ -163,7 +165,7 @@ export class RoutineAdapter {
     }
     vm.commentVisible = visible;
     vm.comments = commentVms;
-    vm.commentable = visible && commentalbe;
+    vm.commentable = visible && commentalbe && !this.isSelf();
     return vm;
   }
 

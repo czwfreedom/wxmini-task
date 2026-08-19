@@ -46,7 +46,7 @@ export namespace DateUtils {
     const day = getStartMillisOfDay(now);
     const y = day - sDayMillis;
     if (millis >= y && millis < day) return formatDate(millis, '昨天  hh:mm');
-    if (millis + sDayMillis > now) `${Math.floor((now - millis) / 3600000)} 小时前`;
+    if (millis + sDayMillis > now) return `${Math.floor((now - millis) / 3600000)} 小时前`;
     return formatDate(millis, 'MM月dd日');
   }
 }

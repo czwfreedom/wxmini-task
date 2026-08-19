@@ -178,7 +178,9 @@
                     </view>
                   </view>
                 </block>
-                <view wx:else class="routine_comment_empty">还没有评论，写下第一条吧</view>
+                <view wx:else class="routine_comment_empty">
+                  {{ item.commentable? '还没有评论，写下第一条吧' : '还没有评论呢'}}
+                </view>
 
                 <view
                   wx:if="{{ item.commentable }}"
