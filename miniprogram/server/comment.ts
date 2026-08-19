@@ -6,7 +6,8 @@ import { Logger } from '../utils/logger';
 
 export namespace Comment {
   export interface Info extends Entity.Id {
-    attrs: number;
+    praise: number;
+    comment: number;
     type: number;
     ref: string;
     userId: string;
@@ -27,7 +28,11 @@ export namespace Comment {
   }
 
   export function hasComment(info: Info): boolean {
-    return !!info.detail && !!(info.attrs & Attr.Comment);
+    return !!info.detail && !!info.comment;
+  }
+
+  export function hasLike(info: Info): boolean {
+    return !!info.praise;
   }
 
   export async function list(data: Partial<Info>): Promise<number | ListResponse> {
@@ -40,7 +45,7 @@ export namespace Comment {
   }
 
   export async function create(data: Partial<Info>): Promise<Info | number> {
-    const res = await Network.post<Info[]>(Api.CreateRelation, data);
+    const res = await Network.post<Info[]>(Api.CreateComment, data);
     if (res?.errcode !== 0 || res.data?.length !== 1) {
       Logger.info('Create comment failed', res);
       return res?.errcode || Err.Code.Network;

@@ -236,7 +236,25 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
 
     if (button === 'comment') {
       this.toggleComment(id);
+    } else if (button === 'like') {
+      this.toggleLike(id);
     }
+  }
+
+  protected async toggleLike(id: string) {
+    const vm = Entity.find(this.getData().records, id);
+    if (!vm.item) return;
+
+    this.showLoading();
+    const res = await this.adapter.toggleLike(id);
+    this.hideLoading();
+    if (res !== 0) {
+      this.showErrToast(res);
+      return;
+    }
+
+    vm.item.footers = this.adapter.adaptFooters(this.adapter.getInfo(id)!);
+    this.setKvData(`records[${vm.index}]`, vm.item);
   }
 
   protected async toggleComment(id: string) {

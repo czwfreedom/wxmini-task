@@ -30,6 +30,17 @@ export class RoutineAdapter {
     return this.comments.get(id);
   }
 
+  public getComment(id: string, userId: string): Comment.Info | undefined {
+    const items = this.getComments(id)?.data;
+    if (!items?.length) return undefined;
+    for (const item of items) {
+      if (item.userId === userId) {
+        return item;
+      }
+    }
+    return undefined;
+  }
+
   public isSelf(): boolean {
     return this.userId === Context.getUserId();
   }
@@ -71,7 +82,25 @@ export class RoutineAdapter {
     const res = await Comment.list({ ref: id });
     if ('number' === typeof res) return res;
 
+    // 更新本地数据，免得对不上。
+    this.geneStat(info, res.data);
     this.comments.set(id, res);
+    return 0;
+  }
+
+  public async toggleLike(id: string): Promise<number> {
+    const info = this.getInfo(id);
+    if (!info) return Err.Code.Unknown;
+
+    const liked = !info?.stat?.liked ? 1 : 0;
+    const res = await Comment.create({ ref: id, praise: liked });
+    if ('number' === typeof res) return res;
+
+    if (!info.stat) info.stat = this.defaultStat();
+    info.stat.count += liked ? 1 : -1;
+    info.stat.liked = liked;
+    const comment = this.getComment(id, Context.getUserId());
+    if (comment) comment.praise = liked;
     return 0;
   }
 
@@ -250,7 +279,7 @@ export class RoutineAdapter {
     return result;
   }
 
-  protected adaptFooters(info: Routine.Info): Entity.Image[] {
+  public adaptFooters(info: Routine.Info): Entity.Image[] {
     const stat = info.stat;
     const isSelf = this.isSelf();
     if (!stat?.comment && !stat?.count && isSelf) return [];
@@ -267,6 +296,26 @@ export class RoutineAdapter {
         avatar: '../assets/imgs/ic-comment-' + (stat?.commented ? 'selected' : 'normal') + '.svg',
       },
     ];
+  }
+
+  protected geneStat(info: Routine.Info, comments: Comment.Info[]) {
+    const stat = this.defaultStat();
+    const userId = Context.getUserId();
+    for (const item of comments || []) {
+      if (Comment.hasComment(item)) {
+        stat.comment++;
+        if (userId === item.userId) stat.commented++;
+      }
+      if (Comment.hasLike(item)) {
+        stat.count++;
+        if (userId === item.userId) stat.liked++;
+      }
+    }
+    info.stat = stat;
+  }
+
+  protected defaultStat(): Routine.Comment {
+    return { count: 0, commented: 0, comment: 0, liked: 0 };
   }
 }
 
