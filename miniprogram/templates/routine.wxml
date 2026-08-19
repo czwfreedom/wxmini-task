@@ -155,19 +155,25 @@
                     <view wx:if="{{ c.editable }}" class="routine_comment_actions">
                       <image
                         class="routine_comment_action"
-                        src="../assets/imgs/ic-edit.svg"
+                        src="../assets/imgs/ic-delete.svg"
                         mode="aspectFit"
-                        catch:tap="onCommentEdit"
-                        data-id="{{ c.id }}"
+                        catch:tap="onItemMenuTap"
+                        data-id="{{ item.id }}"
+                        data-subid="{{ c.id }}"
+                        data-button="deleteComment"
                         hover-class="press"
+                        hover-stop-propagation="true"
                       />
                       <image
                         class="routine_comment_action"
-                        src="../assets/imgs/ic-delete.svg"
+                        src="../assets/imgs/ic-edit.svg"
                         mode="aspectFit"
-                        catch:tap="onCommentDelete"
-                        data-id="{{ c.id }}"
+                        catch:tap="onItemMenuTap"
+                        data-id="{{ item.id }}"
+                        data-subid="{{ c.id }}"
+                        data-button="editComment"
                         hover-class="press"
+                        hover-stop-propagation="true"
                       />
                     </view>
                   </view>

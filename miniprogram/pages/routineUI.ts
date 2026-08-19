@@ -238,8 +238,22 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       this.toggleComment(id);
     } else if (button === 'like') {
       this.toggleLike(id);
-    } else if (button === 'createComment') {
+    } else if (button === 'createComment' || button === 'editComment') {
       this.createComment(id);
+    } else if (button === 'deleteComment') {
+      this.getDialog().show(
+        {
+          id: 'm',
+          name: '确认要删除吗？',
+          desc: '删除之后将无法恢复，请确认',
+          menus: DialogUI.defaultMenus('danger'),
+        },
+        (button) => {
+          if (button === 'confirm') {
+            this.doCreateComment(id, '');
+          }
+        }
+      );
     }
   }
 
@@ -276,6 +290,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
 
   protected createComment(id: string) {
     const dialog = this.getDialog();
+    const comment = this.adapter.getComment(id, Context.getUserId());
     dialog.show(
       {
         id: 'm',
@@ -284,6 +299,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
           id: 'detail',
           name: '',
           type: 'textarea',
+          value: comment?.detail,
           hint: '说点什么鼓励你的伙伴吧',
           maxLength: 400,
         },

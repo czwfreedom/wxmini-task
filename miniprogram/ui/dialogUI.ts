@@ -27,10 +27,10 @@ export class DialogUI extends SubUI<DialogUI.WrapData> {
   protected data?: DialogUI.Data;
   private inputValue: string = '';
 
-  public static defaultMenus(): MenuUI.VM[] {
+  public static defaultMenus(style?: string): MenuUI.VM[] {
     return [
       { id: 'cancel', name: '取消' },
-      { id: 'confirm', name: '确定' },
+      { id: 'confirm', name: '确定', style },
     ];
   }
 

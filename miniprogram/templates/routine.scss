@@ -520,10 +520,10 @@
     }
 
     &_action {
+      box-sizing: content-box;
       width: 36rpx;
       height: 36rpx;
-      margin-left: 20rpx;
-      @include press;
+      padding: 6rpx 12rpx;
     }
 
     &_empty {
