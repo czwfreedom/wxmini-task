@@ -7,13 +7,6 @@ import { DialogUI } from './dialogUI';
 import { ShareUI } from './shareUI';
 
 export abstract class UserUpdaterUI<D> extends InteractUI<D> {
-  protected dialog?: DialogUI;
-
-  public getDialog(): DialogUI {
-    if (!this.dialog) this.dialog = new DialogUI(this.component, this.subDataKey);
-    return this.dialog;
-  }
-
   // https://developers.weixin.qq.com/miniprogram/dev/reference/api/Page.html#onShareAppMessage-Object-object
   public onShareAppMessage(obj: any) {
     if (this.dialog) this.dialog.hide();

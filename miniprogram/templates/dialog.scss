@@ -114,6 +114,10 @@
     &_wrap {
       padding: 0 48rpx;
       margin-bottom: 32rpx;
+
+      &.textarea {
+        padding: 0;
+      }
     }
     &_holder {
       color: $gray-99;
@@ -126,6 +130,7 @@
     color: $gray-33;
     text-align: center;
     border-bottom: 1rpx solid $border;
+    max-height: 192rpx;
   }
 
   // ---- 按钮区（左右双按钮） ----

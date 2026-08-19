@@ -238,6 +238,8 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       this.toggleComment(id);
     } else if (button === 'like') {
       this.toggleLike(id);
+    } else if (button === 'createComment') {
+      this.createComment(id);
     }
   }
 
@@ -269,6 +271,46 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     }
 
     const newVM = this.adapter.adaptComments(vm.item);
+    this.setKvData(`records[${vm.index}]`, newVM);
+  }
+
+  protected createComment(id: string) {
+    const dialog = this.getDialog();
+    dialog.show(
+      {
+        id: 'm',
+        name: '评论',
+        input: {
+          id: 'detail',
+          name: '',
+          type: 'textarea',
+          hint: '说点什么鼓励你的伙伴吧',
+          maxLength: 400,
+        },
+        menus: DialogUI.defaultMenus(),
+      },
+      (button) => {
+        if (button === 'confirm' && dialog.getInputValue()) {
+          this.doCreateComment(id, dialog.getInputValue());
+        }
+      }
+    );
+  }
+
+  protected async doCreateComment(id: string, detail: string) {
+    const vm = Entity.find(this.getData().records, id);
+    if (!vm.item) return;
+
+    this.showLoading();
+    const res = await this.adapter.updateComment(id, detail);
+    this.hideLoading();
+    if (res !== 0) {
+      this.showErrToast(res);
+      return;
+    }
+
+    const newVM = this.adapter.adaptComments(vm.item, true);
+    newVM.footers = this.adapter.adaptFooters(this.adapter.getInfo(id)!);
     this.setKvData(`records[${vm.index}]`, newVM);
   }
 

@@ -177,8 +177,11 @@
                 <view
                   wx:if="{{ item.commentable }}"
                   class="routine_composer"
-                  catch:tap="onComposerTap"
+                  catch:tap="onItemMenuTap"
+                  data-id="{{ item.id }}"
+                  data-button="createComment"
                   hover-class="press"
+                  hover-stop-propagation="true"
                 >
                   <text class="routine_composer_ph">写评论…</text>
                 </view>

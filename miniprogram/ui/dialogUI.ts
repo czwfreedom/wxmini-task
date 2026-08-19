@@ -34,7 +34,7 @@ export class DialogUI extends SubUI<DialogUI.WrapData> {
     ];
   }
 
-  public show(data: DialogUI.Data, onButtonTap?: (button: string) => void) {
+  public show(data: DialogUI.Data, onButtonTap?: (button: string) => void, hide = true) {
     this.data = data;
     this.inputValue = '';
 
@@ -42,12 +42,12 @@ export class DialogUI extends SubUI<DialogUI.WrapData> {
       Logger.log('onDialogButtonTap', e);
       const { button } = e.currentTarget.dataset;
 
-      if (button === 'confirm' && this.data?.input?.hint && !this.inputValue?.trim()) {
+      if (button === 'confirm' && this.data?.input?.hint && !this.getInputValue()) {
         this.showToast(this.data.input.hint);
         return;
       }
 
-      this.hide();
+      if (hide || button === 'cancel') this.hide();
       onButtonTap && onButtonTap(button);
     });
 
@@ -64,7 +64,7 @@ export class DialogUI extends SubUI<DialogUI.WrapData> {
 
   /** 获取输入组件的值（如昵称），供调用方在按钮回调里读取 */
   public getInputValue(): string {
-    return this.inputValue;
+    return this.inputValue?.trim();
   }
 
   // 在open-type的场景，未必会直接回调上面的事件，而要主动调用。

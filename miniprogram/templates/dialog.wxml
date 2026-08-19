@@ -20,12 +20,25 @@
       <view wx:if="{{desc}}" class="dialog_desc {{ descStyle || 'center'}}">{{desc}}</view>
 
       <!-- 输入框（如果 input 字段设置了，type 如 "nickname" 获取微信昵称） -->
-      <view wx:if="{{input}}" class="dialog_input_wrap">
+      <view wx:if="{{input && input.type !== 'textarea'}}" class="dialog_input_wrap">
         <input
           class="dialog_input"
           type="{{input.type || 'text'}}"
           value="{{ input.value }}"
           adjust-position="{{ true }}"
+          placeholder-class="dialog_input_holder"
+          placeholder="{{input.hint}}"
+          maxlength="{{input.maxLength || -1}}"
+          bindinput="onDialogInput"
+        />
+      </view>
+
+      <view wx:if="{{input && input.type === 'textarea'}}" class="dialog_input_wrap textarea">
+        <textarea
+          class="dialog_input"
+          value="{{ input.value }}"
+          adjust-position="{{ true }}"
+          auto-height="true"
           placeholder-class="dialog_input_holder"
           placeholder="{{input.hint}}"
           maxlength="{{input.maxLength || -1}}"

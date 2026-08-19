@@ -104,27 +104,61 @@ export class RoutineAdapter {
     return 0;
   }
 
-  public adaptComments(vm: RoutineUI.Record): RoutineUI.Record {
+  public async updateComment(id: string, detail: string): Promise<number> {
+    const info = this.getInfo(id);
+    if (!info) return Err.Code.Unknown;
+
+    const comment = this.getComment(id, Context.getUserId());
+    const res = comment
+      ? await Comment.update({ id: comment.id, detail })
+      : await Comment.create({ ref: id, detail });
+    if ('number' === typeof res) return res;
+    if (!res) return Err.Code.ServerFailed;
+
+    // 为了少拉一次接口，需要精心维护本地的数据。
+    const comments = this.getComments(id);
+    if (!comments?.data) {
+      this.comments.set(id, { data: [res], users: [] });
+    } else {
+      const exist = Entity.find(comments.data, res.id);
+      if (exist?.item) {
+        comments.data[exist.index] = res;
+      } else {
+        comments.data.push(res);
+      }
+    }
+    this.geneStat(info, this.getComments(id)?.data || []);
+    return 0;
+  }
+
+  public adaptComments(vm: RoutineUI.Record, visible?: boolean): RoutineUI.Record {
     const userId = Context.getUserId();
     const comments = this.getComments(vm.id);
     const commentVms: RoutineUI.Comment[] = [];
-    const visible = !vm.commentVisible;
+    if (visible === undefined) visible = !vm.commentVisible;
     let commentalbe = true;
     if (visible) {
+      // 按照时间倒序。
+      if (comments?.data?.length) {
+        comments.data.sort(
+          (o1, o2) => (o2.commentTime || o2.createTime) - (o1.commentTime || o1.createTime)
+        );
+      }
       for (const item of comments?.data || []) {
         if (!Comment.hasComment(item)) continue;
+        const isSelf = userId === item.userId;
         const user = Entity.find(comments?.users, item.userId).item;
-        const name = user?.name || '未知';
+        const name = isSelf ? '我自己' : user?.name || '未知';
         commentVms.push({
           id: item.id,
           name: name,
           letterIndex: name.charAt(0),
-          avatarStyle: AvatarUtils.randomColor(user?.id),
+          avatarStyle: AvatarUtils.randomColor(item.userId),
           desc: item.detail,
           hint: DateUtils.formatRelative(item.commentTime || item.createTime),
           editable: userId === item.userId,
         });
-        if (userId === item.userId) commentalbe = false;
+        if (isSelf) commentalbe = false;
       }
     }
     vm.commentVisible = visible;
