@@ -169,6 +169,10 @@ export class RoutineAdapter {
     return vm;
   }
 
+  public adaptStars(): Entity.Image[] {
+    return [];
+  }
+
   /** 将加载到的数据转换为 ViewModel，按状态排序：进行中 > 已完成 */
   public adapt(): Partial<RoutineUI.Data> {
     const records: RoutineUI.Record[] = [];
@@ -239,6 +243,8 @@ export class RoutineAdapter {
       pickerEnd: DateUtils.formatDate(maxMillis, 'yyyy-MM-dd'),
       isAllDone,
       records,
+      starVisible: this.isSelf() && isToday,
+      stars: this.adaptStars(),
       stats: [
         { id: 'count', name: `已规划 ${count}` },
         { id: 'pending', name: `待反馈 ${pendingCount}`, style: 'pending' },

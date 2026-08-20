@@ -10,7 +10,14 @@
           <view class="routine_hero_info">
             <!-- 日期导航：‹ 日期 › 三段式，点日期唤起系统选择器 -->
             <view class="routine_hero_nav">
-              <view class="routine_hero_arrow" catch:tap="onPrevDay" hover-class="press">‹</view>
+              <view
+                class="routine_hero_arrow"
+                catch:tap="onMenuTap"
+                data-button="prev"
+                hover-class="press"
+              >
+                ‹
+              </view>
               <picker
                 class="routine_hero_datewrap"
                 mode="date"
@@ -22,8 +29,14 @@
                 <view class="routine_hero_label">{{ dateLabel }}</view>
                 <view class="routine_hero_date">{{ dateMain }}</view>
               </picker>
-              <!-- prettier-ignore -->
-              <view class="routine_hero_arrow {{ !nextable ? 'disabled' : '' }}" catch:tap="onNextDay" hover-class="press">›</view>
+              <view
+                class="routine_hero_arrow {{ !nextable ? 'disabled' : '' }}"
+                catch:tap="onMenuTap"
+                data-button="next"
+                hover-class="press"
+              >
+                ›
+              </view>
             </view>
 
             <!-- prettier-ignore -->
@@ -47,13 +60,66 @@
           <image class="routine_hero_logo" src="../assets/imgs/ic-pencil.svg" />
         </view>
 
+        <!-- 关注伙伴条（空状态 / 有数据 两态） -->
+        <view wx:if="{{ starVisible }}" class="routine_pin">
+          <block wx:if="{{ stars && stars.length }}">
+            <view class="routine_pin_head">
+              <text class="routine_pin_title">关注的伙伴</text>
+              <text class="routine_pin_all" catch:tap="onStarAllTap" hover-class="press">
+                全部 ›
+              </text>
+            </view>
+            <scroll-view class="routine_pin_row" scroll-x="true">
+              <view
+                wx:for="{{ stars }}"
+                wx:key="id"
+                class="routine_pin_item"
+                catch:tap="onStarTap"
+                data-id="{{ item.id }}"
+                hover-class="press"
+              >
+                <view class="routine_pin_avatar {{ item.avatarStyle || 'avatar_c1' }}">
+                  <text>{{ item.letterIndex }}</text>
+                  <view wx:if="{{ item.desc }}" class="routine_pin_badge">{{ item.desc }}</view>
+                </view>
+                <text class="routine_pin_name">{{ item.name }}</text>
+              </view>
+              <view class="routine_pin_add" catch:tap="onStarAddTap" hover-class="press">+</view>
+              <view class="routine_pin_more" catch:tap="onStarAllTap" hover-class="press">
+                更多
+              </view>
+            </scroll-view>
+          </block>
+
+          <block wx:else>
+            <view
+              class="routine_pin_empty"
+              catch:tap="onMenuTap"
+              data-button="star"
+              hover-class="press"
+            >
+              <view class="routine_pin_avatar routine_pin_preview avatar_c3">
+                <text>朵</text>
+                <view class="routine_pin_badge">3/5</view>
+              </view>
+              <view class="routine_pin_empty_t">
+                在「伙伴」里点亮
+                <text class="routine_pin_star">★</text>
+                <view class="routine_pin_empty_sub">一眼看到 TA 的每日进度</view>
+              </view>
+              <view class="routine_pin_add">+</view>
+            </view>
+          </block>
+        </view>
+
         <!-- 任务列表 -->
         <view class="routine_section {{ isAllDone ? 'celebrate' : '' }}">
           {{ isToday ? (addable? '今天做点啥？' : '伙伴在做啥？') : '当日任务' }}
           <view
             wx:if="{{ addable }}"
             class="routine_section_tpl"
-            catch:tap="onTemplateTap"
+            catch:tap="onMenuTap"
+            data-button="template"
             hover-class="press"
           >
             <text class="routine_section_tpl_star">✦</text>
@@ -230,7 +296,13 @@
       </scroll-view>
 
       <!-- 回到今天胶囊（历史态） -->
-      <view wx:if="{{ loaded && !isToday }}" class="routine_backtoday" catch:tap="onBackToday">
+      <view
+        wx:if="{{ loaded && !isToday }}"
+        class="routine_backtoday"
+        catch:tap="onMenuTap"
+        data-button="today"
+        hover-class="press"
+      >
         <view class="routine_backtoday_dot"></view>
         <text class="routine_backtoday_text">回到今天</text>
       </view>

@@ -56,6 +56,8 @@ export namespace RoutineUI {
      */
     stat?: Entity.Label;
 
+    starVisible?: boolean;
+
     /**
      * 加了星标的已关注，
      * name: 名字
@@ -133,12 +135,9 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     this.adapter.userId = userId || Context.getUserId();
 
     this.bindEvent('onItemTap', this.onItemTap);
+    this.bindEvent('onMenuTap', this.onMenuTap);
     this.bindEvent('onShareTap', this.onShareTap);
-    this.bindEvent('onTemplateTap', this.onTemplateTap);
-    this.bindEvent('onPrevDay', this.onPrevDay);
-    this.bindEvent('onNextDay', this.onNextDay);
     this.bindEvent('onDatePicked', this.onDatePicked);
-    this.bindEvent('onBackToday', this.onBackToday);
     this.bindEvent('onItemMenuTap', this.onItemMenuTap);
 
     this.registerEventBus(Event.Name.RoutineUpdated, (ev: Routine.Info) => {
@@ -209,23 +208,35 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     return 0;
   }
 
-  /** 前一天 */
-  protected onPrevDay() {
-    Logger.info('onPrevDay');
-    this.loadDate(this.date - 24 * 3600 * 1000);
-  }
-
-  /** 后一天，今天已到上限则禁用（WXML 同步置灰） */
-  protected onNextDay() {
-    Logger.info('onNextDay');
-    const next = this.date + DateUtils.sDayMillis;
-    const max = this.adapter.getMaxMillis();
-    if (next > max) {
-      const isSelf = this.adapter.isSelf();
-      if (isSelf) this.showToast('只支持提前一天规划任务');
-      return;
+  protected async onMenuTap(e: WechatMiniprogram.TouchEvent) {
+    const { button } = e.currentTarget.dataset;
+    Logger.info('onMenuTap', button);
+    if (button === 'next') {
+      const next = this.date + DateUtils.sDayMillis;
+      const max = this.adapter.getMaxMillis();
+      if (next > max) {
+        const isSelf = this.adapter.isSelf();
+        if (isSelf) this.showToast('只支持提前一天规划任务');
+        return;
+      }
+      this.loadDate(next);
+    } else if (button === 'prev') {
+      this.loadDate(this.date - 24 * 3600 * 1000);
+    } else if (button === 'template') {
+      this.showLoading();
+      const data = await RoutineTemplatesUI.load();
+      this.hideLoading();
+      if ('number' === typeof data) {
+        this.showErrToast(data);
+        return;
+      }
+      const dialog = new RoutineTemplatesUI(this.component, this.subDataKey);
+      dialog.show(data);
+    } else if (button === 'today') {
+      this.loadDate(Date.now());
+    } else if (button === 'star') {
+      Intent.navigateTo(`${Constants.Page.Relations}?dir=usee`);
     }
-    this.loadDate(next);
   }
 
   /** 原生日期选择器（picker mode="date"），上限今天 */
@@ -235,12 +246,6 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     const millis = DateUtils.getStartMillisOfDay(new Date(value.replace(/-/g, '/')).getTime());
     if (!millis || millis === this.date) return;
     this.loadDate(millis);
-  }
-
-  /** 回到今天 */
-  protected onBackToday() {
-    Logger.info('onBackToday');
-    this.loadDate(Date.now());
   }
 
   protected onItemMenuTap(e: WechatMiniprogram.TouchEvent) {
@@ -401,19 +406,5 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     WxUtils.hapticLight();
     Logger.info('onShareTap');
     this.share();
-  }
-
-  /** 模板入口（预留，行为待定） */
-  protected async onTemplateTap() {
-    Logger.info('onTemplateTap');
-    this.showLoading();
-    const data = await RoutineTemplatesUI.load();
-    this.hideLoading();
-    if ('number' === typeof data) {
-      this.showErrToast(data);
-      return;
-    }
-    const dialog = new RoutineTemplatesUI(this.component, this.subDataKey);
-    dialog.show(data);
   }
 }
