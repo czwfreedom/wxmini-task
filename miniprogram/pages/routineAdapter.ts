@@ -193,7 +193,7 @@ export class RoutineAdapter {
   }
 
   public adaptStars(): Partial<RoutineUI.Data> {
-    const starVisible = this.isSelf() && this.isToday;
+    const starVisible = this.isSelf() && this.isToday && !!this.relationStat?.useeCount;
     if (!this.relations?.users?.length || !starVisible) return { starVisible, stars: [] };
 
     const result: Entity.Image[] = [];
