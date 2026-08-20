@@ -19,6 +19,7 @@
 
   &_scroll {
     @include flex-scaleable-scroll-view;
+    overflow: scroll;
   }
 
   // ===== Hero =====

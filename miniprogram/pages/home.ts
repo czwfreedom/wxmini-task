@@ -32,6 +32,21 @@ Page({
     }
   },
 
+  /**
+   * 下拉刷新。
+   * 下拉刷新这个功能与scroll-view手势上有冲突，故布局中没有使用scroll-view。
+   */
+  onPullDownRefresh() {
+    wx.stopPullDownRefresh(); // 手动结束
+    const tab = this.getRealTabs()[this.data.current];
+    if (tab) {
+      const component = this.selectComponent('#home-' + tab.id);
+      if (!!component?.onPullDownRefresh) {
+        return component.onPullDownRefresh();
+      }
+    }
+  },
+
   onSwiperChanged(e: WechatMiniprogram.TouchEvent) {
     const { current, source } = e.detail;
     // Logger.info('onSwiperChange.', current, source);

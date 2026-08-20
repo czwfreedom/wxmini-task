@@ -4,7 +4,7 @@
   <import src="../templates/routineTemplates.wxml"></import>
   <view class="routine {{ style || '' }}">
     <view class="routine_content">
-      <scroll-view wx:if="{{ loaded }}" class="routine_scroll" scroll-y="true">
+      <view wx:if="{{ loaded }}" class="routine_scroll">
         <!-- Hero 顶部（历史态加 past 褪色） -->
         <view class="routine_hero {{ isToday ? '' : 'past' }}">
           <view class="routine_hero_info">
@@ -291,7 +291,7 @@
         </view>
 
         <view class="routine_spacer"></view>
-      </scroll-view>
+      </view>
 
       <!-- 回到今天胶囊（历史态） -->
       <view

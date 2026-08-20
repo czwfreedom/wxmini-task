@@ -203,6 +203,11 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     super.release();
   }
 
+  public onPullDownRefresh() {
+    Logger.info('onPullDownRefresh');
+    if (this.getData().loaded) this.loadDate(this.adapter.date);
+  }
+
   public async loadData(): Promise<number> {
     return this.loadDate(Date.now());
   }

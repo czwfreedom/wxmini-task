@@ -5,6 +5,7 @@ import { Intent } from '../core/intent';
 import { MineAdapter } from './mineAdapter';
 import { Entity } from '../model/entity';
 import { Event } from '../core/event';
+import { Logger } from '../utils/logger';
 
 export namespace MineUI {
   export interface Data extends SubUI.Data {
@@ -37,6 +38,11 @@ export class MineUI extends SubUI<MineUI.Data> {
       stats: [],
       cards: [],
     };
+  }
+
+  public onPullDownRefresh() {
+    Logger.info('onPullDownRefresh');
+    this.loadData();
   }
 
   public async loadData() {

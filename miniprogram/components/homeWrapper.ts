@@ -51,6 +51,9 @@ Component({
     onShareAppMessage(obj: any) {
       return this.data._ui?.onShareAppMessage ? this.data._ui.onShareAppMessage(obj) : undefined;
     },
+    onPullDownRefresh() {
+      return this.data._ui?.onPullDownRefresh ? this.data._ui.onPullDownRefresh() : undefined;
+    },
   },
 
   pageLifetimes: {

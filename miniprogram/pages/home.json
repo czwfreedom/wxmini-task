@@ -4,5 +4,5 @@
     },
     "navigationBarTitleText": "",
     "disableScroll": true,
-    "enablePullDownRefresh": false
+    "enablePullDownRefresh": true
 }
