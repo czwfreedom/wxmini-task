@@ -145,11 +145,13 @@
             </div>
           </div>
 
-          <div class="pin" style="margin-top:16px">
-            <div class="pin-empty">
-              <span class="pin-empty-icon">🌟</span>
-              <span class="pin-empty-t">添加关注的伙伴，<b>一眼看到 TA 的进度</b></span>
-              <span class="pin-add" style="margin-left:auto">+</span>
+                    <div class="pin" style="margin-top:16px">
+            <div class="pin-empty" style="flex-direction:row;align-items:center;justify-content:space-between;gap:10px">
+              <div class="av c2" style="position:relative;flex-shrink:0;width:40px;height:40px;font-size:16px">朵<div class="badge" style="position:absolute;right:-6px;bottom:-4px;min-width:24px;height:16px;background:#fff;border-radius:8px;font-size:9px;font-weight:700;color:#C8853E;display:flex;align-items:center;justify-content:center">3/5</div></div>
+              <div style="flex:1;font-size:12px;color:#5C6178;line-height:1.5">
+                在「伙伴」里点亮 <b style="color:#C8853E">★</b><br>一眼看到 TA 的每日进度
+              </div>
+              <span class="pin-add" style="flex-shrink:0">+</span>
             </div>
           </div>
 
@@ -423,6 +425,64 @@
 
     </div>
   </div>
+
+  <!-- ===== 空状态引导文案 ===== -->
+  <div class="gallery">
+    <h2>关注区空状态 · 引导文案（告诉用户「加星→出现在这」）</h2>
+    <div class="lead">空状态要讲清产品逻辑：「去伙伴页点亮 ★，TA 就会出现在首页关注条」。以下为文案备选，可单选或组合图标+短文案。</div>
+    <div class="cards">
+
+      <div class="vc">
+        <div class="cap">文案 A（直白版）</div>
+        <div class="demo" style="flex-direction:column;gap:6px;text-align:center">
+          <div style="font-size:26px">🌟</div>
+          <div style="font-size:12px;color:#5C6178;line-height:1.5">在「伙伴」里点亮 <b style="color:#C8853E">★</b><br>TA 就会出现在这里</div>
+        </div>
+        <div class="desc">一句话讲清「操作→结果」，最直接。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">文案 B（动作引导）</div>
+        <div class="demo" style="flex-direction:column;gap:6px;text-align:center">
+          <div style="font-size:26px">➕</div>
+          <div style="font-size:12px;color:#5C6178;line-height:1.5">添加关注的伙伴<br>一眼看到 TA 的每日进度</div>
+        </div>
+        <div class="desc">从「我能得到什么」出发，强调价值。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">文案 C（因果箭头）</div>
+        <div class="demo" style="flex-direction:column;gap:6px;text-align:center">
+          <div style="font-size:18px">☆ → ★</div>
+          <div style="font-size:12px;color:#5C6178;line-height:1.5">给伙伴加一颗星<br>即可收藏到首页</div>
+        </div>
+        <div class="desc">用「☆→★」符号演示状态变化，最直观。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">文案 D（轻量提示）</div>
+        <div class="demo" style="flex-direction:column;gap:6px;text-align:center">
+          <div style="font-size:24px">👀</div>
+          <div style="font-size:12px;color:#5C6178;line-height:1.5">还没有关注的伙伴<br>去给 TA 点亮小星星吧</div>
+        </div>
+        <div class="desc">用「小星星」口语化暗示，更亲切。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">文案 E（最终采用：文案 + 预览融合）</div>
+        <div class="demo" style="flex-direction:row;align-items:center;justify-content:space-between;gap:10px;width:100%">
+          <div class="av c2" style="position:relative;flex-shrink:0;width:40px;height:40px;font-size:16px">朵<div class="badge" style="position:absolute;right:-6px;bottom:-4px;min-width:24px;height:16px;background:#fff;border-radius:8px;font-size:9px;font-weight:700;color:#C8853E;display:flex;align-items:center;justify-content:center">3/5</div></div>
+          <div style="flex:1;font-size:12px;color:#5C6178;line-height:1.5">
+            在「伙伴」里点亮 <b style="color:#C8853E">★</b><br>一眼看到 TA 的每日进度
+          </div>
+          <span class="obtn off" style="flex-shrink:0;border:2px dashed #C5C5C5;color:#C5C5C5;font-size:20px">+</span>
+        </div>
+        <div class="desc">主帧已采用此版：文案讲清逻辑，预览卡展示「点亮后的样子」。</div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 </body>
 </html>

@@ -6,6 +6,7 @@ import { Logger } from '../utils/logger';
 
 export namespace Relation {
   export interface Info extends Entity.Id {
+    star: number; // 是否加了星标。 
     userId: string;
     useeId: string;
     createTime: number;

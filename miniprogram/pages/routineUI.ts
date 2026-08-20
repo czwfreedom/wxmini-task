@@ -51,6 +51,19 @@ export namespace RoutineUI {
 
     stats: Entity.Label[];
 
+    /**
+     * 三个统计合并成一个。
+     */
+    stat?: Entity.Label;
+
+    /**
+     * 加了星标的已关注，
+     * name: 名字
+     * letterIndex: 名字首字
+     * desc: 描述
+     */
+    stars?: Entity.Image[];
+
     dialog?: DialogUI.Data;
     templates?: RoutineTemplatesUI.Data;
   }
