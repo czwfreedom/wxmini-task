@@ -205,7 +205,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
 
   public onPullDownRefresh() {
     Logger.info('onPullDownRefresh');
-    if (this.getData().loaded) this.loadDate(this.adapter.date);
+    if (this.getData().loaded) this.loadDate(this.adapter.date, true);
   }
 
   public async loadData(): Promise<number> {
@@ -213,10 +213,10 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   }
 
   /** 加载指定日期并刷新视图，供翻页/选择器/回到今天复用 */
-  protected async loadDate(date: number): Promise<number> {
+  protected async loadDate(date: number, reload = false): Promise<number> {
     date = DateUtils.getStartMillisOfDay(date);
     this.date = date; // 有太多引用了，故也保存在这里。
-    const errcode = await this.adapter.load(date);
+    const errcode = await this.adapter.load(date, reload);
     if (errcode !== Err.Code.OK) return this.abort(errcode);
     this.setData({ loaded: true, ...this.adapter.adapt() });
     this.resetTimer();

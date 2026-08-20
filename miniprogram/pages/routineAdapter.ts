@@ -58,12 +58,12 @@ export class RoutineAdapter {
   }
 
   /** 加载指定日期的任务数据，返回错误码 */
-  public async load(date: number): Promise<number> {
+  public async load(date: number, reload = false): Promise<number> {
     const today = this.getToday();
     const isSelf = this.isSelf();
 
     await this.loadTemplate();
-    await this.loadStars();
+    await this.loadStars(reload);
 
     this.date = date;
     this.isToday = date === today;
