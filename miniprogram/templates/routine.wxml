@@ -39,25 +39,18 @@
               </view>
             </view>
 
-            <!-- prettier-ignore -->
-            <view class="routine_hero_motto {{ isAllDone ? 'celebrate' : '' }}">
-              ✦ {{ isAllDone ? '今天全搞定，太厉害了！🎉' : (addable ? '又是闪闪发光的一天！⭐' : '每一步都算数') }}
-            </view>
-            <view wx:if="{{ stats && stats.length}}" class="routine_hero_stats">
-              <view
-                wx:for="{{ stats }}"
-                wx:for-item="stat"
-                wx:for-index="sindex"
-                wx:key="sindex"
-                class="routine_hero_stat"
-              >
-                <view class="routine_hero_stat_dot {{ stat.style || '' }}"></view>
-                <text>{{ stat.name }}</text>
+            <!-- motto + 进度胶囊 同一行 -->
+            <view class="routine_hero_bottom">
+              <!-- prettier-ignore -->
+              <view class="routine_hero_motto {{ isAllDone ? 'celebrate' : '' }}">
+                ✦ {{ isAllDone ? '今天全搞定，太厉害了！🎉' : (addable ? '又是闪闪发光的一天！⭐' : '每一步都算数') }}
+              </view>
+              <view wx:if="{{ stat && stat.id }}" class="routine_hero_progress">
+                <view class="routine_hero_progress_fill" style="width: {{ stat.progress }}%"></view>
+                <text class="routine_hero_progress_text">{{ stat.name }}</text>
               </view>
             </view>
           </view>
-
-          <image class="routine_hero_logo" src="../assets/imgs/ic-pencil.svg" />
         </view>
 
         <!-- 关注伙伴条（空状态 / 有数据 两态） -->

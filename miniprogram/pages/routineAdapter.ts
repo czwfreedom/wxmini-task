@@ -263,7 +263,7 @@ export class RoutineAdapter {
     }
 
     const isAllDone = count > 0 && doneCount === count;
-
+    const progress = count ? Math.floor(doneCount * 100) / count : 0;
     const isToday = this.isToday;
     const date = this.date;
     const today = this.getToday();
@@ -280,11 +280,13 @@ export class RoutineAdapter {
       pickerEnd: DateUtils.formatDate(maxMillis, 'yyyy-MM-dd'),
       isAllDone,
       records,
-      stats: [
-        { id: 'count', name: `已规划 ${count}` },
-        { id: 'pending', name: `待反馈 ${pendingCount}`, style: 'pending' },
-        { id: 'done', name: `已完成 ${doneCount}`, style: 'done' },
-      ],
+      stat: !count
+        ? { id: '', name: '', progress }
+        : {
+            id: 'stat',
+            name: `${doneCount} 已完成 / ${count} 已规划`,
+            progress,
+          },
       ...this.adaptStars(),
     };
   }

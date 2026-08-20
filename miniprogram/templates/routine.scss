@@ -88,12 +88,19 @@
       text-shadow: 0 4rpx 8rpx $border;
     }
 
+    &_bottom {
+      display: flex;
+      align-items: center;
+      margin-top: 16rpx;
+    }
+
     &_motto {
       font-size: 26rpx;
       color: $white85;
-      margin-top: 8rpx;
       font-weight: 500;
       letter-spacing: 1rpx;
+      white-space: nowrap;
+      flex-shrink: 0;
 
       &.celebrate {
         color: #ffd54f;
@@ -102,45 +109,34 @@
       }
     }
 
-    &_stats {
-      display: flex;
-      margin-top: 32rpx;
-    }
-
-    &_stat {
-      margin-right: 24rpx;
-      display: flex;
-      align-items: center;
-      font-size: 24rpx;
-      font-weight: 600;
-      color: $gray-33;
+    &_progress {
+      flex: 1;
+      position: relative;
+      height: 48rpx;
+      margin-left: 40rpx;
+      border-radius: 24rpx;
       background: $white6;
-      padding: 12rpx 28rpx;
-      border-radius: 40rpx;
+      overflow: hidden;
+      border: 1rpx solid $white5;
 
-      &_dot {
-        width: 16rpx;
-        height: 16rpx;
-        border-radius: 50%;
-        background: $blue;
-        margin-right: 12rpx;
-
-        &.pending {
-          background: $main;
-        }
-
-        &.done {
-          background: $green;
-        }
+      &_fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        border-radius: 24rpx;
+        background: $gradient;
       }
-    }
 
-    &_logo {
-      position: absolute;
-      right: 16rpx;
-      bottom: 32rpx;
-      width: 128rpx;
-      height: 128rpx;
+      &_text {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        line-height: 48rpx;
+        font-size: 22rpx;
+        font-weight: 700;
+        color: $gray-33;
+      }
     }
   }
 

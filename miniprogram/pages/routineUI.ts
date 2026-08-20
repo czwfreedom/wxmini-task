@@ -49,12 +49,10 @@ export namespace RoutineUI {
     /** 日期选择器上限（今天），禁选未来 */
     pickerEnd: string;
 
-    stats: Entity.Label[];
-
     /**
      * 三个统计合并成一个。
      */
-    stat?: Entity.Label;
+    stat?: Stat;
 
     starVisible?: boolean;
 
@@ -68,6 +66,10 @@ export namespace RoutineUI {
 
     dialog?: DialogUI.Data;
     templates?: RoutineTemplatesUI.Data;
+  }
+
+  export interface Stat extends Entity.Label {
+    progress: number;
   }
 
   /** ViewModel，仅包含 UI 渲染需要的字段 */
@@ -190,7 +192,6 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       dateMain: '',
       pickerValue: '',
       pickerEnd: '',
-      stats: [],
     };
   }
 
