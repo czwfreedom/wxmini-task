@@ -65,28 +65,33 @@
           <block wx:if="{{ stars && stars.length }}">
             <view class="routine_pin_head">
               <text class="routine_pin_title">关注的伙伴</text>
-              <text class="routine_pin_all" catch:tap="onStarAllTap" hover-class="press">
-                全部 ›
-              </text>
+              <!-- prettier-ignore -->
+              <text class="routine_pin_all" catch:tap="onMenuTap" data-button="star" hover-class="press">全部 ›</text>
             </view>
-            <scroll-view class="routine_pin_row" scroll-x="true">
-              <view
-                wx:for="{{ stars }}"
-                wx:key="id"
-                class="routine_pin_item"
-                catch:tap="onStarTap"
-                data-id="{{ item.id }}"
-                hover-class="press"
-              >
-                <view class="routine_pin_avatar {{ item.avatarStyle || 'avatar_c1' }}">
-                  <text>{{ item.letterIndex }}</text>
-                  <view wx:if="{{ item.desc }}" class="routine_pin_badge">{{ item.desc }}</view>
+            <scroll-view class="routine_pin_row_scroll" scroll-x="true">
+              <view class="routine_pin_row">
+                <view
+                  wx:for="{{ stars }}"
+                  wx:key="id"
+                  class="routine_pin_item"
+                  catch:tap="onRelationTap"
+                  data-id="{{ item.id }}"
+                  hover-class="press"
+                >
+                  <view class="routine_pin_avatar {{ item.avatarStyle || 'avatar_c1' }}">
+                    <text>{{ item.letterIndex }}</text>
+                    <view wx:if="{{ item.desc }}" class="routine_pin_badge">{{ item.desc }}</view>
+                  </view>
+                  <text class="routine_pin_name">{{ item.name }}</text>
                 </view>
-                <text class="routine_pin_name">{{ item.name }}</text>
-              </view>
-              <view class="routine_pin_add" catch:tap="onStarAddTap" hover-class="press">+</view>
-              <view class="routine_pin_more" catch:tap="onStarAllTap" hover-class="press">
-                更多
+                <view
+                  class="routine_pin_add"
+                  catch:tap="onMenuTap"
+                  data-button="star"
+                  hover-class="press"
+                >
+                  +
+                </view>
               </view>
             </scroll-view>
           </block>

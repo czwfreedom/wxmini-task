@@ -6,7 +6,7 @@ import { Logger } from '../utils/logger';
 
 export namespace Relation {
   export interface Info extends Entity.Id {
-    star: number; // 是否加了星标。 
+    star: number; // 是否加了星标。
     userId: string;
     useeId: string;
     createTime: number;
@@ -15,7 +15,7 @@ export namespace Relation {
 
   export interface User extends Entity.Info {
     // 当天的任务数量
-    routine?: { count: number };
+    routine?: { count: number; finished: number };
   }
 
   export interface Stat {

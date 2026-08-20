@@ -139,6 +139,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     this.bindEvent('onShareTap', this.onShareTap);
     this.bindEvent('onDatePicked', this.onDatePicked);
     this.bindEvent('onItemMenuTap', this.onItemMenuTap);
+    this.bindEvent('onRelationTap', this.onRelationTap);
 
     this.registerEventBus(Event.Name.RoutineUpdated, (ev: Routine.Info) => {
       if (ev?.id && ev?.userId === this.adapter?.userId && this.date === ev.date) {
@@ -163,6 +164,14 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
         this.setData({ loaded: true, ...this.adapter.adapt() });
       }
       this.loadData();
+    });
+
+    this.registerEventBus(Event.Name.RelationUpdated, () => {
+      if (this.getData().loaded) {
+        this.adapter.loadStars(true).then((res) => {
+          if (res === 0) this.setData({ ...this.adapter.adaptStars() });
+        });
+      }
     });
   }
 
@@ -273,6 +282,11 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
         }
       );
     }
+  }
+
+  protected onRelationTap(e: WechatMiniprogram.TouchEvent) {
+    const { id } = e.currentTarget.dataset;
+    Intent.navigateTo(`${Constants.Page.Routine}?uid=${id}`);
   }
 
   protected async toggleLike(id: string) {

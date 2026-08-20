@@ -3,6 +3,7 @@ import { Context } from '../core/context';
 import { Entity } from '../model/entity';
 import { Comment } from '../server/comment';
 import { Config } from '../server/config';
+import { Relation } from '../server/relation';
 import { Routine } from '../server/routine';
 import { User } from '../server/user';
 import { AvatarUtils } from '../utils/avatarUtils';
@@ -21,6 +22,8 @@ export class RoutineAdapter {
   public template?: Config.Template;
 
   protected comments: Map<string, Comment.ListResponse> = new Map();
+  protected relations?: Relation.ListResponse;
+  protected relationStat?: Relation.Stat;
 
   public getInfo(id: string): Routine.Info | undefined {
     return Entity.find(this.infos, id).item;
@@ -60,6 +63,7 @@ export class RoutineAdapter {
     const isSelf = this.isSelf();
 
     await this.loadTemplate();
+    await this.loadStars();
 
     this.date = date;
     this.isToday = date === today;
@@ -70,6 +74,25 @@ export class RoutineAdapter {
     if (typeof result === 'number') return result;
     this.infos = result;
     return Err.Code.OK;
+  }
+
+  public async loadStars(reload = false): Promise<number> {
+    if (this.relationStat && !reload) return 0;
+    this.relationStat = undefined;
+    this.relations = undefined;
+    const stat = await Relation.stat();
+    if ('number' === typeof stat) return stat;
+    this.relationStat = stat;
+    if (stat?.useeCount) {
+      const relations = await Relation.list({
+        userId: Context.getUserId(),
+        star: 1,
+        withStat: true,
+      });
+      if ('number' === typeof relations) return relations;
+      this.relations = relations;
+    }
+    return 0;
   }
 
   public async loadComments(id: string, reload = false): Promise<number> {
@@ -169,8 +192,22 @@ export class RoutineAdapter {
     return vm;
   }
 
-  public adaptStars(): Entity.Image[] {
-    return [];
+  public adaptStars(): Partial<RoutineUI.Data> {
+    const starVisible = this.isSelf() && this.isToday;
+    if (!this.relations?.users?.length || !starVisible) return { starVisible, stars: [] };
+
+    const result: Entity.Image[] = [];
+    for (const u of this.relations.users) {
+      const name = u.nickname || u.name || '无';
+      result.push({
+        id: u.id,
+        name: name,
+        letterIndex: name[0],
+        desc: `${u.routine?.finished || 0}/${u.routine?.count || 0}`,
+        avatarStyle: AvatarUtils.randomColor(u.id),
+      });
+    }
+    return { starVisible, stars: result };
   }
 
   /** 将加载到的数据转换为 ViewModel，按状态排序：进行中 > 已完成 */
@@ -243,13 +280,12 @@ export class RoutineAdapter {
       pickerEnd: DateUtils.formatDate(maxMillis, 'yyyy-MM-dd'),
       isAllDone,
       records,
-      starVisible: this.isSelf() && isToday,
-      stars: this.adaptStars(),
       stats: [
         { id: 'count', name: `已规划 ${count}` },
         { id: 'pending', name: `待反馈 ${pendingCount}`, style: 'pending' },
         { id: 'done', name: `已完成 ${doneCount}`, style: 'done' },
       ],
+      ...this.adaptStars(),
     };
   }
 

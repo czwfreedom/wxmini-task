@@ -53,10 +53,11 @@ export class RelationsAdapter {
     const result: Entity.Image[] = [];
     for (const u of this.users) {
       const relation = this.findRelation(u.id);
+      const name = u.nickname || u.name || '无';
       result.push({
         id: u.id,
-        name: u.nickname || u.name || '',
-        letterIndex: (u.nickname || u.name || '?')[0],
+        name: name,
+        letterIndex: name[0],
         desc: m ? `今日任务 ${u.routine?.count || 0} 个` : '',
         avatarStyle: AvatarUtils.randomColor(u.id),
         selected: m && !!relation?.star,
