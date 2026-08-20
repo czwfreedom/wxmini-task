@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首页关注伙伴 · 推荐组合</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:,0}
+  html{font-size:16px}
+  body{background:#E8EFF5;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;padding:28px 24px}
+  .wrap{max-width:940px;margin:0 auto}
+  h1{font-size:24px;font-weight:800;color:#3A5A8C;margin-bottom:6px}
+  .sub{font-size:13px;color:#5C6178;line-height:1.85;margin-bottom:24px}
+  .sub b{color:#C8853E}
+
+  .flex{display:flex;gap:34px;align-items:flex-start;flex-wrap:wrap}
+  .col{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .tag{font-size:13px;font-weight:800;color:#5c4a14;background:#F4B942;padding:6px 16px;border-radius:12px}
+
+  .phone{width:320px;height:640px;background:#F2F5F8;border-radius:34px;overflow:hidden;position:relative;box-shadow:0 0 0 3px #1A1A1A,0 0 0 6px #2D2D2D,0 14px 34px rgba(0,0,0,0.22)}
+  .status{height:32px;background:#B8DAF5;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:10px;color:#fff;font-weight:600}
+  .body{height:calc(100% - 32px);overflow-y:auto;background:linear-gradient(180deg,#B8DAF5,#F2F5F8 26%);padding:14px 14px 24px}
+  .body::-webkit-scrollbar{width:0}
+
+  /* ===== Hero ===== */
+  .hero{background:linear-gradient(160deg,#b5d9f8,#a0cdf5 50%,#c5e3fa);border-radius:0 0 18px 18px;padding:14px 16px}
+  .hero-nav{display:flex;align-items:center;gap:10px}
+  .arrow{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;font-weight:700;flex-shrink:0}
+  .hdate{flex:1;text-align:center}
+  .hlabel{font-size:9px;color:rgba(255,255,255,0.85)}
+  .hmain{font-size:20px;font-weight:800;color:#fff;line-height:1.2}
+
+  /* motto + 进度胶囊 同一行 */
+  .hero-bottom{display:flex;align-items:center;gap:12px;margin-top:12px}
+  .hmotto{font-size:11px;color:rgba(255,255,255,0.9);font-weight:600;white-space:nowrap}
+  .pcapsule{flex:1;height:28px;border-radius:14px;background:rgba(255,255,255,0.55);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.7)}
+  .pcapsule i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#F4B942,#FFD54F);border-radius:14px}
+  .pcapsule span{position:absolute;width:100%;text-align:center;font-size:11px;font-weight:700;color:#5c4a14;line-height:28px}
+
+  /* ===== 关注条 ===== */
+  .pin{background:#fff;border-radius:18px;box-shadow:0 6px 18px rgba(74,144,226,0.10);padding:12px;position:relative}
+  .pin-head{display:flex;align-items:center;margin-bottom:10px}
+  .pin-title{font-size:14px;font-weight:800;color:#3A5A8C}
+  .pin-title::before{content:'';display:inline-block;width:4px;height:14px;background:#F4B942;border-radius:2px;margin-right: 8px;vertical-align:-2px}
+  .pin-all{margin-left:auto;font-size:11px;color:#C8853E;font-weight:600}
+
+  .pin-row{display:flex;gap:12px;overflow-x:auto}
+  .pin-row::-webkit-scrollbar{display:none}
+  .pin-item{flex-shrink:0;display:flex;flex-direction:column;align-items:center;width:54px}
+  .pin-av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:800;position:relative;box-shadow:0 3px 8px rgba(0,0,0,0.08)}
+  .badge{position:absolute;right:-6px;bottom:-4px;min-width:26px;height:17px;padding:0 4px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#C8853E;box-shadow:0 1px 3px rgba(0,0,0,0.15)}
+  .pin-name{font-size:11px;color:#333;margin-top:5px;white-space:nowrap}
+  .pin-name{font-size:10px;color:#333;margin-top:5px;white-space:nowrap}
+  .pin-num{font-size:9px;color:#999;margin-top:1px}
+  .pin-add{width:46px;height:46px;border-radius:50%;background:#F2F5F8;display:flex;align-items:center;justify-content:center;color:#C5C5C5;font-size:24px;border:2px dashed #C5C5C5}
+  .pin-more{width:46px;height:46px;border-radius:50%;background:#FFF3E0;display:flex;align-items:center;justify-content:center;color:#F4B942;font-size:12px;font-weight:700}
+
+  .pin-empty{display:flex;align-items:center;gap:8px}
+  .pin-empty-icon{font-size:18px;flex-shrink:0}
+  .pin-empty-t{font-size:11px;color:#5C6178;line-height:1.4}
+  .pin-empty-t b{color:#3A5A8C}
+  .pin-empty .pin-add{width:34px;height:34px;font-size:20px;margin-left:auto}
+
+  /* 任务区 */
+  .section{font-size:15px;font-weight:700;color:#333;margin:16px 4px 12px;display:flex;align-items:center}
+  .section::before{content:'';margin-right:8px;width:4px;height:16px;background:#F4B942;border-radius:2px}
+  .card{background:#FDFBF7;border-radius:14px;padding:12px 14px;margin-bottom: 10px;text-shadow:none;box-shadow:0 2px 10px rgba(74,144,226,0.05);position:relative;display:flex;align-items:center;gap:10px}
+  .c-accent{width:6px;align-self:stretch;border-radius:0 4px 4px 0}
+  .c-title{font-size:13px;font-weight:600;color:#333}
+  .c-sub{font-size:10px;color:#999;margin-top:2px}
+  .c-done{position:absolute;top:8px;right:10px;font-size:13px;color:#81C784;font-weight:800}
+  .card.done{background:#FFFDF8;border:2px solid rgba(200,180,150,0.4)}
+
+  /* ===== 帧3：关注列表加星标 ===== */
+  .rlist-head{font-size:14px;font-weight:800;color:#3A5A8C;padding:4px 4px 12px}
+  .rlist{background:#fff;border-radius:18px;box-shadow:0 4px 14px rgba(74,144,226,0.08);padding:6px}
+  .rrow{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;transition:background .15s}
+  .rrow.is-top{background:#FFF3E0}
+  .rav{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;font-weight:800;flex-shrink:0}
+  .rinfo{flex:1;min-width:0}
+  .rname{font-size:13px;font-weight:600;color:#333}
+  .rdesc{font-size:10px;color:#999;margin-top:2px}
+  .rstar{font-size:22px;color:#C5C5C5;flex-shrink:0;width:26px;text-align:center}
+  .rstar.on{color:#F4B942}
+  .rgear{font-size:20px;color:#999;flex-shrink:0;margin-left:4px}
+  .rhint{font-size:11px;color:#5C6178;line-height:1.7;margin-top:14px}
+
+  /* 操作按钮（gear 旁「加入首页」控件） */
+  .obtn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;font-size:20px;color:#C5C5C5;background:#F2F5F8}
+  .obtn.on{color:#F4B942;background:#FFF3E0}
+  .obtn.heart.on{color:#EF5350;background:#FBE9E7}
+
+  .c1{background:linear-gradient( 135deg,#64b5f6,#42a5f5)}
+  .c2{background:linear-gradient(135deg,#81c784,#66bb6a)}
+  .c3{background:linear-gradient(135deg,#ba68c8,#ab47bc)}
+  .c4{background:linear-gradient(135deg,#f06292,#ec407a)}
+
+  /* ===== 独立挑选区通用 ===== */
+  .gallery{margin-top:30px;border-top:2px dashed #C5C5C5;padding-top:18px}
+  .gallery h2{font-size:18px;font-weight:800;color:#3A5A8C;margin-bottom:4px}
+  .gallery .lead{font-size:12px;color:#5C6178;margin-bottom:16px}
+  .cards{display:flex;gap:16px;flex-wrap:wrap}
+  .vc{background:#fff;border-radius:16px;padding:14px;width:210px;box-shadow:0 3px 12px rgba(74,144,226,0.06)}
+  .vc .cap{font-size:12px;font-weight:800;color:#333;margin-bottom:12px}
+  .vc .desc{font-size:10px;color:#999;line-height:1.5;margin-top:10px}
+  .vc .demo{display:flex;align-items:center;justify-content:center;min-height:70px}
+  .vc-row{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+
+  /* 关注区 variant 通用头像复用 */
+  .av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800;position:relative;flex-shrink:0}
+
+  /* 角标 variant */
+  .b-gold-ring{box-shadow:0 0 0 3px #F4B942,0 3px 8px rgba(0,0,0,0.08)}
+  .b-check{position:absolute;right:-2px;bottom:-2px;width:18px;height:18px;border-radius:50%;background:#81C784;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+  .b-dot{position:absolute;right:-2px;top:-2px;width:12px;height:12px;border-radius:50%;background:#F4B942;border:2px solid #fff}
+  .b-flag{position:absolute;right:-4px;top:-4px;font-size:14px}
+  .b-none{}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>首页关注伙伴 · 推荐组合</h1>
+  <div class="sub">
+    砍掉「已规划 / 待反馈 / 已完成」三统计胶囊 → Hero 改为「社交 Hub」。<br>
+    进度胶囊与 **motto 同一行**；下方独立<b>关注条</b>常驻。复用 `Relation.useeId`、`c1`–`c4`、`Event.RelationUpdated`。
+  </div>
+
+  <div class="flex">
+
+    <!-- ====== 帧 1：空状态 ====== -->
+    <div class="col">
+      <div class="tag">空状态（紧凑）</div>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="body">
+          <div class="hero">
+            <div class="hero-nav">
+              <span class="arrow">‹</span>
+              <div class="hdate"><div class="hlabel">今天是</div><div class="hmain">8月20日 周四</div></div>
+              <span class="arrow">›</span>
+            </div>
+            <div class="hero-bottom">
+              <div class="hmotto">✦ 闪闪发光</div>
+              <div class="pcapsule"><i style="width:0%"></i><span>0 / 0 完成</span></div>
+            </div>
+          </div>
+
+          <div class="pin" style="margin-top:16px">
+            <div class="pin-empty">
+              <span class="pin-empty-icon">🌟</span>
+              <span class="pin-empty-t">添加关注的伙伴，<b>一眼看到 TA 的进度</b></span>
+              <span class="pin-add" style="margin-left:auto">+</span>
+            </div>
+          </div>
+
+          <div class="section">今天做点啥？</div>
+          <div class="card"><div class="c-accent" style="background:#F4B942"></div><div><div class="c-title">读《西游记》</div><div class="c-sub">阅读 · 30分钟</div></div></div>
+          <div class="card done"><div class="c-accent" style="background:#81C784"></div><div><div class="c-title" style="color:#444">跳绳500个</div><div class="c-sub">运动 · 15分钟</div></div><div class="c-done">✓</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 帧 2：有数据 ====== -->
+    <div class="col">
+      <div class="tag">有数据</div>
+      <div class="phone">
+        <div class="status"><span>9:41</  span><span>●● Wi-Fi</span></div>
+        <div class="body">
+          <div class="hero">
+            <div class="hero-nav">
+              <span class="arrow">‹</span>
+              <div class="hdate"><div class="hlabel">今天是</div><div class="hmain">8月20日 周四</div></div>
+              <span class="arrow">›</span>
+            </div>
+            <div class="hero-bottom">
+              <div class="hmotto">✦ 每一步都算数</div>
+              <div class="pcapsule"><i style="width:40%"></i><span>2 / 5 完成</span></div>
+            </div>
+          </div>
+
+          <div class="pin" style="margin-top:16px">
+            <div class="pin-head"><div class="pin-title">关注的伙伴</div><div class="pin-all">全部 ›</div></div>
+            <div class="pin-row">
+              <div class="pin-item"><div class="pin-av c2">朵<div class="badge">3/5</div></div><div class="pin-name">朵朵妈</div></div>
+              <div class="pin-item"><div class="pin-av c1">明<div class="badge">1/4</div></div><div class="pin-name">小明妈</div></div>
+              <div class="pin-item"><div class="pin-av c3">乐<div class="badge">2/2</div></div><div class="pin-name">乐乐</div></div>
+              <div class="pin-item"><div class="pin-av c4">安<div class="badge">0/3</div></div><div class="pin-name">安安</div></div>
+              <div class="pin-add">+</div>
+              <div class="pin-more">更多</div>
+            </div>
+          </div>
+
+          <div class="section">今天做点啥？</div>
+          <div class="card"><div class="c-accent" style="background:#F4B942"></div><div><div class="c-title">读《西游记》</div><div class="c-sub">阅读 · 30分钟</div></div></div>
+          <div class="card done"><div class="c-accent" style="background:#81C784"></div><div><div class="c-title" style="color:#444">跳绳500个</div><div class="c-sub">运动 · 15分钟</div></div><div class="c-done">✓</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 帧 3：关注列表加星标 ====== -->
+    <div class="col">
+      <div class="tag">已关注列表 · 加星标</div>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●● Wi-Fi</span></div>
+        <div class="body">
+          <div class="rlist-head">我可查看的伙伴</div>
+          <div class="rlist">
+            <div class="rrow is-top">
+              <div class="rav c2">朵</div>
+              <div class="rinfo"><div class="rname">朵朵妈妈</div><div class="rdesc">今日任务 5 个</div></div>
+              <div class="rstar on">★</div>
+              <div class="rgear">⋯</div>
+            </div>
+            <div class="rrow">
+              <div class="rav c1">明</div>
+              <div class="rinfo"><div class="rname">小明妈妈</div><div class="rdesc">今日任务 4 个</div></div>
+              <div class="rstar">☆</div>
+              <div class="rgear">⋯</div>
+            </div>
+            <div class="rrow">
+              <div class="rav c3">乐</div>
+              <div class="rinfo"><div class="rname">乐乐</div><div class="rdesc">今日任务 2 个</div></div>
+              <div class="rstar">☆</div>
+              <div class="rgear">⋯</div>
+            </div>
+            <div class="rrow">
+              <div class="rav c4">安</div>
+              <div class="rinfo"><div class="rname">安安</div><div class="rdesc">今日任务 3 个</div></div>
+              <div class="rstar">☆</div>
+              <div class="rgear">⋯</div>
+            </div>
+          </div>
+          <div class="rhint">点亮 ★ 即「重点关注」，TA 会出现在首页关注条；置顶行淡金高亮，点击可取消。<br>配合现有 gear「⋯」保留更多操作（移除/修改）。</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== 三者融合方案（头像 / 名字 / 数量） ===== -->
+  <div class="gallery">
+    <h2>头像 · 名字 · 任务数 → 三者融合</h2>
+    <div class="lead">无真实头像时，「头像」本质是「彩色首字」，与「名字」重复。以下把「身份 + 进度」压进同一视觉单元，头部「关注伙伴 / 全部」保留不动。</div>
+    <div class="cards">
+
+      <div class="vc">
+        <div class="cap">① 身份徽章 · 内嵌进度（主帧采用）</div>
+        <div class="demo">
+          <div style="display:flex;gap:10px">
+            <div class="av c2" style="position:relative">朵<div class="badge" style="position:absolute;right:-6px;bottom:-4px;min-width:26px;height:17px;background:#fff;border-radius:9px;font-size: 10px;font-weight:700;color:#C8853E;display:flex;align-items:center;justify-content:center">3/5</div></div>
+            <div class="av c1" style="position:relative">明<div class="badge" style="position:absolute;right:-6px;bottom:-4px;min-width:26px;height:17px;background:#fff;border-radius:9px;font-size:10px;font-weight:700;color:#C8853E;display:flex;align-items:center;justify-content:center">1/4</div></div>
+            <div class="av c3" style="position:relative">乐<div class="badge" style="position:absolute;right:-6px;bottom:-4px;min-width:26px;height:17px;background:#fff;border-radius:9px;font-size:10px;font-weight:700;color:#C8853E;display:flex;align-items:center;justify-content:center">2/2</div></div>
+          </div>
+        </div>
+        <div class="desc">彩色首字圆 = 身份，右下白底金胶囊 = 完成度。名字靠下方小字或点击查看。整体高度＝头像高度。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">② 文字胶囊（去头像图）</div>
+        <div class="demo">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+            <span style="display:inline-flex;align-items:center;gap:6px;background:#F2F5F8;border-radius:16px;padding:6px 12px"><i style="width:10px;height:10px;border-radius:50%;background:#81c784"></i><span style="font-size:12px;color:#333">朵朵妈 · 3/5</span></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;background:#F2F5F8;border-radius:16px;padding:6px 12px"><i style="width:10px;height:10px;border-radius:50%;background:#64b5f6"></i><span style="font-size:12px;color:#333">小明妈 · 1/4</span></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;background:#F2F5F8;border-radius:16px;padding:6px 12px"><i style="width:10px;height:10px;border-radius:50%;background:#ba68c8"></i><span style="font-size:12px;color:#333">乐乐 · 2/2</span></span>
+          </div>
+        </div>
+        <div class="desc">彻底去掉圆形头像，用「色点 + 名字 + 数量」合成一个 pill。最省竖向空间，横向滚动。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">③ 头像内迷你进度环</div>
+        <div class="demo">
+          <div style="display:flex;gap:12px">
+            <div style="position:relative;width:46px;height:46px">
+              <div class="av c2" style="position:absolute;inset:4px">朵</div>
+              <svg viewBox="0 0 36 36" style="position:absolute;inset:0;transform:rotate(-90deg)"><circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"/><circle cx="18" cy="18" r="16" fill="none" stroke="#81C784" stroke-width="3" stroke-dasharray="60 100"/></svg>
+            </div>
+            <div style="position:relative;width:46px;height:46px">
+              <div class="av c1" style="position:absolute;inset:4px">明</div>
+              <svg viewBox="0 0 36 36" style="position:absolute;inset:0;transform:rotate(-90deg)"><circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"/><circle cx="18" cy="18" r="16" fill="none" stroke="#81C784" stroke-width="3" stroke-dasharray="25 100"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="desc">彩色圆内嵌一圈细进度弧，首字仍居中。身份与进度同框，名字可省或做副标题。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">④ 名字并入胶囊 · 头像退化</div>
+        <div class="demo">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+            <span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border-radius:14px;padding:8px 12px;box-shadow:0 2px 8px rgba(0,0,0,0.06)"><i style="width:22px;height:22px;border-radius:50%;background:#81c784;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center">朵</i><span style="font-size:12px;color:#333">3/5</span></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border-radius:14px;padding:8px 12px;box-shadow:0 2px 8px rgba(0,0,0,0.06)"><i style="width:22px;height:22px;border-radius:50%;background:#64b5f6;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center">明</i><span style="font-size:12px;color:#333">1/4</span></span>
+          </div>
+        </div>
+        <div class="desc">「首字小球 + 数量」成一枚小卡，名字以「首字」替代表述，横向铺开。</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== 操作按钮形态（gear 旁「加入首页」控件） ===== -->
+  <div class="gallery">
+    <h2>「加入首页关注」操作按钮 · 形态大全</h2>
+    <div class="lead">这是 gear 旁的<b>可点控件</b>，点击即「重点关注」并放进首页关注条。当前用五角星 ★，以下为替代图标（均可灰→金切换表达开/关）。</div>
+    <div class="cards">
+
+      <div class="vc">
+        <div class="cap">① 五角星 ★（当前）</div>
+        <div class="demo"><span class="obtn off">☆</span><span class="obtn on">★</span></div>
+        <div class="desc">灰☆=未关注，金★=已加入首页。通用但略抢眼。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">② 书签 🔖</div>
+        <div class="demo"><span class  ="obtn off">🔖</span><span class="obtn on">🔖</span></div>
+        <div class="desc">「收藏」语义更贴切「放进来」，非空星形的替代。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">③ 红心 ♥</div>
+        <div class="demo"><span class="obtn off">♡</span><span class="obtn on heart">♥</span></div>
+        <div class="desc">情感化「最爱」，家庭场景更亲昵。空心↔实心切换。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">④ 加号 / 对勾</div>
+        <div class="demo"><span class="obtn off">＋</span><span class="obtn on">✓</span></div>
+        <div class="desc">「＋」添加、「✓」已添加，动作指向最清晰、无任何形状包袱。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">⑤ 图钉 📌</div>
+        <div class="demo"><span class="obtn off">📌</span><span class="obtn on">📌</span></div>
+        <div class="desc">「置顶到首页」字面意义，比星更直白。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">⑥ 眼睛 👁</div>
+        <div class="demo"><span class="obtn off">👁</span><span class="obtn on">👁</span></div>
+        <div class="desc">「我要看 TA」，语义最贴合「打开就能看到 TA 的任务」。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">⑦ 房子 🏠</div>
+        <div class="demo"><span class="obtn off">🏠</span><span class="obtn on">🏠</span></div>
+        <div class="desc">「放进首页」的具象表达，用户秒懂是家/首页。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">⑧ 箭头入框 ↘▢</div>
+        <div class="demo"><span class="obtn off">▢＋</span><span class="obtn on">▣</span></div>
+        <div class="desc">抽象的「收入首页」动作，极简线性图标，风格比 emoji 高级。</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== 置顶标识形态大全 ===== -->
+  <div class="gallery">
+    <h2>重点关注标识 · 形态大全（替代五角星 ★）</h2>
+    <div class="lead">「重点关注」需要在列表中可被一眼识别且可切换。以下为头像/行的不同标识形态，任意选用。</div>
+    <div class="cards">
+
+      <div class="vc">
+        <div class="cap">① 五角星 ★（基准）</div>
+        <div class="demo"><div class="av c2" style="position:relative">朵<div class="badge" style="background:#F4B942;color:#fff">★</div></div></div>
+        <div class="desc">灰☆未置顶 / 金★已置顶，最通用但略抢眼。当前帧3采用。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">② 金色描边</div>
+        <div class="demo"><div class="av c2 b-gold-ring">朵</div></div>
+        <div class="desc">头像加 3px 金色描边，本身就是「已关注」信号，安静不抢眼（推荐）。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">③ 右下角绿 ✓</div>
+        <div class="demo"><div class="av c1">明<div class="b-check">✓</div></div></div>
+        <div class="desc">绿色小圆角对勾，传递「已确认/已关注」，类似「已添加」。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">④ 右上角金点</div>
+        <div class="demo"><div class="av c3">乐<div class="b-dot"></div></div></div>
+        <div class="desc">仅一个金色小圆点，最克制；靠「在关注条里」这一容器语义表达。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">⑤ 书签 / 旗帜</div>
+        <div class="demo"><div class="av c2">朵<div class="b-flag">🔖</div></div></div>
+        <div class="desc">书签语义表达「置顶收藏」，比五角星更贴合「收藏夹」心智。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">⑥ 红心 ♥</div>
+        <div class="demo"><div class="av c4">安<div class="badge" style="background:#EF5350;color:#fff">♥</div></div></div>
+        <div class="desc">情感化「喜欢/在意」，比星更亲昵，适合家庭成员间的「最爱」。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">⑦ 钻石 ◆ / 闪光 ✨</div>
+        <div class="demo"><div class="av c1">明<div class="badge" style="background:linear-gradient(135deg,#FFD54F,#F4B942);color:#fff">✦</div></div></div>
+        <div class="desc">「特别关心」的稀有感，金色钻石/闪光区别于普通星。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">⑧ 行左色条 / 整行高亮</div>
+        <div class="demo">
+          <div style="display:flex;align-items:center;gap:10px;background:#FFF3E0;border-radius:12px;padding:10px;width:100%">
+            <div style="width:4px;height:36px;border-radius:2px;background:#F4B942"></div>
+            <div class="av c3" style="width:34px;height:34px;font-size:14px">乐</div>
+            <div style="font-size:12px;color:#333">乐乐</div>
+          </div>
+        </div>
+        <div class="desc">不画角标，改用「左侧金条 + 淡金底」标记置顶行，整行可点。</div>
+      </div>
+
+      <div class="vc">
+        <div class="cap">⑨ 无标识（靠容器）</div>
+        <div class="demo"><div class="av c4">安</div></div>
+        <div class="desc">完全不加角标——「在关注条里」这一事实即表明已关注，最干净；列表里用排序（置顶的排前）区分。</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>
