@@ -10,6 +10,8 @@
       <view class="relations_header">
         <!-- prettier-ignore -->
         <text class="relations_title">{{ direction === 'usee' ? '我可查看的伙伴' : '可查看我的伙伴' }}</text>
+        <!-- prettier-ignore -->
+        <text wx:if="{{direction === 'usee'}}" class="relations_desc">点亮 ★ 即「重点关注」，TA 会出现在首页关注条</text>
       </view>
 
       <!-- 伙伴列表 -->
@@ -17,7 +19,7 @@
         <view
           wx:for="{{ items }}"
           wx:key="id"
-          class="relations_row"
+          class="relations_row {{ item.selected ? 'star' : '' }}"
           catch:tap="onItemTap"
           data-id="{{ item.id }}"
           hover-class="press"
@@ -28,6 +30,21 @@
           <view class="relations_info">
             <view class="relations_name">{{ item.name }}</view>
             <view wx:if="{{ item.desc }}" class="relations_desc">{{ item.desc }}</view>
+          </view>
+          <view
+            wx:if="{{direction === 'usee'}}"
+            class="relations_star"
+            catch:tap="onMenuTap"
+            hover-class="press"
+            data-id="{{ item.id }}"
+            data-button="star"
+            hover-stop-propagation="true"
+          >
+            <image
+              class="relations_star_img"
+              src="{{ item.selected ? '/assets/imgs/ic-star-selected.svg' : '/assets/imgs/ic-star-normal.svg' }}"
+              mode="aspectFit"
+            />
           </view>
           <view
             class="relations_gear"

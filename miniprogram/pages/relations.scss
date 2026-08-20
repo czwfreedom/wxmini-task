@@ -26,10 +26,16 @@
   }
 
   &_title {
+    display: block;
     font-size: 44rpx;
     font-weight: 800;
     color: white;
     text-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.08);
+  }
+
+  &_desc {
+    font-size: 22rpx;
+    color: $gray-99;
   }
 
   // ===== 伙伴列表 =====
@@ -52,6 +58,15 @@
     transition:
       transform 0.15s ease,
       opacity 0.15s ease;
+
+    // 已加星 / 置顶 高亮
+    &.star {
+      background: $background-white;
+      box-shadow:
+        inset 0 0 0 2rpx $gold4,
+        0 4rpx 0 rgba(0, 0, 0, 0.03),
+        0 16rpx 48rpx rgba($blue-light, 0.06);
+    }
   }
 
   &_avatar {
@@ -121,5 +136,18 @@
     color: $gray-99;
     padding-bottom: 4rpx; // 为了让视觉看起来居中，很SB。
     font-weight: 700;
+  }
+
+  &_star {
+    width: 64rpx;
+    height: 64rpx;
+    flex-shrink: 0;
+    @include flex-layout;
+    margin-right: 8rpx;
+
+    &_img {
+      width: 44rpx;
+      height: 44rpx;
+    }
   }
 }

@@ -94,6 +94,8 @@ export class RelationsUI extends UserUpdaterUI<RelationsUI.Data> {
           },
         }
       );
+    } else if (button === 'star') {
+      if (this.canManage()) this.submit(id, false);
     }
   }
 
@@ -114,7 +116,7 @@ export class RelationsUI extends UserUpdaterUI<RelationsUI.Data> {
   }
 
   protected canManage() {
-    return this.direction === 'usee';
+    return this.adapter.canManage();
   }
 
   protected showDeleteConfirm(id: string) {
@@ -133,15 +135,15 @@ export class RelationsUI extends UserUpdaterUI<RelationsUI.Data> {
       },
       (button) => {
         if (button === 'confirm') {
-          this.doDelete(id);
+          this.submit(id);
         }
       }
     );
   }
 
-  protected async doDelete(id: string) {
+  protected async submit(id: string, del = true) {
     this.showLoading();
-    const res = await this.adapter.delete(id);
+    const res = del ? await this.adapter.delete(id) : await this.adapter.toggleStar(id);
     this.hideLoading();
     if (res !== 0) {
       this.showErrToast(res);
