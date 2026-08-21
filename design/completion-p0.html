@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>完成反馈 · P0 即时反馈帧</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{font-size:16px}
+  body{background:#E8EFF5;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;padding:28px 24px}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:22px;font-weight:800;color:#3A5A8C;margin-bottom:6px}
+  .sub{font-size:13px;color:#5C6178;line-height:1.85;margin-bottom:20px}
+  .sub b{color:#C8853E}
+  .notes{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 3px 12px rgba(74,144,226,0.06);margin-bottom:22px;font-size:12px;color:#5C6178;line-height:1.9}
+  .notes b{color:#3A5A8C}
+  .legend{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:6px;margin-right:6px}
+  .l1{background:#FFF8E1;color:#C8853E}
+  .l2{background:#E8F5E9;color:#43A047}
+  .l3{background:#E3F2FD;color:#5B9BD5}
+
+  /* ===== 手机框 ===== */
+  .phone{width:340px;height:680px;background:#F2F5F8;border-radius:34px;overflow:hidden;position:relative;box-shadow:0 0 0 3px #1A1A1A,0 0 0 6px #2D2D2D,0 14px 34px rgba(0,0,0,0.22)}
+  .status{height:32px;background:#B8DAF5;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:10px;color:#fff;font-weight:600}
+  .body{height:calc(100% - 32px);overflow-y:auto;background:linear-gradient(180deg,#B8DAF5,#F2F5F8 26%);padding:0 14px 24px;position:relative}
+  .body::-webkit-scrollbar{width:0}
+
+  /* 完成任务位置的透明金字：覆盖在对应卡片上，浮现后保留淡金水印感 */
+  .cheer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:6;padding:0 12px}
+  .cheer span{font-size:19px;font-weight:800;letter-spacing:1rpx;color:rgba(244,185,66,0.92);text-shadow:0 1px 1px rgba(255,255,255,0.7),0 0 6px rgba(244,185,66,0.25);text-align:center;opacity:0;transform:scale(.7) translateY(6px);animation:cheerIn 1s .35s cubic-bezier(.34,1.56,.64,1) forwards}
+  @keyframes cheerIn{
+    0%{opacity:0;transform:scale(.7) translateY(6px)}
+    60%{opacity:1;transform:scale(1.06) translateY(0)}
+    100%{opacity:.92;transform:scale(1) translateY(0)}
+  }
+
+  /* ===== Hero（时间部分按"先别动"只画出） ===== */
+  .hero{background:linear-gradient(160deg,#b5d9f8,#a0cdf5 50%,#c5e3fa);border-radius:0 0 18px 18px;padding:14px 16px;margin:0 -14px}
+  .hero-nav{display:flex;align-items:center;gap:10px}
+  .arrow{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;font-weight:700;flex-shrink:0}
+  .hdate{flex:1;text-align:center}
+  .hlabel{font-size:9px;color:rgba(255,255,255,0.85)}
+  .hmain{font-size:20px;font-weight:800;color:#fff;line-height:1.2}
+
+  .hero-bottom{display:flex;align-items:center;gap:12px;margin-top:12px}
+  .hmotto{font-size:11px;color:rgba(255,255,255,0.9);font-weight:600;white-space:nowrap}
+  .pcapsule{flex:1;height:28px;border-radius:14px;background:rgba(255,255,255,0.55);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.7)}
+  .pcapsule i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#F4B942,#FFD54F);border-radius:14px;width:40%;animation:fillUp .9s .2s cubic-bezier(.22,1,.36,1) forwards}
+  @keyframes fillUp{from{width:40%}to{width:67%}}
+  .pcapsule span{position:absolute;width:100%;text-align:center;font-size:11px;font-weight:700;color:#5c4a14;line-height:28px}
+
+  /* ===== 关注伙伴条（简要，体现亲子互见底色） ===== */
+  .pin{background:#fff;border-radius:18px;box-shadow:0 6px 18px rgba(74,144,226,0.10);padding:12px;margin-top:14px;position:relative}
+  .pin-head{display:flex;align-items:center;margin-bottom:10px}
+  .pin-title{font-size:14px;font-weight:800;color:#3A5A8C}
+  .pin-title::before{content:'';display:inline-block;width:4px;height:14px;background:#F4B942;border-radius:2px;margin-right:8px;vertical-align:-2px}
+  .pin-all{margin-left:auto;font-size:11px;color:#C8853E;font-weight:600}
+  .pin-row{display:flex;gap:12px;overflow:hidden}
+  .pin-item{flex-shrink:0;display:flex;flex-direction:column;align-items:center;width:50px}
+  .pin-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800;position:relative;box-shadow:0 3px 8px rgba(0,0,0,0.08)}
+  .pin-name{font-size:10px;color:#333;margin-top:5px;white-space:nowrap}
+
+  /* ===== 任务区 ===== */
+  .section{font-size:15px;font-weight:700;color:#333;margin:18px 4px 12px;display:flex;align-items:center}
+  .section::before{content:'';margin-right:8px;width:4px;height:16px;background:#F4B942;border-radius:2px}
+
+  .card{background:#FDFBF7;border-radius:14px;padding:12px 14px;margin-bottom:10px;box-shadow:0 2px 10px rgba(74,144,226,0.05);position:relative;display:flex;gap:10px;overflow:visible}
+  .c-accent{width:6px;align-self:stretch;border-radius:0 4px 4px 0;flex-shrink:0}
+  .c-main{flex:1;min-width:0;position:relative}
+  .c-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .c-cat{font-size:10px;color:#999;font-weight:600}
+  .c-title{font-size:13px;font-weight:700;color:#333;margin-top:2px}
+  .c-sub{font-size:10px;color:#999;margin-top:2px}
+
+  .card.done{background:#FFFDF8;border:2px solid rgba(200,180,150,0.4)}
+
+  /* 完成印章：金色圆章弹出 */
+  .c-stamp{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#F4B942,#FFD54F);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:800;flex-shrink:0;box-shadow:0 4px 12px rgba(244,185,66,0.35);opacity:0;transform:scale(.4) rotate(-30deg);animation:stampPop .5s .15s cubic-bezier(.34,1.56,.64,1) forwards}
+  @keyframes stampPop{0%{opacity:0;transform:scale(.4) rotate(-30deg)}60%{opacity:1;transform:scale(1.15) rotate(6deg)}100%{opacity:1;transform:scale(1) rotate(-6deg)}}
+
+  /* 卡片内 remark 展开：完成内容 + 分类定制肯定语 */
+  .c-remark{margin-top:10px;background:linear-gradient(135deg,#FFF8E1,#FFE9A8);border-radius:10px;padding:0 12px;font-size:12px;font-weight:700;color:#C8853E;line-height:34px;max-height:0;opacity:0;overflow:hidden;animation:remarkOpen .45s .55s ease forwards}
+  @keyframes remarkOpen{0%{max-height:0;opacity:0}100%{max-height:40px;opacity:1}}
+
+  /* 星光粒子：循环飘散 */
+  .spark{position:absolute;top:6px;right:54px;width:60px;height:40px;pointer-events:none}
+  .spark i{position:absolute;font-size:12px;opacity:0;animation:sparkFloat 1.8s 1s infinite}
+  .spark i:nth-child(1){left:0;animation-delay:1s}
+  .spark i:nth-child(2){left:22px;top:6px;animation-delay:1.5s}
+  .spark i:nth-child(3){left:42px;animation-delay:1.9s}
+  @keyframes sparkFloat{0%{opacity:0;transform:translateY(0) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translateY(-26px) scale(1)}}
+
+  .c-go{font-size:11px;color:#5B9BD5;font-weight:700;border:1px solid #5B9BD5;border-radius:8px;padding:4px 12px;display:inline-block;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>完成任务 · P0 即时反馈（单帧）</h1>
+  <p class="sub">任务被打勾的那一刻，给用户<b>当下成就 + 收获感</b>。本帧：<b>① 卡片内 remark 展开动画 ② 同步弹轻 toast</b>。连续天数不在此页，已移除；亲子互见双向弹窗为 P0 另一帧，此处仅以关注条点出底色。</p>
+
+  <div class="notes">
+    <span class="legend l1">动效</span>金色印章从卡片右侧弹出（cubic-bezier 回弹）+ 星光粒子循环飘散——完成瞬间有"爽点"<br>
+    <span class="legend l2">卡片 remark 展开</span>完成的卡片向下展开一行 remark：分类定制肯定语（运动「今天又强壮了一下 ⚡」/ 阅读「又往脑袋里装了颗星星 📚」/ 练字「这一笔，稳了 ✍️」），留在卡上可回顾<br>
+    <span class="legend l3">卡片透明金字</span>完成那一刻在对应任务卡片位置浮现半透明金色大字「今天又强壮了一下 ⚡」，保留淡金水印感——给当下那一下的即时确认，不打断浏览
+  </div>
+
+  <!-- ===== 手机帧 ===== -->
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+    <div class="body">
+
+      <!-- Hero（时间部分保持原样，只画出） -->
+      <div class="hero">
+        <div class="hero-nav">
+          <div class="arrow">‹</div>
+          <div class="hdate">
+            <div class="hlabel">8月20日 周四</div>
+            <div class="hmain">今日日常</div>
+          </div>
+          <div class="arrow">›</div>
+        </div>
+        <div class="hero-bottom">
+          <div class="hmotto">又是闪闪发光的一天</div>
+          <div class="pcapsule"><i></i><span>2 / 3 完成</span></div>
+        </div>
+      </div>
+
+      <!-- 关注伙伴条（简要底色） -->
+      <div class="pin">
+        <div class="pin-head">
+          <div class="pin-title">关注的伙伴</div>
+          <div class="pin-all">全部 ›</div>
+        </div>
+        <div class="pin-row">
+          <div class="pin-item"><div class="pin-av" style="background:#5B9BD5">朵</div><div class="pin-name">朵朵</div></div>
+          <div class="pin-item"><div class="pin-av" style="background:#81C784">乐</div><div class="pin-name">乐乐</div></div>
+          <div class="pin-item"><div class="pin-av" style="background:#F4B942">安</div><div class="pin-name">安安</div></div>
+          <div class="pin-item"><div class="pin-av" style="background:#EF9A9A">妈</div><div class="pin-name">朵朵妈</div></div>
+        </div>
+      </div>
+
+      <!-- 任务列表 -->
+      <div class="section">今日任务</div>
+
+      <!-- 刚完成的卡片：完整反馈态（印章 + remark 展开 + toast） -->
+      <div class="card done">
+        <div class="c-accent" style="background:#81C784"></div>
+        <div class="c-main">
+          <div class="c-head">
+            <div>
+              <div class="c-cat">💪 运动</div>
+              <div class="c-title">跳绳 200 个</div>
+              <div class="c-sub">约 20 分钟</div>
+            </div>
+            <div class="c-stamp">✓</div>
+          </div>
+          <div class="c-remark">今天又强壮了一下 ⚡</div>
+          <div class="spark"><i>✨</i><i>✨</i><i>✨</i></div>
+          <div class="cheer"><span>今天又强壮了一下 ⚡</span></div>
+        </div>
+      </div>
+
+      <!-- 已完成（静态回顾态） -->
+      <div class="card done">
+        <div class="c-accent" style="background:#5B9BD5"></div>
+        <div class="c-main">
+          <div class="c-head">
+            <div>
+              <div class="c-cat">📖 阅读</div>
+              <div class="c-title">阅读《西游记》</div>
+              <div class="c-sub">约 30 分钟</div>
+            </div>
+            <div class="c-stamp" style="opacity:1;transform:scale(1) rotate(-6deg);animation:none;">✓</div>
+          </div>
+          <div class="c-remark" style="max-height:40px;opacity:1;animation:none;">又往脑袋里装了颗星星 📚</div>
+        </div>
+      </div>
+
+      <!-- 进行中 -->
+      <div class="card">
+        <div class="c-accent" style="background:#F4B942"></div>
+        <div class="c-main">
+          <div class="c-head">
+            <div>
+              <div class="c-cat">✍️ 练字</div>
+              <div class="c-title">描红一页田字格</div>
+              <div class="c-sub">约 15 分钟</div>
+            </div>
+          </div>
+          <div class="c-go">去完成 →</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

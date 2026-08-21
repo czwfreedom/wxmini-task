@@ -204,7 +204,7 @@
       border-radius: 14rpx;
       font-size: 18rpx;
       font-weight: 700;
-      color: $gold-dark;
+      color: $gold-dark2;
       @include flex-layout;
       box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.15);
     }
@@ -309,7 +309,6 @@
     @include card;
     padding: 32rpx 32rpx 32rpx 0;
     @include flex-layout(column, flex-start, flex-start);
-    overflow: hidden;
     margin-top: 28rpx;
 
     &_main {
@@ -399,6 +398,42 @@
       &_img {
         width: 100%;
         height: 100%;
+      }
+    }
+
+    // 完成那一刻的一次性动画：仅 just-done 触发；
+    // stamp / remark 仍由 done 态持久显示，动画结束移除 class 即停在终态，不重播。
+    &.just-done {
+      .routine_card_stamp {
+        @include stamp;
+      }
+      // 展开动画的裁剪放在 remark 文字自身，避免裁掉同容器内的 stamp 印章
+      .routine_card_remark {
+        @include slide-open;
+      }
+    }
+
+    // 透明金字：覆盖在刚完成的卡片上，浮现后随 justDone 清除而消失
+    &_cheer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 4;
+      @include flex-layout;
+      pointer-events: none;
+      padding: 0 32rpx;
+
+      text {
+        font-size: 38rpx;
+        font-weight: 800;
+        text-align: center;
+        color: rgba($main, 0.92);
+        text-shadow:
+          0 1rpx 1rpx $white85,
+          0 0 12rpx rgba($main, 0.25);
+        @include toast;
       }
     }
 

@@ -48,7 +48,7 @@
       box-shadow: 0 8rpx 32rpx $gold4;
       @include flex-layout;
       margin-top: -36rpx;
-      animation: floatDrift 3s ease-in-out infinite;
+      @include float-drift;
 
       &_text {
         font-size: 48rpx;
@@ -58,15 +58,5 @@
         padding-bottom: 4rpx; // 为了看起来视觉居中，不优雅的方案。
       }
     }
-  }
-}
-
-@keyframes floatDrift {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8rpx);
   }
 }

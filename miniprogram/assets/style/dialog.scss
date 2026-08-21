@@ -19,7 +19,7 @@
     background: $background-white;
     // padding: 20rpx 24rpx 32rpx;
     box-shadow: 0 -16rpx 64rpx $black1;
-    animation: dialogSlideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    @include slide-up;
   }
 
   &_pre {
@@ -99,14 +99,5 @@
     overflow: scroll;
     max-height: 70vh;
     box-sizing: border-box;
-  }
-}
-
-@keyframes dialogSlideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
   }
 }

@@ -287,6 +287,8 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
           }
         }
       );
+    } else if (button === 'stamp') {
+      this.showJustDone(id);
     }
   }
 
@@ -426,5 +428,13 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     WxUtils.hapticLight();
     Logger.info('onShareTap');
     this.share();
+  }
+
+  protected showJustDone(id: string) {
+    this.setData({ justDone: { id, name: '哈哈哈' } }, () => {
+      setTimeout(() => {
+        this.setData({ justDone: { id: '', name: '' } });
+      }, 1000);
+    });
   }
 }
