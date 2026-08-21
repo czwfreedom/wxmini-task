@@ -412,6 +412,7 @@ export namespace RoutineAdapter {
     /** 各分类的快捷示例提示词 */
     examples?: string[];
     finish?: string;
+    celebrate?: string;
   }
 
   /** 所有分类统一配置：分类枚举、颜色、图标、是否默认、示例提示词 */
@@ -426,6 +427,7 @@ export namespace RoutineAdapter {
       hint: '今天读什么书呀？',
       examples: ['《三体》第3章', '英语绘本朗读', '读书笔记一页'],
       finish: '哪一句印象最深刻？',
+      celebrate: '又往脑袋里装了颗星星 📚',
     },
     {
       category: Routine.Category.Homework,
@@ -436,6 +438,7 @@ export namespace RoutineAdapter {
       hint: '今天的作业是什么？',
       examples: ['数学练习册 P20', '背诵古诗一首', '英语单词10个'],
       finish: '做完感觉怎么样？',
+      celebrate: '今天的难题被你收服啦 💪',
     },
     {
       category: Routine.Category.Exercise,
@@ -446,6 +449,7 @@ export namespace RoutineAdapter {
       hint: '打算做什么运动？',
       examples: ['跳绳500个', '跑步15分钟', '仰卧起坐30个'],
       finish: '出汗了吗？运动完爽不爽？',
+      celebrate: '今天又强壮了一点 ⚡',
     },
     {
       category: Routine.Category.Chores,
@@ -455,6 +459,7 @@ export namespace RoutineAdapter {
       hint: '想帮家里做点什么？',
       examples: ['整理书桌', '扫地拖地', '浇花'],
       finish: '家里是不是变整洁了？',
+      celebrate: '把家变得更暖了一点 🧹',
     },
     {
       category: Routine.Category.Game,
@@ -464,6 +469,7 @@ export namespace RoutineAdapter {
       hint: '想玩什么游戏？',
       examples: ['Minecraft 建造', '拼图100片', '数独一局'],
       finish: '今天玩得最开心的是什么？',
+      celebrate: '开心充能完成，能量满格 ✨',
     },
     {
       category: Routine.Category.Handwriting,
@@ -473,6 +479,7 @@ export namespace RoutineAdapter {
       hint: '今天练什么字？',
       examples: ['描红一页', '临摹《兰亭序》', '硬笔字帖'],
       finish: '哪个字写得最好看？',
+      celebrate: '这一笔，稳了 ✍️',
     },
     {
       category: Routine.Category.Instrument,
@@ -482,6 +489,7 @@ export namespace RoutineAdapter {
       hint: '练什么曲子？',
       examples: ['音阶练习10遍', '练习曲第3首', '复习和弦'],
       finish: '哪一段弹得最顺？',
+      celebrate: '耳朵和手指都在进步 🎵',
     },
     {
       category: Routine.Category.Drawing,
@@ -491,6 +499,7 @@ export namespace RoutineAdapter {
       hint: '想画点什么？',
       examples: ['素描静物', '水彩风景', '卡通人物'],
       finish: '画了什么？满意吗？',
+      celebrate: '今天的世界更美了一点 🎨',
     },
     {
       category: Routine.Category.Coding,
@@ -500,6 +509,7 @@ export namespace RoutineAdapter {
       hint: '想做什么项目？',
       examples: ['Scratch 发射子弹', 'Python 小游戏', '网页制作'],
       finish: '搞定什么Bug了？',
+      celebrate: '你的小宇宙又升级了 🚀',
     },
     {
       category: Routine.Category.Practice,
@@ -509,6 +519,7 @@ export namespace RoutineAdapter {
       hint: '想参加什么活动？',
       examples: ['摆摊体验', '社区志愿服务', '参观博物馆'],
       finish: '今天有什么新收获？',
+      celebrate: '今天又长大了一点 🌱',
     },
     {
       category: Routine.Category.QA,
@@ -519,6 +530,7 @@ export namespace RoutineAdapter {
       hint: '想问什么问题？',
       examples: ['每日一问', '百科知识问答', '成语接龙'],
       finish: '今天问了什么有趣的问题？',
+      celebrate: '好奇心又点亮一颗星 ❓',
     },
     {
       category: Routine.Category.Job,
@@ -528,6 +540,7 @@ export namespace RoutineAdapter {
       hint: '今天要做什么？',
       examples: ['处理工作消息', '完成项目方案', '整理会议纪要'],
       finish: '今天搞定了什么大事？',
+      celebrate: '今天也是靠谱的大人 🔥',
     },
     {
       category: Routine.Category.Shoot,
@@ -537,6 +550,7 @@ export namespace RoutineAdapter {
       hint: '想拍点什么？',
       examples: ['拍一段 Vlog', '录制朗读视频', '拍摄全家福'],
       finish: '拍到了什么精彩画面？',
+      celebrate: '精彩瞬间被你定格 📸',
     },
     {
       category: Routine.Category.Other,
@@ -545,6 +559,7 @@ export namespace RoutineAdapter {
       icon: '/assets/imgs/ic-other.svg',
       hint: '想做什么？自由发挥吧 ✨',
       examples: ['帮妈妈一个忙', '整理书包', '自由探索'],
+      celebrate: '完成就是最棒的 ✨',
     },
   ];
 
@@ -573,5 +588,10 @@ export namespace RoutineAdapter {
   /** 获取指定分类的完成反馈提示词 */
   export function getFinish(category: number): string {
     return findConfig(category)?.finish || '做完啦，有什么想说的？';
+  }
+
+  /** 获取指定分类的完成祝语（任务完成那一刻弹出的肯定语） */
+  export function getCelebrate(category: number): string {
+    return findConfig(category)?.celebrate || '完成就是最棒的 ✨';
   }
 }

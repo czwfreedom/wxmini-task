@@ -431,7 +431,9 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   }
 
   protected showJustDone(id: string) {
-    this.setData({ justDone: { id, name: '哈哈哈' } }, () => {
+    const info = this.adapter.getInfo(id);
+    if (!info) return;
+    this.setData({ justDone: { id, name: RoutineAdapter.getCelebrate(info.category) } }, () => {
       setTimeout(() => {
         this.setData({ justDone: { id: '', name: '' } });
       }, 1000);
