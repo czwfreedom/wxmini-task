@@ -407,9 +407,10 @@
       .routine_card_stamp {
         @include stamp;
       }
-      // 展开动画的裁剪放在 remark 文字自身，避免裁掉同容器内的 stamp 印章
+      // 完成反馈只做淡入上浮（opacity + translateY），不碰 max-height 等几何属性，
+      // 避免逐帧重排导致下方内容被往下推、整页晃动。
       .routine_card_remark {
-        @include slide-open;
+        @include fade-in;
       }
     }
 

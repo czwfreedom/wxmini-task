@@ -70,7 +70,7 @@ export class RoutineAdapter {
     this.updateable = isSelf && date >= today;
     this.addable = isSelf && date >= today;
     this.finishable = isSelf && date <= today;
-    const result = await Routine.list(date, this.userId, true);
+    const result = await Routine.list({ date, userId: this.userId, withStat: true });
     if (typeof result === 'number') return result;
     this.infos = result;
     return Err.Code.OK;

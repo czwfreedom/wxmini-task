@@ -112,6 +112,13 @@ export namespace Routine {
     rowDays?: number;
   }
 
+  export interface ListRequest extends Info {
+    withStat: boolean;
+    startDate: number;
+    endDate: number;
+    brief: boolean;
+  }
+
   export function isDone(info?: Info): boolean {
     return info?.status === Status.Done;
   }
@@ -119,12 +126,8 @@ export namespace Routine {
   /**
    * 获取指定日期的任务列表
    */
-  export async function list(
-    date: number,
-    userId?: string,
-    withStat?: boolean
-  ): Promise<number | Info[]> {
-    const res = await Network.post<Info[]>(Api.ListRoutine, { date, userId, withStat });
+  export async function list(data: Partial<ListRequest>): Promise<number | Info[]> {
+    const res = await Network.post<Info[]>(Api.ListRoutine, data);
     if (res?.errcode !== 0) {
       Logger.warn('List routine failed', res);
       return res?.errcode || Err.Code.Network;
