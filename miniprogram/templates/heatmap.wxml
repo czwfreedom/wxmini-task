@@ -1,1 +1,80 @@
-<template name="heatmap"></template>
+<!--
+  成长轨迹热力图 · 底部弹窗
+  数据驱动：name/nextable/prevable/weekdays/items/legends 全部由 HeatmapUI.Data 提供
+  配色：done=金 partial=蓝 pending=红 none=灰白 blank=透明占位（与设计图一致）
+  布局：7 列网格，空白格占位但不显形；弹窗结构复用 assets/style/dialog.scss
+-->
+<template name="heatmap">
+  <view wx:if="{{ id }}" class="common_dialog">
+    <!-- 黑色蒙板 -->
+    <view class="common_dialog_mask" catch:tap="onHeatMenuTap" data-button="cancel"></view>
+
+    <!-- 底部上滑面板 -->
+    <view class="common_dialog_content">
+      <view class="common_dialog_handle"></view>
+
+      <view class="heatmap">
+        <!-- 月份切换 -->
+        <view class="heatmap_month">
+          <view
+            class="heatmap_month_arrow_container"
+            catch:tap="onHeatMenuTap"
+            data-button="prev"
+            hover-class="press"
+            hover-stop-propagation="true"
+          >
+            <view class="heatmap_month_arrow {{prevable ? '' : 'disabled'}}">
+              ‹
+            </view>
+          </view>
+          <view class="heatmap_month_label">{{name}}</view>
+          <view
+            class="heatmap_month_arrow_container"
+            catch:tap="onHeatMenuTap"
+            data-button="next"
+            hover-class="press"
+            hover-stop-propagation="true"
+          >
+            <view class="heatmap_month_arrow {{nextable ? '' : 'disabled'}}">
+              ›
+            </view>
+          </view>
+        </view>
+
+        <!-- 星期头部（7 列，与网格对齐） -->
+        <view class="heatmap_weekdays">
+          <view class="heatmap_weekday" wx:for="{{weekdays}}" wx:key="index">
+            {{item}}
+          </view>
+        </view>
+
+        <!-- 日期网格：严格 7 列，空白格占位不显形 -->
+        <view class="heatmap_grid">
+          <view
+            wx:for="{{items}}"
+            wx:key="index"
+            class="heatmap_day {{item.id ? item.style : 'blank'}}"
+            catch:tap="onHeatMenuTap"
+            data-id="{{item.id}}"
+            data-button="day"
+            hover-class="press"
+            hover-stop-propagation="true"
+          >
+            <view class="heatmap_day_box {{item.selected ? 'selected' : ''}} {{ item.style }}">
+              <text wx:if="{{item.id}}" class="heatmap_day_date">{{item.name}}</text>
+              <text wx:if="{{item.id}}" class="heatmap_day_rate">{{item.desc}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 图例（方案 E：示例日格） -->
+        <view class="heatmap_legend">
+          <view class="heatmap_legend_item" wx:for="{{legends}}" wx:key="id">
+            <view class="heatmap_legend_swatch {{item.style}}"></view>
+            <text class="heatmap_legend_label">{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>

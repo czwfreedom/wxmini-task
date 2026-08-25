@@ -45,17 +45,38 @@ export class HeatmapUI extends SubUI<HeatmapUI.Data> {
 
   public async show(adapter: HeatmapAdapter, onDateTap?: (id: string) => void) {
     this.adapter = adapter;
-    const res = await this.load();
-    if (res !== 0) {
-      this.showErrToast(res);
-      return;
+    const res = await this.loadOf();
+    if (res === 0) {
+      this.bindEvent('onHeatMenuTap', (e) => {
+        const { id, button } = e.currentTarget.dataset;
+        if (button === 'prev') {
+          if (adapter.prevable()) this.loadOf(adapter.prevMonth());
+        } else if (button === 'next') {
+          if (adapter.nextable()) this.loadOf(adapter.nextMonth());
+        } else if (button === 'day') {
+          this.hide();
+          if (id && onDateTap) onDateTap(id);
+        } else if (button === 'cancel') {
+          this.hide();
+        }
+      });
     }
-    this.setData({ heatmap: this.adapter?.adapt() });
   }
 
   public hide() {
     this.adapter = undefined;
+    this.unbindEvents();
     this.setData({ heatmap: { id: '', name: '' } });
+  }
+
+  protected async loadOf(millis?: number): Promise<number> {
+    const res = await this.load(millis);
+    if (res !== 0) {
+      this.showErrToast(res);
+      return res;
+    }
+    this.setData({ heatmap: this.adapter?.adapt() });
+    return 0;
   }
 
   protected async load(millis?: number): Promise<number> {

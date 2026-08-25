@@ -1,5 +1,177 @@
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
+@import '../assets/style/dialog.scss';
 
+/* ==========================================================
+   成长轨迹热力图 · 底部弹窗（复用 dialog.scss 的 common_dialog）
+   严格 7 列网格；空白格占位透明；四态配色全部引用 var.scss
+   ========================================================== */
 .heatmap {
+  padding: 8rpx 24rpx 32rpx;
+  box-sizing: border-box;
+
+  /* ===== 月份切换 ===== */
+  &_month {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &_arrow {
+      width: 48rpx;
+      height: 48rpx;
+      border-radius: 50%;
+      background: $gray-ee;
+      color: $blue-dark;
+      font-size: 32rpx;
+      font-weight: 700;
+      @include flex-layout;
+      margin-bottom: 20rpx;
+
+      &_container {
+        padding: 10rpx;
+      }
+
+      &.disabled {
+        color: $gray-c5;
+      }
+    }
+
+    &_label {
+      flex: 1;
+      text-align: center;
+      font-size: 30rpx;
+      font-weight: 800;
+      color: $gray-33;
+    }
+  }
+
+  /* ===== 星期头部（7 列，与网格同宽同起点） ===== */
+  &_weekdays {
+    display: flex;
+    margin-bottom: 10rpx;
+  }
+
+  &_weekday {
+    width: 14.2857%;
+    text-align: center;
+    font-size: 22rpx;
+    color: $gray-99;
+    box-sizing: border-box;
+  }
+
+  /* ===== 日期网格：7 列，空白格占位不显形 ===== */
+  &_grid {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &_day {
+    width: 100rpx; // 写死？
+    box-sizing: border-box;
+    padding: 5rpx;
+    /* 空白占位（无 id）：不可点、无内容、无背景 */
+    &.blank {
+      pointer-events: none;
+      .heatmap_day_box {
+        background: transparent;
+        box-shadow: none;
+      }
+    }
+
+    /* 四态配色（背景作用于内部 box，留出 padding 形成间隙） */
+    &_box {
+      width: 100%;
+      height: 84rpx;
+      border-radius: 16rpx;
+      background: $gray-ee;
+      @include flex-layout(column);
+      line-height: 1.1;
+
+      /* 选中（默认今天）：蓝色描边 */
+      &.selected {
+        box-shadow: 0 0 0 3rpx $blue-dark;
+      }
+
+      &.done {
+        background: $gradient;
+        .heatmap_day_date,
+        .heatmap_day_rate {
+          color: #fff;
+        }
+      }
+
+      &.partial {
+        background: rgba($blue, 0.35);
+        .heatmap_day_date,
+        .heatmap_day_rate {
+          color: $blue-dark;
+        }
+      }
+
+      &.pending {
+        background: rgba($red, 0.18);
+        .heatmap_day_date,
+        .heatmap_day_rate {
+          color: $red;
+        }
+      }
+
+      &.none {
+        background: $gray-ee;
+        .heatmap_day_date,
+        .heatmap_day_rate {
+          color: $gray-c5;
+        }
+      }
+    }
+
+    &_date {
+      font-size: 26rpx;
+      font-weight: 800;
+    }
+
+    &_rate {
+      font-size: 18rpx;
+      font-weight: 700;
+      margin-top: 2rpx;
+    }
+  }
+
+  /* ===== 图例（方案 E：示例日格） ===== */
+  &_legend {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16rpx;
+
+    &_item {
+      display: flex;
+      align-items: center;
+      margin-left: 20rpx;
+    }
+
+    &_swatch {
+      width: 28rpx;
+      height: 28rpx;
+      border-radius: 8rpx;
+      margin-right: 6rpx;
+
+      &.done {
+        background: $gradient;
+      }
+      &.partial {
+        background: rgba($blue, 0.35);
+      }
+      &.pending {
+        background: rgba($red, 0.18);
+      }
+      &.none {
+        background: $gray-ee;
+      }
+    }
+
+    &_label {
+      font-size: 20rpx;
+      color: $gray-99;
+    }
+  }
 }

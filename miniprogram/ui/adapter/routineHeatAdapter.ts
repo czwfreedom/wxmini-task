@@ -7,35 +7,16 @@ import { Entity } from '../../model/entity';
 import { Locale } from '../../constant/locale';
 
 export class RoutineHeatAdapter extends HeatmapAdapter {
+  // 2026-08-01之前肯定不会有数据。
+  private static sMin = 1785513600000;
+
   private userId: string;
-  private today: number;
-  private day: number;
-  /** 当前展示月份第一天 00:00 的时间戳 */
-  private monthMillis: number;
   /** 聚合结果：日期整数 → { finished, total } */
   private aggs = new Map<number, { finished: number; total: number }>();
 
   public constructor(userId: string, day: number) {
-    super();
+    super(day);
     this.userId = userId;
-    this.day = day;
-    this.monthMillis = DateUtils.getMonth(day);
-    this.today = DateUtils.getToday();
-  }
-
-  /** 当前月的起始时间戳 */
-  public getMonthMillis(): number {
-    return this.monthMillis;
-  }
-
-  /** 是否还能上一月（无限制） */
-  public canPrev(): boolean {
-    return true;
-  }
-
-  /** 是否还能下一月（不允许超过当前真实月份） */
-  public canNext(): boolean {
-    return this.monthMillis < DateUtils.getMonth(this.today);
   }
 
   public async load(date?: number): Promise<number> {
@@ -43,13 +24,15 @@ export class RoutineHeatAdapter extends HeatmapAdapter {
 
     const days = DateUtils.daysInMonth(this.monthMillis);
     const endMillis = this.monthMillis + days * DateUtils.sDayMillis;
-
-    const result = await Routine.list({
-      userId: this.userId,
-      startDate: this.monthMillis,
-      endDate: endMillis,
-      brief: true,
-    });
+    const result =
+      endMillis <= RoutineHeatAdapter.sMin
+        ? []
+        : await Routine.list({
+            userId: this.userId,
+            startDate: this.monthMillis,
+            endDate: endMillis,
+            brief: true,
+          });
     if ('number' === typeof result) return result;
 
     this.aggs.clear();
@@ -97,8 +80,8 @@ export class RoutineHeatAdapter extends HeatmapAdapter {
       id: 'routine',
       weekdays: Locale.sWeekdays,
       name: DateUtils.formatDate(this.monthMillis, 'yyyy年 M月'),
-      nextable: this.canNext(),
-      prevable: this.canPrev(),
+      nextable: this.nextable(),
+      prevable: this.prevable(),
       items,
       legends: RoutineHeatAdapter.sLegends,
     };
@@ -125,8 +108,8 @@ export namespace RoutineHeatAdapter {
   /** 图例（与设计方案 E 一致） */
   export const sLegends: Entity.Label[] = [
     { id: 'done', name: '全部完成', style: Style.Done },
-    { id: 'partial', name: '有未完', style: Style.Partial },
-    { id: 'pending', name: '全未完', style: Style.Pending },
+    { id: 'partial', name: '部分完成', style: Style.Partial },
+    { id: 'pending', name: '未完成', style: Style.Pending },
     { id: 'none', name: '无任务', style: Style.None },
   ];
 }

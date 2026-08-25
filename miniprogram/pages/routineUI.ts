@@ -15,6 +15,7 @@ import { UserUpdaterUI } from '../ui/userUpdaterUI';
 import { RoutineTemplatesUI } from '../ui/routineTemplatesUI';
 import { HeatmapUI } from '../ui/heatmapUI';
 import { RoutineHeatAdapter } from '../ui/adapter/routineHeatAdapter';
+import { Utils } from '../utils/utils';
 
 export namespace RoutineUI {
   export interface Data extends SubUI.Data {
@@ -226,18 +227,22 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     return 0;
   }
 
+  protected checkDate(next: number) {
+    const max = this.adapter.getMaxMillis();
+    if (next > max) {
+      const isSelf = this.adapter.isSelf();
+      if (isSelf) this.showToast('只支持提前一天规划任务');
+      return;
+    }
+    this.loadDate(next);
+  }
+
   protected async onMenuTap(e: WechatMiniprogram.TouchEvent) {
     const { button } = e.currentTarget.dataset;
     Logger.info('onMenuTap', button);
     if (button === 'next') {
       const next = this.date + DateUtils.sDayMillis;
-      const max = this.adapter.getMaxMillis();
-      if (next > max) {
-        const isSelf = this.adapter.isSelf();
-        if (isSelf) this.showToast('只支持提前一天规划任务');
-        return;
-      }
-      this.loadDate(next);
+      this.checkDate(next);
     } else if (button === 'prev') {
       this.loadDate(this.date - 24 * 3600 * 1000);
     } else if (button === 'template') {
@@ -256,7 +261,11 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       Intent.navigateTo(`${Constants.Page.Relations}?dir=usee`);
     } else if (button === 'heat') {
       const heatmap = new HeatmapUI(this.component, this.subDataKey).show(
-        new RoutineHeatAdapter(this.adapter.userId, this.adapter.date)
+        new RoutineHeatAdapter(this.adapter.userId, this.adapter.date),
+        (id) => {
+          const millis = Utils.ZNumber(id);
+          if (millis !== this.adapter.date) this.checkDate(millis);
+        }
       );
     }
   }

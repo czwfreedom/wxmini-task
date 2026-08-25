@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D1 交互流 · 修正：按钮内联 + 图例多方案</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:#E8EFF5;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;padding:28px 24px}
+  .wrap{max-width:860px;margin:0 auto}
+  h1{font-size:22px;font-weight:800;color:#3A5A8C;margin-bottom:6px}
+  .sub{font-size:13px;color:#5C6178;line-height:1.9;margin-bottom:18px}
+  .sub b{color:#C8853E}
+  .notes{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 3px 12px rgba(74,144,226,0.06);margin-bottom:24px;font-size:12px;color:#5C6178;line-height:1.95}
+  .notes b{color:#3A5A8C}
+  .flow{display:flex;gap:28px;flex-wrap:wrap}
+  .sec{margin-top:34px;border-top:2px dashed #C9D8E6;padding-top:22px}
+  .sech{font-size:17px;font-weight:800;color:#3A5A8C;margin-bottom:4px}
+  .secsub{font-size:12px;color:#5C6178;margin-bottom:16px;line-height:1.8}
+
+  .phone{width:340px;height:690px;background:#F2F5F8;border-radius:34px;overflow:hidden;position:relative;box-shadow:0 0 0 3px #1A1A1A,0 0 0 6px #2D2D2D,0 14px 34px rgba(0,0,0,0.22);flex-shrink:0}
+  .status{height:30px;background:#B8DAF5;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:10px;color:#fff;font-weight:600}
+  .body{height:calc(100% - 30px);overflow:hidden;background:linear-gradient(180deg,#B8DAF5,#F2F5F8 26%);padding:0 14px 14px;position:relative}
+
+  .hero{background:linear-gradient(160deg,#b5d9f8,#a0cdf5 50%,#c5e3fa);border-radius:0 0 18px 18px;padding:14px 16px;margin:0 -14px}
+  .nav{display:flex;align-items:center;justify-content:space-between}
+  .arrow{font-size:20px;color:#fff;width:22px;text-align:center;font-weight:700}
+  .dwrap{text-align:center;flex:1}
+  .dlabel{font-size:11px;color:rgba(255,255,255,0.92)}
+  .ddate{font-size:19px;font-weight:800;color:#fff;margin-top:2px}
+  /* 轨迹按钮：内联在 日期 与 › 之间，纯文字+▾，金色显眼 */
+  .trace-inline{color:#F4B942;font-weight:800;font-size:13px;background:rgba(255,255,255,0.22);border-radius:14px;padding:5px 11px;margin-left:6px;display:flex;align-items:center;gap:2px}
+  .trace-inline .car{font-size:10px}
+  /* 日期 + 按钮紧挨成一个居中分组，按钮紧贴日期右侧 */
+  .nav-center{display:flex;align-items:center;gap:8px;flex:1;justify-content:center}
+  .b-outline.past{background:transparent;color:#90A4AE;border-color:rgba(144,164,174,0.6)}
+  /* 进度胶囊（保留，不被打扰） */
+  .hero-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+  .motto{font-size:12px;color:#fff;font-weight:700;flex:1}
+  .capsule{font-size:12px;font-weight:800;color:#fff;background:rgba(255,255,255,0.25);border-radius:14px;padding:5px 12px;margin-left:10px;flex-shrink:0}
+  .cap{font-size:11px;color:rgba(255,255,255,0.92);margin-top:8px;display:inline-block;background:rgba(255,255,255,0.22);padding:4px 10px;border-radius:12px;font-weight:700}
+
+  .cards{margin-top:14px;transition:filter .2s}
+  .card{background:#FDFBF7;border-radius:12px;padding:10px 12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(74,144,226,0.05);display:flex;align-items:center;gap:9px;border-left:5px solid #ccc}
+  .card.read{border-color:#5B9BD5}.card.ex{border-color:#81C784}.card.cal{border-color:#F4B942}
+  .c-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;background:#EAF3FB;flex-shrink:0}
+  .c-name{font-size:12px;font-weight:700;color:#333;flex:1}
+  .c-star{font-size:13px;color:#F4B942}
+  .c-done-tag{font-size:10px;color:#81C784;font-weight:800}
+  .dim{filter:brightness(0.96) saturate(0.85)}
+
+  /* 底部弹层 */
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;padding:14px 14px 18px;box-shadow:0 -6px 24px rgba(0,0,0,0.14);animation:slideUp .28s ease;z-index:5}
+  .grab{width:36px;height:4px;border-radius:3px;background:#E0E0E0;margin:0 auto 10px}
+  .sheet-month{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px}
+  .m-arrow{font-size:16px;color:#3A5A8C;font-weight:800;width:26px;height:26px;border-radius:50%;background:#F2F5F8;display:flex;align-items:center;justify-content:center}
+  .m-title{font-size:15px;font-weight:800;color:#333}
+  .wdays{display:flex;justify-content:space-between;margin-bottom:6px;padding:0 2px}
+  .wdays span{font-size:9px;color:#999;width:34px;text-align:center}
+  .grid{display:flex;flex-direction:column;gap:6px}
+  .row{display:flex;justify-content:space-between;gap:6px}
+  .cell{width:34px;height:36px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05}
+  .dnum{font-size:13px;font-weight:800}
+  .drat{font-size:8px;font-weight:700;opacity:0.85;margin-top:1px}
+  .c-none{background:#F2F5F8}.c-none .dnum{color:#C5C5C5}.c-none .drat{color:#C5C5C5}
+  .c-fail{background:#FFCDD2}.c-fail .dnum{color:#C0392B}.c-fail .drat{color:#C0392B}
+  .c-part{background:#BBDEFB}.c-part .dnum{color:#2E6DA4}.c-part .drat{color:#2E6DA4}
+  .c-part2{background:#90CAF9}.c-part2 .dnum{color:#1A5A92}.c-part2 .drat{color:#1A5A92}
+  .c-done{background:linear-gradient(135deg,#F4B942,#FFD54F)}.c-done .dnum{color:#fff}.c-done .drat{color:#fff}
+  .cell.sel{box-shadow:0 0 0 2px #3A5A8C}
+  .cell.today{outline:2px solid #F4B942;outline-offset:1px}
+  .states{display:flex;gap:6px;margin-top:12px}
+  .st{flex:1;background:#F2F5F8;border-radius:9px;padding:6px 2px;text-align:center}
+  .st .sw{width:100%;height:22px;border-radius:6px;margin-bottom:4px}
+  .st .lb{font-size:9px;color:#5C6178;line-height:1.25}
+  .st .lb b{display:block;color:#333;font-size:10px}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+  .past-tag{font-size:10px;color:#C8853E;background:#FFF8E1;padding:3px 9px;border-radius:10px;font-weight:800;margin-left:6px}
+  .caption{text-align:center;font-size:12px;font-weight:700;color:#3A5A8C;margin-top:12px}
+  .stepnum{display:inline-block;background:#3A5A8C;color:#fff;font-size:11px;font-weight:800;width:18px;height:18px;border-radius:50%;line-height:18px;text-align:center;margin-right:6px}
+
+  /* ===== 独立区域A：轨迹按钮变体 ===== */
+  .navmock{background:linear-gradient(160deg,#b5d9f8,#a0cdf5 50%,#c5e3fa);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .navmock .arrow{font-size:20px;color:#fff;width:22px;text-align:center;font-weight:700}
+  .navmock .nm-date{text-align:center;flex:1;color:#fff}
+  .nm-label{font-size:11px;opacity:0.92}
+  .nm-main{font-size:17px;font-weight:800;margin-top:2px}
+  .optdesc{font-size:11px;color:#5C6178;margin:-6px 0 14px;line-height:1.7}
+  .navmock.chosen{outline:2px solid #F4B942;outline-offset:3px;border-radius:16px}
+  .pick{display:inline-block;font-size:10px;font-weight:800;color:#fff;background:#F4B942;border-radius:8px;padding:1px 7px;margin-left:6px;vertical-align:1px}
+  .b-link{color:#F4B942;font-weight:800;font-size:13px;border-bottom:1.5px solid #F4B942;padding:2px 1px;margin-left:8px}
+  .b-outline{color:rgba(255,255,255,0.9);font-weight:600;font-size:11px;border:1px solid rgba(255,255,255,0.55);border-radius:12px;padding:4px 10px;margin-left:8px;background:transparent}
+  .b-outline .car{font-size:9px;font-weight:600}
+  .b-solid{color:#fff;font-weight:800;font-size:12px;background:linear-gradient(135deg,#F4B942,#FFD54F);border-radius:14px;padding:6px 14px;margin-left:8px}
+  .b-dash{color:#FFFDF8;font-weight:800;font-size:12px;border:1.5px dashed rgba(255,255,255,0.85);border-radius:14px;padding:5px 12px;margin-left:8px}
+  .b-text{color:#F4B942;font-weight:800;font-size:13px;margin-left:8px}
+
+  /* ===== 独立区域B：图例变体 ===== */
+  .legendbox{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 3px 12px rgba(74,144,226,0.06);margin-bottom:14px}
+  .lg-title{font-size:13px;font-weight:800;color:#333;margin-bottom:10px}
+  .lg-title::before{content:'';display:inline-block;width:4px;height:14px;background:#F4B942;border-radius:2px;margin-right:7px;vertical-align:-2px}
+  .scale{height:14px;border-radius:7px;background:linear-gradient(90deg,#F2F5F8 0%,#FFCDD2 28%,#90CAF9 62%,#F4B942 100%);margin:4px 0 6px}
+  .scale-ticks{display:flex;justify-content:space-between;font-size:10px;color:#5C6178}
+  .vrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .vsw{width:30px;height:30px;border-radius:8px;flex-shrink:0}
+  .vtxt b{display:block;font-size:12px;color:#333}
+  .vtxt span{font-size:11px;color:#5C6178}
+  .txtlg{font-size:12px;color:#5C6178;line-height:1.95}
+  .txtlg b{color:#333}
+  .miniwrap{display:flex;gap:8px}
+  /* 留空白方案：超出本月范围的格子完全隐形，不占视觉 */
+  .c-blank{background:transparent}
+  .c-blank .dnum,.c-blank .drat{visibility:hidden}
+  .minicell{width:44px;height:50px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:800;line-height:1.2;text-align:center}
+  .mc-done{background:linear-gradient(135deg,#F4B942,#FFD54F);color:#fff}
+  .mc-part{background:#90CAF9;color:#1A5A92}
+  .mc-fail{background:#FFCDD2;color:#C0392B}
+  .mc-none{background:#F2F5F8;color:#C5C5C5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>D1 交互流 · 修正版（按钮内联 + 图例多方案）</h1>
+  <p class="sub">轨迹按钮改为内联在 <b>‹ 日期 [按钮] ›</b> 之间、紧贴日期，<b>不碰下方进度胶囊</b>；热力图每格有日期+完成比、可切月。下方两个独立区域给出按钮与图例的多版方案。</p>
+  <div class="notes">
+    <b>四态色板</b>(全应用统一)：金=全部完成 · 蓝阶=有未完 · 浅红=所有任务未完(有任务0完成) · 灰白=无任务<br>
+    <b>本版修正</b>：① 轨迹按钮移入日期行、保留 ‹ › 与进度胶囊；② 新增「按钮方案」「图例方案」独立区域供选型。
+  </div>
+
+  <div class="flow">
+    <!-- 帧 1：弹层态 -->
+    <div>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="body">
+          <div class="hero">
+            <div class="nav">
+              <div class="arrow">‹</div>
+              <div class="nav-center">
+                <div class="dwrap">
+                  <div class="dlabel">今天</div>
+                  <div class="ddate">8月24日 周一</div>
+                </div>
+                <div class="b-outline">查看轨迹<span class="car"> ▾</span></div>
+              </div>
+              <div class="arrow">›</div>
+            </div>
+            <div class="hero-bottom">
+              <div class="motto">✦ 又是闪闪发光的一天！⭐</div>
+              <div class="capsule">完成 2/3</div>
+            </div>
+          </div>
+
+          <div class="cards dim">
+            <div class="card read"><div class="c-ico">📖</div><div class="c-name">阅读《西游记》</div><div class="c-star">⭐</div></div>
+            <div class="card ex"><div class="c-ico">💪</div><div class="c-name">跳绳 200 个</div><div class="c-star">⭐</div></div>
+            <div class="card cal"><div class="c-ico">✍️</div><div class="c-name">描红一页田字格</div><div class="c-done-tag">进行中</div></div>
+          </div>
+
+          <div class="sheet">
+            <div class="grab"></div>
+            <div class="sheet-month">
+              <div class="m-arrow">‹</div>
+              <div class="m-title">2026年 8月</div>
+              <div class="m-arrow">›</div>
+            </div>
+            <div class="wdays"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+            <div class="grid">
+              <div class="row">
+                <div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-part"><span class="dnum">1</span><span class="drat">1/3</span></div><div class="cell c-part2"><span class="dnum">2</span><span class="drat">2/3</span></div>
+              </div>
+              <div class="row">
+                <div class="cell c-done"><span class="dnum">3</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">4</span><span class="drat">3/3</span></div><div class="cell c-part"><span class="dnum">5</span><span class="drat">1/3</span></div><div class="cell c-fail"><span class="dnum">6</span><span class="drat">0/3</span></div><div class="cell c-none"><span class="dnum">7</span><span class="drat">—</span></div><div class="cell c-done"><span class="dnum">8</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">9</span><span class="drat">3/3</span></div>
+              </div>
+              <div class="row">
+                <div class="cell c-part2"><span class="dnum">10</span><span class="drat">2/3</span></div><div class="cell c-done"><span class="dnum">11</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">12</span><span class="drat">3/3</span></div><div class="cell c-part"><span class="dnum">13</span><span class="drat">1/3</span></div><div class="cell c-part2"><span class="dnum">14</span><span class="drat">2/3</span></div><div class="cell c-none"><span class="dnum">15</span><span class="drat">—</span></div><div class="cell c-done"><span class="dnum">16</span><span class="drat">3/3</span></div>
+              </div>
+              <div class="row">
+                <div class="cell c-done"><span class="dnum">17</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">18</span><span class="drat">3/3</span></div><div class="cell c-done sel"><span class="dnum">19</span><span class="drat">3/3</span></div><div class="cell c-part2"><span class="dnum">20</span><span class="drat">2/3</span></div><div class="cell c-fail"><span class="dnum">21</span><span class="drat">0/3</span></div><div class="cell c-part"><span class="dnum">22</span><span class="drat">1/3</span></div><div class="cell c-part2"><span class="dnum">23</span><span class="drat">2/3</span></div>
+              </div>
+              <div class="row">
+                <div class="cell c-done today"><span class="dnum">24</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">25</span><span class="drat">3/3</span></div><div class="cell c-part"><span class="dnum">26</span><span class="drat">1/3</span></div><div class="cell c-part2"><span class="dnum">27</span><span class="drat">2/3</span></div><div class="cell c-none"><span class="dnum">28</span><span class="drat">—</span></div><div class="cell c-done"><span class="dnum">29</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">30</span><span class="drat">3/3</span></div>
+              </div>
+              <div class="row">
+                <div class="cell c-part"><span class="dnum">31</span><span class="drat">1/3</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div>
+              </div>
+            </div>
+            <div class="miniwrap" style="margin-top:12px;justify-content:flex-end">
+              <div class="minicell mc-done">3/3<br>全完成</div>
+              <div class="minicell mc-part">2/3<br>有未完</div>
+              <div class="minicell mc-fail">0/3<br>全未完</div>
+              <div class="minicell mc-none">—<br>无任务</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="caption"><span class="stepnum">1</span>「轨迹 ▾」内联在日期与 › 之间 → 底部半屏热力图</div>
+    </div>
+
+    <!-- 帧 2：历史只读态结果 -->
+    <div>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●●●● Wi-Fi</span></div>
+        <div class="body">
+          <div class="hero" style="background:linear-gradient(160deg,#cdd9e6,#bcc8d6 50%,#d6dee6)">
+            <div class="nav">
+              <div class="arrow">‹</div>
+              <div class="nav-center">
+                <div class="dwrap">
+                  <div class="dlabel">历史<span class="past-tag">只读</span></div>
+                  <div class="ddate">8月19日 周三</div>
+                </div>
+                <div class="b-outline past">查看轨迹<span class="car"> ▾</span></div>
+              </div>
+              <div class="arrow">›</div>
+            </div>
+            <div class="hero-bottom">
+              <div class="motto" style="color:#5C6178">✦ 这天完成了全部 3 项 🎉</div>
+              <div class="capsule" style="background:rgba(255,255,255,0.4);color:#5C6178">完成 3/3</div>
+            </div>
+          </div>
+
+          <div class="cards">
+            <div class="card read"><div class="c-ico">📖</div><div class="c-name">阅读《西游记》</div><div class="c-star">⭐</div></div>
+            <div class="card ex"><div class="c-ico">💪</div><div class="c-name">跳绳 200 个</div><div class="c-star">⭐</div></div>
+            <div class="card cal"><div class="c-ico">✍️</div><div class="c-name">描红一页田字格</div><div class="c-star">⭐</div></div>
+          </div>
+
+          <div style="margin-top:10px;background:#FFFDF8;border-radius:12px;padding:10px 12px;border:1px solid rgba(200,180,150,0.4)">
+            <div style="font-size:11px;color:#C8853E;font-weight:800;margin-bottom:4px">📝 当天留言</div>
+            <div style="font-size:12px;color:#5C6178;line-height:1.6">"又往脑袋里装了颗星星，今天读完了三打白骨精！"</div>
+          </div>
+        </div>
+      </div>
+      <div class="caption"><span class="stepnum">2</span>选 8/19 → routine 页切到该日只读态(P3)，‹ › 翻看相邻日</div>
+    </div>
+  </div>
+
+  <!-- ===== 独立区域 A：轨迹按钮方案 ===== -->
+  <div class="sec">
+    <div class="sech">独立区域 A · 轨迹按钮方案（按钮紧贴日期，居中分组 ‹ [日期 按钮] ›）</div>
+    <div class="secsub">统一约束：不碰下方进度胶囊；<b>按钮紧贴日期文字右侧</b>（同一居中分组）；纯文字、不依赖图标；用描边/▾ 暗示"可点、点了弹层"。</div>
+
+    <div class="optdesc">① 链接式：金色文字 + 金色下划线，▾ 提示弹层，最轻量。</div>
+    <div class="navmock">
+      <div class="arrow">‹</div>
+      <div class="nav-center">
+        <div class="nm-date"><div class="nm-label">今天</div><div class="nm-main">8月24日 周一</div></div>
+        <div class="b-link">轨迹 ▾</div>
+      </div>
+      <div class="arrow">›</div>
+    </div>
+
+    <div class="optdesc">② 描边胶囊（已选）：半透白底 + 白边圆角，无图标也明显是按钮，紧贴日期。<span class="pick">已选</span></div>
+    <div class="navmock chosen">
+      <div class="arrow">‹</div>
+      <div class="nav-center">
+        <div class="nm-date"><div class="nm-label">今天</div><div class="nm-main">8月24日 周一</div></div>
+        <div class="b-outline">查看轨迹<span class="car"> ▾</span></div>
+      </div>
+      <div class="arrow">›</div>
+    </div>
+
+    <div class="optdesc">③ 实心金按钮：金底白字，最醒目，但视觉权重略重。</div>
+    <div class="navmock">
+      <div class="arrow">‹</div>
+      <div class="nav-center">
+        <div class="nm-date"><div class="nm-label">今天</div><div class="nm-main">8月24日 周一</div></div>
+        <div class="b-solid">轨迹</div>
+      </div>
+      <div class="arrow">›</div>
+    </div>
+
+    <div class="optdesc">④ 虚线提示：虚线白边，强调"可展开/轻量入口"。</div>
+    <div class="navmock">
+      <div class="arrow">‹</div>
+      <div class="nav-center">
+        <div class="nm-date"><div class="nm-label">今天</div><div class="nm-main">8月24日 周一</div></div>
+        <div class="b-dash">热力图</div>
+      </div>
+      <div class="arrow">›</div>
+    </div>
+
+    <div class="optdesc">⑤ 文字 + 箭头：金色"看热力图"后接 ›，暗示向右展开。</div>
+    <div class="navmock">
+      <div class="arrow">‹</div>
+      <div class="nav-center">
+        <div class="nm-date"><div class="nm-label">今天</div><div class="nm-main">8月24日 周一</div></div>
+        <div class="b-text">看热力图 ›</div>
+      </div>
+      <div class="arrow">›</div>
+    </div>
+  </div>
+
+  <!-- ===== 独立区域 B：图例方案 ===== -->
+  <div class="sec">
+    <div class="sech">独立区域 B · 图例（四态说明）方案</div>
+    <div class="secsub">四态统一：金=全部完成 · 蓝阶=有未完 · 浅红=所有任务未完(有任务0完成) · 灰白=无任务。</div>
+
+    <div class="legendbox">
+      <div class="lg-title">方案 A · 色块 + 标签横排（当前默认）</div>
+      <div class="states">
+        <div class="st"><div class="sw c-done"></div><div class="lb"><b>全部完成</b>金满格</div></div>
+        <div class="st"><div class="sw c-part2"></div><div class="lb"><b>有未完</b>蓝阶梯</div></div>
+        <div class="st"><div class="sw c-fail"></div><div class="lb"><b>全未完</b>浅红</div></div>
+        <div class="st"><div class="sw c-none"></div><div class="lb"><b>无任务</b>灰白</div></div>
+      </div>
+    </div>
+
+    <div class="legendbox">
+      <div class="lg-title">方案 B · 渐变刻度条（强调"越深越多"的连续尺度）</div>
+      <div class="scale"></div>
+      <div class="scale-ticks"><span>灰白·无任务</span><span>浅红·全未完</span><span>蓝·进行中</span><span>金·全完成</span></div>
+    </div>
+
+    <div class="legendbox">
+      <div class="lg-title">方案 C · 竖向说明列表（色块 + 标题 + 一句解释）</div>
+      <div class="vrow"><div class="vsw c-done"></div><div class="vtxt"><b>全部完成</b><span>当天任务全勾掉，金色满格最亮</span></div></div>
+      <div class="vrow"><div class="vsw c-part2"></div><div class="vtxt"><b>有未完</b><span>完成了一部分，蓝色越深做得越多</span></div></div>
+      <div class="vrow"><div class="vsw c-fail"></div><div class="vtxt"><b>所有任务未完</b><span>有任务但 0 完成，浅红提醒去完成</span></div></div>
+      <div class="vrow"><div class="vsw c-none"></div><div class="vtxt"><b>无任务</b><span>当天没安排任务，灰白空格</span></div></div>
+    </div>
+
+    <div class="legendbox">
+      <div class="lg-title">方案 D · 纯文字短语（最省空间，无图例块）</div>
+      <div class="txtlg">颜色越深代表当天完成越多：<b>灰白=无任务</b> · <b>浅红=有任务但全未完</b> · <b>蓝=进行中</b> · <b>金=全部完成</b>。今天的格子描金边。</div>
+    </div>
+
+    <div class="legendbox">
+      <div class="lg-title">方案 E · 示例日格（用真实格子样式当图例）<span class="pick">已选</span></div>
+      <div class="miniwrap">
+        <div class="minicell mc-done">3/3<br>全完成</div>
+        <div class="minicell mc-part">2/3<br>有未完</div>
+        <div class="minicell mc-fail">0/3<br>全未完</div>
+        <div class="minicell mc-none">—<br>无任务</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 独立区域 C：超出本月范围 留空白方案（对比） ===== -->
+  <div class="sec">
+    <div class="sech">独立区域 C · 超出本月范围：留空白 vs 现版占位</div>
+    <div class="secsub">现版：超范围格子用浅灰底 + 灰色「—」占位（与"无任务"同色，易混淆）。<br>留空白版：超范围格子完全隐形（透明、无边框、无文字），网格只显示本月有效日期。</div>
+
+    <div class="legendbox">
+      <div class="lg-title">留空白方案（推荐对比）</div>
+      <div class="sheet-month" style="margin-bottom:10px">
+        <div class="m-arrow">‹</div>
+        <div class="m-title">2026年 8月</div>
+        <div class="m-arrow">›</div>
+      </div>
+      <div class="wdays"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+      <div class="grid">
+        <div class="row">
+          <div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-part"><span class="dnum">1</span><span class="drat">1/3</span></div><div class="cell c-part2"><span class="dnum">2</span><span class="drat">2/3</span></div>
+        </div>
+        <div class="row">
+          <div class="cell c-done"><span class="dnum">3</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">4</span><span class="drat">3/3</span></div><div class="cell c-part"><span class="dnum">5</span><span class="drat">1/3</span></div><div class="cell c-fail"><span class="dnum">6</span><span class="drat">0/3</span></div><div class="cell c-none"><span class="dnum">7</span><span class="drat">—</span></div><div class="cell c-done"><span class="dnum">8</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">9</span><span class="drat">3/3</span></div>
+        </div>
+        <div class="row">
+          <div class="cell c-part2"><span class="dnum">10</span><span class="drat">2/3</span></div><div class="cell c-done"><span class="dnum">11</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">12</span><span class="drat">3/3</span></div><div class="cell c-part"><span class="dnum">13</span><span class="drat">1/3</span></div><div class="cell c-part2"><span class="dnum">14</span><span class="drat">2/3</span></div><div class="cell c-none"><span class="dnum">15</span><span class="drat">—</span></div><div class="cell c-done"><span class="dnum">16</span><span class="drat">3/3</span></div>
+        </div>
+        <div class="row">
+          <div class="cell c-done"><span class="dnum">17</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">18</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">19</span><span class="drat">3/3</span></div><div class="cell c-part2"><span class="dnum">20</span><span class="drat">2/3</span></div><div class="cell c-fail"><span class="dnum">21</span><span class="drat">0/3</span></div><div class="cell c-part"><span class="dnum">22</span><span class="drat">1/3</span></div><div class="cell c-part2"><span class="dnum">23</span><span class="drat">2/3</span></div>
+        </div>
+        <div class="row">
+          <div class="cell c-done today"><span class="dnum">24</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">25</span><span class="drat">3/3</span></div><div class="cell c-part"><span class="dnum">26</span><span class="drat">1/3</span></div><div class="cell c-part2"><span class="dnum">27</span><span class="drat">2/3</span></div><div class="cell c-none"><span class="dnum">28</span><span class="drat">—</span></div><div class="cell c-done"><span class="dnum">29</span><span class="drat">3/3</span></div><div class="cell c-done"><span class="dnum">30</span><span class="drat">3/3</span></div>
+        </div>
+        <div class="row">
+          <div class="cell c-part"><span class="dnum">31</span><span class="drat">1/3</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div><div class="cell c-blank"><span class="dnum">—</span></div>
+        </div>
+      </div>
+      <div class="txtlg" style="margin-top:10px"><b>区别说明：</b>留空白版超范围格完全隐形，<b>整张图一眼只看到 8/1~8/31 有效日期</b>，边界清晰；现版的灰色「—」占位会和"无任务"灰白格视觉雷同，用户可能误以为"那些天也无任务"。</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
