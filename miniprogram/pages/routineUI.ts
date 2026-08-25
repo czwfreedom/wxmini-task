@@ -123,6 +123,7 @@ export namespace RoutineUI {
      */
     likes?: Likes;
   }
+
   export interface Likes {
     /**
      * 点赞能看到多少条，如果items.length大于此值，即展示展开按钮。
@@ -135,7 +136,7 @@ export namespace RoutineUI {
     normalCount: number;
 
     // id 用户ID
-    // firstLetter 首字母
+    // letterIndex 首字母
     // name: 名字
     // avatarStyle: 首字母背景色
     items: Entity.Image[];
@@ -168,6 +169,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     this.bindEvent('onDatePicked', this.onDatePicked);
     this.bindEvent('onItemMenuTap', this.onItemMenuTap);
     this.bindEvent('onRelationTap', this.onRelationTap);
+    this.bindEvent('onExpandMenuTap', this.onExpandMenuTap);
 
     this.registerEventBus(Event.Name.RoutineUpdated, (ev: Routine.Info) => {
       if (ev?.id && ev?.userId === this.adapter?.userId && this.date === ev.date) {
@@ -335,8 +337,23 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     Intent.navigateTo(`${Constants.Page.Routine}?uid=${id}`);
   }
 
+  protected onExpandMenuTap(e: WechatMiniprogram.TouchEvent) {
+    const { id, button } = e.currentTarget.dataset;
+    const vm = Entity.find(this.getData().records, id);
+    if (!vm.item?.likes?.items?.length) return;
+
+    if (button === 'expand' || button === 'collapse') {
+      const len = vm.item.likes.items.length;
+      vm.item.likes.visibleCount = button === 'expand' ? Math.max(8, len) : Math.min(8, len);
+      this.setKvData(`records[${vm.index}].likes`, vm.item.likes);
+    }
+  }
+
   protected async toggleLike(id: string) {
-    if (this.adapter.isSelf()) return;
+    if (this.adapter.isSelf()) {
+      this.showComment(id, true);
+      return;
+    }
     const vm = Entity.find(this.getData().records, id);
     if (!vm.item) return;
 
@@ -349,7 +366,15 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     }
 
     vm.item.footers = this.adapter.adaptFooters(this.adapter.getInfo(id)!);
-    this.setKvData(`records[${vm.index}]`, vm.item);
+    this.setData(this.buildNewData(`records[${vm.index}]`, vm.item), () => {
+      this.showComment(id);
+    });
+  }
+
+  protected showComment(id: string, force = false) {
+    if (force || !Entity.find(this.getData().records, id).item?.commentVisible) {
+      this.toggleComment(id);
+    }
   }
 
   protected async toggleComment(id: string) {

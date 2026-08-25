@@ -160,6 +160,7 @@ export class RoutineAdapter {
     const userId = Context.getUserId();
     const comments = this.getComments(vm.id);
     const commentVms: RoutineUI.Comment[] = [];
+    const likeVms: Entity.Image[] = [];
     if (visible === undefined) visible = !vm.commentVisible;
     let commentalbe = true;
     if (visible) {
@@ -170,10 +171,21 @@ export class RoutineAdapter {
         );
       }
       for (const item of comments?.data || []) {
-        if (!Comment.hasComment(item)) continue;
         const isSelf = userId === item.userId;
         const user = Entity.find(comments?.users, item.userId).item;
         const name = isSelf ? '我自己' : user?.name || '未知';
+
+        if (Comment.hasLike(item)) {
+          likeVms.push({
+            id: item.userId,
+            name: name,
+            letterIndex: name.charAt(0),
+            avatarStyle: AvatarUtils.randomColor(item.userId),
+          });
+        }
+
+        if (!Comment.hasComment(item)) continue;
+
         commentVms.push({
           id: item.id,
           name: name,
@@ -186,9 +198,20 @@ export class RoutineAdapter {
         if (isSelf) commentalbe = false;
       }
     }
+
+    // 把自己放前面。
+    if (likeVms.length > 1) {
+      likeVms.sort((o1, o2) => {
+        if (o1.id === userId) return -1;
+        if (o2.id === userId) return 1;
+        return o1.name.localeCompare(o2.name);
+      });
+    }
+
     vm.commentVisible = visible;
     vm.comments = commentVms;
     vm.commentable = visible && commentalbe && !this.isSelf();
+    vm.likes = { normalCount: 8, visibleCount: Math.min(8, likeVms.length), items: likeVms };
     return vm;
   }
 

@@ -3,6 +3,7 @@
   <import src="../templates/dialog.wxml"></import>
   <import src="../templates/routineTemplates.wxml"></import>
   <import src="../templates/heatmap.wxml"></import>
+  <import src="../templates/expandableList.wxml"></import>
 
   <view class="routine {{ style || '' }}">
     <view class="routine_content">
@@ -221,6 +222,14 @@
 
             <!-- 评论区（展开时展示，关联面板；吸底输入条可常驻） -->
             <view wx:if="{{ item.commentVisible }}" class="routine_discuss_container">
+              <view
+                wx:if="{{ item.likes && item.likes.items && item.likes.items.length }}"
+                class="routine_like_container"
+              >
+                <image class="routine_like_icon" src="../assets/imgs/ic-like-selected.svg" />
+                <template is="expandableList" data="{{ id: item.id,  ...item.likes }}"></template>
+              </view>
+
               <view class="routine_discuss">
                 <block wx:if="{{ item.comments && item.comments.length }}">
                   <view

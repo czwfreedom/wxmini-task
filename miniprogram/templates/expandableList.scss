@@ -1,3 +1,51 @@
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
+@import '../assets/style/avatar.scss';
 
+/* ==========================================================
+   expandableList 可展开/收起列表（头像 + 昵称 chip）
+   配色全部引用 var.scss；头像背景色复用 avatar.scss 的 avatar_c1~c4
+   ========================================================== */
+.elist {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  &_item {
+    @include flex-layout;
+    background: $gray-ee;
+    border-radius: 999rpx;
+    padding: 6rpx 16rpx 6rpx 6rpx;
+    margin: 0 12rpx 12rpx 0;
+
+    &_avatar {
+      width: 40rpx;
+      height: 40rpx;
+      border-radius: 50%;
+      @include flex-layout;
+      font-size: 22rpx;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      margin-right: 10rpx;
+    }
+
+    &_name {
+      font-size: 24rpx;
+      font-weight: 600;
+      color: $foreground-sub;
+      max-width: 98rpx; // SB，硬拼出来的。
+      @include ellipsis;
+    }
+  }
+
+  &_more {
+    font-size: 24rpx;
+    font-weight: 700;
+    color: $gold-dark2;
+    background: rgba($main, 0.14);
+    border-radius: 999rpx;
+    padding: 8rpx 24rpx;
+    margin-bottom: 12rpx;
+  }
+}

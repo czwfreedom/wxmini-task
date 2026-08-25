@@ -5,6 +5,7 @@
 @import '../templates/dialog.scss';
 @import '../templates/routineTemplates.scss';
 @import '../templates/heatmap.scss';
+@import '../templates/expandableList.scss';
 
 .routine {
   @include flex-container;
@@ -636,6 +637,23 @@
       margin-top: 16rpx;
       padding-left: 32rpx;
     }
+  }
+
+  &_like {
+    &_container {
+      @include flex-layout(row, flex-start, flex-start);
+      padding: 20rpx 0;
+      border-bottom: 1rpx solid $border;
+    }
+
+    &_icon {
+      flex-shrink: 0;
+      width: 48rpx;
+      height: 48rpx;
+      margin-right: 16rpx;
+    }
+
+    flex: 1 1 auto;
   }
 
   &_comment {

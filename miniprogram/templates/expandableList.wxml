@@ -1,1 +1,50 @@
-<template name="expandableList"></template>
+<!--
+  expandableList 可展开/收起列表模板（头像 + 昵称 chip 横排换行）
+  用于「谁赞了我」等场景。
+
+  状态由 visibleCount 编码，无需额外 expanded 字段：
+    - 收起态：visibleCount === normalCount → 显示前 normalCount 条 + 「等 N 人」展开按钮
+    - 展开态：visibleCount  >  normalCount → 显示前 visibleCount 条 + 「收起」按钮
+  字段：items(Entity.Image[]：id/letterIndex/name/avatarStyle)、visibleCount、normalCount
+  事件：onExpandTap（展开）/ onCollapseTap（收起），由宿主 UI 切换 visibleCount 后重新 setData
+-->
+
+<template name="expandableList">
+  <view class="elist">
+    <!-- wxs似乎不稳定 -->
+    <block wx:for="{{ items }}" wx:key="id">
+      <view wx:if="{{ visibleCount > index }}" class="elist_item">
+        <view class="elist_item_avatar {{ item.avatarStyle }}">
+          <text>{{ item.letterIndex }}</text>
+        </view>
+        <text class="elist_item_name">{{ item.name }}</text>
+      </view>
+    </block>
+
+    <!-- 展开按钮：还有更多未展示 -->
+    <view
+      wx:if="{{ items.length > visibleCount }}"
+      class="elist_more"
+      hover-class="press"
+      catch:tap="onExpandMenuTap"
+      data-id="{{ id }}"
+      data-button="expand"
+      hover-stop-propagation="true"
+    >
+      等 {{ items.length - visibleCount }} 人 ▾
+    </view>
+
+    <!-- 收起按钮：已展开，可收起 -->
+    <view
+      wx:elif="{{ visibleCount > normalCount }}"
+      class="elist_more"
+      hover-class="press"
+      catch:tap="onExpandMenuTap"
+      data-id="{{ id }}"
+      data-button="collapse"
+      hover-stop-propagation="true"
+    >
+      收起 ▴
+    </view>
+  </view>
+</template>
