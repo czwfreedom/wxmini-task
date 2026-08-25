@@ -2,7 +2,7 @@ export namespace DateUtils {
   export const sDayMillis = 86400000;
   const sWeekDay = ['日', '一', '二', '三', '四', '五', '六'];
 
-  export function getStartMillisOfDay(millis: number): number {
+  export function getDay(millis: number): number {
     // 如果没有获取到时间，表示为0.
     if (!millis) return 0;
     const date = new Date(millis);
@@ -11,7 +11,18 @@ export namespace DateUtils {
   }
 
   export function getToday(): number {
-    return getStartMillisOfDay(Date.now());
+    return getDay(Date.now());
+  }
+
+  export function getMonth(millis: number): number {
+    if (!millis) return 0;
+    const d = new Date(millis);
+    return new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0, 0).getTime();
+  }
+
+  export function daysInMonth(millis: number): number {
+    const d = new Date(millis);
+    return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
   }
 
   export function formatTime(timestamp: number) {
@@ -43,7 +54,7 @@ export namespace DateUtils {
     if (millis + 600000 > now) return '刚刚';
     if (millis + 3600000 > now) return `${Math.floor((now - millis) / 60000)} 分钟前`;
 
-    const day = getStartMillisOfDay(now);
+    const day = getDay(now);
     const y = day - sDayMillis;
     if (millis >= y && millis < day) return formatDate(millis, '昨天  hh:mm');
     if (millis + sDayMillis > now) return `${Math.floor((now - millis) / 3600000)} 小时前`;

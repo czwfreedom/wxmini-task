@@ -2,6 +2,8 @@
   <import src="../templates/abort.wxml"></import>
   <import src="../templates/dialog.wxml"></import>
   <import src="../templates/routineTemplates.wxml"></import>
+  <import src="../templates/heatmap.wxml"></import>
+
   <view class="routine {{ style || '' }}">
     <view class="routine_content">
       <view wx:if="{{ loaded }}" class="routine_scroll">
@@ -18,17 +20,22 @@
               >
                 ‹
               </view>
-              <picker
+              <view
                 class="routine_hero_datewrap"
-                mode="date"
-                value="{{ pickerValue }}"
-                start="2026-08-01"
-                end="{{ pickerEnd }}"
-                bindchange="onDatePicked"
+                catch:tap="onMenuTap"
+                data-button="heat"
+                hover-class="press"
               >
                 <view class="routine_hero_label">{{ dateLabel }}</view>
-                <view class="routine_hero_date">{{ dateMain }}</view>
-              </picker>
+                <view class="routine_hero_date_container">
+                  <view class="routine_hero_date">{{ dateMain }}</view>
+                  <view class="routine_hero_heat">
+                    查看轨迹
+                    <!-- prettier-ignore -->
+                    <text class="routine_hero_heat_arrow"> ▾</text>
+                  </view>
+                </view>
+              </view>
               <view
                 class="routine_hero_arrow {{ !nextable ? 'disabled' : '' }}"
                 catch:tap="onMenuTap"
@@ -329,6 +336,7 @@
     data="{{ ...templates }}"
   ></template>
   <template wx:if="{{ dialog && dialog.id }}" is="dialog" data="{{ ...dialog }}"></template>
+  <template wx:if="{{ heatmap && heatmap.id }}" is="heatmap" data="{{ ...heatmap }}"></template>
 
   <template
     wx:if="{{ !loaded || abortMessage }}"

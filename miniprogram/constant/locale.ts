@@ -13,6 +13,7 @@ export namespace Locale {
   }
 
   export const sCnNums: string[] = ['一', '二', '三', '四', '五', '六', '七'];
+  export const sWeekdays: string[] = ['一', '二', '三', '四', '五', '六', '日'];
 
   // 这些代码应该是自动生成的。
   // 但有好处，调用者不用写字符串，减少出错的概率。

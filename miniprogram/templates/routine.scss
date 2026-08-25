@@ -4,6 +4,7 @@
 @import '../templates/abort.scss';
 @import '../templates/dialog.scss';
 @import '../templates/routineTemplates.scss';
+@import '../templates/heatmap.scss';
 
 .routine {
   @include flex-container;
@@ -81,12 +82,31 @@
     }
 
     &_date {
+      &_container {
+        @include flex-layout(row, flex-start, flex-end);
+      }
       font-size: 56rpx;
       font-weight: 800;
       color: white;
       line-height: 1.2;
       letter-spacing: 1rpx;
       text-shadow: 0 4rpx 8rpx $border;
+    }
+
+    &_heat {
+      color: $white92;
+      font-weight: 600;
+      font-size: 22rpx;
+      border: 2rpx solid $white5;
+      border-radius: 24rpx;
+      padding: 4rpx 12rpx;
+      margin-left: 4rpx;
+      background: transparent;
+
+      &_arrow {
+        font-size: 18rpx;
+        font-weight: 600;
+      }
     }
 
     &_bottom {

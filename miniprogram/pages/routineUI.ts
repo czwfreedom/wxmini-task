@@ -13,6 +13,8 @@ import { DialogUI } from '../ui/dialogUI';
 import { WxUtils } from '../utils/wxUtils';
 import { UserUpdaterUI } from '../ui/userUpdaterUI';
 import { RoutineTemplatesUI } from '../ui/routineTemplatesUI';
+import { HeatmapUI } from '../ui/heatmapUI';
+import { RoutineHeatAdapter } from '../ui/adapter/routineHeatAdapter';
 
 export namespace RoutineUI {
   export interface Data extends SubUI.Data {
@@ -66,6 +68,7 @@ export namespace RoutineUI {
 
     dialog?: DialogUI.Data;
     templates?: RoutineTemplatesUI.Data;
+    heatmap?: HeatmapUI.Data;
   }
 
   export interface Stat extends Entity.Label {
@@ -214,7 +217,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
 
   /** 加载指定日期并刷新视图，供翻页/选择器/回到今天复用 */
   protected async loadDate(date: number, reload = false): Promise<number> {
-    date = DateUtils.getStartMillisOfDay(date);
+    date = DateUtils.getDay(date);
     this.date = date; // 有太多引用了，故也保存在这里。
     const errcode = await this.adapter.load(date, reload);
     if (errcode !== Err.Code.OK) return this.abort(errcode);
@@ -251,6 +254,10 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       this.loadDate(Date.now());
     } else if (button === 'star') {
       Intent.navigateTo(`${Constants.Page.Relations}?dir=usee`);
+    } else if (button === 'heat') {
+      const heatmap = new HeatmapUI(this.component, this.subDataKey).show(
+        new RoutineHeatAdapter(this.adapter.userId, this.adapter.date)
+      );
     }
   }
 
@@ -258,7 +265,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   protected onDatePicked(e: WechatMiniprogram.TouchEvent) {
     const value = (e.detail.value as string) || '';
     Logger.info('onDatePicked', value);
-    const millis = DateUtils.getStartMillisOfDay(new Date(value.replace(/-/g, '/')).getTime());
+    const millis = DateUtils.getDay(new Date(value.replace(/-/g, '/')).getTime());
     if (!millis || millis === this.date) return;
     this.loadDate(millis);
   }

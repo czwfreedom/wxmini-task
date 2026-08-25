@@ -280,7 +280,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       res = await Routine.update(data);
     } else {
       data.status = Routine.Status.Working;
-      data.date = DateUtils.getStartMillisOfDay(data.planTime!);
+      data.date = DateUtils.getDay(data.planTime!);
       data.transaction = Routine.newTransaction();
       res = await Routine.create(data);
     }

@@ -1,3 +1,4 @@
+import { Err } from '../constant/error';
 import { SubUI } from '../core/subUI';
 import { Entity } from '../model/entity';
 import { HeatmapAdapter } from './heatmapAdapter';
@@ -8,6 +9,7 @@ export namespace HeatmapUI {
    * name：日期上的文字
    */
   export interface Data extends Entity.Label {
+    weekdays: string[];
     /**
      * 可以下一月。
      */
@@ -41,7 +43,26 @@ export namespace HeatmapUI {
 export class HeatmapUI extends SubUI<HeatmapUI.Data> {
   protected adapter?: HeatmapAdapter;
 
-  public show(adapter: HeatmapAdapter, onDateTap?: (id: string) => void) {}
+  public async show(adapter: HeatmapAdapter, onDateTap?: (id: string) => void) {
+    this.adapter = adapter;
+    const res = await this.load();
+    if (res !== 0) {
+      this.showErrToast(res);
+      return;
+    }
+    this.setData({ heatmap: this.adapter?.adapt() });
+  }
 
-  public hide() {}
+  public hide() {
+    this.adapter = undefined;
+    this.setData({ heatmap: { id: '', name: '' } });
+  }
+
+  protected async load(millis?: number): Promise<number> {
+    if (!this.adapter) return Err.Code.Unknown;
+    this.showLoading();
+    const res = await this.adapter.load(millis);
+    this.hideLoading();
+    return res;
+  }
 }
