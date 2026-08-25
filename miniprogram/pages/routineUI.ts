@@ -117,6 +117,28 @@ export namespace RoutineUI {
      * 若指定，展示底下的评论输入区。
      */
     commentable?: boolean;
+
+    /**
+     * 点赞VM
+     */
+    likes?: Likes;
+  }
+  export interface Likes {
+    /**
+     * 点赞能看到多少条，如果items.length大于此值，即展示展开按钮。
+     */
+    visibleCount: number;
+
+    /**
+     * 收起状态能看到多少条，如果visibleCount 大于此值，即展示收起按钮。
+     */
+    normalCount: number;
+
+    // id 用户ID
+    // firstLetter 首字母
+    // name: 名字
+    // avatarStyle: 首字母背景色
+    items: Entity.Image[];
   }
 
   // id: 评论ID

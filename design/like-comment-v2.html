@@ -125,6 +125,32 @@
   .note .mini{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0;align-items:flex-start}
   .mini-box{background:#F2F5F8;border-radius:10px;padding:10px 12px;font-size:10px;color:#5C6178;width:200px}
   .mini-box b{display:block;margin-bottom:6px;color:#333;font-size:11px}
+
+  /* =========================================================
+     互动详情底部弹层 —— 查看谁赞了我（上：赞 · 下：评论）
+     复用 heatmap/choices 同款 common_dialog：黑色蒙板 + 把手 + 从下上滑
+     ========================================================= */
+  .sheet-mask{position:absolute;inset:0;background:rgba(0,0,0,0.35);z-index:1}
+  .sheet{position:absolute;left:0;right:0;bottom:0;z-index:2;max-height:80%;overflow-y:auto;background:#FFFDF8;border-radius:22px 22px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,0.12);padding:6px 16px 22px}
+  .sheet::-webkit-scrollbar{width:0}
+  .sheet-handle{width:36px;height:4px;border-radius:2px;background:#E5E5E5;margin:6px auto 12px}
+  .sheet-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .sheet-head-ic{width:30px;height:30px;border-radius:50%;background:linear-gradient(160deg,#b5d9f8,#a0cdf5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px}
+  .sheet-head-title{font-size:13px;font-weight:700;color:#333;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sheet-head-close{width:26px;height:26px;display:flex;align-items:center;justify-content:center;color:#C5C5C5;font-size:18px;font-weight:700}
+  /* 赞区（上） */
+  .sheet-like{display:flex;gap:8px;padding:2px 2px 12px}
+  .sheet-like-ic{width:20px;height:20px;color:#F4B942;flex-shrink:0;margin-top:6px}
+  .sheet-like-body{flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  /* 头像 + 昵称 chip（避免首字母撞脸，直接显示名字） */
+  .sheet-like-chip{display:inline-flex;align-items:center;gap:5px;background:#F2F5F8;border-radius:18px;padding:3px 11px 3px 3px;max-width:100%}
+  .sheet-like-chip .av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+  .sheet-like-chip .nm{font-size:11px;font-weight:600;color:#5C6178;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* 折叠态：「等 N 人」/ 展开后「收起」按钮 */
+  .sheet-like-more{flex-shrink:0;font-size:11px;font-weight:700;color:#C8853E;background:rgba(244,185,66,0.14);border-radius:18px;padding:5px 12px}
+  .sheet-divider{height:1px;background:rgba(0,0,0,0.06);margin:4px 0 10px}
+  /* 评论区（下）：复用 .comments，重置外边距 */
+  .sheet .comments{margin-left:0;padding-top:0;border-top:none}
 </style>
 </head>
 <body>
@@ -138,6 +164,7 @@
     每条含头像 + 昵称 + <strong>相对时间</strong>；自己的评论可<strong>编辑/删除</strong>；底部常驻「写评论」入口。
   </p>
 
+  <div class="phone-row">
   <div class="phone-col">
     <div class="phone-label">点赞后 · 评论展开（含时间）</div>
     <div class="phone">
@@ -239,6 +266,105 @@
       </div>
     </div>
   </div>
+  <!-- ===== 新增帧：点 赞 / 评论 → 互动详情（上：赞 · 下：评论） ===== -->
+  <div class="phone-col">
+    <div class="phone-label">点 赞 / 评论 → 互动详情（上：赞 · 下：评论）</div>
+    <div class="phone">
+      <div class="phone-status"><span>9:41</span><span>●● Wi-Fi</span></div>
+      <div class="phone-body">
+        <!-- 背景上下文：被蒙板压暗的原卡片（互动条可见，提示触发点） -->
+        <div class="hero">
+          <div class="hero-nav">
+            <span class="hero-arrow">‹</span>
+            <div class="hero-date"><div class="hero-label">回顾</div><div class="hero-main">8月17日 周一</div></div>
+            <span class="hero-arrow">›</span>
+          </div>
+          <div class="hero-motto">✦ 每一步都算数</div>
+        </div>
+        <div class="section-title">伙伴在做啥？</div>
+        <div class="card done">
+          <span class="card-accent" style="background:#F4B942;"></span>
+          <div class="card-main">
+            <span class="card-icon">📖</span>
+            <div class="card-body">
+              <div class="card-title">读《西游记》</div>
+              <div class="card-sub">阅读 · 30分钟</div>
+            </div>
+          </div>
+          <!-- 互动条：未展开评论，仅显示赞/评论计数（点击任一即唤起详情弹层） -->
+          <div class="interact">
+            <span class="interact_item liked">
+              <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 20h2.5V9H2v11zm19.83-7.12c.11-.25.17-.52.17-.8V10c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 1 6.59 7.59C6.22 7.95 6 8.45 6 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05z"/></svg>
+              <span class="num">3</span>
+            </span>
+            <span class="interact_item commented">
+              <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+              <span class="num">3</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- 黑色蒙板 -->
+        <div class="sheet-mask"></div>
+
+        <!-- 互动详情底部弹层 -->
+        <div class="sheet">
+          <div class="sheet-handle"></div>
+          <div class="sheet-head">
+            <span class="sheet-head-ic">📖</span>
+            <span class="sheet-head-title">读《西游记》</span>
+            <span class="sheet-head-close">✕</span>
+          </div>
+
+          <!-- 赞区（上）：谁赞了我 -->
+          <div class="sheet-like">
+            <svg class="sheet-like-ic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.2C.4 8.3 2 5 5.2 5c2 0 3.3 1.1 4 2.3C9.9 6.1 11.2 5 13.2 5 16.4 5 18 8.3 16.4 11.8 14 16.4 12 21 12 21z"/></svg>
+            <div class="sheet-like-body">
+              <span class="sheet-like-chip"><span class="av" style="background:#F4B942;">我</span><span class="nm">我自己</span></span>
+              <span class="sheet-like-chip"><span class="av" style="background:#81C784;">朵</span><span class="nm">朵朵妈妈</span></span>
+              <span class="sheet-like-chip"><span class="av" style="background:#5B9BD5;">明</span><span class="nm">小明妈妈</span></span>
+            </div>
+          </div>
+
+          <div class="sheet-divider"></div>
+
+          <!-- 评论区（下）：复用评论列表 -->
+          <div class="comments">
+            <div class="comment_item mine">
+              <span class="comment-avatar" style="background:#F4B942;">我</span>
+              <div class="comment-main">
+                <div class="comment-top"><span class="comment-name">我自己</span><span class="comment-time">刚刚</span></div>
+                <div class="comment-text">写得真好，我也这么觉得，一起加油！</div>
+              </div>
+              <div class="comment-ops">
+                <span class="comment-op edit" title="编辑"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z" stroke-linejoin="round"/></svg></span>
+                <span class="comment-op del" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </div>
+            </div>
+            <div class="comment_item">
+              <span class="comment-avatar" style="background:#81C784;">朵</span>
+              <div class="comment-main">
+                <div class="comment-top"><span class="comment-name">朵朵妈妈</span><span class="comment-time">2 小时前</span></div>
+                <div class="comment-text">我家孩子也说孙悟空太冲动了 😄</div>
+              </div>
+            </div>
+            <div class="comment_item">
+              <span class="comment-avatar" style="background:#5B9BD5;">明</span>
+              <div class="comment-main">
+                <div class="comment-top"><span class="comment-name">小明妈妈</span><span class="comment-time">昨天 21:10</span></div>
+                <div class="comment-text">这个理解很到位！👍</div>
+              </div>
+            </div>
+            <div class="composer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4l10.5-10.5a2.12 2.12 0 0 0-3-3L5 17v3zM13.5 6.5l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              写评论…
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
 </div>
 
 <!-- ================= 设计说明 ================= -->
@@ -293,6 +419,48 @@
         点评论图标展开后，列表区显示一句「还没有评论，写下第一条吧 ✍️」，再下方同样是「写评论…」入口。即：<strong>评论图标是触发键，展开区里的输入框才是真正的写入口</strong>，无论有无评论都在同一位置，认知一致、不会找不到。
       </div>
     </div>
+
+    <h3>⑤ 查看谁赞了我：点 赞 / 评论 → 互动详情（上：赞 · 下：评论）</h3>
+    新增一个<strong>底部弹层</strong>（复用 heatmap / choices 同款 <code>common_dialog</code>：黑色蒙板 + 顶部把手 + 从下上滑），把「赞」与「评论」集中在一屏，解决原设计缺「谁赞了我」可见入口的问题。
+    <div class="mini">
+      <div class="mini-box">
+        <b>触发</b>
+        点互动条的<strong>「赞」或「评论」任一项</strong>都唤起此详情弹层。<br>点「赞」默认滚动定位到赞区；点「评论」定位到评论区。<br>蒙板点击 / 关闭 ✕ 收起。
+      </div>
+      <div class="mini-box">
+        <b>上：赞区（头像 + 昵称）</b>
+        金色爱心 + 点赞者以<strong>「头像 + 昵称」chip</strong> 横排换行展示（避免首字母撞脸看不出是谁；头像仍取 <code>$main/$blue/$green</code> 首字彩色圆底，昵称取 <code>$foreground-sub</code>）。<br>出现「我自己」chip = 我也赞了。
+      </div>
+      <div class="mini-box">
+        <b>下：评论区</b>
+        分隔线后复用 ③ 的评论列表（头像 + 昵称 + 相对时间 + 内容）；本人评论可编辑/删除；底部常驻「写评论…」入口（吸底，同 ④）。
+      </div>
+    </div>
+
+    <h4>赞区多人方案（N 较大时）</h4>
+    赞人数少（≤ 8）直接全部换行铺开；人多则<strong>默认折叠</strong>，避免弹层被赞区撑爆、挤压评论区：
+    <div class="mini">
+      <div class="mini-box" style="width:300px">
+        <b>收起态（默认）</b>
+        <div class="sheet-like-body" style="padding:8px 0">
+          <span class="sheet-like-chip"><span class="av" style="background:#F4B942;">我</span><span class="nm">我自己</span></span>
+          <span class="sheet-like-chip"><span class="av" style="background:#81C784;">朵</span><span class="nm">朵朵妈妈</span></span>
+          <span class="sheet-like-chip"><span class="av" style="background:#5B9BD5;">明</span><span class="nm">小明妈妈</span></span>
+          <span class="sheet-like-chip"><span class="av" style="background:#EF5350;">乐</span><span class="nm">乐乐爸爸</span></span>
+          <span class="sheet-like-chip"><span class="av" style="background:#C8B496;">安</span><span class="nm">安安</span></span>
+          <span class="sheet-like-chip"><span class="av" style="background:#3A5A8C;">航</span><span class="nm">航航</span></span>
+          <span class="sheet-like-more">等 6 人 ▾</span>
+        </div>
+        规则：<strong>最多展示前 6 个</strong> chip，超出折叠为「等 N 人 ▾」按钮（金色文字胶囊）。
+      </div>
+      <div class="mini-box" style="width:300px">
+        <b>展开态（点「等 N 人」）</b>
+        全部 chip 换行铺满，末尾变「收起 ▴」。赞区高度随人数增长，但弹层本身 <code>max-height:80%</code> 可滚动，评论区始终能滚到。
+      </div>
+    </div>
+    阈值说明：6 为示意值，实现时可按弹层高度或一行可容纳数微调（建议 6~8）。本人「我自己」始终优先展示在第一个，确保一眼看到「我是否赞了」。
+
+    与 ③ 的关系：③ 是卡片<strong>内联轻量展开评论</strong>；⑤ 是<strong>聚合查看（含赞列表）</strong>。两者并存——内联满足快速看评论，弹层补齐「谁赞了我」并一次性看全互动。弹层头部带任务图标 + 标题，点 ✕ 或蒙板关闭。
   </div>
 </div>
 

@@ -23,9 +23,8 @@
             hover-class="press"
             hover-stop-propagation="true"
           >
-            <view class="heatmap_month_arrow {{prevable ? '' : 'disabled'}}">
-              ‹
-            </view>
+            <!-- prettier-ignore -->
+            <view class="heatmap_month_arrow {{prevable ? '' : 'disabled'}}">‹</view>
           </view>
           <view class="heatmap_month_label">{{name}}</view>
           <view
@@ -35,9 +34,8 @@
             hover-class="press"
             hover-stop-propagation="true"
           >
-            <view class="heatmap_month_arrow {{nextable ? '' : 'disabled'}}">
-              ›
-            </view>
+            <!-- prettier-ignore -->
+            <view class="heatmap_month_arrow {{nextable ? '' : 'disabled'}}">›</view>
           </view>
         </view>
 
