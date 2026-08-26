@@ -307,7 +307,7 @@ export class RoutineAdapter {
         ? { id: '', name: '', progress }
         : {
             id: 'stat',
-            name: `${doneCount} 已完成 / ${count} 已规划`,
+            name: `${doneCount}/${count}`,
             progress,
           },
       ...this.adaptStars(),

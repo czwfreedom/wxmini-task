@@ -132,32 +132,31 @@
     }
 
     &_progress {
-      flex: 1;
+      flex-shrink: 0;
       position: relative;
-      height: 48rpx;
-      margin-left: 40rpx;
-      border-radius: 24rpx;
-      background: $white6;
-      overflow: hidden;
-      border: 1rpx solid $white5;
+      width: 88rpx;
+      height: 88rpx;
+      margin-left: auto;
+      border-radius: 50%;
+      background: conic-gradient($main var(--p), $white4 var(--p));
 
-      &_fill {
+      &_inner {
         position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        border-radius: 24rpx;
-        background: $gradient;
+        left: 8rpx;
+        top: 8rpx;
+        right: 8rpx;
+        bottom: 8rpx;
+        border-radius: 50%;
+        background: $gradient-sub;
+        @include flex-layout;
       }
 
       &_text {
-        position: absolute;
-        width: 100%;
-        text-align: center;
-        line-height: 48rpx;
         font-size: 22rpx;
-        font-weight: 700;
-        color: $gray-33;
+        font-weight: 800;
+        color: white;
+        line-height: 1;
+        letter-spacing: 0;
       }
     }
   }

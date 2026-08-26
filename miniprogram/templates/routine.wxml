@@ -53,9 +53,14 @@
               <view class="routine_hero_motto {{ isAllDone ? 'celebrate' : '' }}">
                 ✦ {{ isAllDone ? '今天全搞定，太厉害了！🎉' : (addable ? '又是闪闪发光的一天！⭐' : '每一步都算数') }}
               </view>
-              <view wx:if="{{ stat && stat.id }}" class="routine_hero_progress">
-                <view class="routine_hero_progress_fill" style="width: {{ stat.progress }}%"></view>
-                <text class="routine_hero_progress_text">{{ stat.name }}</text>
+              <view
+                wx:if="{{ stat && stat.id }}"
+                class="routine_hero_progress"
+                style="--p: {{ stat.progress }}%;"
+              >
+                <view class="routine_hero_progress_inner">
+                  <text class="routine_hero_progress_text">{{ stat.name }}</text>
+                </view>
               </view>
             </view>
           </view>
