@@ -366,6 +366,8 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     }
 
     vm.item.footers = this.adapter.adaptFooters(this.adapter.getInfo(id)!);
+    // 如果已展开，走这个独立的逻辑？
+    if (vm.item.commentVisible) this.adapter.adaptComments(vm.item);
     this.setData(this.buildNewData(`records[${vm.index}]`, vm.item), () => {
       this.showComment(id);
     });

@@ -122,10 +122,7 @@ export class RoutineAdapter {
       : await Comment.create({ ref: id, praise: liked });
     if ('number' === typeof res) return res;
 
-    if (!info.stat) info.stat = this.defaultStat();
-    info.stat.count += liked ? 1 : -1;
-    info.stat.liked = liked;
-    if (comment) comment.praise = liked;
+    this.updateLocalComment(info, id, res);
     return 0;
   }
 
@@ -140,20 +137,26 @@ export class RoutineAdapter {
     if ('number' === typeof res) return res;
     if (!res) return Err.Code.ServerFailed;
 
-    // 为了少拉一次接口，需要精心维护本地的数据。
+    this.updateLocalComment(info, id, res);
+    return 0;
+  }
+
+  // 为了少拉一次接口，需要精心维护本地的数据。
+  protected updateLocalComment(info: Routine.Info, id: string, comment?: Comment.Info) {
+    if (!comment) return;
+
     const comments = this.getComments(id);
     if (!comments?.data) {
-      this.comments.set(id, { data: [res], users: [] });
+      this.comments.set(id, { data: [comment], users: [] });
     } else {
-      const exist = Entity.find(comments.data, res.id);
+      const exist = Entity.find(comments.data, comment.id);
       if (exist?.item) {
-        comments.data[exist.index] = res;
+        comments.data[exist.index] = comment;
       } else {
-        comments.data.push(res);
+        comments.data.push(comment);
       }
     }
     this.geneStat(info, this.getComments(id)?.data || []);
-    return 0;
   }
 
   public adaptComments(vm: RoutineUI.Record, visible?: boolean): RoutineUI.Record {
