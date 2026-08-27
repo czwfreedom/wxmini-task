@@ -23,7 +23,7 @@ Page({
 
   onShareAppMessage(obj: any) {
     // 不知道为什么报错。试过放在data内部，报错倒是没有了，小程序貌似会序列化data中的所有数据。
-    const tab = this.getRealTabs()[this.data.current];
+    const tab = this.getCurrentTab();
     if (tab) {
       const component = this.selectComponent('#home-' + tab.id);
       if (!!component?.onShareAppMessage) {
@@ -38,7 +38,7 @@ Page({
    */
   onPullDownRefresh() {
     wx.stopPullDownRefresh(); // 手动结束
-    const tab = this.getRealTabs()[this.data.current];
+    const tab = this.getCurrentTab();
     if (tab) {
       const component = this.selectComponent('#home-' + tab.id);
       if (!!component?.onPullDownRefresh) {
@@ -82,7 +82,9 @@ Page({
   onTabDoubleTap(e: WechatMiniprogram.TouchEvent) {
     const { id } = e.currentTarget.dataset;
     Logger.info('onDoubleTap', 'home', id);
-    EventBus.emit(Event.Name.OnDoubleTap, { from: 'home', button: id });
+    if (this.getCurrentTab()?.id === id) {
+      wx.startPullDownRefresh();
+    }
   },
 
   init() {
@@ -91,6 +93,10 @@ Page({
 
   getRealTabs(): MenuUI.ImageTab[] {
     return this.data.tabs.items.filter((o) => o.id);
+  },
+
+  getCurrentTab(): MenuUI.ImageTab | undefined {
+    return this.getRealTabs()[this.data.current];
   },
 
   setCurrent(current: number) {
