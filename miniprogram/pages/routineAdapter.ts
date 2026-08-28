@@ -438,7 +438,7 @@ export namespace RoutineAdapter {
     /** 各分类的快捷示例提示词 */
     examples?: string[];
     finish?: string;
-    celebrate?: string;
+    celebrates?: string[];
   }
 
   /** 所有分类统一配置：分类枚举、颜色、图标、是否默认、示例提示词 */
@@ -456,7 +456,11 @@ export namespace RoutineAdapter {
       examples: ['《三体》第3章', '大声朗读绘本', '画一页读书笔记'],
       // 引导说出具体画面+情绪（双编码/命名/叙事记忆/正向写死）
       finish: '哪一句让你心里一亮？说给爸妈听听',
-      celebrate: '又往脑袋里装了颗星星 📚',
+      celebrates: [
+        '又往脑袋里装了颗星星 📚',
+        '这页书，被你变成自己的了 📖',
+        '今天和作者的想法撞了一下肩 💡',
+      ],
     },
     {
       category: Routine.Category.Homework,
@@ -467,7 +471,11 @@ export namespace RoutineAdapter {
       hint: '今天想先攻克哪一样？',
       examples: ['数学练习册 P20', '背一首古诗', '听写10个单词'],
       finish: '哪道题最让你得意？讲讲你的思路',
-      celebrate: '今天的难题被你收服啦 💪',
+      celebrates: [
+        '今天的难题被你收服啦 💪',
+        '这一课的关卡，通关 ✅',
+        '作业本上，又多了一枚你的勋章 🏅',
+      ],
     },
     {
       category: Routine.Category.Exercise,
@@ -478,7 +486,11 @@ export namespace RoutineAdapter {
       hint: '今天想让身体怎么动起来？',
       examples: ['跳绳500下', '慢跑15分钟', '平板支撑30秒'],
       finish: '动完是不是浑身轻飘飘？哪里最酸？',
-      celebrate: '今天又强壮了一点点 ⚡',
+      celebrates: [
+        '汗水没白流，又强壮一点 ⚡',
+        '心跳砰砰，身体在说谢谢 💓',
+        '今天的自己，比昨天更能跑更能跳 🏃',
+      ],
     },
     {
       category: Routine.Category.Chores,
@@ -488,7 +500,11 @@ export namespace RoutineAdapter {
       hint: '想帮家里做件什么小事后？',
       examples: ['把书桌理整齐', '扫一遍地', '给绿植浇浇水'],
       finish: '看着家里变清爽，心情是不是变好了？',
-      celebrate: '把家变得更暖了一点 🧹',
+      celebrates: [
+        '把家变得更暖了一点 🧹',
+        '小小手，把家里理得亮堂堂 ✨',
+        '家人回来，会闻到你的用心 🏠',
+      ],
     },
     {
       category: Routine.Category.Game,
@@ -498,7 +514,7 @@ export namespace RoutineAdapter {
       hint: '今天想玩点什么开开心？',
       examples: ['搭个 Minecraft 小屋', '拼完100片拼图', '来一局数独'],
       finish: '今天玩得最爽的是哪一刻？',
-      celebrate: '开心充能完成，能量满格 ✨',
+      celebrates: ['玩得尽兴，能量满格 ✨', '这一局，快乐拉满 🎮', '边玩边练，脑子又灵光一点 🧠'],
     },
     {
       category: Routine.Category.Handwriting,
@@ -508,7 +524,7 @@ export namespace RoutineAdapter {
       hint: '今天想练哪一页字？',
       examples: ['描红一页', '临摹《兰亭序》', '写满一页硬笔'],
       finish: '哪个字你写得最满意？圈出来看看',
-      celebrate: '这一笔，稳了 ✍️',
+      celebrates: ['这一笔，稳了 ✍️', '纸上多了一行你的安静 📝', '手和笔，越来越合拍了 🤝'],
     },
     {
       category: Routine.Category.Instrument,
@@ -518,7 +534,7 @@ export namespace RoutineAdapter {
       hint: '今天想让哪首曲子流出来？',
       examples: ['音阶爬升10遍', '练熟第3首练习曲', '复习三个和弦'],
       finish: '哪一段弹得最顺？闭上眼再听一遍',
-      celebrate: '耳朵和手指都在进步 🎵',
+      celebrates: ['耳朵和手指都在进步 🎵', '一段旋律，被你唤醒了 🎶', '今天的练习，听见了成长 🌟'],
     },
     {
       category: Routine.Category.Drawing,
@@ -528,7 +544,11 @@ export namespace RoutineAdapter {
       hint: '今天想画个什么出来？',
       examples: ['素描一个静物', '涂一幅水彩风景', '画个卡通角色'],
       finish: '画里你最满意的是哪一块？',
-      celebrate: '今天的世界更美了一点 🎨',
+      celebrates: [
+        '今天的世界更美了一点 🎨',
+        '白纸被你讲成了一个故事 🖌️',
+        '颜色里，藏着你的小心情 🌈',
+      ],
     },
     {
       category: Routine.Category.Coding,
@@ -538,7 +558,11 @@ export namespace RoutineAdapter {
       hint: '今天想捣鼓点什么小程序？',
       examples: ['Scratch 做个射击游戏', 'Python 写个小猜数', '改一改自己的网页'],
       finish: '今天打败了哪个 Bug？怎么解决的？',
-      celebrate: '你的小宇宙又升级了 🚀',
+      celebrates: [
+        '你的小宇宙又升级了 🚀',
+        '一行代码，又听你的话了 💻',
+        'Bug 退散，你又变厉害了 ⚔️',
+      ],
     },
     {
       category: Routine.Category.Practice,
@@ -548,7 +572,7 @@ export namespace RoutineAdapter {
       hint: '今天想去体验点什么？',
       examples: ['摆个小摊', '做次社区志愿', '逛一趟博物馆'],
       finish: '今天撞见了什么新鲜事？',
-      celebrate: '今天又长大了一点 🌱',
+      celebrates: ['今天又长大了一点 🌱', '真实世界里，你又踩了踩脚印 👣', '经历，变成你的底气 💪'],
     },
     {
       category: Routine.Category.QA,
@@ -559,7 +583,11 @@ export namespace RoutineAdapter {
       hint: '今天脑子里冒出什么好奇？',
       examples: ['每天一个问题', '查一个百科冷知识', '和家人成语接龙'],
       finish: '今天问的哪个问题最烧脑？',
-      celebrate: '好奇心又点亮一颗星 ❓',
+      celebrates: [
+        '好奇心又点亮一颗星 ❓',
+        '今天的世界，又被你问清楚一点 🔍',
+        '小问号，变成了小惊叹号 ❗',
+      ],
     },
     {
       category: Routine.Category.Job,
@@ -569,7 +597,11 @@ export namespace RoutineAdapter {
       hint: '今天想推进点什么？',
       examples: ['回几条工作消息', '写完项目方案', '整理会议纪要'],
       finish: '今天哪件事让你最有成就感？',
-      celebrate: '今天也是靠谱的大人 🔥',
+      celebrates: [
+        '今天的大事被你拿下了 🔥',
+        '这一项，从待办变成搞定 ✅',
+        '靠谱的，是你自己的节奏 ⏱️',
+      ],
     },
     {
       category: Routine.Category.Shoot,
@@ -579,7 +611,7 @@ export namespace RoutineAdapter {
       hint: '今天想定格什么画面？',
       examples: ['拍一段 Vlog', '录段朗读视频', '拍张全家福'],
       finish: '哪张照片你最想再看一遍？',
-      celebrate: '精彩瞬间被你定格 📸',
+      celebrates: ['精彩瞬间被你定格 📸', '这一帧，以后会很好看 🖼️', '你眼里的世界，被留下来了 👀'],
     },
     {
       category: Routine.Category.Other,
@@ -589,7 +621,11 @@ export namespace RoutineAdapter {
       hint: '想做什么？自由发挥吧 ✨',
       examples: ['帮妈妈一个小忙', '把书包理好', '去户外探探险'],
       finish: '做完是不是挺有成就感的？',
-      celebrate: '完成就是最棒的 ✨',
+      celebrates: [
+        '想做的事，你真的去做了 ✨',
+        '自由发挥，也是一种本事 🎈',
+        '做完啦，给自己比个耶 👍',
+      ],
     },
   ];
 
@@ -620,8 +656,12 @@ export namespace RoutineAdapter {
     return findConfig(category)?.finish || '做完啦，有什么想说的？';
   }
 
-  /** 获取指定分类的完成祝语（任务完成那一刻弹出的肯定语） */
+  /** 获取指定分类的完成祝语（任务完成那一刻弹出的肯定语），随机选一句以对抗脱敏 */
   export function getCelebrate(category: number): string {
-    return findConfig(category)?.celebrate || '完成就是最棒的 ✨';
+    const celebrates = findConfig(category)?.celebrates;
+    if (celebrates && celebrates.length) {
+      return celebrates[Math.floor(Math.random() * celebrates.length)];
+    }
+    return '完成就是最棒的 ✨';
   }
 }
