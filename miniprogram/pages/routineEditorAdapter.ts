@@ -15,11 +15,11 @@ export class RoutineEditorAdapter {
 
   // ---- 计划时长选项（10分钟 · 25番茄钟 · 30 · 45 · 1小时 · 其他） ----
   private static sDurations: RoutineEditorUI.Duration[] = [
+    { id: '1', name: '1', desc: '分钟' },
+    { id: '5', name: '5', desc: '分钟' },
     { id: '10', name: '10', desc: '分钟' },
     { id: '25', name: '25', desc: '分钟' },
-    { id: '30', name: '30', desc: '分钟' },
-    { id: '45', name: '45', desc: '分钟' },
-    { id: '60', name: '1', desc: '小时' },
+    { id: '30', name: '30', desc: '小时' },
     { id: 'custom', name: '其他', desc: '' },
   ];
 
