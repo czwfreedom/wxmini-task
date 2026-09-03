@@ -1,5 +1,6 @@
 import { Entity } from '../model/entity';
 import { Routine } from '../server/routine';
+import { RoutineCache } from '../storage/routineCache';
 import { DateUtils } from '../utils/dateUtils';
 import { RoutineAdapter } from './routineAdapter';
 import { RoutineEditorUI } from './routineEditorUI';
@@ -61,9 +62,17 @@ export class RoutineEditorAdapter {
   }
 
   /** 获取指定分类的示例提示词 VM 列表（从 sConfigs.examples 读取，空数组则不展示） */
-  public adaptExamples(category: number): RoutineEditorUI.Example[] {
+  public adaptExamples(category: number, updating = false): RoutineEditorUI.Example[] {
     const config = RoutineAdapter.findConfig(category);
-    const texts = config?.examples || [];
+    const texts = config?.examples ? [...config.examples] : [];
+    if (!updating) {
+      const cache = RoutineCache.get(category);
+      if (cache) {
+        texts.splice(0, 0, cache);
+        // 后面直接不要了？
+        if (texts?.length > 3) texts.length = 3;
+      }
+    }
     return texts.map((text, i) => ({
       id: `ex_${category}_${i}`,
       name: text,

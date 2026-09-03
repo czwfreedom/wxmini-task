@@ -13,6 +13,7 @@ import { Intent } from '../core/intent';
 import { MenuUI } from '../ui/menuUI';
 import { RoutineAdapter } from './routineAdapter';
 import { ObjectUtils } from '../utils/objectUtils';
+import { RoutineCache } from '../storage/routineCache';
 
 export namespace RoutineEditorUI {
   export interface Data extends SubUI.Data {
@@ -293,6 +294,10 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       return;
     }
 
+    const category = data.category || this.entry?.category;
+    const detail = data.detail || this.entry?.detail;
+    if (category && detail) RoutineCache.save(category, detail);
+
     this.showToast(updating ? '修改成功' : '创建成功');
     this.postEvent(Event.Name.RoutineUpdated, res);
     Intent.delayBack();
@@ -383,7 +388,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       categories.splice(categories.length - 1, 1, more);
     }
     this.markSelected(categories, category);
-    const examples = this.adapter.adaptExamples(category);
+    const examples = this.adapter.adaptExamples(category, this.updating());
     const config = RoutineAdapter.findConfig(category);
 
     this.updateData({
