@@ -477,6 +477,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       if (id.startsWith('holder')) {
         const template = this.adapter.findTemplate(vm.category);
         Intent.navigateTo(Constants.Page.CreateRoutine, {
+          type: Routine.isNote(vm.category) ? Entity.Action.Finish : undefined,
           data: { category: vm.category, date: this.date, duration: template?.duration },
         } as Intent.Wrap<Partial<Routine.Info>>);
       }

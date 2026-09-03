@@ -124,6 +124,10 @@ export namespace Routine {
     brief: boolean;
   }
 
+  export function isNote(category?: number): boolean {
+    return category === Category.Note;
+  }
+
   export function isDone(info?: Info): boolean {
     return info?.status === Status.Done;
   }

@@ -256,7 +256,7 @@ export class RoutineAdapter {
       const holder = info.id.startsWith('holder');
       const done = info.status === Routine.Status.Done;
       const config = RoutineAdapter.findConfig(info.category)!;
-      const isNote = info.category === Routine.Category.Note;
+      const isNote = Routine.isNote(info.category);
       // 应该进进度吗？后台还没改。
       if (!holder) {
         count++;
@@ -270,7 +270,7 @@ export class RoutineAdapter {
       if (!holder) {
         // 一句话只展示时间，不展示「开始 / 时长」
         detail = isNote
-          ? `${config.name} · ${DateUtils.formatDate(info.createTime || Date.now(), 'hh:mm')}`
+          ? `${DateUtils.formatDate(info.createTime || Date.now(), 'hh:mm')}`
           : `${config.name} · ${DateUtils.formatDate(info.planTime || Date.now(), 'hh:mm')}开始 · ${Math.floor(info.duration || 1800000) / 60000}分钟`;
       } else if (isNote) {
         // 一句话 holder 的副标题用引导语（hint）
@@ -637,7 +637,7 @@ export namespace RoutineAdapter {
       // $gold-dark2 棕金/墨色：与阅读的亮金区分，有"书写"联想，未占用的变量
       color: '#C8853E',
       icon: '/assets/imgs/ic-note.svg',
-      finish: '再多说一点点？',
+      finish: '想到什么就记，日积月累',
       hint: '想到什么就记，日积月累',
       celebrates: [
         '记下了，这就是你的今天 ✍️',

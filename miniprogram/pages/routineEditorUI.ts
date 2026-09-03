@@ -27,6 +27,7 @@ export namespace RoutineEditorUI {
 
     // 很想把这个统统放到一个结构里。
     /** 任务内容 */
+    contentTitle?: string;
     contentHint?: string;
     contentHolder?: string;
     contentText: string;
@@ -288,9 +289,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     this.hideLoading();
 
     if ('number' === typeof res) {
-      this.showToast(
-        res === Err.Code.OverLimited ? '过犹不及，今天的任务太多啦' : Err.getMessage(res)
-      );
+      this.showErrToast(res === Err.Code.OverLimited ? Err.Code.RoutineOverLimited : res);
       return;
     }
 
