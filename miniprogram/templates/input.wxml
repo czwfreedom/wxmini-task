@@ -1,4 +1,5 @@
 <template name="input">
+  <!-- 带图文的单元选 -->
   <view wx:if="{{ type === 'gridRadio' }}" class="input_section">
     <view wx:if="{{ name }}" class="input_section_title">{{ name }}</view>
     <view class="input_grid {{ selectedId ? 'has-selected' : '' }}">
@@ -20,6 +21,53 @@
         <view wx:if="{{ item.other }}" class="input_grid_hint">点击可选择</view>
         <view wx:if="{{ item.selected }}" class="input_checked">✓</view>
       </view>
+    </view>
+  </view>
+
+  <!-- 带选择的短文本输出 -->
+  <view wx:if="{{ type ==='optionInput' }}" class="input_section">
+    <view wx:if="{{ name }}" class="input_section_title">{{ name }}</view>
+
+    <view class="input_option_grid">
+      <block wx:for="{{ items }}" wx:key="id">
+        <view
+          wx:if="{{ item.id !== 'custom' }}"
+          class="input_option_cell {{ item.selected? 'selected' : '' }}"
+          catch:tap="onInputRadioTap"
+          hover-class="press"
+          data-id="{{ id }}"
+          data-subid="{{ item.id }}"
+        >
+          <!-- prettier-ignore -->
+          <text wx:if="{{ item.name }}" class="input_option_value {{ item.selected? 'selected' : '' }}">{{ item.name }}</text>
+          <text wx:if="{{ item.desc }}" class="input_option_unit">{{ item.desc }}</text>
+        </view>
+
+        <!-- "其他"单元格：点击后原地切换为输入框 -->
+        <view
+          wx:else
+          class="input_option_cell {{ item.selected ? 'selected' : 'custom' }}"
+          catch:tap="{{ item.selected ? '' : 'onInputRadioTap' }}"
+          data-id="{{ id }}"
+          data-subid="{{ item.id }}"
+        >
+          <block wx:if="{{ item.selected }}">
+            <input
+              class="input_option_custom_input"
+              type="{{ subType || 'text' }}"
+              placeholder="{{ hint || '输入'}}"
+              maxlength="{{ maxLength || 3 }}"
+              value="{{ value }}"
+              data-id="{{ id }}"
+              bindinput="onInputChanged"
+              bindblur="onInputBlur"
+              focus="true"
+            />
+            <text wx:if="{{ item.desc }}" class="input_option_custom_unit">{{ item.desc }}</text>
+          </block>
+          <block wx:else>其他</block>
+        </view>
+      </block>
     </view>
   </view>
 </template>

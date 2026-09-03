@@ -6,14 +6,20 @@ export namespace InputUI {
      * 带图文的单选。
      */
     GridRadio = 'gridRadio',
+
+    /**
+     * 带候选的短输入。
+     */
+    OptionInput = 'optionInput',
   }
 
   // 配合 input.scss/wxml
   export interface VM extends Entity.Image {
     type?: string;
+    subType?: string; // 子类型，预留。
     maxLength?: number;
     value?: string;
-    
+
     color?: string;
 
     other?: boolean; // 是否是'其他'

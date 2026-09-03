@@ -22,7 +22,7 @@ export class RoutineEditorAdapter {
     { id: '10', name: '10', desc: '分钟' },
     { id: '25', name: '25', desc: '分钟' },
     { id: '30', name: '30', desc: '分钟' },
-    { id: 'custom', name: '其他', desc: '' },
+    { id: 'custom', name: '其他', desc: '分钟' },
   ];
 
   /** 计划时间选项（整点快捷 + 自定义入口），构建时按当前小时过滤已过时间 */
@@ -81,7 +81,7 @@ export class RoutineEditorAdapter {
   }
 
   /** 获取计划时长选项 VM 列表（带选中态），末尾"其他"为虚线自定义入口 */
-  public adaptDurations(selectedMinutes?: number): Partial<RoutineEditorUI.Data> {
+  public adaptDurations(selectedMinutes?: number): Partial<InputUI.VM> {
     const items: RoutineEditorUI.Duration[] = RoutineEditorAdapter.sDurations.map((o) =>
       Object.assign({}, o)
     );
@@ -94,7 +94,7 @@ export class RoutineEditorAdapter {
         if (item.id === 'custom') custom = minId;
       }
     }
-    return custom ? { durations: items, durationCustomText: custom } : { durations: items };
+    return custom ? { items: items, value: custom } : { items: items };
   }
 
   /** 获取计划时间选项 VM 列表（按当前小时过滤已过时间 + 带选中态），末尾为自定义入口 */

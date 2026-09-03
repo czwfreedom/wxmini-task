@@ -82,4 +82,71 @@
   &_checked {
     @include checked;
   }
+
+  // ===== 3. 计划时长 =====
+  &_option {
+    &_grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16rpx;
+    }
+
+    &_cell {
+      @include card;
+      @include flex-layout(row, center, center);
+      @include press;
+      border-radius: 28rpx;
+      text-align: center;
+      border: 3rpx solid $gray-e5;
+      padding: 0 24rpx;
+
+      &.selected {
+        border-color: $main;
+        background: $background-white;
+      }
+
+      &.custom {
+        border-style: dashed;
+        color: $gray-99;
+        background: transparent;
+        border-color: $gray-c5;
+      }
+    }
+    &_value {
+      font-size: 32rpx;
+      line-height: 80rpx;
+      font-weight: 700;
+      color: $foreground-sub;
+
+      &.selected {
+        color: $gray-33;
+      }
+    }
+
+    &_unit {
+      font-size: 20rpx;
+      color: $gray-99;
+      margin-left: 4rpx;
+    }
+
+    &_custom {
+      &_input {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 32rpx;
+        line-height: 80rpx;
+        font-weight: 700;
+        color: $gray-33;
+        text-align: center;
+        min-width: 40rpx;
+      }
+
+      &_unit {
+        font-size: 20rpx;
+        color: $gray-99;
+        flex-shrink: 0;
+      }
+    }
+  }
 }

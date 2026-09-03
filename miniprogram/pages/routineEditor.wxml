@@ -55,49 +55,11 @@
         </view>
       </view>
 
-      <!-- 3. 计划时长 -->
-      <view wx:if="{{ !finishing }}" class="croutine_section">
-        <view class="croutine_section_title">计划时长</view>
-
-        <view class="croutine_duration_grid">
-          <block wx:for="{{ durations }}" wx:key="id">
-            <view
-              wx:if="{{ item.id !== 'custom' }}"
-              class="croutine_duration_cell {{ item.selected? 'selected' : '' }}"
-              catch:tap="onDurationTap"
-              hover-class="press"
-              data-id="{{ item.id }}"
-            >
-              <!-- prettier-ignore -->
-              <text class="croutine_duration_value {{ item.selected? 'selected' : '' }}">{{ item.name }}</text>
-              <text class="croutine_duration_unit">{{ item.desc }}</text>
-            </view>
-
-            <!-- "其他"单元格：点击后原地切换为输入框 -->
-            <view
-              wx:else
-              class="croutine_duration_cell {{ item.selected ? 'selected' : 'custom' }}"
-              catch:tap="{{ item.selected ? '' : 'onDurationTap' }}"
-              data-id="{{ item.id }}"
-            >
-              <block wx:if="{{ item.selected }}">
-                <input
-                  class="croutine_duration_custom_input"
-                  type="number"
-                  placeholder="输入"
-                  maxlength="{{ 3 }}"
-                  value="{{ durationCustomText }}"
-                  bindinput="onDurationCustomInput"
-                  bindblur="onDurationCustomConfirm"
-                  focus="true"
-                />
-                <text class="croutine_duration_custom_unit">分钟</text>
-              </block>
-              <block wx:else>其他</block>
-            </view>
-          </block>
-        </view>
-      </view>
+      <template
+        wx:if="{{ !finishing && duration && duration.items }}"
+        is="input"
+        data="{{ ...duration }}"
+      ></template>
 
       <!-- 4. 计划时间 -->
       <view wx:if="{{ !finishing }}" class="croutine_section">
