@@ -19,7 +19,7 @@ export class RoutineEditorAdapter {
     { id: '5', name: '5', desc: '分钟' },
     { id: '10', name: '10', desc: '分钟' },
     { id: '25', name: '25', desc: '分钟' },
-    { id: '30', name: '30', desc: '小时' },
+    { id: '30', name: '30', desc: '分钟' },
     { id: 'custom', name: '其他', desc: '' },
   ];
 

@@ -453,9 +453,9 @@ export namespace RoutineAdapter {
       // 探索/邀请语气（脚手架非压迫）+ 好奇驱动
       hint: '今天想翻开哪本书？',
       // 看得见的具体动作画面（双编码）；首条最轻量（难度匹配降初始失败）
-      examples: ['《三体》第3章', '大声朗读绘本', '画一页读书笔记'],
+      examples: ['DK百科', '朗读绘本', '画一页读书笔记'],
       // 引导说出具体画面+情绪（双编码/命名/叙事记忆/正向写死）
-      finish: '哪一句让你心里一亮？说给爸妈听听',
+      finish: '哪一句让你心里一亮？',
       celebrates: [
         '又往脑袋里装了颗星星 📚',
         '这页书，被你变成自己的了 📖',
@@ -469,7 +469,7 @@ export namespace RoutineAdapter {
       icon: '/assets/imgs/ic-homework.svg',
       default: true,
       hint: '今天想先攻克哪一样？',
-      examples: ['数学练习册 P20', '背一首古诗', '听写10个单词'],
+      examples: ['出一道题', '背一首诗', '听写10个单词'],
       finish: '哪道题最让你得意？讲讲你的思路',
       celebrates: [
         '今天的难题被你收服啦 💪',
@@ -512,7 +512,7 @@ export namespace RoutineAdapter {
       color: '#F06292',
       icon: '/assets/imgs/ic-game.svg',
       hint: '今天想玩点什么开开心？',
-      examples: ['搭个 Minecraft 小屋', '拼完100片拼图', '来一局数独'],
+      examples: ['我的世界', '拼完100片拼图', '来一局数独'],
       finish: '今天玩得最爽的是哪一刻？',
       celebrates: ['玩得尽兴，能量满格 ✨', '这一局，快乐拉满 🎮', '边玩边练，脑子又灵光一点 🧠'],
     },
@@ -522,7 +522,7 @@ export namespace RoutineAdapter {
       color: '#4DB6AC',
       icon: '/assets/imgs/ic-calligraphy.svg',
       hint: '今天想练哪一页字？',
-      examples: ['描红一页', '临摹《兰亭序》', '写满一页硬笔'],
+      examples: ['两页高频字', '描红一页', '写满一页硬笔'],
       finish: '哪个字你写得最满意？圈出来看看',
       celebrates: ['这一笔，稳了 ✍️', '纸上多了一行你的安静 📝', '手和笔，越来越合拍了 🤝'],
     },
@@ -532,7 +532,7 @@ export namespace RoutineAdapter {
       color: '#A1887F',
       icon: '/assets/imgs/ic-instrument.svg',
       hint: '今天想让哪首曲子流出来？',
-      examples: ['音阶爬升10遍', '练熟第3首练习曲', '复习三个和弦'],
+      examples: ['练熟1首练习曲', '复习三个和弦'],
       finish: '哪一段弹得最顺？闭上眼再听一遍',
       celebrates: ['耳朵和手指都在进步 🎵', '一段旋律，被你唤醒了 🎶', '今天的练习，听见了成长 🌟'],
     },
@@ -556,7 +556,6 @@ export namespace RoutineAdapter {
       color: '#4FC3F7',
       icon: '/assets/imgs/ic-coding.svg',
       hint: '今天想捣鼓点什么小程序？',
-      examples: ['Scratch 做个射击游戏', 'Python 写个小猜数', '改一改自己的网页'],
       finish: '今天打败了哪个 Bug？怎么解决的？',
       celebrates: [
         '你的小宇宙又升级了 🚀',
@@ -581,7 +580,7 @@ export namespace RoutineAdapter {
       icon: '/assets/imgs/ic-qa.svg',
       default: true,
       hint: '今天脑子里冒出什么好奇？',
-      examples: ['每天一个问题', '查一个百科冷知识', '和家人成语接龙'],
+      examples: ['每日一问', '查一个百科冷知识', '成语接龙'],
       finish: '今天问的哪个问题最烧脑？',
       celebrates: [
         '好奇心又点亮一颗星 ❓',
