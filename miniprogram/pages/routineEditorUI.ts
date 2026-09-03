@@ -14,16 +14,15 @@ import { MenuUI } from '../ui/base/menuUI';
 import { RoutineAdapter } from './routineAdapter';
 import { ObjectUtils } from '../utils/objectUtils';
 import { RoutineCache } from '../storage/routineCache';
+import { InputUI } from '../ui/base/inputUI';
 
 export namespace RoutineEditorUI {
   export interface Data extends SubUI.Data {
     finishing?: boolean;
 
     choices: ChoicesUI.Data;
-    /** 当前选中分类 ID */
-    selectedCategoryId: number;
-    /** 常用分类列表，最后一个是“更多”选项 */
-    categories: Category[];
+
+    category: InputUI.VM;
 
     // 很想把这个统统放到一个结构里。
     /** 任务内容 */
@@ -81,7 +80,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     this.entry = intent;
     this.isFuture = (intent?.date || 0) > Date.now();
 
-    this.bindEvent('onCategoryTap', this.onCategoryTap);
+    this.bindEvent('onInputRadioTap', this.onInputRadioTap);
     this.bindEvent('onContentInput', this.onContentInput);
     this.bindEvent('onContentExampleTap', this.onContentExampleTap);
     this.bindEvent('onDurationTap', this.onDurationTap);
@@ -97,8 +96,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       loaded: false,
       abortMessage: '',
       choices: ChoicesUI.defaultData(),
-      categories: [],
-      selectedCategoryId: 0,
+      category: { id: 'category', name: '想做什么呢？', type: InputUI.Type.GridRadio },
       contentText: '',
       contentMaxLength: RoutineEditorUI.sContentMaxLength,
       contentCharCount: 0,
@@ -123,7 +121,9 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
   /** 初始化页面数据（同步，无需网络请求） */
   public loadData(): number {
     const entry = this.entry;
-    const categories = this.adapter.adaptCategories();
+    const oldData = this.getData();
+    const category = oldData.category;
+    category.items = this.adapter.adaptCategories();
     const durations = this.adapter.adaptDurations((entry?.duration || 0) / 60000 || 30);
     const times = this.adapter.adaptTimes(entry?.planTime, this.isFuture);
 
@@ -131,7 +131,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     this.setData(
       {
         loaded: true,
-        categories: categories,
+        category,
         ...durations,
         ...times,
         contentText: detail,
@@ -152,21 +152,21 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
   // ---- 事件处理 ----
 
   /** 选择常用分类 */
-  protected onCategoryTap(e: WechatMiniprogram.TouchEvent) {
-    const { id } = e.currentTarget.dataset;
-    Logger.info('onCategoryTap', id);
-    const vm = Entity.find(this.getData().categories, id);
+  protected onInputRadioTap(e: WechatMiniprogram.TouchEvent) {
+    const { id, subid } = e.currentTarget.dataset;
+    Logger.info('onInputTap', id, subid);
+    const vm = Entity.find(this.getData().category.items, subid);
     if (!vm.item) return;
     if (vm.item.other) {
       this.showMoreCategories();
     } else {
-      this.selectCategory(Number(id), false);
+      this.selectCategory(Number(subid), false);
     }
   }
 
   /** 打开更多分类弹窗（委托 ChoicesUI） */
   protected showMoreCategories() {
-    const categories = this.adapter.adaptMoreCategories(this.getData().selectedCategoryId);
+    const categories = this.adapter.adaptMoreCategories(this.getSelectedCategory());
     this.getChoices().show(
       {
         id: 'more-category',
@@ -258,6 +258,10 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     this.commit();
   }
 
+  protected getSelectedCategory(): number {
+    return Utils.ZNumber(this.getData().category.selectedId);
+  }
+
   protected updating() {
     return !!this.entry?.id && (this.isFuture || DateUtils.getToday() === this.entry.date);
   }
@@ -320,7 +324,8 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
 
   protected getCommitData(showToast = false): Partial<Routine.Info> | undefined {
     const data = this.getData();
-    if (!data.selectedCategoryId) {
+    const selectedCategory = this.getSelectedCategory();
+    if (!selectedCategory) {
       if (showToast) this.showToast('请选择任务分类');
       return undefined;
     }
@@ -348,7 +353,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     }
 
     const newInfo: Partial<Routine.Info> = {
-      category: data.selectedCategoryId,
+      category: selectedCategory,
       detail: content,
       duration: mins * 60000,
       planTime: this.formatPlanTime(time.id === 'custom' ? data.timeCustomValue.trim() : time.id),
@@ -380,19 +385,21 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
 
   /** 选择分类：更新选中态 + 刷新示例提示词 */
   private selectCategory(category: number, isMore = false) {
-    const categories = this.getData().categories;
+    const input = this.getData().category;
+    const categories = input.items!;
+    input.selectedId = '' + category;
     if (isMore) {
       const more = this.adapter.buildCategoryVM(category);
       more.other = true;
       categories.splice(categories.length - 1, 1, more);
     }
     this.markSelected(categories, category);
+
     const examples = this.adapter.adaptExamples(category, this.updating());
     const config = RoutineAdapter.findConfig(category);
 
     this.updateData({
-      selectedCategoryId: category,
-      categories: categories,
+      category: input,
       contentExamples: examples,
       contentHolder: config?.hint || '',
     });

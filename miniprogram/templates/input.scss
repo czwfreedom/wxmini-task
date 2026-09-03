@@ -1,0 +1,85 @@
+@import '../assets/style/var.scss';
+@import '../assets/style/mixin.scss';
+
+.input {
+  &_section {
+    margin: 40rpx 32rpx 0;
+
+    &_title {
+      @include section-title;
+      @include flex-layout(row, flex-start);
+      margin-bottom: 28rpx;
+    }
+
+    &_tip {
+      font-size: 22rpx;
+      font-weight: 500;
+      color: $gray-99;
+      margin-left: auto;
+    }
+  }
+
+  &_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20rpx;
+
+    &.has-selected .input_grid_cell:not(.selected) .input_grid_icon {
+      opacity: 0.55;
+    }
+
+    &_cell {
+      @include card;
+      @include flex-layout(column, center, center);
+      @include press;
+      border: 4rpx solid transparent;
+      border-radius: 32rpx;
+      padding: 28rpx 12rpx 24rpx;
+      position: relative;
+      box-sizing: border-box;
+
+      &.other {
+        border: 4rpx dashed $gray-c5;
+      }
+      // 统一选中态：仅边框色 + 底色变化，尺寸不变
+      &.selected {
+        border: 4rpx solid $main;
+        background: $background-white;
+      }
+    }
+    &_icon {
+      width: 96rpx;
+      height: 96rpx;
+
+      &.other {
+        width: 56rpx;
+        height: 56rpx;
+      }
+
+      &_img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    &_name {
+      font-size: 26rpx;
+      font-weight: 600;
+      color: $foreground-sub;
+      margin-top: 8rpx;
+
+      &.other {
+        color: $gray-99;
+      }
+    }
+
+    &_hint {
+      font-size: 22rpx;
+      color: $gray-99;
+    }
+  }
+
+  &_checked {
+    @include checked;
+  }
+}

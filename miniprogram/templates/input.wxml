@@ -1,0 +1,25 @@
+<template name="input">
+  <view wx:if="{{ type === 'gridRadio' }}" class="input_section">
+    <view wx:if="{{ name }}" class="input_section_title">{{ name }}</view>
+    <view class="input_grid {{ selectedId ? 'has-selected' : '' }}">
+      <view
+        wx:for="{{ items }}"
+        wx:key="id"
+        class="input_grid_cell {{ item.other? 'other' : '' }} {{ item.selected? 'selected' : '' }}"
+        catch:tap="onInputRadioTap"
+        data-id="{{ id }}"
+        data-subid="{{ item.id }}"
+        hover-class="press"
+      >
+        <view wx:if="{{ item.avatar }}" class="input_grid_icon {{ item.other? 'other' : '' }}">
+          <image src="{{ item.avatar }}" mode="aspectFit" class="input_grid_icon_img" />
+        </view>
+        <view class="input_grid_name {{ item.other && !item.selected? 'other' : '' }}">
+          {{ item.name }}
+        </view>
+        <view wx:if="{{ item.other }}" class="input_grid_hint">点击可选择</view>
+        <view wx:if="{{ item.selected }}" class="input_checked">✓</view>
+      </view>
+    </view>
+  </view>
+</template>

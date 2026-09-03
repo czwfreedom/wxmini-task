@@ -1,36 +1,17 @@
 <import src="../templates/abort.wxml"></import>
 <import src="../templates/choices.wxml"></import>
 <import src="../templates/bottomBar.wxml"></import>
+<import src="../templates/input.wxml"></import>
 
 <view class="croutine">
   <view class="croutine_content">
     <scroll-view wx:if="{{ loaded }}" class="croutine_scroll" scroll-y="true">
       <!-- 1. 选择任务类型 -->
-      <view wx:if="{{ !finishing }}" class="croutine_section">
-        <view class="croutine_section_title">想做什么呢？</view>
-        <view class="croutine_category {{ selectedCategoryId ? 'has-selected' : '' }}">
-          <view
-            wx:for="{{ categories }}"
-            wx:key="id"
-            class="croutine_category_cell {{ item.other? 'other' : '' }} {{ item.selected? 'selected' : '' }}"
-            catch:tap="onCategoryTap"
-            data-id="{{ item.id }}"
-            hover-class="press"
-          >
-            <view
-              wx:if="{{ item.avatar }}"
-              class="croutine_category_icon {{ item.other? 'other' : '' }}"
-            >
-              <image src="{{ item.avatar }}" mode="aspectFit" class="croutine_category_icon_img" />
-            </view>
-            <view class="croutine_category_name {{ item.other && !item.selected? 'other' : '' }}">
-              {{ item.name }}
-            </view>
-            <view wx:if="{{ item.other }}" class="croutine_category_hint">点击可选择</view>
-            <view wx:if="{{ item.selected }}" class="croutine_checked">✓</view>
-          </view>
-        </view>
-      </view>
+      <template
+        wx:if="{{ !finishing && category && category.items }}"
+        is="input"
+        data="{{ ...category }}"
+      ></template>
 
       <!-- 2. 任务内容 -->
       <view class="croutine_section">
@@ -40,12 +21,12 @@
         <view class="croutine_detail">
           <textarea
             class="croutine_detail_input {{ contentStyle || '' }}"
-            placeholder="{{  contentHolder || (selectedCategoryId ? '想做什么呢？' : '请先选择任务类型') }}"
+            placeholder="{{  contentHolder || (category.selectedId ? '想做什么呢？' : '请先选择任务类型') }}"
             maxlength="{{ contentMaxLength }}"
             value="{{ contentText }}"
             bindinput="onContentInput"
             auto-height="true"
-            disabled="{{ !selectedCategoryId && !finishing }}"
+            disabled="{{ !category.selectedId && !finishing }}"
           />
 
           <view class="croutine_detail_footer">

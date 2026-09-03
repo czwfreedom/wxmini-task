@@ -1,6 +1,7 @@
 import { Entity } from '../model/entity';
 import { Routine } from '../server/routine';
 import { RoutineCache } from '../storage/routineCache';
+import { InputUI } from '../ui/base/inputUI';
 import { DateUtils } from '../utils/dateUtils';
 import { RoutineAdapter } from './routineAdapter';
 import { RoutineEditorUI } from './routineEditorUI';
@@ -44,7 +45,7 @@ export class RoutineEditorAdapter {
   // ---- 构建方法 ----
 
   /** 获取常用分类 VM 列表（从 sConfigs 中 default=true 的分类） */
-  public adaptCategories(selectedCategory?: number): RoutineEditorUI.Category[] {
+  public adaptCategories(selectedCategory?: number): InputUI.VM[] {
     const result = RoutineAdapter.getDefaults().map((id) =>
       this.buildCategoryVM(id, selectedCategory)
     );
@@ -53,7 +54,7 @@ export class RoutineEditorAdapter {
   }
 
   /** 获取更多分类 VM 列表（从 sConfigs 中 default 不为 true 的分类），可传入已选 ID 预选 */
-  public adaptMoreCategories(selectedId?: number): RoutineEditorUI.Category[] {
+  public adaptMoreCategories(selectedId?: number): InputUI.VM[] {
     return RoutineAdapter.getDefaults(false).map((id) => {
       const item = this.buildCategoryVM(id);
       if (selectedId && selectedId === id) item.selected = true;
@@ -126,12 +127,9 @@ export class RoutineEditorAdapter {
     return !RoutineAdapter.findConfig(category).default;
   }
 
-  public buildCategoryVM(
-    id: Routine.Category,
-    selectedCategory?: number
-  ): RoutineEditorUI.Category {
+  public buildCategoryVM(id: Routine.Category, selectedCategory?: number): InputUI.VM {
     const config = RoutineAdapter.findConfig(id);
-    const result: RoutineEditorUI.Category = {
+    const result: InputUI.VM = {
       id: '' + id,
       name: config.name,
       avatar: config.icon,

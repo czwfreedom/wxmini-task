@@ -1,6 +1,7 @@
 import { SubUI } from '../../core/subUI';
 import { Entity } from '../../model/entity';
 import { Logger } from '../../utils/logger';
+import { InputUI } from './inputUI';
 import { MenuUI } from './menuUI';
 
 export namespace DialogUI {
@@ -14,7 +15,7 @@ export namespace DialogUI {
     // 如果设置了，在desc下展示一个单行的input
     // hint: 表示input的holder
     // maxLength: 限制长度
-    input?: MenuUI.Input;
+    input?: InputUI.VM;
     menus?: MenuUI.VM[]; // 菜单。
   }
 
