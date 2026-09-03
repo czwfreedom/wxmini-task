@@ -11,6 +11,11 @@ export namespace InputUI {
      * 带候选的短输入。
      */
     OptionInput = 'optionInput',
+
+    /**
+     * 带候选的时间选择。
+     */
+    OptionTime = 'optionTime',
   }
 
   // 配合 input.scss/wxml

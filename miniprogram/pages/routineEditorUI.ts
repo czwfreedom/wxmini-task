@@ -38,11 +38,7 @@ export namespace RoutineEditorUI {
     contentExamples: Example[];
 
     duration: InputUI.VM;
-
-    /** 计划时间选项 */
-    times: Time[];
-    /** 自定义时间值（picker 回填） */
-    timeCustomValue: string;
+    time: InputUI.VM;
 
     /** 是否可以提交 */
     submittable: boolean;
@@ -77,8 +73,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     this.bindEvent('onContentExampleTap', this.onContentExampleTap);
     this.bindEvent('onInputChanged', this.onInputChanged);
     this.bindEvent('onInputBlur', this.onInputBlur);
-    this.bindEvent('onTimeTap', this.onTimeTap);
-    this.bindEvent('onTimePicked', this.onTimePicked);
+    this.bindEvent('onInputTimePicked', this.onInputTimePicked);
     this.bindEvent('onBottomBarTap', this.onBottomBarTap);
   }
 
@@ -100,9 +95,12 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
         hint: '输入',
         maxLength: 3,
       },
-
-      times: [],
-      timeCustomValue: '',
+      time: {
+        id: 'time',
+        name: '几点开始？⏰',
+        type: InputUI.Type.OptionTime,
+        hint: '可选，默认现在',
+      },
       submittable: false,
       keyboardHeight: 0,
     };
@@ -120,9 +118,10 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     const oldData = this.getData();
     const category = oldData.category;
     const duration = oldData.duration;
+    const time = oldData.time;
     category.items = this.adapter.adaptCategories();
     Object.assign(duration, this.adapter.adaptDurations((entry?.duration || 0) / 60000 || 30));
-    const times = this.adapter.adaptTimes(entry?.planTime, this.isFuture);
+    Object.assign(time, this.adapter.adaptTimes(entry?.planTime, this.isFuture));
 
     const detail = entry?.detail || '';
     this.setData(
@@ -130,7 +129,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
         loaded: true,
         category,
         duration,
-        ...times,
+        time,
         contentText: detail,
         contentCharCount: detail.length,
       },
@@ -165,6 +164,10 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       const options = this.getData().duration.items!;
       Entity.markSelected(options, subid);
       this.updateData({ duration: this.getData().duration });
+    } else if (id === 'time') {
+      const options = this.getData().time.items!;
+      Entity.markSelected(options, subid);
+      this.updateData({ time: this.getData().time });
     }
   }
 
@@ -227,25 +230,16 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     }
   }
 
-  /** 选择计划时间（整点快捷） */
-  protected onTimeTap(e: WechatMiniprogram.TouchEvent) {
-    const { id } = e.currentTarget.dataset;
-
-    Logger.info('onTimeTap', id);
-    const options = this.getData().times;
-    Entity.markSelected(options, id);
-    this.updateData({ times: options });
-  }
-
   /** 原生 picker 选择回调 */
-  protected onTimePicked(e: WechatMiniprogram.TouchEvent) {
+  protected onInputTimePicked(e: WechatMiniprogram.TouchEvent) {
     const timeValue = e.detail.value as string;
     Logger.info('onTimePicked', timeValue);
     if (!timeValue) return;
 
-    const options = this.getData().times;
-    Entity.markSelected(options, 'custom');
-    this.updateData({ times: options, timeCustomValue: timeValue });
+    const time = this.getData().time;
+    Entity.markSelected(time.items!, 'custom');
+    time.value = timeValue;
+    this.updateData({ time });
   }
 
   /** 提交创建任务 */
@@ -341,8 +335,8 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       duration.id === 'custom' ? data.duration.value?.trim() : duration.id
     );
 
-    const time = data.times.find((o) => o.selected);
-    if (!time || (time.id === 'custom' && !data.timeCustomValue.trim())) {
+    const time = data.time.items?.find((o) => o.selected);
+    if (!time || (time.id === 'custom' && !data.time?.value?.trim())) {
       if (showToast) this.showToast('请选择计划时间');
       return undefined;
     }
@@ -351,7 +345,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       category: selectedCategory,
       detail: content,
       duration: mins * 60000,
-      planTime: this.formatPlanTime(time.id === 'custom' ? data.timeCustomValue.trim() : time.id),
+      planTime: this.formatPlanTime(time.id === 'custom' ? data.time.value!.trim() : time.id),
     };
     const entry = this.entry;
     if (!entry?.id) return newInfo;

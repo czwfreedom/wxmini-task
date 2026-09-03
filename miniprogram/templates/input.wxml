@@ -70,4 +70,33 @@
       </block>
     </view>
   </view>
+
+  <!-- 4. 计划时间 -->
+  <view wx:if="{{ type ==='optionTime' }}" class="input_section">
+    <view class="input_section_title">
+      {{ name}}
+      <text wx:if="{{ hint }}" class="input_section_tip">{{ hint }}</text>
+    </view>
+
+    <view class="input_time_items">
+      <block wx:for="{{ items }}" wx:key="id">
+        <view
+          wx:if="{{ item.id !== 'custom' }}"
+          class="input_time_item {{ item.selected? 'selected' : '' }}"
+          catch:tap="onInputRadioTap"
+          hover-class="press"
+          data-id="{{ id }}"
+          data-subid="{{ item.id }}"
+        >
+          {{ item.name }}
+        </view>
+
+        <picker wx:else mode="time" value="{{ value }}" bindchange="onInputTimePicked">
+          <view class="input_time_item {{ item.selected? 'selected' : '' }}">
+            {{ value || item.name }}
+          </view>
+        </picker>
+      </block>
+    </view>
+  </view>
 </template>

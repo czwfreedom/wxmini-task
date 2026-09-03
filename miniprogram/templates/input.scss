@@ -83,7 +83,7 @@
     @include checked;
   }
 
-  // ===== 3. 计划时长 =====
+  // 带有选项的输入。
   &_option {
     &_grid {
       display: grid;
@@ -146,6 +146,39 @@
         font-size: 20rpx;
         color: $gray-99;
         flex-shrink: 0;
+      }
+    }
+  }
+
+  // ===== 4. 计划时间 =====
+  &_time {
+    &_items {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    &_item {
+      @include card;
+      border-radius: 28rpx;
+      @include press;
+      margin: 0 16rpx 12rpx 0;
+      padding: 18rpx 32rpx;
+      font-size: 26rpx;
+      font-weight: 600;
+      color: $foreground-sub;
+      border: 3rpx solid $gray-e5;
+
+      &.selected {
+        border-color: $main;
+        background: $background-white;
+        color: $gray-33;
+      }
+
+      &.custom {
+        border-style: dashed;
+        color: $gray-99;
+        background: transparent;
+        border-color: $gray-c5;
       }
     }
   }

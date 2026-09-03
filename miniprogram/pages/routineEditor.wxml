@@ -55,6 +55,7 @@
         </view>
       </view>
 
+      <!-- 时长 -->
       <template
         wx:if="{{ !finishing && duration && duration.items }}"
         is="input"
@@ -62,32 +63,11 @@
       ></template>
 
       <!-- 4. 计划时间 -->
-      <view wx:if="{{ !finishing }}" class="croutine_section">
-        <view class="croutine_section_title">
-          几点开始？⏰
-          <text class="croutine_section_tip">可选，默认现在</text>
-        </view>
-
-        <view class="croutine_time_items">
-          <block wx:for="{{ times }}" wx:key="id">
-            <view
-              wx:if="{{ item.id !== 'custom' }}"
-              class="croutine_time_item {{ item.selected? 'selected' : '' }}"
-              catch:tap="onTimeTap"
-              data-id="{{ item.id }}"
-              hover-class="press"
-            >
-              {{ item.name }}
-            </view>
-
-            <picker wx:else mode="time" value="{{ timeCustomValue }}" bindchange="onTimePicked">
-              <view class="croutine_time_item {{ item.selected? 'selected' : '' }}">
-                {{ timeCustomValue || item.name }}
-              </view>
-            </picker>
-          </block>
-        </view>
-      </view>
+      <template
+        wx:if="{{ !finishing && time && time.items }}"
+        is="input"
+        data="{{ ...time }}"
+      ></template>
       <view class="croutine_spacer"></view>
     </scroll-view>
   </view>

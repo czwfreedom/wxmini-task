@@ -98,7 +98,7 @@ export class RoutineEditorAdapter {
   }
 
   /** 获取计划时间选项 VM 列表（按当前小时过滤已过时间 + 带选中态），末尾为自定义入口 */
-  public adaptTimes(planTime?: number, isFuture = false): Partial<RoutineEditorUI.Data> {
+  public adaptTimes(planTime?: number, isFuture = false): Partial<InputUI.VM> {
     const now = new Date();
     const hour = !isFuture ? now.getHours() : 0;
     const filtered = RoutineEditorAdapter.sTimes.filter((item) => {
@@ -119,7 +119,7 @@ export class RoutineEditorAdapter {
     } else {
       items[0].selected = true; // 现在在第一位。
     }
-    return custom ? { times: items, timeCustomValue: custom } : { times: items };
+    return custom ? { items, value: custom } : { items };
   }
 
   /** 判断分类 ID 是否属于「更多分类」 */
