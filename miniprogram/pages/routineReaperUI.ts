@@ -54,7 +54,13 @@ export class RoutineReaperUI extends RoutineEditorUI {
 
     return {
       id: 'm',
-      items: [{ id: 'finish', name: updating ? '修改反馈' : '完成任务', enabled: !!commitData }],
+      items: [
+        {
+          id: 'finish',
+          name: updating ? '修改反馈' : this.isNote() ? '记下来' : '完成任务',
+          enabled: !!commitData,
+        },
+      ],
     };
   }
 
