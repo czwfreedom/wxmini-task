@@ -345,6 +345,25 @@
       opacity: 0.75;
     }
 
+    // ===== 一句话（category = Note）=====
+    // 专属色 $gold-dark2（棕金/墨色）：与阅读的亮金 $main 区分，有"书写"联想
+    // holder 始终置顶、随时可记（即使当天已记过）
+    &.note-holder {
+      border: 4rpx dashed rgba($gold-dark2, 0.5);
+      // 比一般 holder 实一点：它是「待写」，不是「待补」
+      opacity: 0.85;
+
+      .routine_card_sub {
+        color: rgba($gold-dark2, 0.85);
+      }
+    }
+
+    // 已记下的一句话：与一般任务卡区分（无"去完成"，点卡片可编辑）
+    &.note {
+      background: $background-white;
+      border: 3rpx solid rgba($gold-dark2, 0.4);
+    }
+
     &_accent {
       position: absolute;
       left: 0;
@@ -476,6 +495,15 @@
 
       &.holder {
         background: $gradient-sub;
+      }
+
+      // 一句话：描边式幽灵按钮，三种按钮里最轻，暗示「可跳过、非必须」
+      &.note {
+        background: transparent;
+        border: 3rpx solid $gold-dark2;
+        color: $gold-dark2;
+        box-shadow: none;
+        font-weight: 700;
       }
     }
 

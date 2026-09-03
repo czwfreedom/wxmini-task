@@ -251,10 +251,13 @@ export class RoutineAdapter {
         return a.status === Routine.Status.Working ? -1 : 1;
       });
     }
+    this.addNoteHolder(infos);
     for (const info of infos) {
       const holder = info.id.startsWith('holder');
       const done = info.status === Routine.Status.Done;
       const config = RoutineAdapter.findConfig(info.category)!;
+      const isNote = info.category === Routine.Category.Note;
+      // 应该进进度吗？后台还没改。
       if (!holder) {
         count++;
         if (done) {
@@ -265,7 +268,13 @@ export class RoutineAdapter {
       }
       let detail = '';
       if (!holder) {
-        detail = `${config.name} · ${DateUtils.formatDate(info.planTime || Date.now(), 'hh:mm')}开始 · ${Math.floor(info.duration || 1800000) / 60000}分钟`;
+        // 一句话只展示时间，不展示「开始 / 时长」
+        detail = isNote
+          ? `${config.name} · ${DateUtils.formatDate(info.createTime || Date.now(), 'hh:mm')}`
+          : `${config.name} · ${DateUtils.formatDate(info.planTime || Date.now(), 'hh:mm')}开始 · ${Math.floor(info.duration || 1800000) / 60000}分钟`;
+      } else if (isNote) {
+        // 一句话 holder 的副标题用引导语（hint）
+        detail = config.hint || '';
       } else if (info?.duration) {
         detail = `${Math.floor(info.duration) / 60000}分钟`;
       }
@@ -281,6 +290,7 @@ export class RoutineAdapter {
         finishTime: info.finishTime,
         remark: info.remark,
         holder: holder,
+        isNote: isNote,
         done,
         style: done ? 'done' : holder ? 'holder' : '',
         footers: this.adaptFooters(info),
@@ -385,6 +395,14 @@ export class RoutineAdapter {
     return result;
   }
 
+  /**
+   * 「一句话」holder 始终置顶：即使当天已经记过，入口也常在，随时可记。
+   * 它不设 default，故不会被 getDefaults 当成普通 holder push 到末尾。
+   */
+  protected addNoteHolder(result: Routine.Info[]) {
+    result.unshift(this.getHolder(Routine.Category.Note));
+  }
+
   public adaptFooters(info: Routine.Info): Entity.Image[] {
     const stat = info.stat;
     const isSelf = this.isSelf();
@@ -439,6 +457,7 @@ export namespace RoutineAdapter {
     examples?: string[];
     finish?: string;
     celebrates?: string[];
+    invisible?: boolean;
   }
 
   /** 所有分类统一配置：分类枚举、颜色、图标、是否默认、示例提示词 */
@@ -613,6 +632,21 @@ export namespace RoutineAdapter {
       celebrates: ['精彩瞬间被你定格 📸', '这一帧，以后会很好看 🖼️', '你眼里的世界，被留下来了 👀'],
     },
     {
+      category: Routine.Category.Note,
+      name: '随手记',
+      // $gold-dark2 棕金/墨色：与阅读的亮金区分，有"书写"联想，未占用的变量
+      color: '#C8853E',
+      icon: '/assets/imgs/ic-note.svg',
+      finish: '再多说一点点？',
+      hint: '想到什么就记，日积月累',
+      celebrates: [
+        '记下了，这就是你的今天 ✍️',
+        '这句话，以后看会很有意思 💫',
+        '你的想法被好好保存下来了 📌',
+      ],
+      invisible: true,
+    },
+    {
       category: Routine.Category.Other,
       name: '其他',
       color: '#90A4AE',
@@ -642,12 +676,7 @@ export namespace RoutineAdapter {
 
   /** 获取所有默认/常用分类 ID */
   export function getDefaults(v = true): Routine.Category[] {
-    return sConfigs.filter((c) => !!c.default === v).map((c) => c.category);
-  }
-
-  /** 获取所有非默认/更多分类 ID */
-  export function getMoreCategoryIds(): Routine.Category[] {
-    return sConfigs.filter((c) => !c.default).map((c) => c.category);
+    return sConfigs.filter((c) => !!c.default === v && !c.invisible).map((c) => c.category);
   }
 
   /** 获取指定分类的完成反馈提示词 */

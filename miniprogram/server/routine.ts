@@ -54,6 +54,11 @@ export namespace Routine {
     Shoot = 13,
 
     /**
+     * 笔记
+     */
+    Note = 14,
+
+    /**
      * 其他
      */
     Other = 255,

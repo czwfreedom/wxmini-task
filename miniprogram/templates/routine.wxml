@@ -142,7 +142,7 @@
           <view
             wx:for="{{ records }}"
             wx:key="id"
-            class="routine_card {{ item.style || '' }} {{ isToday && item.done ? 'harvest' : '' }} {{ justDone && item.id === justDone.id ? 'just-done' : '' }}"
+            class="routine_card {{ item.style || '' }} {{ item.isNote && item.holder ? 'note-holder' : '' }} {{ item.isNote && !item.holder ? 'note' : '' }} {{ isToday && item.done ? 'harvest' : '' }} {{ justDone && item.id === justDone.id ? 'just-done' : '' }}"
             catch:tap="{{ updateable && !item.holder? 'onItemTap' : '' }}"
             data-id="{{ item.id }}"
             hover-class="{{ updateable && !item.holder? 'press' : '' }}"
@@ -167,8 +167,14 @@
                 hover-class="press"
                 hover-stop-propagation="true"
               >
-                <view wx:if="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
-                <view wx:elif="{{ !item.done && finishable }}" class="routine_card_btn">
+                <view wx:if="{{ item.holder && item.isNote }}" class="routine_card_btn note">
+                  记下来
+                </view>
+                <view wx:elif="{{ item.holder }}" class="routine_card_btn holder">去添加</view>
+                <view
+                  wx:elif="{{ !item.done && finishable && !item.isNote }}"
+                  class="routine_card_btn"
+                >
                   去完成
                 </view>
               </view>

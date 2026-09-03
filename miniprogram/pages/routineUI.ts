@@ -79,6 +79,10 @@ export namespace RoutineUI {
   /** ViewModel，仅包含 UI 渲染需要的字段 */
   export interface Record extends Entity.Label {
     holder?: boolean;
+    /**
+     * 是否是笔记。
+     */
+    isNote?: boolean;
     done?: boolean;
     /** 任务详情 */
     detail: string;
