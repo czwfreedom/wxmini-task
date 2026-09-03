@@ -138,4 +138,17 @@ export namespace Entity {
     }
     return ids;
   }
+
+  export function markSelected<T extends Entity.Label>(
+    items: T[],
+    selectedId: number | string
+  ): T[] {
+    const id = '' + selectedId;
+    for (const item of items) {
+      if (item.id === id) {
+        item.selected = true;
+      } else if (item.selected) item.selected = false;
+    }
+    return items;
+  }
 }

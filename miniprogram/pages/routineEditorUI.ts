@@ -210,7 +210,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     const { id } = e.currentTarget.dataset;
     Logger.info('onDurationTap', id);
     const options = this.getData().durations;
-    this.markSelected(options, id);
+    Entity.markSelected(options, id);
     this.updateData({ durations: options });
   }
 
@@ -238,7 +238,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
 
     Logger.info('onTimeTap', id);
     const options = this.getData().times;
-    this.markSelected(options, id);
+    Entity.markSelected(options, id);
     this.updateData({ times: options });
   }
 
@@ -249,7 +249,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     if (!timeValue) return;
 
     const options = this.getData().times;
-    this.markSelected(options, 'custom');
+    Entity.markSelected(options, 'custom');
     this.updateData({ times: options, timeCustomValue: timeValue });
   }
 
@@ -393,7 +393,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       more.other = true;
       categories.splice(categories.length - 1, 1, more);
     }
-    this.markSelected(categories, category);
+    Entity.markSelected(categories, category);
 
     const examples = this.adapter.adaptExamples(category, this.updating());
     const config = RoutineAdapter.findConfig(category);
@@ -403,15 +403,5 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       contentExamples: examples,
       contentHolder: config?.hint || '',
     });
-  }
-
-  private markSelected<T extends Entity.Label>(items: T[], selectedId: number | string): T[] {
-    const id = '' + selectedId;
-    for (const item of items) {
-      if (item.id === id) {
-        item.selected = true;
-      } else if (item.selected) item.selected = false;
-    }
-    return items;
   }
 }
