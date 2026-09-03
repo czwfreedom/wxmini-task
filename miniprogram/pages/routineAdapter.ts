@@ -8,6 +8,7 @@ import { Routine } from '../server/routine';
 import { User } from '../server/user';
 import { AvatarUtils } from '../utils/avatarUtils';
 import { DateUtils } from '../utils/dateUtils';
+import { Utils } from '../utils/utils';
 import { RoutineUI } from './routineUI';
 
 export class RoutineAdapter {
@@ -244,6 +245,12 @@ export class RoutineAdapter {
     let pendingCount = 0;
 
     const infos = this.fillHolders();
+    if (infos.length && infos.length > 1) {
+      infos.sort((a, b) => {
+        if (a.status === b.status) return a.createTime - b.createTime;
+        return a.status === Routine.Status.Working ? -1 : 1;
+      });
+    }
     for (const info of infos) {
       const holder = info.id.startsWith('holder');
       const done = info.status === Routine.Status.Done;
@@ -279,13 +286,6 @@ export class RoutineAdapter {
         footers: this.adaptFooters(info),
       };
       records.push(record);
-    }
-
-    if (records.length && records.length > 1) {
-      records.sort((a, b) => {
-        if (a.status === b.status) return 0;
-        return a.status === Routine.Status.Working ? -1 : 1;
-      });
     }
 
     const isAllDone = count > 0 && doneCount === count;
@@ -330,7 +330,7 @@ export class RoutineAdapter {
     return today + (this.isSelf() ? DateUtils.sDayMillis : 0);
   }
 
-  protected getHolder(category: Routine.Category): Routine.Info {
+  protected getHolder(category: Routine.Category, index = 0): Routine.Info {
     const config = RoutineAdapter.findConfig(category);
     const template = this.findTemplate(category);
     return {
@@ -343,7 +343,7 @@ export class RoutineAdapter {
       date: this.date,
       transaction: '',
       duration: template?.duration,
-      createTime: Date.now(),
+      createTime: Date.now() + index,
     };
   }
 
@@ -379,7 +379,7 @@ export class RoutineAdapter {
       : RoutineAdapter.getDefaults();
     for (const category of defaults) {
       if (!exists.includes(category)) {
-        result.push(this.getHolder(category));
+        result.push(this.getHolder(category, result.length));
       }
     }
     return result;
