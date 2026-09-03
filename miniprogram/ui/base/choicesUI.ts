@@ -1,5 +1,5 @@
-import { SubUI } from '../core/subUI';
-import { Entity } from '../model/entity';
+import { SubUI } from '../../core/subUI';
+import { Entity } from '../../model/entity';
 
 export namespace ChoicesUI {
   export interface Data {

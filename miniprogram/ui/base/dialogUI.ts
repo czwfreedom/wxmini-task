@@ -1,6 +1,6 @@
-import { SubUI } from '../core/subUI';
-import { Entity } from '../model/entity';
-import { Logger } from '../utils/logger';
+import { SubUI } from '../../core/subUI';
+import { Entity } from '../../model/entity';
+import { Logger } from '../../utils/logger';
 import { MenuUI } from './menuUI';
 
 export namespace DialogUI {

@@ -2,13 +2,13 @@ import { SubUI } from '../core/subUI';
 import { Err } from '../constant/error';
 import { Entity } from '../model/entity';
 import { RelationsAdapter } from './relationsAdapter';
-import { MenuUI } from '../ui/menuUI';
+import { MenuUI } from '../ui/base/menuUI';
 import { Context } from '../core/context';
 import { UserUpdaterUI } from '../ui/userUpdaterUI';
 import { Intent } from '../core/intent';
 import { Constants } from '../constant/common';
-import { ChoicesUI } from '../ui/choicesUI';
-import { DialogUI } from '../ui/dialogUI';
+import { ChoicesUI } from '../ui/base/choicesUI';
+import { DialogUI } from '../ui/base/dialogUI';
 import { Event } from '../core/event';
 
 export namespace RelationsUI {

@@ -5,7 +5,7 @@ import { Event } from '../core/event';
 import { Intent } from '../core/intent';
 import { SubUI } from '../core/subUI';
 import { Relation } from '../server/relation';
-import { DialogUI } from '../ui/dialogUI';
+import { DialogUI } from '../ui/base/dialogUI';
 import { UserUpdaterUI } from '../ui/userUpdaterUI';
 
 export namespace IndexUI {

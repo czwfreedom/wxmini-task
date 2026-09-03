@@ -3,7 +3,7 @@ import { Event } from '../core/event';
 import { EventBus } from '../core/eventBus';
 import { Intent } from '../core/intent';
 import { Entity } from '../model/entity';
-import { MenuUI } from '../ui/menuUI';
+import { MenuUI } from '../ui/base/menuUI';
 import { Logger } from '../utils/logger';
 import { WxUtils } from '../utils/wxUtils';
 

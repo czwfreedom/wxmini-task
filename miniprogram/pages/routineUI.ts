@@ -9,7 +9,7 @@ import { Event } from '../core/event';
 import { Context } from '../core/context';
 import { Intent } from '../core/intent';
 import { Constants } from '../constant/common';
-import { DialogUI } from '../ui/dialogUI';
+import { DialogUI } from '../ui/base/dialogUI';
 import { WxUtils } from '../utils/wxUtils';
 import { UserUpdaterUI } from '../ui/userUpdaterUI';
 import { RoutineTemplatesUI } from '../ui/routineTemplatesUI';

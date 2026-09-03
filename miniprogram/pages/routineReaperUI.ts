@@ -2,7 +2,7 @@ import { Err } from '../constant/error';
 import { Event } from '../core/event';
 import { Intent } from '../core/intent';
 import { Routine } from '../server/routine';
-import { MenuUI } from '../ui/menuUI';
+import { MenuUI } from '../ui/base/menuUI';
 import { DateUtils } from '../utils/dateUtils';
 import { Logger } from '../utils/logger';
 import { WxUtils } from '../utils/wxUtils';

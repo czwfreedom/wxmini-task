@@ -1,4 +1,4 @@
-import { Entity } from '../model/entity';
+import { Entity } from '../../model/entity';
 
 export namespace MenuUI {
   /**

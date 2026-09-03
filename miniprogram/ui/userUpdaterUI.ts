@@ -3,7 +3,7 @@ import { InteractUI } from '../core/interactUI';
 import { Login } from '../core/login';
 import { User } from '../server/user';
 import { Logger } from '../utils/logger';
-import { DialogUI } from './dialogUI';
+import { DialogUI } from './base/dialogUI';
 import { ShareUI } from './shareUI';
 
 export abstract class UserUpdaterUI<D> extends InteractUI<D> {

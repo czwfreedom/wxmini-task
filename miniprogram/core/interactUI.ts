@@ -1,5 +1,5 @@
-import { ChoicesUI } from '../ui/choicesUI';
-import { DialogUI } from '../ui/dialogUI';
+import { ChoicesUI } from '../ui/base/choicesUI';
+import { DialogUI } from '../ui/base/dialogUI';
 import { SubUI } from './subUI';
 
 export abstract class InteractUI<D> extends SubUI<D> {
