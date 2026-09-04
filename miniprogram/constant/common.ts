@@ -1,5 +1,5 @@
 export namespace Constants {
-  export const sConfig: Global.Config = { version: '0.1.11', apiHost: 'https://api.haoletech.com' };
+  export const sConfig: Global.Config = { version: '0.1.12', apiHost: 'https://api.haoletech.com' };
 
   export const enum Page {
     Routine = '/pages/routine',
