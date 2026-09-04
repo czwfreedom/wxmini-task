@@ -2,6 +2,7 @@ import { Err } from '../constant/error';
 import { Event } from '../core/event';
 import { Intent } from '../core/intent';
 import { Routine } from '../server/routine';
+import { InputUI } from '../ui/base/inputUI';
 import { MenuUI } from '../ui/base/menuUI';
 import { DateUtils } from '../utils/dateUtils';
 import { Logger } from '../utils/logger';
@@ -29,16 +30,21 @@ export class RoutineReaperUI extends RoutineEditorUI {
     WxUtils.setNavTitle('完成任务');
     const remark = info.remark || '';
     const isNote = Routine.isNote(info.category);
+
     this.setData({
       loaded: true,
       finishing: true,
-      contentMaxLength: 400,
-      contentTitle: isNote ? '随手记' : '',
-      contentText: remark,
-      contentCharCount: remark.length,
-      contentHolder: config.finish || '说说做了什么吧',
-      contentHint: !isNote ? `任务：${info.detail}` : '',
-      contentStyle: 'h',
+      detail: {
+        id: 'detail',
+        name: isNote ? '随手记' : '写写做了啥 ✍️',
+        type: InputUI.Type.Textarea,
+        header: !isNote ? `任务：${info.detail}` : '',
+        hint: config.finish || '说说做了什么吧',
+        value: remark,
+        style: 'h',
+        maxLength: 400,
+        charCount: remark.length,
+      },
       menus: this.getMenus(),
     });
     return 0;
@@ -104,7 +110,7 @@ export class RoutineReaperUI extends RoutineEditorUI {
    */
   protected getCommitData(showToast = false): Partial<Routine.Info> | undefined {
     const data = this.getData();
-    const content = data.contentText?.trim();
+    const content = data.detail.value?.trim();
     const isNote = this.isNote();
     if (!content) {
       if (showToast) this.showToast(isNote ? '要记点什么呢' : '请填写任务反馈');

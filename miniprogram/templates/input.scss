@@ -19,6 +19,67 @@
     }
   }
 
+  // ===== 文本 =====
+  &_text {
+    @include card;
+    border-radius: 32rpx;
+    padding: 28rpx 36rpx 24rpx;
+    &_input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 34rpx;
+      color: $gray-33;
+      line-height: 1.4;
+      min-height: 96rpx;
+
+      &.h {
+        min-height: 192rpx;
+      }
+    }
+    &_footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    &_count {
+      font-size: 22rpx;
+      color: $gray-99;
+      font-weight: 500;
+    }
+
+    &_hint {
+      font-size: 34rpx;
+      color: $gray-33;
+      text-align: left;
+      word-wrap: break-word;
+      white-space: normal;
+      margin: 0 0 28rpx 0;
+    }
+  }
+
+  // ===== 示例 =====
+  &_example {
+    &_items {
+      display: flex;
+      margin-top: 20rpx;
+      flex-wrap: wrap;
+    }
+
+    &_item {
+      margin-right: 16rpx;
+      font-size: 24rpx;
+      font-weight: 500;
+      @include press;
+      color: $foreground-sub;
+      background: $background-white;
+      padding: 14rpx 28rpx;
+      border-radius: 32rpx;
+      border: 2rpx solid $gray-e5;
+    }
+  }
+
   &_grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

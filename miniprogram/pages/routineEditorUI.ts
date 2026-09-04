@@ -23,19 +23,7 @@ export namespace RoutineEditorUI {
     choices: ChoicesUI.Data;
 
     category: InputUI.VM;
-
-    // 很想把这个统统放到一个结构里。
-    /** 任务内容 */
-    contentTitle?: string;
-    contentHint?: string;
-    contentHolder?: string;
-    contentText: string;
-    contentMaxLength: number;
-    contentStyle?: string;
-
-    contentCharCount: number;
-    /** 示例提示词（数据驱动，可能为空） */
-    contentExamples: Example[];
+    detail: InputUI.VM;
 
     duration: InputUI.VM;
     time: InputUI.VM;
@@ -47,12 +35,6 @@ export namespace RoutineEditorUI {
     keyboardHeight: number;
     menus?: MenuUI.Menus;
   }
-
-  export interface Example extends Entity.Label {}
-
-  export interface Duration extends Entity.Label {}
-
-  export interface Time extends Entity.Label {}
 }
 
 export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
@@ -69,8 +51,6 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     this.isFuture = (intent?.date || 0) > Date.now();
 
     this.bindEvent('onInputRadioTap', this.onInputRadioTap);
-    this.bindEvent('onContentInput', this.onContentInput);
-    this.bindEvent('onContentExampleTap', this.onContentExampleTap);
     this.bindEvent('onInputChanged', this.onInputChanged);
     this.bindEvent('onInputBlur', this.onInputBlur);
     this.bindEvent('onInputTimePicked', this.onInputTimePicked);
@@ -83,10 +63,15 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       abortMessage: '',
       choices: ChoicesUI.defaultData(),
       category: { id: 'category', name: '想做什么呢？', type: InputUI.Type.GridRadio },
-      contentText: '',
-      contentMaxLength: RoutineEditorUI.sContentMaxLength,
-      contentCharCount: 0,
-      contentExamples: [],
+      detail: {
+        id: 'detail',
+        name: '具体做什么呢 ✍️',
+        type: InputUI.Type.Textarea,
+        hint: '请先选择任务类型',
+        maxLength: RoutineEditorUI.sContentMaxLength,
+        charCount: 0,
+        disabled: true,
+      },
       duration: {
         id: 'duration',
         name: '计划时长',
@@ -119,19 +104,21 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     const category = oldData.category;
     const duration = oldData.duration;
     const time = oldData.time;
+    const detail = oldData.detail;
+
     category.items = this.adapter.adaptCategories();
     Object.assign(duration, this.adapter.adaptDurations((entry?.duration || 0) / 60000 || 30));
     Object.assign(time, this.adapter.adaptTimes(entry?.planTime, this.isFuture));
 
-    const detail = entry?.detail || '';
+    detail.value = entry?.detail || '';
+    detail.charCount = detail.value?.length || 0;
     this.setData(
       {
         loaded: true,
         category,
         duration,
         time,
-        contentText: detail,
-        contentCharCount: detail.length,
+        detail,
       },
       () => {
         if (entry?.category) {
@@ -149,7 +136,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
 
   /** 选择常用分类 */
   protected onInputRadioTap(e: WechatMiniprogram.TouchEvent) {
-    const { id, subid } = e.currentTarget.dataset;
+    const { id, subid, name } = e.currentTarget.dataset;
     Logger.info('onInputTap', id, subid);
 
     if (id === 'category') {
@@ -168,6 +155,8 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       const options = this.getData().time.items!;
       Entity.markSelected(options, subid);
       this.updateData({ time: this.getData().time });
+    } else if (id === 'detail') {
+      if (name) this.updateDetailValue(name);
     }
   }
 
@@ -190,32 +179,15 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     );
   }
 
-  /** 任务内容输入 */
-  protected onContentInput(e: WechatMiniprogram.TouchEvent) {
-    const text = (e.detail.value || '') as string;
-    const count = text.length;
-
-    this.updateData({ contentText: text, contentCharCount: count });
-  }
-
-  /** 点击示例提示词 chip，填充到输入框 */
-  protected onContentExampleTap(e: WechatMiniprogram.TouchEvent) {
-    const { name } = e.currentTarget.dataset;
-    if (!name) return;
-
-    Logger.info('onContentExampleTap', name);
-    const count = (name as string).length;
-
-    this.updateData({
-      contentText: name,
-      contentCharCount: count,
-    });
-  }
-
   /** 自定义时长输入 */
   protected onInputChanged(e: WechatMiniprogram.TouchEvent) {
+    const { id } = e.currentTarget.dataset;
     const text = (e.detail.value || '') as string;
-    this.updateData(this.buildNewData('duration.value', text));
+    if (id === 'duration') {
+      this.updateData(this.buildNewData('duration.value', text));
+    } else if (id === 'detail') {
+      this.updateDetailValue(text);
+    }
   }
 
   /** 自定义时长确认（失焦后生效） */
@@ -305,6 +277,13 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     };
   }
 
+  protected updateDetailValue(text: string) {
+    const detail = this.getData().detail;
+    detail.value = text;
+    detail.charCount = text.length;
+    this.updateData({ detail });
+  }
+
   protected updateData(data: Partial<RoutineEditorUI.Data> | any) {
     this.setData(data, () => {
       this.setData({ menus: this.getMenus() });
@@ -319,7 +298,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
       return undefined;
     }
 
-    const content = data.contentText.trim();
+    const content = data.detail.value?.trim();
     if (!content) {
       if (showToast) this.showToast('请填写任务内容');
       return undefined;
@@ -386,11 +365,11 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
 
     const examples = this.adapter.adaptExamples(category, this.updating());
     const config = RoutineAdapter.findConfig(category);
+    const detail = this.getData().detail;
+    detail.disabled = false;
+    detail.hint = config?.hint || '';
+    detail.items = examples;
 
-    this.updateData({
-      category: input,
-      contentExamples: examples,
-      contentHolder: config?.hint || '',
-    });
+    this.updateData({ category: input, detail });
   }
 }

@@ -16,7 +16,7 @@ export class RoutineEditorAdapter {
   public static readonly kCustomDurationMinutes = -1;
 
   // ---- 计划时长选项（10分钟 · 25番茄钟 · 30 · 45 · 1小时 · 其他） ----
-  private static sDurations: RoutineEditorUI.Duration[] = [
+  private static sDurations: Entity.Label[] = [
     { id: '1', name: '1', desc: '分钟' },
     { id: '5', name: '5', desc: '分钟' },
     { id: '10', name: '10', desc: '分钟' },
@@ -26,7 +26,7 @@ export class RoutineEditorAdapter {
   ];
 
   /** 计划时间选项（整点快捷 + 自定义入口），构建时按当前小时过滤已过时间 */
-  private static readonly sTimes: RoutineEditorUI.Time[] = [
+  private static readonly sTimes: Entity.Label[] = [
     { id: 'now', name: '现在' },
     { id: '08:00', name: '08:00' },
     { id: '09:00', name: '09:00' },
@@ -63,7 +63,7 @@ export class RoutineEditorAdapter {
   }
 
   /** 获取指定分类的示例提示词 VM 列表（从 sConfigs.examples 读取，空数组则不展示） */
-  public adaptExamples(category: number, updating = false): RoutineEditorUI.Example[] {
+  public adaptExamples(category: number, updating = false): Entity.Label[] {
     const config = RoutineAdapter.findConfig(category);
     const texts = config?.examples ? [...config.examples] : [];
     if (!updating) {
@@ -82,9 +82,7 @@ export class RoutineEditorAdapter {
 
   /** 获取计划时长选项 VM 列表（带选中态），末尾"其他"为虚线自定义入口 */
   public adaptDurations(selectedMinutes?: number): Partial<InputUI.VM> {
-    const items: RoutineEditorUI.Duration[] = RoutineEditorAdapter.sDurations.map((o) =>
-      Object.assign({}, o)
-    );
+    const items: Entity.Label[] = RoutineEditorAdapter.sDurations.map((o) => Object.assign({}, o));
     let custom = '';
     if (selectedMinutes) {
       const minId = '' + selectedMinutes;
@@ -107,7 +105,7 @@ export class RoutineEditorAdapter {
       const itemHour = parseInt(item.id.split(':')[0], 10);
       return itemHour > hour;
     });
-    const items: RoutineEditorUI.Time[] = filtered.map((item) => ({ ...item }));
+    const items: Entity.Label[] = filtered.map((item) => ({ ...item }));
     let custom = '';
     if (planTime) {
       const v = DateUtils.formatDate(planTime, 'hh:mm');

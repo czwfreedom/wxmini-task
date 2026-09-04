@@ -1,4 +1,45 @@
 <template name="input">
+  <!-- 多行文本 -->
+  <view wx:if="{{ type === 'textarea' }}" class="input_section">
+    <view wx:if="{{ name }}" class="input_section_title">{{ name }}</view>
+    <view wx:if="{{ header }}" class="input_text_hint">{{ header }}</view>
+    <view class="input_text">
+      <textarea
+        class="input_text_input {{ style || '' }}"
+        placeholder="{{  hint || '请输入' }}"
+        maxlength="{{ maxLength || 400 }}"
+        value="{{ value }}"
+        data-id="{{ id }}"
+        bindinput="onInputChanged"
+        auto-height="true"
+        disabled="{{ disabled || false }}"
+      />
+
+      <view class="input_text_footer">
+        <view></view>
+        <view class="input_text_count">
+          {{ charCount }}/{{ maxLength || 400}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 示例提示词（数据驱动，可能为空） -->
+    <view wx:if="{{ items && items.length }}" class="input_example_items">
+      <view
+        wx:for="{{ items }}"
+        wx:key="id"
+        class="input_example_item"
+        catch:tap="onInputRadioTap"
+        hover-class="press"
+        data-id="{{ id }}"
+        data-subid="{{ item.id }}"
+        data-name="{{ item.name }}"
+      >
+        {{ item.name }}
+      </view>
+    </view>
+  </view>
+
   <!-- 带图文的单元选 -->
   <view wx:if="{{ type === 'gridRadio' }}" class="input_section">
     <view wx:if="{{ name }}" class="input_section_title">{{ name }}</view>

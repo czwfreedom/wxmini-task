@@ -14,46 +14,7 @@
       ></template>
 
       <!-- 2. 任务内容 -->
-      <view class="croutine_section">
-        <view class="croutine_section_title">{{ contentTitle || '写具体点吧 ✍️' }}</view>
-
-        <view wx:if="{{ contentHint }}" class="croutine_detail_hint">{{ contentHint }}</view>
-        <view class="croutine_detail">
-          <textarea
-            class="croutine_detail_input {{ contentStyle || '' }}"
-            placeholder="{{  contentHolder || (category.selectedId ? '想做什么呢？' : '请先选择任务类型') }}"
-            maxlength="{{ contentMaxLength }}"
-            value="{{ contentText }}"
-            bindinput="onContentInput"
-            auto-height="true"
-            disabled="{{ !category.selectedId && !finishing }}"
-          />
-
-          <view class="croutine_detail_footer">
-            <view></view>
-            <view class="croutine_detail_count">
-              {{ contentCharCount }}/{{ contentMaxLength }}
-            </view>
-          </view>
-        </view>
-
-        <!-- 示例提示词（数据驱动，可能为空） -->
-        <view
-          wx:if="{{ contentExamples && contentExamples.length }}"
-          class="croutine_example_items"
-        >
-          <view
-            wx:for="{{ contentExamples }}"
-            wx:key="id"
-            class="croutine_example_item"
-            catch:tap="onContentExampleTap"
-            hover-class="press"
-            data-name="{{ item.name }}"
-          >
-            {{ item.name }}
-          </view>
-        </view>
-      </view>
+      <template wx:if="{{ detail &&detail.id}}" is="input" data="{{ ...detail }}"></template>
 
       <!-- 时长 -->
       <template
