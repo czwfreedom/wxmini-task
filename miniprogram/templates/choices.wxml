@@ -13,8 +13,8 @@
         <!-- 把手 -->
         <view class="common_dialog_handle"></view>
         <!-- 单选：居中标题 + 关闭 -->
-        <view wx:if="{{ limited === 1 && title }}" class="common_dialog_title_container">
-          <view class="common_dialog_title">{{ title }}</view>
+        <view wx:if="{{ limited === 1 && name }}" class="common_dialog_title_container">
+          <view class="common_dialog_title">{{ name }}</view>
         </view>
 
         <!-- 多选：Header（取消 | 标题 | 确认） -->
@@ -26,7 +26,7 @@
           >
             取消
           </view>
-          <view class="common_dialog_header_title">{{ title }}</view>
+          <view class="common_dialog_header_title">{{ name || '' }}</view>
           <view
             class="common_dialog_header_confirm"
             catch:tap="onChoicesMenuTap"
@@ -44,7 +44,7 @@
         <view
           wx:for="{{ items }}"
           wx:key="id"
-          class="choices_item {{ grid? 'grid' : 'single' }} {{ item.selected? 'selected' : '' }}"
+          class="choices_item {{ grid? 'grid' : 'single' }} {{ style || '' }} {{ item.selected? 'selected' : '' }}"
           catch:tap="onChoicesItemTap"
           data-id="{{ item.id }}"
         >
@@ -58,7 +58,8 @@
           </view>
 
           <view wx:if="{{ item.desc }}" class="choices_item_desc">{{ item.desc }}</view>
-          <view wx:if="{{ item.selected && limited > 1 }}" class="choices_checked">✓</view>
+          <!-- 选中即打勾（原仅多选显示；单选重新打开时需看到当前选中项） -->
+          <view wx:if="{{ item.selected }}" class="choices_checked {{ style || '' }}">✓</view>
         </view>
       </view>
       <!-- 单选：底部取消按钮 -->

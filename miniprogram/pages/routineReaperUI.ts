@@ -1,6 +1,7 @@
 import { Err } from '../constant/error';
 import { Event } from '../core/event';
 import { Intent } from '../core/intent';
+import { Entity } from '../model/entity';
 import { Routine } from '../server/routine';
 import { InputUI } from '../ui/base/inputUI';
 import { MenuUI } from '../ui/base/menuUI';
@@ -14,6 +15,7 @@ import { RoutineEditorUI } from './routineEditorUI';
 export class RoutineReaperUI extends RoutineEditorUI {
   public constructor(component: any, intent?: Partial<Routine.Info>) {
     super(component, intent);
+    this.bindEvent('onInputMenuTap', this.onInputMenuTap);
     this.watchKeyboard();
   }
 
@@ -44,6 +46,7 @@ export class RoutineReaperUI extends RoutineEditorUI {
         style: 'h',
         maxLength: 400,
         charCount: remark.length,
+        footer: this.getFooter(),
       },
       menus: this.getMenus(),
     });
@@ -77,8 +80,56 @@ export class RoutineReaperUI extends RoutineEditorUI {
     return Routine.isDone(this.getInfo());
   }
 
+  protected onInputMenuTap(e: WechatMiniprogram.TouchEvent) {
+    const { id, button } = e.currentTarget.dataset;
+    if (id === 'detail') {
+      if (button?.startsWith('footer')) {
+        const config = RoutineAdapter.findConfig(this.getInfo().category);
+        if (config?.finishExamples?.items?.length) {
+          const options: Entity.Option[] = config.finishExamples.items.map((o) => {
+            return { id: o.id, name: o.name, desc: o.desc };
+          });
+          this.getChoices().show(
+            { id: 'i', name: '从哪个角度记？', items: options, limited: 1, style: 'detailed' },
+            {
+              onChoicesDialogItemTap: (item) => {
+                const detail = this.getData().detail;
+                detail.footer = this.getFooter(item.id);
+                this.setData({ detail });
+              },
+            }
+          );
+        }
+      }
+    }
+  }
+
   protected isNote(): boolean {
     return Routine.isNote(this.getInfo().category);
+  }
+
+  protected getFooter(id?: string): Entity.Label {
+    if (this.isNote()) {
+      const config = RoutineAdapter.findConfig(this.getInfo().category);
+      if (config?.finishExamples?.items?.length) {
+        let item: Entity.Hierarchy | undefined;
+        if (!id) {
+          const rand = Math.floor(Math.random() * config.finishExamples.items.length);
+          item = config.finishExamples.items[rand];
+        } else {
+          item = Entity.find(config.finishExamples.items, id).item;
+        }
+        if (item) {
+          return {
+            id: 'footer:' + item.id,
+            name: '例如',
+            desc: item.items?.map((o) => o.name).join(' · ') || '',
+            hint: config.finishExamples.name || '',
+          };
+        }
+      }
+    }
+    return { id: '', name: '' };
   }
 
   /** 提交创建任务 */

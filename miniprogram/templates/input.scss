@@ -59,7 +59,7 @@
     }
   }
 
-  // ===== 示例 =====
+  // ===== 示例（点击后填入正文）=====
   &_example {
     &_items {
       display: flex;
@@ -77,6 +77,54 @@
       padding: 14rpx 28rpx;
       border-radius: 32rpx;
       border: 2rpx solid $gray-e5;
+    }
+  }
+
+  // ===== 底部提示（footer）=====
+  // 语义见 InputUI.VM.footer：name=前缀 / desc=只读提示 / hint=可点入口
+  // 与 example 的关键区别：这里不代填正文——记录必须是用户自己的话。
+  // 判别标准：有边框／底色／圆角 ＝ 像可点的；纯灰字流式排列 ＝ 一眼是读的。
+  &_footer {
+    &_inspire {
+      margin-top: 24rpx;
+      @include flex-layout(row, flex-start, baseline);
+
+      &_label {
+        flex-shrink: 0;
+        margin-right: 16rpx;
+        font-size: 22rpx;
+        color: $gray-c5;
+      }
+
+      &_text {
+        flex: 1;
+        min-width: 0;
+        font-size: 24rpx;
+        line-height: 1.6;
+        color: $gray-99;
+        white-space: pre-wrap;
+      }
+    }
+
+    &_entry {
+      padding-top: 24rpx;
+      @include flex-layout(row, flex-start, center);
+
+      &_text {
+        font-size: 22rpx;
+        font-weight: 500;
+        color: $gray-99;
+      }
+
+      // 下三角：用 border 绘制，避免字体兼容问题
+      &_arrow {
+        margin-left: 8rpx;
+        width: 0;
+        height: 0;
+        border-left: 8rpx solid transparent;
+        border-right: 8rpx solid transparent;
+        border-top: 10rpx solid $gray-c5;
+      }
     }
   }
 

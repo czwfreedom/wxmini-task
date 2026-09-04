@@ -2,11 +2,9 @@ import { SubUI } from '../../core/subUI';
 import { Entity } from '../../model/entity';
 
 export namespace ChoicesUI {
-  export interface Data {
+  export interface Data extends Entity.Label {
     /** 弹窗 ID，空字符串表示不展示 */
     id: string;
-    /** 标题 */
-    title?: string;
     /** 确定按钮文字（多选时 header 使用） */
     confirm?: string;
     /** 限制选择数量，1 为单选，>1 为多选 */

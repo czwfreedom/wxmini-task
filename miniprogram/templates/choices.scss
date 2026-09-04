@@ -48,12 +48,30 @@
       box-shadow: none;
     }
 
-    // 未调。
+    // 纯文字操作列表（如 relations 的「设置」）—— 居中，保持原样
     &.single {
-      width: 100%;
+      // width: 702rpx;
       @include flex-layout;
       border-bottom: 1rpx solid $border;
       padding: 32rpx 0;
+    }
+
+    // 三段式纵向行：name 左（定宽）/ desc 中（自适应）/ 打勾右
+    // 仅 single 且行内带 desc 时生效，不影响上面的纯文字列表
+    &.detailed {
+      padding: 28rpx 24rpx;
+    }
+
+    &.detailed &_name {
+      flex-shrink: 0;
+      min-width: 132rpx;
+      font-size: 30rpx;
+      font-weight: 700;
+    }
+
+    &.detailed &_desc {
+      @include ellipsis-layout;
+      font-size: 26rpx;
     }
 
     // 统一选中态
@@ -114,5 +132,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    &.detailed {
+      position: relative;
+      top: unset;
+      right: unset;
+      flex-shrink: 0;
+      margin-left: 16rpx;
+      width: 40rpx;
+      height: 40rpx;
+      font-size: 24rpx;
+    }
   }
 }

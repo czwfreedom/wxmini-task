@@ -650,7 +650,7 @@ export namespace RoutineAdapter {
        */
       finishExamples: {
         id: '',
-        name: '想不到记什么？试试这些角度 ▴',
+        name: '想不到记什么？试试这些角度',
         items: [
           {
             id: 'comp',

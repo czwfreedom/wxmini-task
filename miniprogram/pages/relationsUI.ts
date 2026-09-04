@@ -85,7 +85,7 @@ export class RelationsUI extends UserUpdaterUI<RelationsUI.Data> {
       this.getChoices().show(
         {
           id: 'm',
-          title: '设置',
+          name: '设置',
           items: [{ id: 'del', name: this.canManage() ? '取消查看' : '移出可查看' }],
         },
         {

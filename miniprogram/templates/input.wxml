@@ -23,7 +23,7 @@
       </view>
     </view>
 
-    <!-- 示例提示词（数据驱动，可能为空） -->
+    <!-- 示例提示词（数据驱动，可能为空）：点击后填入正文 -->
     <view wx:if="{{ items && items.length }}" class="input_example_items">
       <view
         wx:for="{{ items }}"
@@ -36,6 +36,35 @@
         data-name="{{ item.name }}"
       >
         {{ item.name }}
+      </view>
+    </view>
+
+    <!--
+      底部提示区（数据驱动，可能为空）
+      语义见 InputUI.VM.footer（Entity.Label）：
+        name = 前缀（如「例如」）
+        desc = 只读提示正文（用「·」分隔）—— 不可点、不代填
+        hint = 可点入口文案 —— 点击有事件（如唤起角度列表弹窗）
+      与上方 example 的区别：example 点了会填入正文，footer.desc 只是提示。
+    -->
+    <view wx:if="{{ footer }}" class="input_footer">
+      <!-- ① 只读提示：无边框／无底色／无圆角，一眼就是「读的」不是「点的」 -->
+      <view wx:if="{{ footer.name || footer.desc }}" class="input_footer_inspire">
+        <text wx:if="{{ footer.name }}" class="input_footer_inspire_label">{{ footer.name }}</text>
+        <text wx:if="{{ footer.desc }}" class="input_footer_inspire_text">{{ footer.desc }}</text>
+      </view>
+
+      <!-- ② 可点入口：唤起弹窗（事件由使用方绑定） -->
+      <view
+        wx:if="{{ footer.hint }}"
+        class="input_footer_entry"
+        catch:tap="onInputMenuTap"
+        hover-class="press"
+        data-id="{{ id }}"
+        data-button="{{ footer.id || 'footer' }}"
+      >
+        <text class="input_footer_entry_text">{{ footer.hint }}</text>
+        <view class="input_footer_entry_arrow"></view>
       </view>
     </view>
   </view>

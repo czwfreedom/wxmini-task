@@ -167,7 +167,7 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     this.getChoices().show(
       {
         id: 'more-category',
-        title: '更多分类',
+        name: '更多分类',
         items: categories,
         limited: 1,
         grid: 3,
