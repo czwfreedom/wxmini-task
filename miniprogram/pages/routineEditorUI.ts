@@ -148,9 +148,10 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
         this.selectCategory(Number(subid), false);
       }
     } else if (id === 'duration') {
-      const options = this.getData().duration.items!;
-      Entity.markSelected(options, subid);
-      this.updateData({ duration: this.getData().duration });
+      const duration = this.getData().duration;
+      Entity.markSelected(duration.items!, subid);
+      duration.focused = subid === 'custom';
+      this.updateData({ duration });
     } else if (id === 'time') {
       const options = this.getData().time.items!;
       Entity.markSelected(options, subid);
@@ -184,21 +185,24 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     const { id } = e.currentTarget.dataset;
     const text = (e.detail.value || '') as string;
     if (id === 'duration') {
-      this.updateData(this.buildNewData('duration.value', text));
+      this.updateDurationCustom(text, true);
     } else if (id === 'detail') {
       this.updateDetailValue(text);
     }
   }
 
   /** 自定义时长确认（失焦后生效） */
-  protected onInputBlur() {
+  protected onInputBlur(e: WechatMiniprogram.TouchEvent) {
+    const { id } = e.currentTarget.dataset;
     const text = this.getData().duration.value?.trim();
     if (!text) return;
-    const mins = parseInt(text, 10);
-    if (isNaN(mins) || mins <= 0 || mins > 480) {
-      this.showToast('请输入 1-480 之间的分钟数');
-      this.updateData(this.buildNewData('duration.value', ''));
-      return;
+    if (id === 'duration') {
+      const mins = parseInt(text, 10);
+      if (isNaN(mins) || mins <= 0 || mins > 480) {
+        this.showToast('请输入 1-480 之间的分钟数');
+        this.updateDurationCustom('');
+        return;
+      }
     }
   }
 
@@ -277,11 +281,18 @@ export class RoutineEditorUI extends InteractUI<RoutineEditorUI.Data> {
     };
   }
 
-  protected updateDetailValue(text: string) {
+  protected updateDetailValue(v: string) {
     const detail = this.getData().detail;
-    detail.value = text;
-    detail.charCount = text.length;
+    detail.value = v;
+    detail.charCount = v.length;
     this.updateData({ detail });
+  }
+
+  protected updateDurationCustom(v: string, focus = false) {
+    const duration = this.getData().duration;
+    duration.value = v;
+    duration.focused = focus;
+    this.updateData({ duration });
   }
 
   protected updateData(data: Partial<RoutineEditorUI.Data> | any) {

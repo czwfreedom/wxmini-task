@@ -27,7 +27,8 @@ export namespace InputUI {
     type?: string;
     subType?: string; // 子类型，预留。
 
-    disabled?: boolean; // 是否禁用，预留。
+    disabled?: boolean; // 是否禁用
+    focused?: boolean; // 是否聚焦
     // 文本类。
     maxLength?: number;
     value?: string; // 当前值
