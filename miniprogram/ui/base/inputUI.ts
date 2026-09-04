@@ -40,6 +40,13 @@ export namespace InputUI {
     other?: boolean; // 是否是'其他'
 
     selectedId?: string; // items中选中的 id
+
+    // 在 type === ‘textarea’时，如果不可选，是另一种样式。
+    itemSelectable?: boolean; // items中是否可选
+
+    // 如果有，那在 items展开之前，还有一段文本提示。
+    itemName?: string;
+
     /**
      * 子选择。
      */

@@ -456,6 +456,9 @@ export namespace RoutineAdapter {
     /** 各分类的快捷示例提示词 */
     examples?: string[];
     finish?: string;
+    // 各分类的完成后引导语，可能是多分类的嵌套。
+    // 是三层的嵌套
+    finishExamples?: Entity.Hierarchy;
     celebrates?: string[];
     invisible?: boolean;
   }
@@ -638,6 +641,18 @@ export namespace RoutineAdapter {
       color: '#C8853E',
       icon: '/assets/imgs/ic-note.svg',
       finish: '想到什么就记，日积月累',
+      finishExamples: {
+        id: '',
+        name: '想不到记什么？试试这些角度 ▴',
+        items: [
+          {
+            id: 'comp',
+            name: '对比',
+            desc: '今天和昨天有什么不一样？',
+            items: [{ id: '', name: '今天换了条路' }],
+          },
+        ],
+      },
       hint: '想到什么就记，日积月累',
       celebrates: [
         '记下了，这就是你的今天 ✍️',

@@ -49,6 +49,10 @@ export namespace Entity {
     avatarStyle?: string; // 头像的样式
   }
 
+  export interface Hierarchy extends Image {
+    items?: Hierarchy[];
+  }
+
   export interface Option extends Image {}
 
   export function toMap<T extends Id>(items: T[], key?: string): Map<string, T> {
