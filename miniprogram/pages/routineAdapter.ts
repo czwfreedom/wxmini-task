@@ -641,6 +641,13 @@ export namespace RoutineAdapter {
       color: '#C8853E',
       icon: '/assets/imgs/ic-note.svg',
       finish: '想到什么就记，日积月累',
+      /**
+       * 三层嵌套，语义各不相同：
+       *   L1 根     = 折叠入口（不可选）
+       *   L2 角度   = id 有值（可切换）；name = 角度名，desc = 疑问全文
+       *   L3 灵感   = id 为空（不可点、不代填），name = 只读提示
+       * 顺序是 coarse→fine 的阶梯：对比（入门）→ … → 小变化（进阶），非并列。
+       */
       finishExamples: {
         id: '',
         name: '想不到记什么？试试这些角度 ▴',
@@ -649,7 +656,61 @@ export namespace RoutineAdapter {
             id: 'comp',
             name: '对比',
             desc: '今天和昨天有什么不一样？',
-            items: [{ id: '', name: '今天换了条路' }],
+            items: [
+              { id: '', name: '今天换了条路' },
+              { id: '', name: '午饭和平时不一样' },
+              { id: '', name: '放学时间不一样' },
+            ],
+          },
+          {
+            id: 'first',
+            name: '第一次',
+            desc: '今天有没有第一次发生的事？',
+            items: [
+              { id: '', name: '第一次自己完成的事' },
+              { id: '', name: '吃到没吃过的东西' },
+              { id: '', name: '去了没去过的地方' },
+            ],
+          },
+          {
+            id: 'stuck',
+            name: '卡住',
+            desc: '有什么没搞懂、想问的？',
+            items: [
+              { id: '', name: '有一道题没想通' },
+              { id: '', name: '有件事不明白为什么' },
+              { id: '', name: '想问但没问出口' },
+            ],
+          },
+          {
+            id: 'emotion',
+            name: '情绪',
+            desc: '哪一刻情绪最明显？',
+            items: [
+              { id: '', name: '最开心的一刻' },
+              { id: '', name: '有点失落的时候' },
+              { id: '', name: '被感动的一下' },
+            ],
+          },
+          {
+            id: 'quote',
+            name: '谁的话',
+            desc: '谁说了让你记住的话？',
+            items: [
+              { id: '', name: '老师说的那句话' },
+              { id: '', name: '朋友跟我说的' },
+              { id: '', name: '家里人念叨的' },
+            ],
+          },
+          {
+            id: 'change',
+            name: '小变化',
+            desc: '有什么和平时不同了？',
+            items: [
+              { id: '', name: '会做以前不会的事了' },
+              { id: '', name: '对一件事的看法变了' },
+              { id: '', name: '身边什么悄悄变了' },
+            ],
           },
         ],
       },

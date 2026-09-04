@@ -41,15 +41,16 @@ export namespace InputUI {
 
     selectedId?: string; // items中选中的 id
 
-    // 在 type === ‘textarea’时，如果不可选，是另一种样式。
-    itemSelectable?: boolean; // items中是否可选
-
-    // 如果有，那在 items展开之前，还有一段文本提示。
-    itemName?: string;
-
     /**
      * 子选择。
      */
     items?: VM[];
+
+    /**
+     * name: 标题前缀，可以为空。
+     * desc: 具体内容，可以为空，例如用 · 分隔的提示。
+     * hint: 可以换提示，点击之后有事件，可以为空。
+     */
+    footer?: Entity.Label; // 底部提示。
   }
 }
