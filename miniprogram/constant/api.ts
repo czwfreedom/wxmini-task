@@ -20,4 +20,8 @@ export const Api = {
   ListComment: '/v1/comment/list',
   CreateComment: '/v1/comment/create',
   UpdateComment: '/v1/comment/update',
+
+  ListResource: '/v1/resource/list',
+  CreateResource: '/v1/resource/create',
+  UpdateResource: '/v1/resource/update',
 };
