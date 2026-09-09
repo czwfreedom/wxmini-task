@@ -22,6 +22,26 @@ export class ImageChooser {
   /** 支持的图片格式（后台仅支持 jpg） */
   public static sSupportedTypes = ['jpg', 'jpeg'];
 
+  /**
+   * 转 jpg 用的隐藏 canvas 的 canvas-id。
+   * ★ 使用方必须在页面 wxml 中放置该 canvas（否则转码会失败）：
+   *   <canvas canvas-id="imageChooserCanvas" class="image-chooser-canvas" />
+   *   .image-chooser-canvas {
+   *     position: absolute; left: -9999px; top: 0;
+   *     width: 2048px; height: 2048px;   // 必须 ≥ sCanvasMaxSize
+   *   }
+   * 注意：不要用 display:none —— 部分基础库不会绘制未参与布局的 canvas。
+   */
+  public static sCanvasId = 'imageChooserCanvas';
+  /**
+   * canvas 转 jpg 时的最大边长。
+   * 受 canvas 内存限制（约 w×h×4 字节）：2048² ≈ 16MB 较安全，
+   * 4096² ≈ 67MB 低端机有风险。非 jpg 图转码时会等比缩到该值内。
+   */
+  public static sCanvasMaxSize = 2048;
+  /** canvas 导出 jpg 的质量（0~1） */
+  public static sJpgQuality = 0.8;
+
   // 选择与处理的结果，都保存在media结构里。
   public medias: Media[] = [];
 
@@ -47,16 +67,8 @@ export class ImageChooser {
       media.height = file.height;
 
       // 基础数据：宽高与大小。chooseMedia 返回的宽高在部分机型可能为 0，故失败时再读一次。
-      if (!media.width || !media.height) {
-        const info = await WxUtils.readImageInfo(media.path);
-        if (info) {
-          media.width = info.width;
-          media.height = info.height;
-        }
-      }
-      if (!media.size) {
-        media.size = await WxUtils.getFileSize(media.path);
-      }
+      // 总是读一下，确保读到类型。
+      ImageChooser.refresh(media, 0, media.size);
 
       if (!delay) {
         // 压缩后文件变更，故 hash 必须基于最终文件计算。
@@ -111,6 +123,20 @@ export class ImageChooser {
    */
   protected static async compress(media: Media): Promise<number> {
     if (!media.path) return Err.Code.InvalidParam;
+
+    // ⓪ 格式：后台严格只支持 jpg，非 jpg 必须先用 canvas 转码（与是否超限无关）
+    if (!(await ImageChooser.isJpg(media))) {
+      const jpg = await ImageChooser.toJpg(media);
+      if (!jpg) {
+        // 多数情况是页面未放置隐藏 canvas，交由调用方排查。
+        Logger.warn('Image is not jpg and convert failed.', media);
+        return Err.Code.WxAPIFailed;
+      }
+      media.path = jpg;
+      media.name = ImageChooser.replacePostfix(media.name, 'jpg');
+      await ImageChooser.refresh(media);
+    }
+
     if (!ImageChooser.needCompress(media)) return Err.Code.OK;
 
     // ① 长边超限：先按长边等比缩一次（另一个维度留空，由微信等比处理）
@@ -123,8 +149,8 @@ export class ImageChooser {
     }
 
     // ② 仍超大小：按质量阶梯继续压。
-    // 注意：quality 仅对 jpg 有效，非 jpg 压了也不会变小，故跳过（直接走③的缩放）。
-    if (media.size > ImageChooser.sMaxSize && ImageChooser.isJpg(media)) {
+    // 走到这里必然已是 jpg（步骤⓪已转码），故 quality 一定有效。
+    if (media.size > ImageChooser.sMaxSize) {
       for (const quality of ImageChooser.sQualities) {
         const path = await ImageChooser.compressOnce(media.path, quality);
         if (path) {
@@ -161,7 +187,7 @@ export class ImageChooser {
   /**
    * 取后缀（小写，不含点）。
    * 后台仅支持 jpg；compressImage 的 quality 也仅对 jpg 生效，
-   * 故非 jpg（如 png）只能靠缩放尺寸减小体积，且不能保证转成 jpg。
+   * 故非 jpg（如 png）必须先用 canvas 转码成 jpg。
    */
   protected static postfix(media: Media): string {
     const name = media.name || '';
@@ -169,8 +195,75 @@ export class ImageChooser {
     return index >= 0 ? name.substring(index + 1).toLowerCase() : '';
   }
 
-  protected static isJpg(media: Media): boolean {
-    return ImageChooser.sSupportedTypes.indexOf(ImageChooser.postfix(media)) >= 0;
+  /** 替换后缀（原文件名无后缀时补上），用于转码后更新 name */
+  protected static replacePostfix(name: string, postfix: string): string {
+    const origin = name || 'image';
+    const index = origin.lastIndexOf('.');
+    return (index >= 0 ? origin.substring(0, index) : origin) + '.' + postfix;
+  }
+
+  /**
+   * 是否是 jpg。
+   * 优先用后缀快速判断；后缀缺失（微信临时文件常无后缀）时，
+   * 读图片真实格式（wx.getImageInfo 的 type，如 jpeg / png）兜底。
+   */
+  protected static async isJpg(media: Media): Promise<boolean> {
+    const postfix = ImageChooser.postfix(media);
+    if (ImageChooser.sSupportedTypes.indexOf(postfix) >= 0) return true;
+    if (['png', 'gif', 'webp', 'heic', 'bmp'].indexOf(postfix) >= 0) return false;
+    const type = media.postfix || '';
+    return type === 'jpeg' || type === 'jpg';
+  }
+
+  /**
+   * 用 canvas 把非 jpg 图转为 jpg（后台严格限制，且缩略图只支持 jpg）。
+   * 转码同时按需等比缩到 sCanvasMaxSize 内，避免超出画布尺寸。
+   * @returns 新的 jpg 临时路径；失败返回空（多为页面未放置隐藏 canvas）。
+   */
+  protected static async toJpg(media: Media): Promise<string> {
+    const width0 = media.width || 0;
+    const height0 = media.height || 0;
+    if (!media.path || !width0 || !height0) return '';
+
+    // 目标尺寸：不超过画布上限，也不超过后台长边限制
+    const max = Math.min(ImageChooser.sCanvasMaxSize, ImageChooser.sMaxLongEdge);
+    const ratio = Math.max(width0, height0) > max ? max / Math.max(width0, height0) : 1;
+    const width = Math.max(1, Math.round(width0 * ratio));
+    const height = Math.max(1, Math.round(height0 * ratio));
+
+    // 这里用旧版 canvas（canvas-id）而非新版 Canvas 2D：
+    // 本类是纯逻辑类、拿不到页面/组件实例，而 2D 版需 SelectorQuery 取 node 才行。
+    // 旧版已标记 deprecated 但仍可用；将来若迁移到 2D，需把 wxml 改为
+    // <canvas type="2d" id="..." /> 并由调用方传入 component 实例。
+    const canvasId = ImageChooser.sCanvasId;
+    const ctx = wx.createCanvasContext(canvasId);
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(media.path, 0, 0, width, height);
+
+    // draw 是异步的，必须等回调结束再导出
+    const drawn = await new Promise<boolean>((resolve) => {
+      ctx.draw(false, () => resolve(true));
+    });
+    if (!drawn) return '';
+
+    return new Promise((resolve) => {
+      wx.canvasToTempFilePath({
+        canvasId: canvasId,
+        x: 0,
+        y: 0,
+        width: width,
+        height: height,
+        destWidth: width,
+        destHeight: height,
+        fileType: 'jpg',
+        quality: ImageChooser.sJpgQuality,
+        success: (res) => resolve(res?.tempFilePath || ''),
+        fail: (err) => {
+          Logger.warn('Convert to jpg failed.', media.path, err);
+          resolve('');
+        },
+      });
+    });
   }
 
   protected static longEdge(media: Media): number {
@@ -224,12 +317,15 @@ export class ImageChooser {
   }
 
   /** 压缩后重新读取宽高与大小 */
-  protected static async refresh(media: Media): Promise<void> {
-    media.size = await WxUtils.getFileSize(media.path);
-    const info = await WxUtils.readImageInfo(media.path);
-    if (info) {
-      media.width = info.width;
-      media.height = info.height;
+  protected static async refresh(media: Media, width = 0, size = 0): Promise<void> {
+    if (!size) media.size = await WxUtils.getFileSize(media.path);
+    if (!width) {
+      const info = await WxUtils.readImageInfo(media.path);
+      if (info) {
+        media.width = info.width;
+        media.height = info.height;
+        media.postfix = (info.type || '').toLowerCase();
+      }
     }
   }
 }

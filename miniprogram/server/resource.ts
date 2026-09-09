@@ -25,6 +25,7 @@ export namespace Resource {
     hash: string;
     path: string;
     tag?: string;
+    postfix?: string;
   }
 
   export interface ListRequest {
@@ -39,9 +40,7 @@ export namespace Resource {
   //     "postfix": "jpg",
   //     "time": "1621502520000"
   // }
-  export interface CreateRequest extends Info {
-    postfix?: string;
-  }
+  export interface CreateRequest extends Info {}
 
   export interface Upload {
     key: string;
