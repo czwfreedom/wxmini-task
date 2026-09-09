@@ -20,6 +20,16 @@ export namespace InputUI {
      * 带候选的时间选择。
      */
     OptionTime = 'optionTime',
+
+    /**
+     * 多图。
+     */
+    Images = 'images',
+
+    /**
+     * 多音频。
+     */
+    Audios = 'audios',
   }
 
   // 配合 input.scss/wxml
@@ -52,5 +62,12 @@ export namespace InputUI {
      * hint: 可以换提示，点击之后有事件，可以为空。
      */
     footer?: Entity.Label; // 底部提示。
+
+    // 图片/视频/音频相关。
+    mediaLimited?: number; // 最多上传大小。
+    mediaDeletable?: boolean; // 图片是否删除。
+    // mediaScaleable?: boolean;
+    // mediaSortable?: boolean; // 图片是否可以排序。
+    sourceType?: string[];
   }
 }
