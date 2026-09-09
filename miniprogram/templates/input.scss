@@ -259,6 +259,224 @@
     }
   }
 
+  // ===== 5. 图片（九宫格 + 末尾「＋」）=====
+  // ＋ 格子是网格的最后一格（方案 B），故结构上不可能被语音隔开。
+  &_media {
+    &_grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16rpx;
+    }
+
+    &_cell {
+      position: relative;
+      width: 100%;
+      // 1:1 正方形：不用 aspect-ratio（小程序/iOS 低版本兼容），用 padding 撑高
+      height: 0;
+      padding-bottom: 100%;
+      box-sizing: border-box;
+      border-radius: 16rpx;
+      overflow: hidden;
+      border: 2rpx solid $border;
+
+      &_img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      &_del {
+        position: absolute;
+        top: 8rpx;
+        right: 8rpx;
+        width: 40rpx;
+        height: 40rpx;
+        border-radius: 50%;
+        background: $black3;
+        color: #fff;
+        font-size: 26rpx;
+        font-weight: 700;
+        @include flex-layout;
+      }
+
+      // ＋ 格子：虚线 = 可添加
+      &.add {
+        border: 2rpx dashed $gray-c5;
+        background: $background-card;
+        @include press;
+      }
+
+      // 内容居中：因父级靠 padding 撑高，需绝对定位容器
+      &_inner {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        @include flex-layout(column, center, center);
+      }
+
+      &_plus {
+        font-size: 52rpx;
+        line-height: 1;
+        color: $gray-c5;
+      }
+
+      &_label {
+        margin-top: 8rpx;
+        font-size: 20rpx;
+        font-weight: 500;
+        color: $gray-99;
+      }
+    }
+
+    // 计数：仅在有图时显示（空白态显示 0/9 只会显得空旷）
+    &_count {
+      margin-top: 12rpx;
+      font-size: 20rpx;
+      color: $gray-c5;
+      text-align: right;
+    }
+
+    // 录音入口按钮（音频用）：虚线胶囊 = 可添加
+    &_add {
+      margin-top: 16rpx;
+      height: 80rpx;
+      border-radius: 28rpx;
+      background: $background-card;
+      border: 2rpx dashed $gray-c5;
+      font-size: 26rpx;
+      font-weight: 600;
+      color: $foreground-sub;
+      @include press;
+      @include flex-layout;
+
+      &_icon {
+        width: 32rpx;
+        height: 32rpx;
+        margin-right: 12rpx;
+      }
+    }
+  }
+
+  // ===== 6. 音频（多条语音条 / 录音中）=====
+  // 多条：列表，每条独立播放 + 删除；播放中的那条三角变停止方块
+  &_voice_list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &_voice {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 80rpx;
+    padding: 0 24rpx;
+    border-radius: 999rpx;
+    background: $background-green-light;
+    // 多条之间留间距
+    margin-bottom: 16rpx;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    // 默认宽度（逻辑层可用 avatarStyle 覆盖为按时长计算的宽度）
+    width: 320rpx;
+    max-width: 480rpx;
+
+    // 播放中：边框高亮 + 三角变停止方块
+    &.playing {
+      border: 3rpx solid rgba($green, 0.5);
+
+      .input_voice_play {
+        width: 14rpx;
+        height: 16rpx;
+        border: none;
+        border-radius: 2rpx;
+        background: $green;
+      }
+    }
+
+    // 播放三角：border 绘制，避免字体兼容问题
+    &_play {
+      width: 0;
+      height: 0;
+      flex-shrink: 0;
+      border-left: 16rpx solid $green;
+      border-top: 10rpx solid transparent;
+      border-bottom: 10rpx solid transparent;
+    }
+
+    &_wave {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      min-width: 0;
+      margin-left: 20rpx;
+
+      // 波形竖条：间距用 margin（遵循规范，不用 flex gap）
+      view {
+        display: block;
+        width: 4rpx;
+        height: 12rpx;
+        margin-right: 6rpx;
+        border-radius: 2rpx;
+        background: $green;
+      }
+    }
+
+    &_dur {
+      flex-shrink: 0;
+      margin-left: 8rpx;
+      font-size: 22rpx;
+      color: $gray-99;
+    }
+
+    &_del {
+      flex-shrink: 0;
+      margin-left: 12rpx;
+      font-size: 26rpx;
+      color: $gray-99;
+    }
+
+    // 录音中：红系，与 green 的「已录制」区分
+    &.recording {
+      background: rgba($red, 0.08);
+      border: 2rpx solid rgba($red, 0.3);
+    }
+
+    &_dot {
+      width: 16rpx;
+      height: 16rpx;
+      border-radius: 50%;
+      background: $red;
+      flex-shrink: 0;
+    }
+
+    &_time {
+      flex-shrink: 0;
+      margin-left: 8rpx;
+      font-size: 22rpx;
+      font-weight: 700;
+      color: $red;
+    }
+
+    &_stop {
+      flex-shrink: 0;
+      margin-left: 12rpx;
+      padding: 8rpx 24rpx;
+      border-radius: 999rpx;
+      background: $red;
+      color: #fff;
+      font-size: 22rpx;
+      font-weight: 700;
+    }
+  }
+
   // ===== 4. 计划时间 =====
   &_time {
     &_items {

@@ -169,4 +169,133 @@
       </block>
     </view>
   </view>
+
+  <!--
+    5. 图片（九宫格）
+    方案 B：「＋」是与图片同尺寸的一格，永远跟在图片流末尾，
+    因此结构上不可能被其他元素隔开；满 mediaLimited 张时整格消失。
+    空白态（items 为空）时 ＋ 格子带「添加图片」文字，有图后简化为纯 ＋。
+  -->
+  <view wx:if="{{ type ==='images' }}" class="input_section">
+    <view wx:if="{{ name }}" class="input_section_title">
+      {{ name }}
+      <text wx:if="{{ hint }}" class="input_section_tip">{{ hint }}</text>
+    </view>
+
+    <view class="input_media_grid">
+      <view
+        wx:for="{{ items }}"
+        wx:key="id"
+        class="input_media_cell"
+        catch:tap="onInputMediaTap"
+        data-id="{{ id }}"
+        data-subid="{{ item.id }}"
+      >
+        <image src="{{ item.avatar }}" mode="aspectFill" class="input_media_cell_img" />
+        <view
+          wx:if="{{ mediaDeletable }}"
+          class="input_media_cell_del"
+          catch:tap="onInputMediaDel"
+          hover-class="press"
+          hover-stop-propagation="true"
+          data-id="{{ id }}"
+          data-subid="{{ item.id }}"
+        >
+          ×
+        </view>
+      </view>
+
+      <!-- ＋ 格子：图片流末尾，未满时显示 -->
+      <view
+        wx:if="{{ !mediaLimited || (items && items.length < mediaLimited) }}"
+        class="input_media_cell add"
+        catch:tap="onInputMediaAdd"
+        hover-class="press"
+        data-id="{{ id }}"
+      >
+        <view class="input_media_cell_inner">
+          <!-- prettier-ignore -->
+          <text class="input_media_cell_plus">＋</text>
+          <text wx:if="{{ !items || !items.length }}" class="input_media_cell_label">添加图片</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{ items && items.length }}" class="input_media_count">
+      {{ items.length }}/{{ mediaLimited || 9 }}
+    </view>
+  </view>
+
+  <!--
+    6. 音频（多条）
+    三态：① 录音中（recording）② 已录制（items 非空，遍历）③ 去录音（默认）
+    · 每条独立播放 / 删除，播放态由 item.selected 标记（同一时刻只播一条，由逻辑层保证）
+    · 语音条宽度按时长：160rpx + 秒×4rpx，上限 480rpx（由 item.style 或 avatarStyle 承载，逻辑层计算）
+    · 未满 mediaLimited 时显示「继续添加」；满则隐藏入口
+    · 计数仅在有语音时显示（空白态不显示 0/9）
+  -->
+  <view wx:if="{{ type ==='audios' }}" class="input_section">
+    <view wx:if="{{ name }}" class="input_section_title">
+      {{ name }}
+      <text wx:if="{{ hint }}" class="input_section_tip">{{ hint }}</text>
+    </view>
+
+    <!-- ① 录音中（最新一条） -->
+    <view wx:if="{{ recording }}" class="input_voice recording">
+      <view class="input_voice_dot"></view>
+      <view class="input_voice_wave">
+        <view></view><view></view><view></view><view></view><view></view>
+      </view>
+      <text class="input_voice_time">{{ duration || 0 }}s</text>
+      <view class="input_voice_stop" catch:tap="onInputMediaStop" data-id="{{ id }}">完成</view>
+    </view>
+
+    <!-- ② 已录制：多条列表，每条独立 -->
+    <view wx:else class="input_voice_list">
+      <view
+        wx:for="{{ items }}"
+        wx:key="id"
+        class="input_voice {{ item.selected ? 'playing' : '' }} {{ item.style || '' }}"
+        style="{{ item.avatarStyle || '' }}"
+      >
+        <!-- 播放 / 停止：播放中显示方块（停止） -->
+        <view
+          class="input_voice_play"
+          catch:tap="onInputMediaTap"
+          data-id="{{ id }}"
+          data-subid="{{ item.id }}"
+        ></view>
+        <view class="input_voice_wave">
+          <view></view><view></view><view></view><view></view><view></view>
+        </view>
+        <text class="input_voice_dur">{{ item.name }}</text>
+        <view
+          wx:if="{{ mediaDeletable }}"
+          class="input_voice_del"
+          catch:tap="onInputMediaDel"
+          hover-stop-propagation="true"
+          data-id="{{ id }}"
+          data-subid="{{ item.id }}"
+        >
+          ✕
+        </view>
+      </view>
+    </view>
+
+    <!-- ③ 录音 / 继续添加 入口：能力可见，未满时显示 -->
+    <view
+      wx:if="{{ !mediaLimited || (items && items.length < mediaLimited) }}"
+      class="input_media_add"
+      catch:tap="onInputMediaAdd"
+      hover-class="press"
+      data-id="{{ id }}"
+    >
+      <image src="../assets/imgs/ic-record.svg" class="input_media_add_icon" mode="aspectFit" />
+      <text>{{ items && items.length ? '继续添加' : '录音' }}</text>
+    </view>
+
+    <view wx:if="{{ items && items.length }}" class="input_media_count">
+      语音 {{ items.length }}/{{ mediaLimited || 9 }}
+    </view>
+  </view>
 </template>

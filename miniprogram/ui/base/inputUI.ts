@@ -53,6 +53,8 @@ export namespace InputUI {
 
     /**
      * 子选择。
+     * type 为 Images / Audios 时，复用为本表单的媒体列表：
+     *   avatar = 图片或音频地址；name = 展示文案（音频可放时长文本，如「0:15」）。
      */
     items?: VM[];
 
@@ -69,5 +71,15 @@ export namespace InputUI {
     // mediaScaleable?: boolean;
     // mediaSortable?: boolean; // 图片是否可以排序。
     sourceType?: string[];
+
+    /**
+     * 音频时长（秒），type 为 Audios 且正在录音时使用。
+     */
+    duration?: number;
+
+    /**
+     * 是否正在录音，type 为 Audios 时控制「录音中」态。
+     */
+    recording?: boolean;
   }
 }
