@@ -247,11 +247,11 @@
     <view wx:if="{{ recording }}" class="input_voice recording">
       <view class="input_voice_dot"></view>
       <view class="input_voice_wave">
-        <view></view>
-        <view></view>
-        <view></view>
-        <view></view>
-        <view></view>
+        <view class="w1"></view>
+        <view class="w2"></view>
+        <view class="w3"></view>
+        <view class="w4"></view>
+        <view class="w5"></view>
       </view>
       <text class="input_voice_time">{{ duration || 0 }}s</text>
       <view
@@ -280,11 +280,11 @@
         <!-- 播放 / 停止：播放中显示方块（停止） -->
         <view class="input_voice_play"></view>
         <view class="input_voice_wave">
-          <view></view>
-          <view></view>
-          <view></view>
-          <view></view>
-          <view></view>
+          <view class="w1"></view>
+          <view class="w2"></view>
+          <view class="w3"></view>
+          <view class="w4"></view>
+          <view class="w5"></view>
         </view>
         <text class="input_voice_dur">{{ item.name }}</text>
         <view
