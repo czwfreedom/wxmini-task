@@ -9,11 +9,11 @@ import { InputUI } from './inputUI';
 import { PageInputUI } from './pageInputUI';
 
 /** 语音条最小宽度（rpx） */
-const VOICE_MIN_WIDTH = 160;
+const VOICE_MIN_WIDTH = 260;
 /** 语音条每秒增加的宽度（rpx） */
 const VOICE_WIDTH_PER_SEC = 4;
 /** 语音条最大宽度（rpx） */
-const VOICE_MAX_WIDTH = 480;
+const VOICE_MAX_WIDTH = 580;
 /** 录音最大时长（毫秒），与后台限制一致 */
 const RECORD_MAX_DURATION = 60000;
 

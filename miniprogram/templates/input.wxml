@@ -265,7 +265,7 @@
       </view>
     </view>
 
-    <!-- ② 已录制：多条列表，每条独立 -->
+    <!-- ② 已录制：多条列表，每条独立。录音时是不存在的，免得用户分心。 -->
     <view wx:else class="input_voice_list">
       <view
         wx:for="{{ items }}"
@@ -314,7 +314,8 @@
       <text>{{ items && items.length ? '继续添加' : '录音' }}</text>
     </view>
 
-    <view wx:if="{{ items && items.length && !recording }}" class="input_media_count">
+    <!-- 录音时也在，免得用户说数据怎么不见 -->
+    <view wx:if="{{ items && items.length }}" class="input_media_count">
       语音 {{ items.length }}/{{ mediaLimited || 9 }}
     </view>
   </view>
