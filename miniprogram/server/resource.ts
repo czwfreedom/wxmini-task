@@ -14,7 +14,7 @@ export namespace Resource {
 
   export interface Info extends Entity.Info {
     createTime: number;
-    checked?: boolean;
+    checked?: number;
     type: number;
     quality?: number;
     width: number;
@@ -101,12 +101,15 @@ export namespace Resource {
     return check(res);
   }
 
-  export async function create(data: Partial<Resource.Info>): Promise<number | CreateResponse> {
-    const res = await Network.post<Info>(Api.CreateResource, data);
+  export async function create(
+    data: Partial<Resource.Info>
+  ): Promise<number | Resource.CreateResponse> {
+    const res = await Network.post<CreateResponse>(Api.CreateResource, data);
     if (res?.errcode !== 0 || !res.data) {
       Logger.warn('Create resource failed.', res);
       return res.errcode || Err.Code.Network;
     }
+    // 有 upload 字段也不会丢。
     return toMedia(res.data);
   }
 }
