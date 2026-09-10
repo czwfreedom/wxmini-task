@@ -168,10 +168,11 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
       return;
     }
 
-    this.showLoading();
+    // 在开发者工具里，首次打开会弹出一个服务协议，需要确认，如果有这个，是不能点击的。
+    // this.showLoading();
     const chooser = new ImageChooser();
     const errcode = await chooser.choose(remain, false, item.sourceType);
-    this.hideLoading();
+    // this.hideLoading();
     // 用户取消不算错误
     if (errcode !== Err.Code.OK) {
       this.showErrToast(errcode);

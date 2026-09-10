@@ -1,4 +1,5 @@
 import { Err } from '../constant/error';
+import { Locale } from '../constant/locale';
 import { Media, Resource } from '../server/resource';
 import { Logger } from '../utils/logger';
 import { WxUtils } from '../utils/wxUtils';
@@ -56,7 +57,8 @@ export class ImageChooser {
     // 用户取消（fail 且非真正错误）时，不视为失败。
     if (!files) return Err.Code.OK;
     if (!files.length) return Err.Code.Unknown;
-
+    // 发现在外面调用会有问题，暂时又不想依赖 SubUI。 TODO
+    wx.showLoading({ title: Locale.String.processing, mask: true });
     for (const file of files) {
       const media = Resource.defaultMedia();
       media.type = Resource.Type.Image;
@@ -68,7 +70,7 @@ export class ImageChooser {
 
       // 基础数据：宽高与大小。chooseMedia 返回的宽高在部分机型可能为 0，故失败时再读一次。
       // 总是读一下，确保读到类型。
-      ImageChooser.refresh(media, 0, media.size);
+      await ImageChooser.refresh(media, 0, media.size);
 
       if (!delay) {
         // 压缩后文件变更，故 hash 必须基于最终文件计算。
@@ -78,6 +80,7 @@ export class ImageChooser {
 
       this.medias.push(media);
     }
+    wx.hideLoading();
     return Err.Code.OK;
   }
 
@@ -190,6 +193,7 @@ export class ImageChooser {
    * 故非 jpg（如 png）必须先用 canvas 转码成 jpg。
    */
   protected static postfix(media: Media): string {
+    if (media.postfix) return media.postfix;
     const name = media.name || '';
     const index = name.lastIndexOf('.');
     return index >= 0 ? name.substring(index + 1).toLowerCase() : '';
@@ -211,8 +215,7 @@ export class ImageChooser {
     const postfix = ImageChooser.postfix(media);
     if (ImageChooser.sSupportedTypes.indexOf(postfix) >= 0) return true;
     if (['png', 'gif', 'webp', 'heic', 'bmp'].indexOf(postfix) >= 0) return false;
-    const type = media.postfix || '';
-    return type === 'jpeg' || type === 'jpg';
+    return false;
   }
 
   /**
@@ -325,6 +328,13 @@ export class ImageChooser {
         media.width = info.width;
         media.height = info.height;
         media.postfix = (info.type || '').toLowerCase();
+        // 检查方向。
+        const o = info.orientation;
+        if (o === 'left-mirrored' || o === 'right' || o === 'right-mirrored' || o === 'left') {
+          const temp = media.width;
+          media.width = media.height;
+          media.height = temp;
+        }
       }
     }
   }
