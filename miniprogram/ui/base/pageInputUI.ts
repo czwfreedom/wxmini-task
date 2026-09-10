@@ -1,7 +1,7 @@
-import { SubUI } from '../../core/subUI';
+import { InteractUI } from '../../core/interactUI';
 import { InputUI } from './inputUI';
 
-export abstract class PageInputUI<D> extends SubUI<D> {
+export abstract class PageInputUI<D> extends InteractUI<D> {
   /**
    * 适配已有页面。
    */
