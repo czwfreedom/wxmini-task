@@ -8,7 +8,6 @@ import { Routine } from '../server/routine';
 import { User } from '../server/user';
 import { AvatarUtils } from '../utils/avatarUtils';
 import { DateUtils } from '../utils/dateUtils';
-import { Utils } from '../utils/utils';
 import { RoutineUI } from './routineUI';
 
 export class RoutineAdapter {
@@ -496,7 +495,8 @@ export namespace RoutineAdapter {
       celebrates: [
         '今天的难题被你收服啦 💪',
         '这一课的关卡，通关 ✅',
-        '作业本上，又多了一枚你的勋章 🏅',
+        // 作业也可拍照/录音提交，故不用「作业本上」这类预设纸笔的说法
+        '这一项，又多了一枚你的勋章 🏅',
       ],
     },
     {
@@ -715,10 +715,12 @@ export namespace RoutineAdapter {
         ],
       },
       hint: '想到什么就记，日积月累',
+      // 支持文字/图片/录音任一即可提交，故祝语不预设媒介：
+      // 不用「这句话」「想法」「✍️」等只对应文字的表达，改用「这一刻」「今天」等通用说法。
       celebrates: [
-        '记下了，这就是你的今天 ✍️',
-        '这句话，以后看会很有意思 💫',
-        '你的想法被好好保存下来了 📌',
+        '记下了，这就是你的今天 ✨',
+        '这一刻，以后看会很有意思 💫',
+        '你的今天，被好好存下来了 📌',
       ],
       invisible: true,
     },
@@ -757,7 +759,8 @@ export namespace RoutineAdapter {
 
   /** 获取指定分类的完成反馈提示词 */
   export function getFinish(category: number): string {
-    return findConfig(category)?.finish || '做完啦，有什么想说的？';
+    // 兜底同样不预设媒介（可为文字/图片/录音），故用「记点什么」而非「想说的」。
+    return findConfig(category)?.finish || '做完了，想记点什么？';
   }
 
   /** 获取指定分类的完成祝语（任务完成那一刻弹出的肯定语），随机选一句以对抗脱敏 */
@@ -766,6 +769,7 @@ export namespace RoutineAdapter {
     if (celebrates && celebrates.length) {
       return celebrates[Math.floor(Math.random() * celebrates.length)];
     }
-    return '完成就是最棒的 ✨';
+    // 兜底：不预设媒介，也不用「最棒」这类外部评判词（避免把行为绑到外在评价上）
+    return '完成了，又向前走了一小步 ✨';
   }
 }

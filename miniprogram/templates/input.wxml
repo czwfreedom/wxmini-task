@@ -176,7 +176,7 @@
     因此结构上不可能被其他元素隔开；满 mediaLimited 张时整格消失。
     空白态（items 为空）时 ＋ 格子带「添加图片」文字，有图后简化为纯 ＋。
   -->
-  <view wx:if="{{ type ==='images' }}" class="input_section {{ !name? 'packed' : '' }}">
+  <view wx:if="{{ type ==='images' }}" class="input_section {{ style || '' }}">
     <view wx:if="{{ name }}" class="input_section_title">
       {{ name }}
       <text wx:if="{{ hint }}" class="input_section_tip">{{ hint }}</text>
@@ -237,7 +237,7 @@
     · 未满 mediaLimited 时显示「继续添加」；满则隐藏入口
     · 计数仅在有语音时显示（空白态不显示 0/9）
   -->
-  <view wx:if="{{ type ==='audios' }}" class="input_section {{ !name? 'packed' : '' }}">
+  <view wx:if="{{ type ==='audios' }}" class="input_section {{ style || '' }}">
     <view wx:if="{{ name }}" class="input_section_title">
       {{ name }}
       <text wx:if="{{ hint }}" class="input_section_tip">{{ hint }}</text>
