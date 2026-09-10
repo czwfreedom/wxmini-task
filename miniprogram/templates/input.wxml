@@ -272,15 +272,13 @@
         wx:key="id"
         class="input_voice {{ item.selected ? 'playing' : '' }} {{ item.style || '' }}"
         style="{{ item.avatarStyle || '' }}"
+        catch:tap="onInputMediaTap"
+        data-id="{{ id }}"
+        data-subid="{{ item.id }}"
+        data-button="play"
       >
         <!-- 播放 / 停止：播放中显示方块（停止） -->
-        <view
-          class="input_voice_play"
-          catch:tap="onInputMediaTap"
-          data-id="{{ id }}"
-          data-subid="{{ item.id }}"
-          data-button="play"
-        ></view>
+        <view class="input_voice_play"></view>
         <view class="input_voice_wave">
           <view></view>
           <view></view>
@@ -305,7 +303,7 @@
 
     <!-- ③ 录音 / 继续添加 入口：能力可见，未满时显示 -->
     <view
-      wx:if="{{ !mediaLimited || (items && items.length < mediaLimited) }}"
+      wx:if="{{ (!mediaLimited || (items && items.length < mediaLimited)) && !recording }}"
       class="input_media_add"
       catch:tap="onInputMediaTap"
       hover-class="press"
@@ -316,7 +314,7 @@
       <text>{{ items && items.length ? '继续添加' : '录音' }}</text>
     </view>
 
-    <view wx:if="{{ items && items.length }}" class="input_media_count">
+    <view wx:if="{{ items && items.length && !recording }}" class="input_media_count">
       语音 {{ items.length }}/{{ mediaLimited || 9 }}
     </view>
   </view>

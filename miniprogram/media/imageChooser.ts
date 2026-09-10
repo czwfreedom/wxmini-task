@@ -1,6 +1,7 @@
 import { Err } from '../constant/error';
 import { Locale } from '../constant/locale';
 import { Media, Resource } from '../server/resource';
+import { FileUtils } from '../utils/fileUtils';
 import { Logger } from '../utils/logger';
 import { WxUtils } from '../utils/wxUtils';
 
@@ -194,9 +195,7 @@ export class ImageChooser {
    */
   protected static postfix(media: Media): string {
     if (media.postfix) return media.postfix;
-    const name = media.name || '';
-    const index = name.lastIndexOf('.');
-    return index >= 0 ? name.substring(index + 1).toLowerCase() : '';
+    return FileUtils.postfix(media.name);
   }
 
   /** 替换后缀（原文件名无后缀时补上），用于转码后更新 name */

@@ -2,6 +2,7 @@ import { Err } from '../../constant/error';
 import { ImageChooser } from '../../media/imageChooser';
 import { MediaUploader } from '../../media/uploader';
 import { Media, Resource } from '../../server/resource';
+import { FileUtils } from '../../utils/fileUtils';
 import { Logger } from '../../utils/logger';
 import { WxUtils } from '../../utils/wxUtils';
 import { InputUI } from './inputUI';
@@ -210,7 +211,10 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
 
   /** 开始录音 */
   protected startRecord(id: string, item: InputUI.VM) {
-    if (this.recordId) return;
+    if (this.recordId) {
+      this.showToast('正在录音中..');
+      return;
+    }
 
     const limited = item.mediaLimited || 9;
     const items = this.ensureItems(item);
@@ -295,9 +299,10 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     media.id = MediaInputUI.newId();
     media.type = Resource.Type.Audio;
     media.path = res.tempFilePath;
-    media.duration = seconds;
+    media.duration = res.duration;
     media.size = res.fileSize || 0;
     media.name = MediaInputUI.formatDuration(seconds);
+    media.postfix = FileUtils.postfix(media.path);
 
     const medias = this.getMedias(id);
     medias.push(media);
