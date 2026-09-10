@@ -6,7 +6,7 @@
 <view class="croutine">
   <canvas
     wx:if="{{ !unloaded && loaded && snapCanvas }}"
-    id="snapCanvas"
+    canvas-id="snapCanvas"
     class="snap_canvas"
   ></canvas>
 
@@ -21,6 +21,16 @@
 
       <!-- 2. 任务内容 -->
       <template wx:if="{{ detail &&detail.id}}" is="input" data="{{ ...detail }}"></template>
+      <template
+        wx:if="{{ detailImage && detailImage.id}}"
+        is="input"
+        data="{{ ...detailImage }}"
+      ></template>
+      <template
+        wx:if="{{ detailAudio &&detailAudio.id}}"
+        is="input"
+        data="{{ ...detailAudio }}"
+      ></template>
 
       <!-- 时长 -->
       <template

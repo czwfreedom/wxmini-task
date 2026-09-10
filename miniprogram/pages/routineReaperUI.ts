@@ -58,6 +58,8 @@ export class RoutineReaperUI extends RoutineEditorUI {
         charCount: remark.length,
         footer: this.getFooter(),
       },
+      detailImage: this.defaultImageVM('detailImage'),
+      detailAudio: this.defaultAudioVM('detailAudio'),
       snapCanvas: true,
       menus: this.getMenus(),
     });
@@ -145,8 +147,16 @@ export class RoutineReaperUI extends RoutineEditorUI {
 
   /** 提交创建任务 */
   protected async commit() {
-    const data = this.getCommitData(true);
+    let data = this.getCommitData(true);
     if (!data) return;
+
+    // 前面检查了一次，然后上传之后，再来一次。
+    const uploadErrcode = await this.uploadMedias();
+    if (uploadErrcode !== Err.Code.OK) return;
+
+    data = this.getCommitData(true);
+    if (!data) return;
+
     Logger.info('Finishing', data);
 
     const updating = this.updating();
@@ -172,18 +182,27 @@ export class RoutineReaperUI extends RoutineEditorUI {
    */
   protected getCommitData(showToast = false): Partial<Routine.Info> | undefined {
     const data = this.getData();
-    const content = data.detail.value?.trim();
+    const content = data.detail.value?.trim() || '';
     const isNote = this.isNote();
-    if (!content) {
+    // 图片与音频的 id 以英文逗号分隔，统一放在 mediaRemark。
+    const mediaRemark = this.getMediaIds(['detailImage', 'detailAudio']).join(',');
+    if (!content && !mediaRemark) {
       if (showToast) this.showToast(isNote ? '要记点什么呢' : '请填写任务反馈');
       return undefined;
     }
-    // 没有改动。
-    if (this.updating() && content === this.getInfo().remark) return undefined;
+    const info = this.getInfo();
+
+    // 没有改动：文字与媒体都没变（否则只加图片没改文字会被误判为无改动）。
+    if (
+      this.updating() &&
+      content === (info.remark || '') &&
+      mediaRemark === (info.mediaRemark || '')
+    ) {
+      return undefined;
+    }
 
     // 直接生成一条记录。
-    const info = this.getInfo();
-    if (!this.getInfo().id && isNote) {
+    if (!info.id && isNote) {
       return {
         status: Routine.Status.Done,
         category: info.category,
@@ -192,13 +211,15 @@ export class RoutineReaperUI extends RoutineEditorUI {
         detail: '随手记',
         duration: 0,
         planTime: Date.now(),
-        remark: content,
+        remark: content || undefined,
+        mediaRemark: mediaRemark || undefined,
       };
     }
 
     return {
-      id: this.getInfo().id,
-      remark: content,
+      id: info.id,
+      remark: content || undefined,
+      mediaRemark: mediaRemark || undefined,
     };
   }
 }

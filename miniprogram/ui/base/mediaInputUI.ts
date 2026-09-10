@@ -1,5 +1,6 @@
 import { Err } from '../../constant/error';
 import { ImageChooser } from '../../media/imageChooser';
+import { MediaUploader } from '../../media/uploader';
 import { Media, Resource } from '../../server/resource';
 import { Logger } from '../../utils/logger';
 import { WxUtils } from '../../utils/wxUtils';
@@ -61,6 +62,12 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     super.release();
   }
 
+  // 默认行为？？
+  // 不清楚子类是怎么定义VM的，所以留个hook点。
+  protected setInputData(id: string, item: InputUI.VM) {
+    this.setData({ [id]: item });
+  }
+
   /**
    * 取指定表单的媒体（完整数据），供提交时上传使用。
    */
@@ -69,12 +76,63 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
   }
 
   /**
+   * 取指定表单的媒体 id（以英文逗号分隔），用于提交到后台的 mediaRemark 字段。
+   * 例："12,34,56"。无媒体时返回空串。
+   */
+  public getMediaIds(ids: string[]): string[] {
+    const result: string[] = [];
+    for (const id of ids) {
+      const medias = this.getMedias(id);
+      for (const media of medias) {
+        if (media.id && !result.includes(media.id)) result.push(media.id);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * 直接设置某表单的媒体（完整数据），用于编辑场景回填并支持渲染。
+   */
+  public setMedias(id: string, medias: Media[]): void {
+    this.mediaMap.set(id, medias || []);
+  }
+
+  /**
+   * 【通用】上传所有媒体表单中的本地新增媒体。
+   *
+   * 放在基类是为了复用：任何页面只要继承 MediaInputUI，
+   * 提交前调用本方法即可完成全部媒体的上传，无需关心有几个媒体表单。
+   *
+   * 上传会把本地 id（m 开头）替换为服务端返回的真实 id，
+   * 因此**必须在取 id（getMediaIds / getAllMediaIds）之前调用**。
+   *
+   * @param showLoading 是否展示「上传中 x/y」进度
+   * @returns 错误码，OK 表示全部成功
+   */
+  public async uploadMedias(showLoading = true): Promise<number> {
+    const medias: Media[] = [];
+    this.mediaMap.forEach((list) => {
+      for (const media of list) {
+        if (media.id && MediaUploader.isLocal(media.id)) medias.push(media);
+      }
+    });
+    if (!medias.length) return Err.Code.OK;
+
+    const loader = new MediaUploader(this.component);
+    const errcode = await loader.upload(medias, showLoading);
+    if (errcode !== Err.Code.OK) {
+      this.showErrToast(errcode);
+      return errcode;
+    }
+    return Err.Code.OK;
+  }
+
+  /**
    * 所有媒体事件入口：按 item.type 与 button 分发。
    */
   protected onInputMediaTap(e: WechatMiniprogram.TouchEvent) {
     const { id, subid, button } = e.currentTarget.dataset;
-    if (!id) return;
-    const item = this.getInputItem(id);
+    const item = this.getInputItem(id || '');
     if (!item) return;
 
     if (item.type === InputUI.Type.Images) {
@@ -85,10 +143,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
       } else if (button === 'del') {
         this.delMedia(id, item, subid);
       }
-      return;
-    }
-
-    if (item.type === InputUI.Type.Audios) {
+    } else if (item.type === InputUI.Type.Audios) {
       if (button === 'add') {
         this.startRecord(id, item);
       } else if (button === 'stop') {
@@ -131,7 +186,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
       items.push({ id: mid, name: '', avatar: media.path });
     }
     this.mediaMap.set(id, medias);
-    this.setData({ [id]: item });
+    this.setInputData(id, item);
   }
 
   /** 预览图片 */
@@ -163,7 +218,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     this.recordId = id;
     item.recording = true;
     item.duration = 0;
-    this.setData({ [id]: item });
+    this.setInputData(id, item);
 
     // 每秒更新时长
     this.clearRecordTimer();
@@ -178,7 +233,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
         return;
       }
       current.duration = (current.duration || 0) + 1;
-      this.setData({ [this.recordId]: current });
+      this.setInputData(this.recordId, current);
     }, 1000);
 
     recorder.start({ format: 'mp3', duration: RECORD_MAX_DURATION });
@@ -197,7 +252,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     if (item) {
       item.recording = false;
       item.duration = 0;
-      this.setData({ [this.recordId]: item });
+      this.setInputData(this.recordId, item);
     }
     this.recordId = '';
     try {
@@ -227,7 +282,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     // 秒停（不足 1 秒）不生成音频，避免出现无法播放的空条目
     if (!res.tempFilePath || seconds < 1) {
       Logger.info('Record too short, ignored.', seconds);
-      this.setData({ [id]: item });
+      this.setInputData(id, item);
       return;
     }
 
@@ -251,7 +306,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
       avatarStyle: MediaInputUI.voiceStyle(seconds),
     });
 
-    this.setData({ [id]: item });
+    this.setInputData(id, item);
 
     // hash 只用于去重/上传，异步算即可，不阻塞 UI
     const hash = await WxUtils.getFileMd5(media.path);
@@ -280,7 +335,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     for (const o of item.items || []) {
       o.selected = o.id === subid;
     }
-    this.setData({ [id]: item });
+    this.setInputData(id, item);
   }
 
   /** 停止播放 */
@@ -291,7 +346,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
         for (const o of item.items || []) {
           o.selected = false;
         }
-        this.setData({ [this.playing.id]: item });
+        this.setInputData(this.playing.id, item);
       }
       this.playing = undefined;
     }
@@ -316,9 +371,9 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     const medias = this.getMedias(id);
     const mIndex = medias.findIndex((o) => o.id === subid);
     if (mIndex >= 0) medias.splice(mIndex, 1);
-    this.mediaMap.set(id, medias);
+    // this.mediaMap.set(id, medias);
 
-    this.setData({ [id]: item });
+    this.setInputData(id, item);
   }
 
   /** 取默认的图片表单 VM（子类可重写） */

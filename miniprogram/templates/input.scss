@@ -5,6 +5,10 @@
   &_section {
     margin: 40rpx 32rpx 0;
 
+    &.packed {
+      margin: 20rpx 32rpx 0;
+    }
+
     &_title {
       @include section-title;
       @include flex-layout(row, flex-start);
@@ -364,12 +368,11 @@
 
   // ===== 6. 音频（多条语音条 / 录音中）=====
   // 多条：列表，每条独立播放 + 删除；播放中的那条三角变停止方块
-  &_voice_list {
-    display: flex;
-    flex-direction: column;
-  }
-
   &_voice {
+    &_list {
+      display: flex;
+      flex-direction: column;
+    }
     display: flex;
     align-items: center;
     box-sizing: border-box;
