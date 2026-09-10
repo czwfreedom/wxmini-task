@@ -190,16 +190,18 @@
         catch:tap="onInputMediaTap"
         data-id="{{ id }}"
         data-subid="{{ item.id }}"
+        data-button="preview"
       >
         <image src="{{ item.avatar }}" mode="aspectFill" class="input_media_cell_img" />
         <view
           wx:if="{{ mediaDeletable }}"
           class="input_media_cell_del"
-          catch:tap="onInputMediaDel"
+          catch:tap="onInputMediaTap"
           hover-class="press"
           hover-stop-propagation="true"
           data-id="{{ id }}"
           data-subid="{{ item.id }}"
+          data-button="del"
         >
           ×
         </view>
@@ -209,9 +211,10 @@
       <view
         wx:if="{{ !mediaLimited || (items && items.length < mediaLimited) }}"
         class="input_media_cell add"
-        catch:tap="onInputMediaAdd"
+        catch:tap="onInputMediaTap"
         hover-class="press"
         data-id="{{ id }}"
+        data-button="add"
       >
         <view class="input_media_cell_inner">
           <!-- prettier-ignore -->
@@ -244,10 +247,22 @@
     <view wx:if="{{ recording }}" class="input_voice recording">
       <view class="input_voice_dot"></view>
       <view class="input_voice_wave">
-        <view></view><view></view><view></view><view></view><view></view>
+        <view></view>
+        <view></view>
+        <view></view>
+        <view></view>
+        <view></view>
       </view>
       <text class="input_voice_time">{{ duration || 0 }}s</text>
-      <view class="input_voice_stop" catch:tap="onInputMediaStop" data-id="{{ id }}">完成</view>
+      <view
+        class="input_voice_stop"
+        catch:tap="onInputMediaTap"
+        hover-class="press"
+        data-id="{{ id }}"
+        data-button="stop"
+      >
+        完成
+      </view>
     </view>
 
     <!-- ② 已录制：多条列表，每条独立 -->
@@ -264,18 +279,24 @@
           catch:tap="onInputMediaTap"
           data-id="{{ id }}"
           data-subid="{{ item.id }}"
+          data-button="play"
         ></view>
         <view class="input_voice_wave">
-          <view></view><view></view><view></view><view></view><view></view>
+          <view></view>
+          <view></view>
+          <view></view>
+          <view></view>
+          <view></view>
         </view>
         <text class="input_voice_dur">{{ item.name }}</text>
         <view
           wx:if="{{ mediaDeletable }}"
           class="input_voice_del"
-          catch:tap="onInputMediaDel"
+          catch:tap="onInputMediaTap"
           hover-stop-propagation="true"
           data-id="{{ id }}"
           data-subid="{{ item.id }}"
+          data-button="del"
         >
           ✕
         </view>
@@ -286,9 +307,10 @@
     <view
       wx:if="{{ !mediaLimited || (items && items.length < mediaLimited) }}"
       class="input_media_add"
-      catch:tap="onInputMediaAdd"
+      catch:tap="onInputMediaTap"
       hover-class="press"
       data-id="{{ id }}"
+      data-button="add"
     >
       <image src="../assets/imgs/ic-record.svg" class="input_media_add_icon" mode="aspectFit" />
       <text>{{ items && items.length ? '继续添加' : '录音' }}</text>
