@@ -14,9 +14,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     if (!id) return;
   }
 
-  protected static defaultImageVM(id: string): InputUI.VM {
-    
-  }
+  protected defaultImageVM(id: string): InputUI.VM {}
 
-  protected static defaultAudioVM(id: string): InputUI.VM {}
+  protected defaultAudioVM(id: string): InputUI.VM {}
 }

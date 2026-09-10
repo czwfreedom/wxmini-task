@@ -5,7 +5,6 @@ import { Routine } from '../server/routine';
 import { RoutineEditorAdapter } from './routineEditorAdapter';
 import { Logger } from '../utils/logger';
 import { ChoicesUI } from '../ui/base/choicesUI';
-import { InteractUI } from '../core/interactUI';
 import { Utils } from '../utils/utils';
 import { DateUtils } from '../utils/dateUtils';
 import { Event } from '../core/event';
@@ -25,8 +24,8 @@ export namespace RoutineEditorUI {
 
     category: InputUI.VM;
     detail: InputUI.VM;
-    detailImage: InputUI.VM;
-    detailAudio: InputUI.VM;
+    detailImage?: InputUI.VM;
+    detailAudio?: InputUI.VM;
 
     duration: InputUI.VM;
     time: InputUI.VM;
@@ -75,8 +74,6 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
         charCount: 0,
         disabled: true,
       },
-      detailImage: MediaInputUI.defaultImageVM('detailImage'),
-      detailAudio: MediaInputUI.defaultAudioVM('detailAudio'),
       duration: {
         id: 'duration',
         name: '计划时长',
@@ -94,16 +91,6 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
       submittable: false,
       keyboardHeight: 0,
     };
-  }
-
-  /**
-   * @override
-   */
-  public getInputItem(id: string): InputUI.VM {
-    if (id === 'detailImage') {
-      return this.getData().detailImage;
-    }
-    return this.getData().detailAudio;
   }
 
   protected watchKeyboard() {

@@ -26,6 +26,16 @@ export class RoutineReaperUI extends RoutineEditorUI {
   /**
    * @override
    */
+  public getInputItem(id: string): InputUI.VM | undefined {
+    if (id === 'detailImage') {
+      return this.getData().detailImage;
+    }
+    return this.getData().detailAudio;
+  }
+
+  /**
+   * @override
+   */
   public loadData(): number {
     const info = this.getInfo();
     const config = RoutineAdapter.findConfig(info.category);
