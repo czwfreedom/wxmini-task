@@ -32,7 +32,7 @@ export class ImageChooser {
    *   }
    * 注意：不要用 display:none —— 部分基础库不会绘制未参与布局的 canvas。
    */
-  public static sCanvasId = 'imageChooserCanvas';
+  public static sCanvasId = 'snapCanvas';
   /**
    * canvas 转 jpg 时的最大边长。
    * 受 canvas 内存限制（约 w×h×4 字节）：2048² ≈ 16MB 较安全，

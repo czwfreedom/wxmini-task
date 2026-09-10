@@ -121,6 +121,14 @@
   z-index: 2;
 }
 
+@mixin invisible-canvas {
+  width: 2080px;
+  height: 2080px;
+  position: absolute;
+  left: -2080px;
+  top: -2080px;
+}
+
 // 后面的动画。
 
 // 在公众号文章上看到的实现节流的方法。测试是有效的。

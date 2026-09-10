@@ -4,6 +4,12 @@
 <import src="../templates/input.wxml"></import>
 
 <view class="croutine">
+  <canvas
+    wx:if="{{ !unloaded && loaded && snapCanvas }}"
+    id="snapCanvas"
+    class="snap_canvas"
+  ></canvas>
+
   <view class="croutine_content">
     <scroll-view wx:if="{{ loaded }}" class="croutine_scroll" scroll-y="true">
       <!-- 1. 选择任务类型 -->

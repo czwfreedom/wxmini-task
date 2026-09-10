@@ -58,6 +58,7 @@ export class RoutineReaperUI extends RoutineEditorUI {
         charCount: remark.length,
         footer: this.getFooter(),
       },
+      snapCanvas: true,
       menus: this.getMenus(),
     });
     return 0;

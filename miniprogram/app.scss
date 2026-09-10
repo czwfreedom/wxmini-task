@@ -1,9 +1,19 @@
 /** app.scss **/
 @import 'assets/style/var.scss';
+@import 'assets/style/mixin.scss';
 
 page {
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica,
-    Segoe UI, Arial, Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    'Helvetica Neue',
+    Helvetica,
+    Segoe UI,
+    Arial,
+    Roboto,
+    'PingFang SC',
+    'Microsoft YaHei',
+    sans-serif;
   font-size: 14px;
   color: $gray-33;
 }
@@ -12,4 +22,8 @@ page {
 .press {
   transform: scale(0.96);
   opacity: 0.85;
+}
+
+.snap_canvas {
+  @include invisible-canvas;
 }

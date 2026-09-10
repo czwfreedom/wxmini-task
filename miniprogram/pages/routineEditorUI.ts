@@ -26,6 +26,7 @@ export namespace RoutineEditorUI {
     detail: InputUI.VM;
     detailImage?: InputUI.VM;
     detailAudio?: InputUI.VM;
+    snapCanvas?: boolean;
 
     duration: InputUI.VM;
     time: InputUI.VM;
@@ -91,6 +92,14 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
       submittable: false,
       keyboardHeight: 0,
     };
+  }
+
+  /**
+   * @override
+   */
+  public release(): void {
+    if (this.getData().snapCanvas) this.setData({ snapCanvas: false });
+    super.release();
   }
 
   protected watchKeyboard() {
