@@ -65,8 +65,12 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
   // 默认行为？？
   // 不清楚子类是怎么定义VM的，所以留个hook点。
   protected setInputData(id: string, item: InputUI.VM) {
-    this.setData({ [id]: item });
+    this.setData({ [id]: item }, () => {
+      this.onMediaChanged(item);
+    });
   }
+
+  protected onMediaChanged(item: InputUI.VM) {}
 
   /**
    * 取指定表单的媒体（完整数据），供提交时上传使用。

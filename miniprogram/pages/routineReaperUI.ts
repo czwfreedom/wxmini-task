@@ -36,6 +36,13 @@ export class RoutineReaperUI extends RoutineEditorUI {
   /**
    * @override
    */
+  protected onMediaChanged(item: InputUI.VM): void {
+    this.setData({ menus: this.getMenus() });
+  }
+
+  /**
+   * @override
+   */
   public loadData(): number {
     const info = this.getInfo();
     const config = RoutineAdapter.findConfig(info.category);

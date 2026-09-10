@@ -97,7 +97,7 @@ export namespace Resource {
   }
 
   export async function update(data: Partial<Resource.Info>[]): Promise<number | Media[]> {
-    const res = await Network.post<Info[]>(Api.UpdateResource, data);
+    const res = await Network.post<Info[]>(Api.UpdateResource, { data });
     return check(res);
   }
 

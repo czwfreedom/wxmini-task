@@ -87,12 +87,14 @@ export class MediaUploader extends SubUI<{}> {
         Logger.warn('Confirm resource upload failed.', created.id, updated);
         return updated;
       }
+      // 创建时返回的值是有问题的，没有后缀，暂时先这样。
+      media.path = updated[0].path;
+    } else {
+      // upload 为空 = 服务端已存在同 hash 的资源，无需重复上传
+      media.path = created.path || media.path;
     }
-    // upload 为空 = 服务端已存在同 hash 的资源，无需重复上传
-
     // 用服务端 id 替换本地 id（服务端保证 id 不以 m 开头）
     media.id = created.id;
-    media.path = created.path || media.path;
     return Err.Code.OK;
   }
 
