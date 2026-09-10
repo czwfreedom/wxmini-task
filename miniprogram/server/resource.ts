@@ -112,4 +112,9 @@ export namespace Resource {
 }
 
 // 有些历史代码直接使用了 Media，所以导出这个。
-export interface Media extends Resource.Info {}
+export interface Media extends Resource.Info {
+  /**
+   * 本地照片上传之后，既有本地路径，也有云端路径。如果要使用，暂时保存起来。
+   */
+  localPath?: string;
+}
