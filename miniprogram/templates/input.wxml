@@ -196,9 +196,10 @@
         data-button="preview"
       >
         <image src="{{ item.avatar }}" mode="aspectFill" class="input_media_cell_img" />
+
         <view
           wx:if="{{ mediaDeletable }}"
-          class="input_media_cell_del"
+          class="input_media_cell_del_container"
           catch:tap="onInputMediaTap"
           hover-class="press"
           hover-stop-propagation="true"
@@ -206,7 +207,9 @@
           data-subid="{{ item.id }}"
           data-button="del"
         >
-          ×
+          <view class="input_media_cell_del">
+            ×
+          </view>
         </view>
       </view>
 

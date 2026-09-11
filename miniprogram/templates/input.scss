@@ -295,9 +295,12 @@
       }
 
       &_del {
-        position: absolute;
-        top: 8rpx;
-        right: 8rpx;
+        &_container {
+          position: absolute;
+          padding: 8rpx; // 让可点击区域大一些。
+          top: 0;
+          right: 0;
+        }
         width: 40rpx;
         height: 40rpx;
         border-radius: 50%;
@@ -407,7 +410,7 @@
 
     &_del {
       flex-shrink: 0;
-      margin-left: 12rpx;
+      padding: 12rpx 0 12rpx 12rpx; // 让点击区更大。
       font-size: 26rpx;
       color: $gray-99;
     }

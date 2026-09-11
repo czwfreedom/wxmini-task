@@ -54,44 +54,97 @@ export class RoutineAdapter {
   }
 
   /**
-   * 加载当日所有任务的媒体详情（源数据）。
-   * 只拉一次：收集所有 mediaRemark 的 id，批量 Resource.list 后按各自顺序回填。
+   * 同步媒体【源数据】，使其与 infos 的 mediaRemark **严格对应**（内容与顺序都要一致）。
+   *
+   * 每次调用都会比对（无缓存短路），因为任务可能在【其他页面】被修改：
+   * 别的页面加了图/音频、删了某张、或调整了顺序 —— 都要在这里对齐。
+   *
+   * 处理逻辑：
+   *   ① 解析每个任务 mediaRemark 期望的 id 序列（顺序敏感）
+   *   ② 与 mediaMap 现有序列逐位比对：
+   *        · 某 id 在缓存中查不到 → 记为「欠资源」，统一拉取
+   *        · 长度或任一位不同   → 记为「需重排」
+   *   ③ 只拉真正缺失的 id（已有资源不重复请求）
+   *   ④ 按 mediaRemark 顺序重建 mediaMap —— 顺序差异与增删都在此被修正
+   *
+   * @returns 错误码；拉取失败时返回错误码（调用方可忽略，不阻断页面）
    */
-  public async loadMedias(reload = false): Promise<number> {
-    if (this.mediaMap.size && !reload) return Err.Code.OK;
-
-    const ids: string[] = [];
-    for (const info of this.infos) {
-      if (!info.mediaRemark) continue;
-      for (const raw of info.mediaRemark.split(',')) {
-        const mid = raw.trim();
-        if (mid && !ids.includes(mid)) ids.push(mid);
-      }
-    }
-    this.mediaMap = new Map();
-    if (!ids.length) return Err.Code.OK;
-
-    const res = await Resource.list({ ids: ids });
-    if (typeof res === 'number') {
-      Logger.warn('List resources failed.', res);
-      return res;
-    }
-
-    // 按 id 建立索引，再依各任务的 mediaRemark 顺序回填（保持上传顺序）
+  public async loadMedias(): Promise<number> {
+    // ① 已缓存的 Media 索引（跨任务收集，避免重复拉取同一资源）
     const indexed = new Map<string, Media>();
-    for (const media of res) {
-      indexed.set(media.id, media);
-    }
-    for (const info of this.infos) {
-      if (!info.mediaRemark) continue;
-      const medias: Media[] = [];
-      for (const raw of info.mediaRemark.split(',')) {
-        const media = indexed.get(raw.trim());
-        if (media) medias.push(media);
+    this.mediaMap.forEach((list) => {
+      for (const media of list) {
+        if (media.id) indexed.set(media.id, media);
       }
-      if (medias.length) this.mediaMap.set(info.id, medias);
+    });
+
+    // ② 解析期望序列，同时找出「欠资源」与「需重排」
+    const expected = new Map<string, string[]>(); // 任务 id → 期望的媒体 id 序列
+    const missing: string[] = []; // 缓存中查不到的 id（去重）
+    let needRebuild = false;
+
+    for (const info of this.infos) {
+      const ids = RoutineAdapter.parseMediaIds(info.mediaRemark);
+      expected.set(info.id, ids);
+
+      const current = this.mediaMap.get(info.id) || [];
+      if (current.length !== ids.length) {
+        // 数量变了：别的页面增删过媒体
+        needRebuild = true;
+      } else {
+        for (let i = 0; i < ids.length; i++) {
+          if (current[i].id !== ids[i]) {
+            // 顺序变了
+            needRebuild = true;
+            break;
+          }
+        }
+      }
+
+      for (const id of ids) {
+        if (!indexed.has(id) && !missing.includes(id)) missing.push(id);
+      }
+    }
+
+    // ③ 只拉缺失的资源
+    if (missing.length) {
+      const res = await Resource.list({ ids: missing });
+      if (typeof res === 'number') {
+        Logger.warn('List resources failed.', res);
+        return res;
+      }
+      for (const media of res) {
+        indexed.set(media.id, media);
+      }
+      needRebuild = true;
+    }
+
+    // ④ 重建：严格按 mediaRemark 顺序（顺序差异、增删都在此修正）
+    if (needRebuild) {
+      const rebuilt = new Map<string, Media[]>();
+      expected.forEach((ids, infoId) => {
+        const medias: Media[] = [];
+        for (const id of ids) {
+          const media = indexed.get(id);
+          // 拉取失败的 id 直接跳过，保证 medias 与 id 序列位置对齐
+          if (media) medias.push(media);
+        }
+        if (medias.length) rebuilt.set(infoId, medias);
+      });
+      this.mediaMap = rebuilt;
     }
     return Err.Code.OK;
+  }
+
+  /** 解析 mediaRemark（逗号分隔的 id 串）为 id 数组，去空白与空项 */
+  protected static parseMediaIds(mediaRemark?: string): string[] {
+    if (!mediaRemark) return [];
+    const ids: string[] = [];
+    for (const raw of mediaRemark.split(',')) {
+      const id = raw.trim();
+      if (id) ids.push(id);
+    }
+    return ids;
   }
 
   /**
@@ -174,7 +227,7 @@ export class RoutineAdapter {
     this.infos = result;
     // 补拉媒体详情：mediaRemark 只是 id 串，可播放/可展示的地址需查询。
     // 失败不阻断页面（仅媒体不显示），故不返回其错误码。
-    await this.loadMedias(true);
+    await this.loadMedias();
     return Err.Code.OK;
   }
 

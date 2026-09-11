@@ -174,55 +174,6 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   protected date = 0;
   protected timer?: number;
 
-  /**
-   * 列表卡片上的媒体点击：按 button 分发。
-   *   play    → 播放 / 停止（互斥与释放由基类 AudiosUI 处理）
-   *   preview → 图片预览
-   */
-  protected onCardMediaTap(e: WechatMiniprogram.TouchEvent) {
-    const { id, subid, button } = e.currentTarget.dataset;
-    if (!id) return;
-
-    if (button === 'play') {
-      this.toggleAudio(id, subid);
-    } else if (button === 'preview') {
-      // 预览地址取【源数据】（adapter 持有），不用 VM 里的缩略图地址
-      const images = this.adapter.getImages(id);
-      const urls = images.map((o) => o.path).filter((o) => !!o);
-      if (!urls.length) return;
-      const found = images.find((o) => o.id === subid);
-      wx.previewImage({
-        current: found?.path || urls[0],
-        urls: urls,
-      });
-    }
-  }
-
-  /**
-   * 取某条记录的音频【源数据】（供基类 AudiosUI 播放）。
-   *
-   * ★ 源数据在 adapter 中（由 Resource.list 查询并缓存），
-   *   不能从 getData() 的 VM 反推 —— VM 只服务渲染，结构与源数据不保证一致。
-   */
-  protected getAudios(id: string): Media[] {
-    return this.adapter.getAudios(id);
-  }
-
-  /**
-   * 把播放态写回 data：对应音频项 selected（wxml 据此加 voice-playing 触发波形动画）。
-   */
-  protected setAudioPlaying(id: string, subid: string, playing: boolean): void {
-    const data = this.getData();
-    if (!data.records?.length) return;
-    for (const record of data.records) {
-      if (record.id !== id) continue;
-      for (const audio of record.audios || []) {
-        if (audio.id === subid) audio.selected = playing;
-      }
-    }
-    this.setData({ records: data.records });
-  }
-
   public constructor(component: any, subDataKey = '', userId?: string) {
     super(component, subDataKey);
     this.adapter.userId = userId || Context.getUserId();
@@ -236,9 +187,10 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     this.bindEvent('onExpandMenuTap', this.onExpandMenuTap);
     this.bindEvent('onCardMediaTap', this.onCardMediaTap);
 
-    this.registerEventBus(Event.Name.RoutineUpdated, (ev: Routine.Info) => {
+    this.registerEventBus(Event.Name.RoutineUpdated, async (ev: Routine.Info) => {
       if (ev?.id && ev?.userId === this.adapter?.userId && this.date === ev.date) {
         this.adapter.addInfo(ev);
+        await this.adapter.loadMedias();
         this.updateView();
       }
     });
@@ -286,6 +238,33 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       pickerValue: '',
       pickerEnd: '',
     };
+  }
+
+  /**
+   * @override
+   * 取某条记录的音频【源数据】（供基类 AudiosUI 播放）。
+   *
+   * ★ 源数据在 adapter 中（由 Resource.list 查询并缓存），
+   *   不能从 getData() 的 VM 反推 —— VM 只服务渲染，结构与源数据不保证一致。
+   */
+  protected getAudios(id: string): Media[] {
+    return this.adapter.getAudios(id);
+  }
+
+  /**
+   * @override
+   * 把播放态写回 data：对应音频项 selected（wxml 据此加 voice-playing 触发波形动画）。
+   */
+  protected setAudioPlaying(id: string, subid: string, playing: boolean): void {
+    const data = this.getData();
+    if (!data.records?.length) return;
+    for (const record of data.records) {
+      if (record.id !== id) continue;
+      for (const audio of record.audios || []) {
+        if (audio.id === subid) audio.selected = playing;
+      }
+    }
+    this.setData({ records: data.records });
   }
 
   /**
@@ -411,6 +390,30 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       const len = vm.item.likes.items.length;
       vm.item.likes.visibleCount = button === 'expand' ? Math.max(8, len) : Math.min(8, len);
       this.setKvData(`records[${vm.index}].likes`, vm.item.likes);
+    }
+  }
+
+  /**
+   * 列表卡片上的媒体点击：按 button 分发。
+   *   play    → 播放 / 停止（互斥与释放由基类 AudiosUI 处理）
+   *   preview → 图片预览
+   */
+  protected onCardMediaTap(e: WechatMiniprogram.TouchEvent) {
+    const { id, subid, button } = e.currentTarget.dataset;
+    if (!id) return;
+
+    if (button === 'play') {
+      this.toggleAudio(id, subid);
+    } else if (button === 'preview') {
+      // 预览地址取【源数据】（adapter 持有），不用 VM 里的缩略图地址
+      const images = this.adapter.getImages(id);
+      const urls = images.map((o) => o.path).filter((o) => !!o);
+      if (!urls.length) return;
+      const found = images.find((o) => o.id === subid);
+      wx.previewImage({
+        current: found?.path || urls[0],
+        urls: urls,
+      });
     }
   }
 
