@@ -26,6 +26,9 @@
   align-items: center;
   flex: 1;
   min-width: 0;
+  // 与左侧元素（录音红点 / 播放图标）的间隔。
+  // 项目禁用 flex gap，故间距只能用 margin 表达。
+  margin-left: 20rpx;
 
   view {
     display: block;

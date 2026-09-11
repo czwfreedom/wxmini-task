@@ -4,10 +4,14 @@ import { Entity } from '../model/entity';
 import { Comment } from '../server/comment';
 import { Config } from '../server/config';
 import { Relation } from '../server/relation';
+import { Media, Resource } from '../server/resource';
 import { Routine } from '../server/routine';
 import { User } from '../server/user';
 import { AvatarUtils } from '../utils/avatarUtils';
 import { DateUtils } from '../utils/dateUtils';
+import { Logger } from '../utils/logger';
+import { OSSUtils } from '../utils/ossUtils';
+import { VoiceUtils } from '../utils/voiceUtils';
 import { RoutineUI } from './routineUI';
 
 export class RoutineAdapter {
@@ -24,6 +28,101 @@ export class RoutineAdapter {
   protected comments: Map<string, Comment.ListResponse> = new Map();
   protected relations?: Relation.ListResponse;
   protected relationStat?: Relation.Stat;
+
+  /**
+   * 任务 id → 该任务的媒体【源数据】（Media）。
+   *
+   * ★ 源数据由 adapter 持有：routine 列表只返回 mediaRemark（id 串），
+   *   可播放/可展示的地址需 Resource.list 查询后在此缓存。
+   *   UI 层（RoutineUI）需要源数据时统一向 adapter 要，不可从 VM 反推。
+   */
+  protected mediaMap: Map<string, Media[]> = new Map();
+
+  /** 取某任务的媒体【源数据】 */
+  public getMedias(id: string): Media[] {
+    return this.mediaMap.get(id) || [];
+  }
+
+  /** 取某任务的音频【源数据】（供 AudiosUI 播放） */
+  public getAudios(id: string): Media[] {
+    return this.getMedias(id).filter((o) => o.type === Resource.Type.Audio);
+  }
+
+  /** 取某任务的图片【源数据】（供预览） */
+  public getImages(id: string): Media[] {
+    return this.getMedias(id).filter((o) => o.type === Resource.Type.Image);
+  }
+
+  /**
+   * 加载当日所有任务的媒体详情（源数据）。
+   * 只拉一次：收集所有 mediaRemark 的 id，批量 Resource.list 后按各自顺序回填。
+   */
+  public async loadMedias(reload = false): Promise<number> {
+    if (this.mediaMap.size && !reload) return Err.Code.OK;
+
+    const ids: string[] = [];
+    for (const info of this.infos) {
+      if (!info.mediaRemark) continue;
+      for (const raw of info.mediaRemark.split(',')) {
+        const mid = raw.trim();
+        if (mid && !ids.includes(mid)) ids.push(mid);
+      }
+    }
+    this.mediaMap = new Map();
+    if (!ids.length) return Err.Code.OK;
+
+    const res = await Resource.list({ ids: ids });
+    if (typeof res === 'number') {
+      Logger.warn('List resources failed.', res);
+      return res;
+    }
+
+    // 按 id 建立索引，再依各任务的 mediaRemark 顺序回填（保持上传顺序）
+    const indexed = new Map<string, Media>();
+    for (const media of res) {
+      indexed.set(media.id, media);
+    }
+    for (const info of this.infos) {
+      if (!info.mediaRemark) continue;
+      const medias: Media[] = [];
+      for (const raw of info.mediaRemark.split(',')) {
+        const media = indexed.get(raw.trim());
+        if (media) medias.push(media);
+      }
+      if (medias.length) this.mediaMap.set(info.id, medias);
+    }
+    return Err.Code.OK;
+  }
+
+  /**
+   * 媒体【源数据】→ 渲染用 VM（图片 / 音频分开）。
+   * 图片用 OSS 缩略图地址，音频带时长文本与语音条宽度。
+   */
+  protected adaptMedias(info: Routine.Info): { images: Entity.Image[]; audios: Entity.Image[] } {
+    const images: Entity.Image[] = [];
+    const audios: Entity.Image[] = [];
+
+    for (const media of this.getMedias(info.id)) {
+      if (media.type === Resource.Type.Audio) {
+        const seconds = (media.duration || 0) / 1000;
+        audios.push({
+          id: media.id,
+          name: VoiceUtils.formatDuration(seconds),
+          avatar: media.path,
+          avatarStyle: VoiceUtils.barStyle(seconds),
+          selected: false,
+        });
+      } else if (media.type === Resource.Type.Image) {
+        images.push({
+          id: media.id,
+          name: '',
+          avatar: OSSUtils.getPreviewUrl(media.path),
+          selected: false,
+        });
+      }
+    }
+    return { images, audios };
+  }
 
   public getInfo(id: string): Routine.Info | undefined {
     return Entity.find(this.infos, id).item;
@@ -73,6 +172,9 @@ export class RoutineAdapter {
     const result = await Routine.list({ date, userId: this.userId, withStat: true });
     if (typeof result === 'number') return result;
     this.infos = result;
+    // 补拉媒体详情：mediaRemark 只是 id 串，可播放/可展示的地址需查询。
+    // 失败不阻断页面（仅媒体不显示），故不返回其错误码。
+    await this.loadMedias(true);
     return Err.Code.OK;
   }
 
@@ -288,6 +390,7 @@ export class RoutineAdapter {
         status: info.status,
         finishTime: info.finishTime,
         remark: info.remark,
+        ...this.adaptMedias(info),
         holder: holder,
         isNote: isNote,
         done,

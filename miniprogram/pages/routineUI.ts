@@ -175,12 +175,37 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   protected timer?: number;
 
   /**
-   * 取某条记录的音频（供基类 AudiosUI 播放）。
-   * 复用 Record.audios（Entity.Image 已含 id/avatar/selected/name 等渲染字段）。
+   * 列表卡片上的媒体点击：按 button 分发。
+   *   play    → 播放 / 停止（互斥与释放由基类 AudiosUI 处理）
+   *   preview → 图片预览
+   */
+  protected onCardMediaTap(e: WechatMiniprogram.TouchEvent) {
+    const { id, subid, button } = e.currentTarget.dataset;
+    if (!id) return;
+
+    if (button === 'play') {
+      this.toggleAudio(id, subid);
+    } else if (button === 'preview') {
+      // 预览地址取【源数据】（adapter 持有），不用 VM 里的缩略图地址
+      const images = this.adapter.getImages(id);
+      const urls = images.map((o) => o.path).filter((o) => !!o);
+      if (!urls.length) return;
+      const found = images.find((o) => o.id === subid);
+      wx.previewImage({
+        current: found?.path || urls[0],
+        urls: urls,
+      });
+    }
+  }
+
+  /**
+   * 取某条记录的音频【源数据】（供基类 AudiosUI 播放）。
+   *
+   * ★ 源数据在 adapter 中（由 Resource.list 查询并缓存），
+   *   不能从 getData() 的 VM 反推 —— VM 只服务渲染，结构与源数据不保证一致。
    */
   protected getAudios(id: string): Media[] {
-    const record = this.getData().records?.find((o: RoutineUI.Record) => o.id === id);
-    return (record?.audios || []) as unknown as Media[];
+    return this.adapter.getAudios(id);
   }
 
   /**
@@ -209,6 +234,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     this.bindEvent('onItemMenuTap', this.onItemMenuTap);
     this.bindEvent('onRelationTap', this.onRelationTap);
     this.bindEvent('onExpandMenuTap', this.onExpandMenuTap);
+    this.bindEvent('onCardMediaTap', this.onCardMediaTap);
 
     this.registerEventBus(Event.Name.RoutineUpdated, (ev: Routine.Info) => {
       if (ev?.id && ev?.userId === this.adapter?.userId && this.date === ev.date) {

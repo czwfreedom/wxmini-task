@@ -1,3 +1,6 @@
+<!-- 通用波形（与编辑页语音条共用同一份） -->
+<import src="./voiceWave.wxml" />
+
 <template name="routine">
   <import src="../templates/abort.wxml"></import>
   <import src="../templates/dialog.wxml"></import>
@@ -196,6 +199,47 @@
                   src="/assets/imgs/ic-stamp-done.svg"
                   mode="aspectFit"
                 />
+              </view>
+            </view>
+
+            <!-- 媒体：图片九宫格（只读，点击预览） -->
+            <view wx:if="{{ item.images && item.images.length }}" class="routine_card_media">
+              <view class="routine_card_media_grid">
+                <view
+                  wx:for="{{ item.images }}"
+                  wx:for-item="media"
+                  wx:key="id"
+                  class="routine_card_media_cell"
+                  catch:tap="onCardMediaTap"
+                  data-id="{{ item.id }}"
+                  data-subid="{{ media.id }}"
+                  data-button="preview"
+                  hover-class="press"
+                  hover-stop-propagation="true"
+                >
+                  <image src="{{ media.avatar }}" mode="aspectFill" class="routine_card_media_img" />
+                </view>
+              </view>
+            </view>
+
+            <!-- 媒体：音频（点击播放 / 停止；波形复用通用 template） -->
+            <view wx:if="{{ item.audios && item.audios.length }}" class="routine_card_media">
+              <view
+                wx:for="{{ item.audios }}"
+                wx:for-item="media"
+                wx:key="id"
+                class="routine_card_media_voice {{ media.selected ? 'voice-playing' : '' }}"
+                style="{{ media.avatarStyle }}"
+                catch:tap="onCardMediaTap"
+                data-id="{{ item.id }}"
+                data-subid="{{ media.id }}"
+                data-button="play"
+                hover-class="press"
+                hover-stop-propagation="true"
+              >
+                <view class="voice-play"></view>
+                <template is="voiceWave" />
+                <text class="routine_card_media_dur">{{ media.name }}</text>
               </view>
             </view>
 

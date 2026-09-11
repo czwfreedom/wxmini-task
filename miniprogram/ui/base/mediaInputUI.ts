@@ -6,16 +6,11 @@ import { Media, Resource } from '../../server/resource';
 import { FileUtils } from '../../utils/fileUtils';
 import { Logger } from '../../utils/logger';
 import { OSSUtils } from '../../utils/ossUtils';
+import { VoiceUtils } from '../../utils/voiceUtils';
 import { WxUtils } from '../../utils/wxUtils';
 import { InputUI } from './inputUI';
 import { PageInputUI } from './pageInputUI';
 
-/** 语音条最小宽度（rpx） */
-const VOICE_MIN_WIDTH = 260;
-/** 语音条每秒增加的宽度（rpx） */
-const VOICE_WIDTH_PER_SEC = 4;
-/** 语音条最大宽度（rpx） */
-const VOICE_MAX_WIDTH = 580;
 /** 录音最大时长（毫秒），与后台限制一致 */
 const RECORD_MAX_DURATION = 60000;
 
@@ -300,7 +295,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     media.path = res.tempFilePath;
     media.duration = res.duration;
     media.size = res.fileSize || 0;
-    media.name = MediaInputUI.formatDuration(seconds);
+    media.name = VoiceUtils.formatDuration(seconds);
     media.postfix = FileUtils.postfix(media.path);
 
     const medias = this.getMedias(id);
@@ -404,7 +399,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
       id: media.id,
       avatar: media.path,
       name: media.name,
-      avatarStyle: MediaInputUI.voiceStyle(seconds),
+      avatarStyle: VoiceUtils.barStyle(seconds),
     };
   }
 
@@ -444,17 +439,4 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     return 'm' + Date.now() + Math.floor(Math.random() * 1000);
   }
 
-  /** 秒 → 0:15 */
-  private static formatDuration(seconds: number): string {
-    const s = Math.max(0, Math.floor(seconds || 0));
-    const m = Math.floor(s / 60);
-    const r = s % 60;
-    return `${m}:${r < 10 ? '0' : ''}${r}`;
-  }
-
-  /** 语音条宽度：160rpx + 秒×4rpx，上限 480rpx */
-  private static voiceStyle(seconds: number): string {
-    const width = Math.min(VOICE_MAX_WIDTH, VOICE_MIN_WIDTH + (seconds || 0) * VOICE_WIDTH_PER_SEC);
-    return `width: ${width}rpx;`;
-  }
 }

@@ -241,8 +241,8 @@ export class RoutineReaperUI extends RoutineEditorUI {
 
     return {
       id: info.id,
-      remark: content || undefined,
-      mediaRemark: mediaRemark || undefined,
+      remark: !content && !info.remark ? undefined : content,
+      mediaRemark: !mediaRemark && !info.mediaRemark ? undefined : mediaRemark,
     };
   }
 }
