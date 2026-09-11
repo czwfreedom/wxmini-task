@@ -79,6 +79,8 @@ export class ImageChooser {
         media.hash = await WxUtils.getFileMd5(media.path);
       }
 
+      // 前面一通处理，最后把这个数据再存一份，可能存在一个media，同时有远程路径，本地路径。
+      media.localPath = media.path;
       this.medias.push(media);
     }
     wx.hideLoading();

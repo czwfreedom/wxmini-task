@@ -1,9 +1,11 @@
 import { Err } from '../../constant/error';
 import { ImageChooser } from '../../media/imageChooser';
 import { MediaUploader } from '../../media/uploader';
+import { Entity } from '../../model/entity';
 import { Media, Resource } from '../../server/resource';
 import { FileUtils } from '../../utils/fileUtils';
 import { Logger } from '../../utils/logger';
+import { OSSUtils } from '../../utils/ossUtils';
 import { WxUtils } from '../../utils/wxUtils';
 import { InputUI } from './inputUI';
 import { PageInputUI } from './pageInputUI';
@@ -309,12 +311,7 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     this.mediaMap.set(id, medias);
 
     const items = this.ensureItems(item);
-    items.push({
-      id: media.id,
-      avatar: media.path,
-      name: media.name,
-      avatarStyle: MediaInputUI.voiceStyle(seconds),
-    });
+    items.push(this.initAudioVM(media));
 
     this.setInputData(id, item);
 
@@ -387,29 +384,49 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
   }
 
   /** 取默认的图片表单 VM（子类可重写） */
-  protected defaultImageVM(id: string): InputUI.VM {
+  protected defaultImageVM(id: string, medias?: Media[]): InputUI.VM {
+    const items = medias?.map((o) => this.initMediaVM(o)) || [];
     return {
       id: id,
       type: InputUI.Type.Images,
       name: '',
-      items: [],
+      items,
       mediaLimited: 9,
       mediaDeletable: true,
       sourceType: ['album', 'camera'],
     };
   }
 
+  protected initMediaVM(media: Media): Entity.Image {
+    return {
+      id: media.id,
+      name: '',
+      avatar: media.localPath || OSSUtils.getPreviewUrl(media.path),
+    };
+  }
+
   /** 取默认的音频表单 VM（子类可重写） */
-  protected defaultAudioVM(id: string): InputUI.VM {
+  protected defaultAudioVM(id: string, medias?: Media[]): InputUI.VM {
+    const items = medias?.map((o) => this.initAudioVM(o)) || [];
     return {
       id: id,
       type: InputUI.Type.Audios,
       name: '',
-      items: [],
+      items,
       mediaLimited: 9,
       mediaDeletable: true,
       recording: false,
       duration: 0,
+    };
+  }
+
+  protected initAudioVM(media: Media): Entity.Image {
+    const seconds = (media.duration || 0) / 1000;
+    return {
+      id: media.id,
+      avatar: media.path,
+      name: media.name,
+      avatarStyle: MediaInputUI.voiceStyle(seconds),
     };
   }
 

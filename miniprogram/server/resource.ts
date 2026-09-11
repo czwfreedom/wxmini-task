@@ -77,7 +77,7 @@ export namespace Resource {
     return Object.assign(defaultMedia(), info);
   }
 
-  function check(res: Network.BaseResponse<Info[]>): number | Media[] {
+  function check(res: Network.BaseResponse<Info[]>, ids?: string[]): number | Media[] {
     if (res?.errcode !== 0) {
       Logger.warn('List resource failed.', res);
       return res.errcode || Err.Code.Network;
@@ -88,17 +88,30 @@ export namespace Resource {
       const media = toMedia(item);
       medias.push(media);
     }
+
+    // 后台目前没有按照顺序返回，所以做个排序。
+    if (ids?.length && medias?.length > 1) {
+      medias.sort((o1, o2) => {
+        const i1 = ids.indexOf(o1.id);
+        const i2 = ids.indexOf(o2.id);
+        return i1 - i2;
+      });
+    }
+
     return medias;
   }
 
   export async function list(data: Partial<ListRequest>): Promise<number | Media[]> {
     const res = await Network.post<Info[]>(Api.ListResource, data);
-    return check(res);
+    return check(res, data.ids);
   }
 
   export async function update(data: Partial<Resource.Info>[]): Promise<number | Media[]> {
     const res = await Network.post<Info[]>(Api.UpdateResource, { data });
-    return check(res);
+    return check(
+      res,
+      data.map((o) => o.id || '')
+    );
   }
 
   export async function create(

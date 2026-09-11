@@ -2,6 +2,7 @@ import { Err } from '../constant/error';
 import { Event } from '../core/event';
 import { Intent } from '../core/intent';
 import { Entity } from '../model/entity';
+import { Resource } from '../server/resource';
 import { Routine } from '../server/routine';
 import { InputUI } from '../ui/base/inputUI';
 import { MenuUI } from '../ui/base/menuUI';
@@ -43,14 +44,17 @@ export class RoutineReaperUI extends RoutineEditorUI {
   /**
    * @override
    */
-  public loadData(): number {
+  public async loadData(): Promise<number> {
     const info = this.getInfo();
     const config = RoutineAdapter.findConfig(info.category);
     WxUtils.setNavTitle('完成任务');
     const remark = info.remark || '';
     const isNote = Routine.isNote(info.category);
 
-    this.setData({
+    const res = await this.loadMedias();
+    if (res !== 0) return this.abort(res);
+
+    this.updateData({
       loaded: true,
       finishing: true,
       detail: {
@@ -65,10 +69,9 @@ export class RoutineReaperUI extends RoutineEditorUI {
         charCount: remark.length,
         footer: this.getFooter(),
       },
-      detailImage: this.defaultImageVM('detailImage'),
-      detailAudio: this.defaultAudioVM('detailAudio'),
+      detailImage: this.defaultImageVM('detailImage', this.getMedias('detailImage')),
+      detailAudio: this.defaultAudioVM('detailAudio', this.getMedias('detailAudio')),
       snapCanvas: true,
-      menus: this.getMenus(),
     });
     return 0;
   }
@@ -98,6 +101,19 @@ export class RoutineReaperUI extends RoutineEditorUI {
    */
   protected updating(): boolean {
     return Routine.isDone(this.getInfo());
+  }
+
+  protected async loadMedias(): Promise<number> {
+    const remark = this.entry?.mediaRemark;
+    if (!remark) return 0;
+    const medias = await Resource.list({ ids: remark.split(',') });
+    if ('number' === typeof medias) return medias;
+
+    const images = medias.filter((o) => o.type === Resource.Type.Image);
+    const audios = medias.filter((o) => o.type === Resource.Type.Audio);
+    this.setMedias('detailImage', images);
+    this.setMedias('detailAudio', audios);
+    return 0;
   }
 
   protected onInputMenuTap(e: WechatMiniprogram.TouchEvent) {
