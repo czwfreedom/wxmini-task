@@ -3,6 +3,7 @@ import { Err } from '../constant/error';
 import { Entity } from '../model/entity';
 import { DateUtils } from '../utils/dateUtils';
 import { Routine } from '../server/routine';
+import { Media } from '../server/resource';
 import { RoutineAdapter } from './routineAdapter';
 import { Logger } from '../utils/logger';
 import { Event } from '../core/event';
@@ -100,6 +101,16 @@ export namespace RoutineUI {
     remark?: string;
 
     /**
+     * 图片。
+     */
+    images?: Entity.Image[];
+
+    /**
+     * 音频。
+     */
+    audios?: Entity.Image[];
+
+    /**
      * 若指定，展示底部的点赞/评论交互区，否则留空。（看自己的routine时，如果没有数据，没必要展示出来占地方）
      * id: like
      * name: 文本
@@ -162,6 +173,30 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
   protected adapter = new RoutineAdapter();
   protected date = 0;
   protected timer?: number;
+
+  /**
+   * 取某条记录的音频（供基类 AudiosUI 播放）。
+   * 复用 Record.audios（Entity.Image 已含 id/avatar/selected/name 等渲染字段）。
+   */
+  protected getAudios(id: string): Media[] {
+    const record = this.getData().records?.find((o: RoutineUI.Record) => o.id === id);
+    return (record?.audios || []) as unknown as Media[];
+  }
+
+  /**
+   * 把播放态写回 data：对应音频项 selected（wxml 据此加 voice-playing 触发波形动画）。
+   */
+  protected setAudioPlaying(id: string, subid: string, playing: boolean): void {
+    const data = this.getData();
+    if (!data.records?.length) return;
+    for (const record of data.records) {
+      if (record.id !== id) continue;
+      for (const audio of record.audios || []) {
+        if (audio.id === subid) audio.selected = playing;
+      }
+    }
+    this.setData({ records: data.records });
+  }
 
   public constructor(component: any, subDataKey = '', userId?: string) {
     super(component, subDataKey);

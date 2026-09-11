@@ -1,3 +1,6 @@
+<!-- 通用波形（录音中 / 播放中共用） -->
+<import src="./voiceWave.wxml" />
+
 <template name="input">
   <!-- 多行文本 -->
   <view wx:if="{{ type === 'textarea' }}" class="input_section">
@@ -244,15 +247,9 @@
     </view>
 
     <!-- ① 录音中（最新一条） -->
-    <view wx:if="{{ recording }}" class="input_voice recording">
+    <view wx:if="{{ recording }}" class="input_voice voice-recording">
       <view class="input_voice_dot"></view>
-      <view class="input_voice_wave">
-        <view class="w1"></view>
-        <view class="w2"></view>
-        <view class="w3"></view>
-        <view class="w4"></view>
-        <view class="w5"></view>
-      </view>
+      <template is="voiceWave" />
       <text class="input_voice_time">{{ duration || 0 }}s</text>
       <view
         class="input_voice_stop"
@@ -270,22 +267,16 @@
       <view
         wx:for="{{ items }}"
         wx:key="id"
-        class="input_voice {{ item.selected ? 'playing' : '' }} {{ item.style || '' }}"
+        class="input_voice {{ item.selected ? 'voice-playing' : '' }} {{ item.style || '' }}"
         style="{{ item.avatarStyle || '' }}"
         catch:tap="onInputMediaTap"
         data-id="{{ id }}"
         data-subid="{{ item.id }}"
         data-button="play"
       >
-        <!-- 播放 / 停止：播放中显示方块（停止） -->
-        <view class="input_voice_play"></view>
-        <view class="input_voice_wave">
-          <view class="w1"></view>
-          <view class="w2"></view>
-          <view class="w3"></view>
-          <view class="w4"></view>
-          <view class="w5"></view>
-        </view>
+        <!-- 播放 / 停止：播放中显示方块（停止）；波形用通用 template -->
+        <view class="voice-play"></view>
+        <template is="voiceWave" />
         <text class="input_voice_dur">{{ item.name }}</text>
         <view
           wx:if="{{ mediaDeletable }}"

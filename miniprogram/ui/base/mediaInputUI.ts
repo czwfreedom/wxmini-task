@@ -40,10 +40,10 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
   private recordId = '';
   /** 录音计时器 */
   private recordTimer?: any;
-  /** 音频播放上下文（单例） */
-  private audio?: WechatMiniprogram.InnerAudioContext;
-  /** 当前播放的音频：表单 id + 媒体项 id */
-  private playing?: { id: string; subid: string };
+  /**
+   * 注：音频播放已抽到基类 AudiosUI（单例播放、互斥、释放）。
+   * 播放态由本类的 setAudioPlaying 写回 data。
+   */
 
   public constructor(component: any, subDataKey = '') {
     super(component, subDataKey);
@@ -56,12 +56,8 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
    * 资源释放：停止录音与播放，销毁音频上下文。
    */
   public release() {
+    // 停止录音；音频的停止与 destroy 由基类 AudiosUI.release() 处理
     this.stopRecord(true);
-    this.stopPlay();
-    if (this.audio) {
-      this.audio.destroy();
-      this.audio = undefined;
-    }
     super.release();
   }
 
@@ -156,7 +152,8 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
       } else if (button === 'stop') {
         this.stopRecord();
       } else if (button === 'play') {
-        this.togglePlay(id, item, subid);
+        // 播放 / 停止：互斥与释放统一由基类 AudiosUI 处理
+        this.toggleAudio(id, subid);
       } else if (button === 'del') {
         this.delMedia(id, item, subid);
       }
@@ -320,55 +317,36 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     if (hash) media.hash = hash;
   }
 
-  // ==================== 音频：播放 ====================
+  // ==================== 音频：播放（基类 AudiosUI 的两个抽象函数） ====================
 
-  /** 播放或停止：点同一条则停止，点其他条则切换 */
-  protected togglePlay(id: string, item: InputUI.VM, subid: string) {
-    if (this.playing && this.playing.subid === subid) {
-      this.stopPlay();
-      return;
-    }
-    this.stopPlay();
-
-    const medias = this.getMedias(id);
-    const media = medias.find((o) => o.id === subid);
-    if (!media?.path) return;
-
-    const audio = this.getAudio();
-    audio.src = media.path;
-    audio.play();
-
-    this.playing = { id: id, subid: subid };
-    for (const o of item.items || []) {
-      o.selected = o.id === subid;
-    }
-    this.setInputData(id, item);
+  /**
+   * @override
+   * 取某表单的音频（供基类播放时查找 src）。
+   */
+  protected getAudios(id: string): Media[] {
+    return this.getMedias(id);
   }
 
-  /** 停止播放 */
-  protected stopPlay() {
-    if (this.playing) {
-      const item = this.getInputItem(this.playing.id);
-      if (item) {
-        for (const o of item.items || []) {
-          o.selected = false;
-        }
-        this.setInputData(this.playing.id, item);
-      }
-      this.playing = undefined;
+  /**
+   * @override
+   * 把播放态写回 data：对应项 selected 标记（wxml 据此加 voice-playing 触发波形动画）。
+   */
+  protected setAudioPlaying(id: string, subid: string, playing: boolean): void {
+    const item = this.getInputItem(id);
+    if (!item) return;
+    for (const o of item.items || []) {
+      if (o.id === subid) o.selected = playing;
     }
-    if (this.audio) {
-      this.audio.stop();
-    }
+    this.setInputData(id, item);
   }
 
   // ==================== 通用 ====================
 
   /** 删除媒体（图片与音频通用） */
   protected delMedia(id: string, item: InputUI.VM, subid: string) {
-    // 删的是正在播放的音频 → 先停止
-    if (this.playing && this.playing.subid === subid) {
-      this.stopPlay();
+    // 删的是正在播放的音频 → 先停止（isAudioPlaying 由基类提供）
+    if (this.isAudioPlaying(id, subid)) {
+      this.stopAudio();
     }
 
     const items = item.items || [];
@@ -459,17 +437,6 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
       this.recorder = recorder;
     }
     return this.recorder;
-  }
-
-  private getAudio(): WechatMiniprogram.InnerAudioContext {
-    if (!this.audio) {
-      const audio = wx.createInnerAudioContext();
-      audio.onEnded(() => this.stopPlay());
-      audio.onError(() => this.stopPlay());
-      audio.onStop(() => this.stopPlay());
-      this.audio = audio;
-    }
-    return this.audio;
   }
 
   /** 生成媒体项 id */

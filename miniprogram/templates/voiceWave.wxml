@@ -1,0 +1,20 @@
+<!--
+  通用波形（5 根竖线）：编辑页语音条、列表页语音条共用，改一次即全局生效。
+
+  用法：
+    <import src="./voiceWave.wxml" />
+    <template is="voiceWave" />
+
+  动画由父级的「通用状态类」驱动（详见 voiceWave.scss）：
+    voice-playing   播放中
+    voice-recording 录音中
+-->
+<template name="voiceWave">
+  <view class="voice-wave">
+    <view class="w1"></view>
+    <view class="w2"></view>
+    <view class="w3"></view>
+    <view class="w4"></view>
+    <view class="w5"></view>
+  </view>
+</template>

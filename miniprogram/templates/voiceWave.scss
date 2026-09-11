@@ -1,0 +1,104 @@
+@import '../assets/style/var.scss';
+
+/* ==========================================================
+   通用波形 + 播放图标（编辑页 / 列表页共用）
+   —— 修改波形只改本文件，两处同时生效。
+
+   动画由「通用状态类」驱动，与具体页面的 BEM 前缀解耦：
+     .voice-playing    播放中
+     .voice-recording  录音中
+   页面只需在语音条上加对应 class 即可，不必各自再写一套动画。
+   ========================================================== */
+
+// 竖线周期性起伏。用 transform: scaleY 而非改 height —— 走 GPU 合成，不触发重排。
+@keyframes voice_wave {
+  0%,
+  100% {
+    transform: scaleY(0.6);
+  }
+  50% {
+    transform: scaleY(1.8);
+  }
+}
+
+.voice-wave {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+
+  view {
+    display: block;
+    width: 4rpx;
+    margin-right: 6rpx;
+    border-radius: 2rpx;
+    background: $green;
+    // 以中心为基准上下伸缩（不加会从底部单向生长）
+    transform-origin: center;
+  }
+
+  // 5 根线基准高度各不相同 —— 静止时就是高低错落；
+  // scaleY 相对自身高度缩放，动画时高的更高、矮的更矮，
+  // 于是呈现「长短不一样」，而非 5 根等高线齐步跳。
+  .w1 {
+    height: 10rpx;
+  }
+  .w2 {
+    height: 16rpx;
+  }
+  .w3 {
+    height: 8rpx;
+  }
+  .w4 {
+    height: 14rpx;
+  }
+  .w5 {
+    height: 11rpx;
+  }
+}
+
+// 播放中：竖线起伏。
+// 5 根线用【不同的 delay + 不同的时长】—— 只错开 delay 而时长相同，
+// 走几拍后又会对齐（看着像同步）；时长各异则相位持续错开，更接近真实声波。
+.voice-playing .voice-wave,
+.voice-recording .voice-wave {
+  .w1 {
+    animation: voice_wave 0.9s ease-in-out 0s infinite;
+  }
+  .w2 {
+    animation: voice_wave 1.1s ease-in-out 0.15s infinite;
+  }
+  .w3 {
+    animation: voice_wave 0.75s ease-in-out 0.3s infinite;
+  }
+  .w4 {
+    animation: voice_wave 1s ease-in-out 0.45s infinite;
+  }
+  .w5 {
+    animation: voice_wave 0.85s ease-in-out 0.6s infinite;
+  }
+}
+
+// 录音中：竖线转红，与录音红点/计时呼应（区别于「已录制」的绿色）
+.voice-recording .voice-wave view {
+  background: $red;
+}
+
+// 播放 / 停止图标：三角 → 播放中变方块（停止）。
+// 用 border 画三角，避免字体兼容问题。
+.voice-play {
+  width: 0;
+  height: 0;
+  flex-shrink: 0;
+  border-left: 16rpx solid $green;
+  border-top: 10rpx solid transparent;
+  border-bottom: 10rpx solid transparent;
+}
+
+.voice-playing .voice-play {
+  width: 14rpx;
+  height: 16rpx;
+  border: none;
+  border-radius: 2rpx;
+  background: $green;
+}

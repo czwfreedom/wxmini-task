@@ -1,12 +1,13 @@
 import { Context } from '../core/context';
-import { InteractUI } from '../core/interactUI';
+import { AudiosUI } from './base/audiosUI';
 import { Login } from '../core/login';
 import { User } from '../server/user';
 import { Logger } from '../utils/logger';
 import { DialogUI } from './base/dialogUI';
 import { ShareUI } from './shareUI';
 
-export abstract class UserUpdaterUI<D> extends InteractUI<D> {
+// 继承 AudiosUI（InteractUI 的子类）后，列表类页面也具备音频播放能力
+export abstract class UserUpdaterUI<D> extends AudiosUI<D> {
   // https://developers.weixin.qq.com/miniprogram/dev/reference/api/Page.html#onShareAppMessage-Object-object
   public onShareAppMessage(obj: any) {
     if (this.dialog) this.dialog.hide();

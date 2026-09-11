@@ -73,11 +73,6 @@ export namespace InputUI {
     sourceType?: string[];
 
     /**
-     * 音频时长（秒），type 为 Audios 且正在录音时使用。
-     */
-    duration?: number;
-
-    /**
      * 是否正在录音，type 为 Audios 时控制「录音中」态。
      */
     recording?: boolean;

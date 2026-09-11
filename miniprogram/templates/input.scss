@@ -1,17 +1,7 @@
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
-
-// 波形竖条动画：播放中 / 录音中时周期性起伏。
-// 用 transform: scaleY 而非改 height —— 走 GPU 合成，不触发重排，性能更好。
-@keyframes input_voice_wave {
-  0%,
-  100% {
-    transform: scaleY(0.6);
-  }
-  50% {
-    transform: scaleY(1.8);
-  }
-}
+// 波形与播放图标已抽为通用资产（编辑页 / 列表页共用，改一次即全局生效）
+@import './voiceWave.scss';
 
 .input {
   &_section {
@@ -403,94 +393,9 @@
     width: 320rpx;
     max-width: 480rpx;
 
-    // 播放中：边框高亮 + 三角变停止方块
-    &.playing {
+    // 播放中：边框高亮（波形动画与「三角变停止方块」由通用 voiceWave.scss 提供）
+    &.voice-playing {
       border: 3rpx solid rgba($green, 0.5);
-
-      .input_voice_play {
-        width: 14rpx;
-        height: 16rpx;
-        border: none;
-        border-radius: 2rpx;
-        background: $green;
-      }
-    }
-
-    // 播放三角：border 绘制，避免字体兼容问题
-    &_play {
-      width: 0;
-      height: 0;
-      flex-shrink: 0;
-      border-left: 16rpx solid $green;
-      border-top: 10rpx solid transparent;
-      border-bottom: 10rpx solid transparent;
-    }
-
-    &_wave {
-      display: flex;
-      align-items: center;
-      flex: 1;
-      min-width: 0;
-      margin-left: 20rpx;
-
-      // 波形竖条：间距用 margin（遵循规范，不用 flex gap）
-      view {
-        display: block;
-        width: 4rpx;
-        margin-right: 6rpx;
-        border-radius: 2rpx;
-        background: $green;
-        // 以中心为基准上下伸缩（不加会从底部单向生长）
-        transform-origin: center;
-      }
-
-      // 5 根线基准高度各不相同 —— 静止时就是高低错落的波形；
-      // 且 scaleY 是相对自身高度缩放，动画时高的更高、矮的更矮，
-      // 于是呈现「长短不一样」，而非 5 根等高的线齐步跳。
-      .w1 {
-        height: 10rpx;
-      }
-      .w2 {
-        height: 16rpx;
-      }
-      .w3 {
-        height: 8rpx;
-      }
-      .w4 {
-        height: 14rpx;
-      }
-      .w5 {
-        height: 11rpx;
-      }
-    }
-
-    // 播放中 / 录音中：竖条周期性起伏（波浪）。
-    // 关键：5 根线用【不同的 delay + 不同的时长】——
-    // 只错开 delay 而时长相同，走几拍后又会对齐（看着像同步）；
-    // 时长各异则相位持续错开，永不重合，更接近真实声波。
-    // 仅在这两个态下加 animation，静态时完全不动，无谓耗电为 0。
-    &.playing,
-    &.recording {
-      .input_voice_wave .w1 {
-        animation: input_voice_wave 0.9s ease-in-out 0s infinite;
-      }
-      .input_voice_wave .w2 {
-        animation: input_voice_wave 1.1s ease-in-out 0.15s infinite;
-      }
-      .input_voice_wave .w3 {
-        animation: input_voice_wave 0.75s ease-in-out 0.3s infinite;
-      }
-      .input_voice_wave .w4 {
-        animation: input_voice_wave 1s ease-in-out 0.45s infinite;
-      }
-      .input_voice_wave .w5 {
-        animation: input_voice_wave 0.85s ease-in-out 0.6s infinite;
-      }
-    }
-
-    // 录音中：竖条转红，与录音红点呼应（区别于「已录制」的绿色）
-    &.recording &_wave view {
-      background: $red;
     }
 
     &_dur {
@@ -507,8 +412,8 @@
       color: $gray-99;
     }
 
-    // 录音中：红系，与 green 的「已录制」区分
-    &.recording {
+    // 录音中：红系，与 green 的「已录制」区分（波形转红由通用 voiceWave.scss 提供）
+    &.voice-recording {
       background: rgba($red, 0.08);
       border: 2rpx solid rgba($red, 0.3);
     }

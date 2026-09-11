@@ -47,6 +47,11 @@ export namespace Entity {
   export interface Image extends Label {
     avatar?: string; // 带头像。
     avatarStyle?: string; // 头像的样式
+
+    /**
+     * 音频时长（秒）
+     */
+    duration?: number;
   }
 
   export interface Hierarchy extends Image {
