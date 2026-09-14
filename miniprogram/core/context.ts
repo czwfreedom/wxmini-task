@@ -7,6 +7,22 @@ export namespace Context {
     routineTemplate?: Config.Info;
   }
 
+  export function getSystem(): WechatMiniprogram.SystemInfo {
+    return getApp().systemInfo;
+  }
+
+  /**
+   * 屏幕上的底部空间。
+   */
+  export function getSafeBottom(): number {
+    const info = getSystem();
+    const safe = info?.safeArea;
+    if (safe?.bottom && info?.screenHeight) {
+      return Math.max(0, info.screenHeight - safe.bottom);
+    }
+    return 0;
+  }
+
   export function get(): Info {
     return getApp().context;
   }

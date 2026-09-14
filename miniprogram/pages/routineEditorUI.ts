@@ -102,12 +102,6 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
     super.release();
   }
 
-  protected watchKeyboard() {
-    wx.onKeyboardHeightChange((res) => {
-      this.setData({ keyboardHeight: res.height });
-    });
-  }
-
   /** 初始化页面数据（同步，无需网络请求） */
   public async loadData(): Promise<number> {
     const entry = this.entry;

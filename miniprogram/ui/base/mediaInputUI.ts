@@ -56,11 +56,12 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
     super.release();
   }
 
-  // 默认行为？？
-  // 不清楚子类是怎么定义VM的，所以留个hook点。
-  protected setInputData(id: string, item: InputUI.VM) {
+  /**
+   * @override
+   */
+  protected setInputData(id: string, item: InputUI.VM, changed = true) {
     this.setData({ [id]: item }, () => {
-      this.onMediaChanged(item);
+      if (changed) this.onMediaChanged(item);
     });
   }
 
@@ -438,5 +439,4 @@ export abstract class MediaInputUI<D> extends PageInputUI<D> {
   private static newId(): string {
     return 'm' + Date.now() + Math.floor(Math.random() * 1000);
   }
-
 }

@@ -52,8 +52,15 @@
   <template
     wx:if="{{ menus && menus.items && menus.items.length }}"
     is="bottomBar"
-    data="{{ menus, keyboardHeight }}"
+    data="{{ menus }}"
   ></template>
+
+  <!-- 用一个傻方法规避按钮被挡住的问题 -->
+  <view
+    wx:if="{{ keyboardHeight && keyboardHeight > 20 }}"
+    class="croutine_padding"
+    style="height: {{keyboardHeight}}px"
+  ></view>
 </view>
 
 <!-- Choices 通用弹窗（更多分类等） -->
