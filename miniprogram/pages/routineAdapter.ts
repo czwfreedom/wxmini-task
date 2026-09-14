@@ -555,7 +555,7 @@ export class RoutineAdapter {
    * 它不设 default，故不会被 getDefaults 当成普通 holder push 到末尾。
    */
   protected addNoteHolder(result: Routine.Info[]) {
-    if (this.isToday) result.unshift(this.getHolder(Routine.Category.Note));
+    if (this.isToday && this.isSelf()) result.unshift(this.getHolder(Routine.Category.Note));
   }
 
   public adaptFooters(info: Routine.Info): Entity.Image[] {

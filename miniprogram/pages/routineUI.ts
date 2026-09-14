@@ -275,9 +275,15 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     super.release();
   }
 
-  public onPullDownRefresh() {
-    Logger.info('onPullDownRefresh');
-    if (this.getData().loaded) this.loadDate(this.adapter.date, true);
+  public onShow(data?: any): void {
+    if (this.getData().abortMessage) this.onPullDownRefresh(false);
+  }
+
+  public onPullDownRefresh(log = true) {
+    if (log) Logger.info('onPullDownRefresh');
+    if (this.getData().loaded || this.getData().abortMessage) {
+      this.loadDate(this.adapter.date, true);
+    }
   }
 
   public async loadData(): Promise<number> {
@@ -290,7 +296,7 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     this.date = date; // 有太多引用了，故也保存在这里。
     const errcode = await this.adapter.load(date, reload);
     if (errcode !== Err.Code.OK) return this.abort(errcode);
-    this.setData({ loaded: true, ...this.adapter.adapt() });
+    this.setData({ loaded: true, abortMessage: '', ...this.adapter.adapt() });
     this.resetTimer();
     return 0;
   }
@@ -335,6 +341,8 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
           if (millis !== this.adapter.date) this.checkDate(millis);
         }
       );
+    } else if (button === 'abort') {
+      this.onPullDownRefresh(false);
     }
   }
 

@@ -16,4 +16,8 @@ Page({
   onUnload() {
     this.ui?.release();
   },
+
+  onShow() {
+    this.ui?.onShow();
+  },
 });

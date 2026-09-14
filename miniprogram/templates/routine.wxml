@@ -217,7 +217,11 @@
                   hover-class="press"
                   hover-stop-propagation="true"
                 >
-                  <image src="{{ media.avatar }}" mode="aspectFill" class="routine_card_media_img" />
+                  <image
+                    src="{{ media.avatar }}"
+                    mode="aspectFill"
+                    class="routine_card_media_img"
+                  />
                 </view>
               </view>
             </view>
@@ -405,6 +409,6 @@
   <template
     wx:if="{{ !loaded || abortMessage }}"
     is="abort"
-    data="{{message: abortMessage || '加载中..' }}"
+    data="{{message: abortMessage || '加载中..', onTap: 'onMenuTap' }}"
   ></template>
 </template>
