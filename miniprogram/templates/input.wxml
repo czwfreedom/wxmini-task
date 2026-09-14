@@ -13,6 +13,7 @@
         maxlength="{{ maxLength || 400 }}"
         value="{{ value }}"
         data-id="{{ id }}"
+        adjust-position="{{false}}"
         bindinput="onInputChanged"
         auto-height="true"
         disabled="{{ disabled || false }}"
