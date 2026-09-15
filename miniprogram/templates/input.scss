@@ -69,20 +69,20 @@
   &_example {
     &_items {
       display: flex;
-      margin-top: 20rpx;
+      margin-top: 12rpx;
       flex-wrap: wrap;
     }
 
     &_item {
-      margin-right: 16rpx;
-      font-size: 24rpx;
-      font-weight: 500;
+      margin: 8rpx 8rpx 0 0;
+      font-size: 22rpx;
       @include press;
       color: $foreground-sub;
       background: $background-white;
-      padding: 14rpx 28rpx;
+      padding: 12rpx 24rpx;
       border-radius: 32rpx;
       border: 2rpx solid $gray-e5;
+      white-space: normal;
     }
   }
 
