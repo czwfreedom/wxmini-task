@@ -197,7 +197,8 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
     this.bindEvent('onCardMediaTap', this.onCardMediaTap);
 
     this.registerEventBus(Event.Name.RoutineUpdated, async (ev: Routine.Info) => {
-      if (ev?.id && ev?.userId === this.adapter?.userId && this.date === ev.date) {
+      const userId = this.adapter?.userId;
+      if (ev?.id && (ev?.userId === userId || ev?.delegated === userId) && this.date === ev.date) {
         this.adapter.addInfo(ev);
         await this.adapter.loadMedias();
         this.updateView();

@@ -193,6 +193,7 @@ export class RoutineAdapter {
    * 别人叫上我的读到「朵朵 邀你一起」—— 同一位置，语义靠视角自然区分。
    */
   protected adaptPartner(info: Routine.Info): Entity.Image | undefined {
+    if (!this.isSelf()) return undefined; // 查看别人的任务，暂时不展示这种关系。
     const partnerId = this.getPartnerId(info);
     const user = this.getUser(partnerId);
     const name = user?.nickname || user?.name || '';

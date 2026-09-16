@@ -206,7 +206,7 @@ export class RoutineEditorAdapter {
     if (!partner) {
       return {
         id: 'together',
-        type: InputUI.Type.Together,
+        type: InputUI.Type.Card,
         avatar: RoutineEditorAdapter.sTogetherIcon,
         name: '叫上谁一起？',
         desc: '可选 · TA 也能完成',
@@ -218,7 +218,7 @@ export class RoutineEditorAdapter {
 
     return {
       id: 'together',
-      type: InputUI.Type.Together,
+      type: InputUI.Type.Card,
       name: partner.name,
       desc: '已叫上 TA 一起',
       hint: '更换 ›',

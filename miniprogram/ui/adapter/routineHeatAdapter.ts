@@ -32,6 +32,7 @@ export class RoutineHeatAdapter extends HeatmapAdapter {
             startDate: this.monthMillis,
             endDate: endMillis,
             brief: true,
+            withDelegated: true,
           });
     if ('number' === typeof result) return result;
 
