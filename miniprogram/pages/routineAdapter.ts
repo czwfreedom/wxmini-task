@@ -224,7 +224,7 @@ export class RoutineAdapter {
     this.finishable = isSelf && date <= today;
     const result = await Routine.list({ date, userId: this.userId, withStat: true });
     if (typeof result === 'number') return result;
-    this.infos = result;
+    this.infos = result.data;
     // 补拉媒体详情：mediaRemark 只是 id 串，可播放/可展示的地址需查询。
     // 失败不阻断页面（仅媒体不显示），故不返回其错误码。
     await this.loadMedias();

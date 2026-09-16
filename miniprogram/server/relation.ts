@@ -25,6 +25,7 @@ export namespace Relation {
 
   export interface ListRequest extends Info {
     withStat: boolean;
+    mutual: boolean;
   }
 
   export interface ListResponse {

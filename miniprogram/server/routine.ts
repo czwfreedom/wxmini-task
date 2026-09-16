@@ -4,6 +4,7 @@ import { Network } from '../core/network';
 import { Entity } from '../model/entity';
 import { Logger } from '../utils/logger';
 import { Utils } from '../utils/utils';
+import { User } from './user';
 
 export namespace Routine {
   /** 任务状态 */
@@ -73,6 +74,11 @@ export namespace Routine {
     subcategory?: number;
     /** 归属用户 */
     userId: string;
+    /**
+     * 委托用户
+     */
+    delegated?: string;
+    
     /** 日期，精确到天，如 20260727 */
     date: number;
     /** 创建时排重用，32 位 uuid */
@@ -122,6 +128,14 @@ export namespace Routine {
     startDate: number;
     endDate: number;
     brief: boolean;
+    //  若设置，拉到委托给自己的任务。
+    // 只有查看自己的任务才需要这样。
+    withDelegated: boolean;
+  }
+
+  export interface ListResponse {
+    data: Info[];
+    users?: User.Info[];
   }
 
   export function isNote(category?: number): boolean {
@@ -135,13 +149,13 @@ export namespace Routine {
   /**
    * 获取指定日期的任务列表
    */
-  export async function list(data: Partial<ListRequest>): Promise<number | Info[]> {
+  export async function list(data: Partial<ListRequest>): Promise<number | ListResponse> {
     const res = await Network.post<Info[]>(Api.ListRoutine, data);
     if (res?.errcode !== 0) {
       Logger.warn('List routine failed', res);
       return res?.errcode || Err.Code.Network;
     }
-    return res.data ?? [];
+    return { data: res.data ?? [], users: res.users };
   }
 
   /**

@@ -26,7 +26,7 @@ export class RoutineHeatAdapter extends HeatmapAdapter {
     const endMillis = this.monthMillis + days * DateUtils.sDayMillis;
     const result =
       endMillis <= RoutineHeatAdapter.sMin
-        ? []
+        ? { data: [] }
         : await Routine.list({
             userId: this.userId,
             startDate: this.monthMillis,
@@ -36,7 +36,7 @@ export class RoutineHeatAdapter extends HeatmapAdapter {
     if ('number' === typeof result) return result;
 
     this.aggs.clear();
-    for (const info of result) {
+    for (const info of result.data) {
       const cur = this.aggs.get(info.date) ?? { finished: 0, total: 0 };
       cur.total += 1;
       if (info.status === Routine.Status.Done) cur.finished += 1;
