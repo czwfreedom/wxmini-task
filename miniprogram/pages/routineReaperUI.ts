@@ -201,7 +201,7 @@ export class RoutineReaperUI extends RoutineEditorUI {
 
     this.showToast(updating ? '已修改' : RoutineAdapter.getCelebrate(this.getInfo().category));
     Object.assign(this.getInfo(), !data.id ? res : data);
-    this.postEvent(Event.Name.RoutineUpdated, this.getInfo());
+    this.postEvent(Event.Name.RoutineUpdated, res ? res : this.getInfo());
     Intent.delayBack();
   }
 
