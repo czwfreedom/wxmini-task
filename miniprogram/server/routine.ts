@@ -78,7 +78,7 @@ export namespace Routine {
      * 委托用户
      */
     delegated?: string;
-    
+
     /** 日期，精确到天，如 20260727 */
     date: number;
     /** 创建时排重用，32 位 uuid */
@@ -108,6 +108,16 @@ export namespace Routine {
     comment: number;
     liked: number;
     commented: number;
+  }
+
+  /**
+   * 跳转「创建 / 完成任务」页时携带的数据。
+   *
+   * 比 Info 多一个 partner 的原因：署名（昵称、头像色）在列表页已经解析好了，
+   * 完成页直接渲染即可，不必为了一个昵称再查一次用户。
+   */
+  export interface Intent extends Partial<Info> {
+    partner?: Entity.Image;
   }
 
   export interface Stat extends Entity.Id {
@@ -140,6 +150,23 @@ export namespace Routine {
 
   export function isNote(category?: number): boolean {
     return category === Category.Note;
+  }
+
+  /**
+   * 是否叫上了伙伴。
+   *
+   * delegated 为 '0' 或空都表示「没叫人」—— '0' 是取消委托时的约定值，
+   * 不能用 `!!delegated` 直接判断，否则取消后会仍然被当成有委托。
+   *
+   * 参数取 Pick 而非整个 Info：调用方常常只有 id 字符串，不必伪造一条任务。
+   */
+  export function hasDelegated(info?: Pick<Info, 'delegated'>): boolean {
+    return !!info?.delegated && info.delegated !== '0';
+  }
+
+  /** 取归一化后的委托对象 id；未委托（含 '0' 与空）时返回空串。 */
+  export function getDelegated(info?: Pick<Info, 'delegated'>): string {
+    return hasDelegated(info) ? info!.delegated! : '';
   }
 
   export function isDone(info?: Info): boolean {

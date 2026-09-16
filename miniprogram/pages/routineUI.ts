@@ -85,6 +85,15 @@ export namespace RoutineUI {
      */
     isNote?: boolean;
     done?: boolean;
+    /**
+     * 委托任务的对方（署名行：头像 + 昵称 + 动作）。普通任务为空。
+     */
+    partner?: Entity.Image;
+    /**
+     * 逐条编辑权。委托来的任务只能完成、不能改内容，
+     * 所以不能用页面级的 updateable 统一判断。
+     */
+    editable?: boolean;
     /** 任务详情 */
     detail: string;
     /** 任务分类 */
@@ -555,11 +564,15 @@ export class RoutineUI extends UserUpdaterUI<RoutineUI.Data> {
       }
     } else if (info) {
       const edit = button !== 'next';
-      if (edit && !this.getData().updateable) return;
-      if (this.getData().updateable || this.getData().finishable) {
+      // 编辑权是逐条的：委托来的任务只能完成、不能改内容
+      if (edit && !vm?.editable) return;
+      if (vm?.editable || this.getData().finishable) {
+        // 带上署名：完成页要显示「谁邀你一起」，而列表页已经解析过，
+        // 不带着就得在完成页为一个昵称再查一次用户。
+        const data: Routine.Intent = { ...info, partner: vm?.partner };
         Intent.navigateTo(Constants.Page.CreateRoutine, {
           type: Routine.isDone(info) || !edit ? Entity.Action.Finish : Entity.Action.Update,
-          data: info,
+          data: data,
         });
       }
     }

@@ -146,9 +146,9 @@
             wx:for="{{ records }}"
             wx:key="id"
             class="routine_card {{ item.style || '' }} {{ item.isNote && item.holder ? 'note-holder' : '' }} {{ item.isNote && !item.holder ? 'note' : '' }} {{ isToday && item.done ? 'harvest' : '' }} {{ justDone && item.id === justDone.id ? 'just-done' : '' }}"
-            catch:tap="{{ updateable && !item.holder? 'onItemTap' : '' }}"
+            catch:tap="{{ item.editable ? 'onItemTap' : '' }}"
             data-id="{{ item.id }}"
-            hover-class="{{ updateable && !item.holder? 'press' : '' }}"
+            hover-class="{{ item.editable ? 'press' : '' }}"
           >
             <view class="routine_card_main">
               <view class="routine_card_accent" style="background:{{ item.color }};"></view>
@@ -156,6 +156,16 @@
                 <image src="{{ item.icon }}" class="routine_card_icon_img" mode="aspectFit" />
               </view>
               <view class="routine_card_body">
+                <!-- 委托署名行：位于标题之上，阅读顺序为「谁 → 做什么 → 何时」 -->
+                <view wx:if="{{ item.partner }}" class="routine_card_byline">
+                  <view
+                    class="routine_card_byline_avatar {{ item.partner.avatarStyle || 'avatar_c1' }}"
+                  >
+                    <text>{{ item.partner.letterIndex }}</text>
+                  </view>
+                  <text class="routine_card_byline_name">{{ item.partner.name }}</text>
+                  <text class="routine_card_byline_verb">{{ item.partner.desc }}</text>
+                </view>
                 <view wx:if="{{ item.name }}" class="routine_card_title">{{ item.name }}</view>
                 <view wx:if="{{ item.detail }}" class="routine_card_sub">
                   {{ item.detail }}

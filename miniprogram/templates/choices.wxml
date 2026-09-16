@@ -48,16 +48,38 @@
           catch:tap="onChoicesItemTap"
           data-id="{{ item.id }}"
         >
-          <view wx:if="{{ item.avatar }}" class="choices_item_avatar_container">
+          <!-- 图片头像（grid 等场景）；people 走下方的字母头像 -->
+          <view
+            wx:if="{{ item.avatar && style !== 'people' }}"
+            class="choices_item_avatar_container"
+          >
             <image src="{{ item.avatar }}" class="choices_item_avatar" mode="aspectFit" />
           </view>
+          <!-- 字母头像（people）：与 routine 页「伙伴」共用 avatar_c1~c4 色板 -->
           <view
-            class="choices_item_name {{ !grid? 'single' : '' }} {{ item.selected? 'selected' : '' }}"
+            wx:elif="{{ item.letterIndex }}"
+            class="choices_item_letter {{ item.avatarStyle || 'avatar_c1' }}"
           >
-            {{ item.name }}
+            <text>{{ item.letterIndex }}</text>
           </view>
 
-          <view wx:if="{{ item.desc }}" class="choices_item_desc">{{ item.desc }}</view>
+          <!-- people：名字与描述上下两行 -->
+          <view wx:if="{{ style === 'people' }}" class="choices_item_main">
+            <view class="choices_item_name {{ item.selected? 'selected' : '' }}">
+              {{ item.name }}
+            </view>
+            <view wx:if="{{ item.desc }}" class="choices_item_sub">{{ item.desc }}</view>
+          </view>
+          <!-- 其余样式：沿用原来的平铺结构 -->
+          <block wx:else>
+            <view
+              class="choices_item_name {{ !grid? 'single' : '' }} {{ item.selected? 'selected' : '' }}"
+            >
+              {{ item.name }}
+            </view>
+            <view wx:if="{{ item.desc }}" class="choices_item_desc">{{ item.desc }}</view>
+          </block>
+
           <!-- 选中即打勾（原仅多选显示；单选重新打开时需看到当前选中项） -->
           <view wx:if="{{ item.selected }}" class="choices_checked {{ style || '' }}">✓</view>
         </view>

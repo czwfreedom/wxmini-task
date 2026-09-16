@@ -30,6 +30,12 @@ export namespace InputUI {
      * 多音频。
      */
     Audios = 'audios',
+
+    /**
+     * 委托：叫上伙伴一起。细长卡，未选虚线 / 已选金边。
+     * value 存对方 userId，avatar/letterIndex/avatarStyle 见 input.wxml 的字段约定。
+     */
+    Together = 'together',
   }
 
   // 配合 input.scss/wxml

@@ -3,6 +3,7 @@ import { Err } from '../constant/error';
 import { Network } from '../core/network';
 import { Entity } from '../model/entity';
 import { Logger } from '../utils/logger';
+import { User } from './user';
 
 export namespace Relation {
   export interface Info extends Entity.Id {
@@ -13,7 +14,7 @@ export namespace Relation {
     deleted?: number;
   }
 
-  export interface User extends Entity.Info {
+  export interface User extends User.Info {
     // 当天的任务数量
     routine?: { count: number; finished: number };
   }

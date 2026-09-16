@@ -12,6 +12,17 @@
 
   <view class="croutine_content">
     <scroll-view wx:if="{{ loaded }}" class="croutine_scroll" scroll-y="true">
+      <!-- 0. 委托署名条：完成共享任务时，顶部先说清「这是两个人的事」 -->
+      <view wx:if="{{ partner }}" class="croutine_partner">
+        <view class="croutine_partner_avatar {{ partner.avatarStyle || 'avatar_c1' }}">
+          <text>{{ partner.letterIndex }}</text>
+        </view>
+        <view class="croutine_partner_body">
+          <view class="croutine_partner_name">{{ partner.name }} {{ partner.desc }}</view>
+          <view class="croutine_partner_sub">双方都能完成，记录互相可见</view>
+        </view>
+      </view>
+
       <!-- 1. 选择任务类型 -->
       <template
         wx:if="{{ !finishing && category && category.items }}"
@@ -45,6 +56,10 @@
         is="input"
         data="{{ ...time }}"
       ></template>
+
+      <!-- 5. 叫上谁一起（无可选伙伴时 together 为空，整块不渲染） -->
+      <template wx:if="{{ !finishing && together }}" is="input" data="{{ ...together }}"></template>
+
       <view class="croutine_spacer"></view>
     </scroll-view>
   </view>

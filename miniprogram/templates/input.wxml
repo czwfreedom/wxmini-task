@@ -314,4 +314,36 @@
       语音 {{ items.length }}/{{ mediaLimited || 9 }}
     </view>
   </view>
+
+  <!--
+    7. 委托（叫上伙伴一起）
+    一张细长卡，刻意不配 section 标题 —— 这是可选项，不值得再加一行标题去强调。
+      未选：虚线 + 透明底，与「更多分类」「其他」同一套语言，读作「可选的空位」
+      已选：金边 + 浅底 + 头像，切到项目统一的选中态
+    字段约定：
+      value       对方 userId；空表示「没叫上人」（取消时由调用方回写 '0'）
+      avatar      未选时的入口图标
+      letterIndex / avatarStyle   已选时的字母头像（与「伙伴」共用 avatar_c1~c4）
+      name / desc 标题 / 副文案
+      hint        右侧动作文案（叫上 › / 更换 ›）
+  -->
+  <view
+    wx:if="{{ type ==='together' }}"
+    class="input_together {{ value ? 'invited' : '' }}"
+    catch:tap="onInputRadioTap"
+    hover-class="press"
+    data-id="{{ id }}"
+  >
+    <view wx:if="{{ value }}" class="input_together_avatar {{ avatarStyle || 'avatar_c1' }}">
+      <text>{{ letterIndex }}</text>
+    </view>
+    <view wx:else class="input_together_icon">
+      <image src="{{ avatar }}" class="input_together_icon_img" mode="aspectFit" />
+    </view>
+    <view class="input_together_body">
+      <view class="input_together_title">{{ name }}</view>
+      <view wx:if="{{ desc }}" class="input_together_sub">{{ desc }}</view>
+    </view>
+    <view wx:if="{{ hint }}" class="input_together_action">{{ hint }}</view>
+  </view>
 </template>

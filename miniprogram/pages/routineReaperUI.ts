@@ -14,7 +14,7 @@ import { RoutineEditorUI } from './routineEditorUI';
 
 // 完成事件。
 export class RoutineReaperUI extends RoutineEditorUI {
-  public constructor(component: any, intent?: Partial<Routine.Info>) {
+  public constructor(component: any, intent?: Routine.Intent) {
     super(component, intent);
     this.bindEvent('onInputMenuTap', this.onInputMenuTap);
     this.watchKeyboard();
@@ -54,9 +54,14 @@ export class RoutineReaperUI extends RoutineEditorUI {
     const res = await this.loadMedias();
     if (res !== 0) return this.abort(res);
 
+    // 委托任务：署名条已在列表页解析好（随 Intent 带过来），这里只负责渲染。
+    // 引导语同时带上对方名字 —— 完成从「自我反馈」变成「一次回应」。
+    const partner = this.entry?.partner;
+
     this.updateData({
       loaded: true,
       finishing: true,
+      partner: partner,
       detail: {
         id: 'detail',
         name: isNote ? '随手记' : '写写做了啥 ✍️',

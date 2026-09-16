@@ -1,10 +1,12 @@
+import { Context } from '../core/context';
 import { Entity } from '../model/entity';
+import { Relation } from '../server/relation';
 import { Routine } from '../server/routine';
 import { RoutineCache } from '../storage/routineCache';
 import { InputUI } from '../ui/base/inputUI';
+import { AvatarUtils } from '../utils/avatarUtils';
 import { DateUtils } from '../utils/dateUtils';
 import { RoutineAdapter } from './routineAdapter';
-import { RoutineEditorUI } from './routineEditorUI';
 
 /**
  * 创建任务页的数据适配器。
@@ -14,6 +16,12 @@ import { RoutineEditorUI } from './routineEditorUI';
 export class RoutineEditorAdapter {
   /** 自定义时长入口的 sentinel */
   public static readonly kCustomDurationMinutes = -1;
+
+  /** 「不叫上任何人」的哨兵 id —— 与 Routine.Info.delegated 用 '0' 表示未委托的约定一致 */
+  public static readonly kNoPartner = '0';
+
+  /** 委托入口卡「未选」态的图标 */
+  public static readonly sTogetherIcon = '../assets/imgs/ic-together.svg';
 
   // ---- 计划时长选项（10分钟 · 25番茄钟 · 30 · 45 · 1小时 · 其他） ----
   private static sDurations: Entity.Label[] = [
@@ -135,5 +143,88 @@ export class RoutineEditorAdapter {
     };
     if (id === selectedCategory) result.selected = true;
     return result;
+  }
+
+  // ---- 委托（叫上伙伴一起）----
+
+  /**
+   * 可选伙伴列表。
+   *
+   * 条件 = 我星标了 且 互相关注，两者各管一件事：
+   *   星标     → 我的意愿（我信任 TA、想重点看 TA）
+   *   互相关注 → 对方的意愿（TA 也愿意看见我）
+   * 只用星标，等于允许我单方面把任务塞给一个没选择看见我的人。
+   *
+   * @returns 错误码，或伙伴列表（可能为空，空则调用方不渲染入口）
+   */
+  public async loadPartners(): Promise<number | Entity.Option[]> {
+    const res = await Relation.list({
+      userId: Context.getUserId(),
+      star: 1,
+      mutual: true,
+      withStat: true,
+    });
+    if ('number' === typeof res) return res;
+
+    const result: Entity.Option[] = [];
+    for (const user of res.users || []) {
+      const name = user.nickname || user.name || '';
+      if (!name) continue;
+      const routine = user.routine;
+      result.push({
+        id: user.id,
+        name: name,
+        desc: routine ? `今天 ${routine.finished || 0}/${routine.count || 0}` : '',
+        letterIndex: name.charAt(0),
+        avatarStyle: AvatarUtils.randomColor(user.id),
+      });
+    }
+    return result;
+  }
+
+  /**
+   * Choices 的 items：可选伙伴 + 末尾固定追加的「不叫上任何人」。
+   * 换人与取消共用同一个弹窗，不必在卡片上再放一个 ✕。
+   */
+  public adaptPartnerOptions(partners: Entity.Option[], delegated?: string): Entity.Option[] {
+    const items: Entity.Option[] = partners.map((o) => Object.assign({}, o));
+    Entity.markSelected(items, Routine.getDelegated({ delegated }));
+    items.push({ id: RoutineEditorAdapter.kNoPartner, name: '不叫上任何人' });
+    return items;
+  }
+
+  /**
+   * 委托入口卡的 VM。没有可选伙伴时返回 undefined —— 整块不渲染，不留空态。
+   *
+   * 未选：虚线空位（叫上谁一起？）；已选：头像 + 昵称 + 更换。
+   */
+  public buildTogetherVM(partners: Entity.Option[], delegated?: string): InputUI.VM | undefined {
+    if (!partners.length) return undefined;
+
+    const selected = Routine.getDelegated({ delegated });
+    const partner = Entity.find(partners, selected).item;
+    if (!partner) {
+      return {
+        id: 'together',
+        type: InputUI.Type.Together,
+        avatar: RoutineEditorAdapter.sTogetherIcon,
+        name: '叫上谁一起？',
+        desc: '可选 · TA 也能完成',
+        hint: '叫上 ›',
+        // value 是「没叫人」的状态值；wxml 以它判断是否已选
+        value: '',
+      };
+    }
+
+    return {
+      id: 'together',
+      type: InputUI.Type.Together,
+      name: partner.name,
+      desc: '已叫上 TA 一起',
+      hint: '更换 ›',
+      value: partner.id,
+      letterIndex: partner.letterIndex,
+      avatarStyle: partner.avatarStyle,
+    };
   }
 }

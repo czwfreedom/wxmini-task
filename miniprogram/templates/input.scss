@@ -1,5 +1,7 @@
 @import '../assets/style/var.scss';
 @import '../assets/style/mixin.scss';
+// 字母头像（委托卡片已选态用 avatar_c1~c4，与「伙伴」共用同一套色板）
+@import '../assets/style/avatar.scss';
 // 波形与播放图标已抽为通用资产（编辑页 / 列表页共用，改一次即全局生效）
 @import './voiceWave.scss';
 
@@ -479,6 +481,87 @@
         background: transparent;
         border-color: $gray-c5;
       }
+    }
+  }
+
+  // ===== 7. 委托（叫上伙伴一起）=====
+  // 细长卡：刻意不配 section 标题，靠卡片形态自己表达「这是可选项」。
+  //   未选 → 虚线 + 透明底，与「更多分类」「其他」同一套语言
+  //   已选 → 金边 + 浅底 + 头像，切到项目统一的选中态
+  &_together {
+    display: flex;
+    align-items: center;
+    margin: 40rpx 32rpx 0;
+    padding: 20rpx 28rpx;
+    border-radius: 32rpx;
+    border: 4rpx dashed $gray-c5;
+    background: transparent;
+    @include press;
+
+    &_icon {
+      flex-shrink: 0;
+      width: 80rpx;
+      height: 80rpx;
+
+      &_img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    &_avatar {
+      flex-shrink: 0;
+      width: 80rpx;
+      height: 80rpx;
+      border-radius: 50%;
+      @include flex-layout;
+      font-size: 32rpx;
+      font-weight: 700;
+      color: white;
+    }
+
+    &_body {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin-left: 20rpx;
+    }
+
+    &_title {
+      font-size: 28rpx;
+      font-weight: 600;
+      color: $gray-99;
+    }
+
+    &_sub {
+      margin-top: 4rpx;
+      font-size: 22rpx;
+      font-weight: 500;
+      color: $gray-c5;
+    }
+
+    &_action {
+      flex-shrink: 0;
+      font-size: 24rpx;
+      font-weight: 600;
+      color: $gray-99;
+    }
+
+    &.invited {
+      border-style: solid;
+      border-color: $main;
+      background: $background-white;
+    }
+
+    &.invited &_title {
+      color: $gray-33;
+    }
+
+    &.invited &_sub {
+      color: $gold-dark2;
+    }
+
+    &.invited &_action {
+      color: $main;
     }
   }
 }

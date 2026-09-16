@@ -25,6 +25,46 @@
     height: 32rpx;
   }
 
+  // ===== 委托署名条 =====
+  // 只在带 partner 的 Intent 下渲染（即这条任务是「叫上某人一起」的）。
+  // 位置在完成页最上方：先说清这是两个人的事，再让用户写反馈。
+  &_partner {
+    @include card;
+    @include flex-layout(row, flex-start, center);
+    margin: 40rpx 32rpx 0;
+    padding: 24rpx 28rpx;
+    border: 3rpx solid $gold-border;
+
+    &_avatar {
+      flex-shrink: 0;
+      width: 72rpx;
+      height: 72rpx;
+      border-radius: 50%;
+      @include flex-layout;
+      font-size: 30rpx;
+      font-weight: 700;
+      color: white;
+    }
+
+    &_body {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin-left: 20rpx;
+    }
+
+    &_name {
+      font-size: 28rpx;
+      font-weight: 700;
+      color: $gray-33;
+    }
+
+    &_sub {
+      margin-top: 4rpx;
+      font-size: 22rpx;
+      color: $gold-dark2;
+    }
+  }
+
   &_padding {
     flex-shrink: 0;
   }

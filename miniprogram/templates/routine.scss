@@ -390,6 +390,44 @@
       min-width: 0;
     }
 
+    // ===== 委托署名行 =====
+    // 位于标题之上，阅读顺序变成「谁 → 做什么 → 何时」。
+    // 复用项目已有的「内嵌胶囊」语言（同 remark 的绿胶囊结构），底色取浅金。
+    // 用 inline-flex 而非 flex：胶囊要贴合内容宽度，不铺满整行。
+    &_byline {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      padding: 4rpx 20rpx 4rpx 4rpx;
+      margin-bottom: 12rpx;
+      border-radius: 999rpx;
+      background: rgba($main, 0.12);
+
+      &_avatar {
+        flex-shrink: 0;
+        width: 40rpx;
+        height: 40rpx;
+        border-radius: 50%;
+        @include flex-layout;
+        font-size: 20rpx;
+        font-weight: 700;
+        color: white;
+      }
+
+      &_name {
+        margin-left: 10rpx;
+        font-size: 24rpx;
+        font-weight: 700;
+        color: $gold-dark2;
+      }
+
+      &_verb {
+        margin-left: 8rpx;
+        font-size: 22rpx;
+        color: rgba($gold-dark2, 0.75);
+      }
+    }
+
     &_title {
       font-size: 32rpx;
       font-weight: 600;

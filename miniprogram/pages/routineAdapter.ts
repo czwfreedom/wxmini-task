@@ -38,6 +38,15 @@ export class RoutineAdapter {
    */
   protected mediaMap: Map<string, Media[]> = new Map();
 
+  /**
+   * 用户 id → 用户信息。
+   *
+   * ★ 来源是 Routine.list 返回的 users 字段（与 Relation.list 同构），
+   *   不是 User 接口 —— User 只有单条 listInfo，逐条查会变成 N+1。
+   *   用途：委托任务的署名行（需要对方昵称与头像色）。
+   */
+  protected users: Map<string, User.Info> = new Map();
+
   /** 取某任务的媒体【源数据】 */
   public getMedias(id: string): Media[] {
     return this.mediaMap.get(id) || [];
@@ -177,6 +186,27 @@ export class RoutineAdapter {
     return { images, audios };
   }
 
+  /**
+   * 署名行 VM：头像 + 昵称 + 动作。普通任务返回 undefined。
+   *
+   * 文案按视角分：我创建的读到「爸爸 和你一起做」，
+   * 别人叫上我的读到「朵朵 邀你一起」—— 同一位置，语义靠视角自然区分。
+   */
+  protected adaptPartner(info: Routine.Info): Entity.Image | undefined {
+    const partnerId = this.getPartnerId(info);
+    const user = this.getUser(partnerId);
+    const name = user?.nickname || user?.name || '';
+    // 拿不到昵称就不渲染署名：宁可不显示，也不要出现一个空头像
+    if (!partnerId || !name) return undefined;
+    return {
+      id: partnerId,
+      name,
+      letterIndex: name.charAt(0),
+      avatarStyle: AvatarUtils.randomColor(partnerId),
+      desc: this.isOwner(info) ? '和你一起做' : '邀你一起',
+    };
+  }
+
   public getInfo(id: string): Routine.Info | undefined {
     return Entity.find(this.infos, id).item;
   }
@@ -200,6 +230,29 @@ export class RoutineAdapter {
     return this.userId === Context.getUserId();
   }
 
+  /** 是否是当前用户创建的任务。委托来的任务 userId 是对方，故不能整体判断。 */
+  public isOwner(info?: Routine.Info): boolean {
+    return info?.userId === Context.getUserId();
+  }
+
+  /**
+   * 任务里的「对方」id。
+   *   我创建的   → delegated（我叫上的人）
+   *   别人创建的 → userId（叫上我的人）
+   * 普通任务（我自己建、没叫人）返回 undefined。
+   */
+  public getPartnerId(info: Routine.Info): string | undefined {
+    if (info.userId === Context.getUserId()) {
+      return Routine.hasDelegated(info) ? info.delegated : undefined;
+    }
+    return info.userId;
+  }
+
+  /** 取用户信息（署名行用），来源见 users 字段的注释 */
+  public getUser(id?: string): User.Info | undefined {
+    return id ? this.users.get(id) : undefined;
+  }
+
   public addInfo(info: Routine.Info) {
     const res = Entity.find(this.infos, info.id);
     if (res.index >= 0) {
@@ -207,6 +260,13 @@ export class RoutineAdapter {
     } else {
       this.infos.push(info);
     }
+  }
+
+  /** 从列表移除某个任务（如委托被对方取消后，它不该再留在我的今天页） */
+  public removeInfo(id: string) {
+    const res = Entity.find(this.infos, id);
+    if (res.index >= 0) this.infos.splice(res.index, 1);
+    this.mediaMap.delete(id);
   }
 
   /** 加载指定日期的任务数据，返回错误码 */
@@ -222,9 +282,20 @@ export class RoutineAdapter {
     this.updateable = isSelf && date >= today;
     this.addable = isSelf && date >= today;
     this.finishable = isSelf && date <= today;
-    const result = await Routine.list({ date, userId: this.userId, withStat: true });
+    // withDelegated：把自己创建的任务 + 别人委托给我的任务一起拉回来。
+    // 只有看自己的页面时才需要 —— 看别人的页面混进来会串号。
+    const result = await Routine.list({
+      date,
+      userId: this.userId,
+      withStat: true,
+      withDelegated: isSelf,
+    });
     if (typeof result === 'number') return result;
     this.infos = result.data;
+    // this.users.clear();
+    for (const user of result.users || []) {
+      if (user?.id) this.users.set(user.id, user);
+    }
     // 补拉媒体详情：mediaRemark 只是 id 串，可播放/可展示的地址需查询。
     // 失败不阻断页面（仅媒体不显示），故不返回其错误码。
     await this.loadMedias();
@@ -246,6 +317,7 @@ export class RoutineAdapter {
       });
       if ('number' === typeof relations) return relations;
       this.relations = relations;
+      for (const user of relations?.users || []) this.users.set(user.id, user);
     }
     return 0;
   }
@@ -444,6 +516,10 @@ export class RoutineAdapter {
         finishTime: info.finishTime,
         remark: info.remark,
         ...this.adaptMedias(info),
+        // 委托任务的对方（署名行）；普通任务为空
+        partner: this.adaptPartner(info),
+        // 逐条编辑权：委托来的任务只能完成、不能改内容
+        editable: this.updateable && this.isOwner(info),
         holder: holder,
         isNote: isNote,
         done,

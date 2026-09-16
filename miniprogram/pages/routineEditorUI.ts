@@ -20,6 +20,9 @@ export namespace RoutineEditorUI {
   export interface Data extends SubUI.Data {
     finishing?: boolean;
 
+    /** 委托任务顶部的署名条（Intent 里带了 partner 才有）；普通任务为空 */
+    partner?: Entity.Image;
+
     choices: ChoicesUI.Data;
 
     category: InputUI.VM;
@@ -30,6 +33,9 @@ export namespace RoutineEditorUI {
 
     duration: InputUI.VM;
     time: InputUI.VM;
+
+    /** 委托入口卡（叫上谁一起）。没有可选伙伴时为空，整块不渲染。 */
+    together?: InputUI.VM;
 
     /** 是否可以提交 */
     submittable: boolean;
@@ -42,12 +48,15 @@ export namespace RoutineEditorUI {
 
 export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
   private adapter = new RoutineEditorAdapter();
-  protected entry?: Partial<Routine.Info>;
+  protected entry?: Routine.Intent;
   protected isFuture: boolean;
+
+  /** 可选伙伴（我星标 且 互相关注）。随 loadData 拉一次，选人时复用不重复请求。 */
+  protected partners: Entity.Option[] = [];
 
   public static readonly sContentMaxLength = 128;
 
-  public constructor(component: any, intent?: Partial<Routine.Info>) {
+  public constructor(component: any, intent?: Routine.Intent) {
     super(component);
 
     this.entry = intent;
@@ -102,7 +111,7 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
     super.release();
   }
 
-  /** 初始化页面数据（同步，无需网络请求） */
+  /** 初始化页面数据。除委托伙伴名单外均为本地装配。 */
   public async loadData(): Promise<number> {
     const entry = this.entry;
     const oldData = this.getData();
@@ -117,6 +126,7 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
 
     detail.value = entry?.detail || '';
     detail.charCount = detail.value?.length || 0;
+
     this.setData(
       {
         loaded: true,
@@ -134,7 +144,23 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
       }
     );
 
+    // 委托入口单独补上：它是可选项，不该为了它拖慢首屏。
+    this.loadPartners();
+
     return Err.Code.OK;
+  }
+
+  /**
+   * 拉取可选伙伴，并补上「叫上谁一起」的入口卡。
+   *
+   * 没有「我星标 且 互相关注」的伙伴时，buildTogetherVM 返回 undefined，
+   * 整块不渲染（不留空态）；拉取失败也当作没有 —— 它不该挡住创建流程。
+   */
+  protected async loadPartners() {
+    const partners = await this.adapter.loadPartners();
+    this.partners = 'number' === typeof partners ? [] : partners;
+    const together = this.adapter.buildTogetherVM(this.partners, this.entry?.delegated);
+    if (together) this.setData({ together: together });
   }
 
   // ---- 事件处理 ----
@@ -163,7 +189,42 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
       this.updateData({ time: this.getData().time });
     } else if (id === 'detail') {
       if (name) this.updateDetailValue(name);
+    } else if (id === 'together') {
+      this.showPartners();
     }
+  }
+
+  /**
+   * 打开伙伴选择弹窗（Choices 的 people 样式：头像 + 名字）。
+   * 名单复用 loadData 时拉到的 partners，不再重新请求。
+   */
+  protected showPartners() {
+    if (!this.partners.length) return;
+
+    const together = this.getData().together;
+    const items = this.adapter.adaptPartnerOptions(this.partners, together?.value);
+    this.getChoices().show(
+      {
+        id: 'together',
+        name: '叫上谁一起',
+        tips: '只显示我星标、且互相关注的伙伴',
+        items: items,
+        limited: 1,
+        style: 'people',
+      },
+      {
+        onChoicesDialogItemTap: (item) => {
+          this.selectPartner(item.id);
+        },
+      }
+    );
+  }
+
+  /** 选定伙伴 / 取消委托（kNoPartner 即取消），只改本地，提交时随任务一起写回 */
+  protected selectPartner(id: string) {
+    const together = this.adapter.buildTogetherVM(this.partners, id);
+    if (!together) return;
+    this.updateData({ together: together });
   }
 
   /** 打开更多分类弹窗（委托 ChoicesUI） */
@@ -342,6 +403,11 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
       duration: mins * 60000,
       planTime: this.formatPlanTime(time.id === 'custom' ? data.time.value!.trim() : time.id),
     };
+    // 委托：没有可选伙伴时整块卡不存在，也就不该带这个字段。
+    // value 为空即「没叫人」，与取消委托的约定值 '0' 一致。
+    if (data.together) {
+      newInfo.delegated = data.together.value || RoutineEditorAdapter.kNoPartner;
+    }
     const entry = this.entry;
     if (!entry?.id) return newInfo;
     // 也支持修改。
