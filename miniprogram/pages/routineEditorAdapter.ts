@@ -74,7 +74,7 @@ export class RoutineEditorAdapter {
   public adaptExamples(category: number, updating = false): Entity.Label[] {
     const config = RoutineAdapter.findConfig(category);
     const texts = config?.examples ? [...config.examples] : [];
-    if (!updating) {
+    if (!updating && config.examples?.length) {
       const cache = RoutineCache.get(category);
       if (cache) {
         texts.splice(0, 0, cache);

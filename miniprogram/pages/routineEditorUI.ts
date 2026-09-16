@@ -67,6 +67,7 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
     this.bindEvent('onInputBlur', this.onInputBlur);
     this.bindEvent('onInputTimePicked', this.onInputTimePicked);
     this.bindEvent('onBottomBarTap', this.onBottomBarTap);
+    this.bindEvent('onInputMenuTap', this.onInputMenuTap);
   }
 
   public static defaultData(): RoutineEditorUI.Data {
@@ -289,6 +290,61 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
     this.commit();
   }
 
+  protected onInputMenuTap(e: WechatMiniprogram.TouchEvent) {
+    const { id, button } = e.currentTarget.dataset;
+    if (id === 'detail') {
+      if (button?.startsWith('footer')) {
+        const examples = this.getDetailExamples();
+        if (examples?.items?.length) {
+          const options: Entity.Option[] = examples.items.map((o) => {
+            return { id: o.id, name: o.name, desc: o.desc };
+          });
+          this.getChoices().show(
+            { id: 'i', name: '提示', items: options, limited: 1, style: 'detailed' },
+            {
+              onChoicesDialogItemTap: (item) => {
+                const detail = this.getData().detail;
+                detail.footer = this.getFooter(item.id);
+                this.setData({ detail });
+              },
+            }
+          );
+        }
+      }
+    }
+  }
+
+  protected getFooter(id?: string): Entity.Label {
+    const examples = this.getDetailExamples();
+    if (examples?.items?.length) {
+      let item: Entity.Hierarchy | undefined;
+      if (!id) {
+        const rand = Math.floor(Math.random() * examples.items.length);
+        item = examples.items[rand];
+      } else {
+        item = Entity.find(examples.items, id).item;
+      }
+      if (item) {
+        return {
+          id: 'footer:' + item.id,
+          name: '例如',
+          desc: item.items?.map((o) => o.name).join(' · ') || '',
+          hint: examples.name || '',
+        };
+      }
+    }
+    return { id: '', name: '' };
+  }
+
+  protected getDetailExamples(): Entity.Hierarchy | undefined {
+    const category = this.getSelectedCategory();
+    if (category && !this.updating()) {
+      const config = RoutineAdapter.findConfig(category);
+      return config?.createExamples;
+    }
+    return undefined;
+  }
+
   protected getSelectedCategory(): number {
     return Utils.ZNumber(this.getData().category.selectedId);
   }
@@ -451,6 +507,7 @@ export class RoutineEditorUI extends MediaInputUI<RoutineEditorUI.Data> {
     detail.disabled = false;
     detail.hint = config?.hint || '';
     detail.items = examples;
+    detail.footer = this.getFooter();
 
     this.updateData({ category: input, detail });
   }

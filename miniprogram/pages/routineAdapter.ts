@@ -687,6 +687,7 @@ export namespace RoutineAdapter {
     hint?: string; // 任务内容提示词。
     /** 各分类的快捷示例提示词 */
     examples?: string[];
+    createExamples?: Entity.Hierarchy;
     finish?: string;
     // 各分类的完成后引导语，可能是多分类的嵌套。
     // 是三层的嵌套
@@ -835,7 +836,80 @@ export namespace RoutineAdapter {
       icon: '/assets/imgs/ic-qa.svg',
       default: true,
       hint: '今天脑子里冒出什么好奇？',
-      examples: ['每日一问', '查一个百科冷知识', '成语接龙'],
+      /**
+       * 三层嵌套，与 finishExamples 同构：
+       *   L1 根     = 折叠入口（不可选）
+       *   L2 角度   = id 有值（可切换）；name = 角度名，desc = 疑问全文
+       *   L3 灵感   = id 为空（不可点、不代填），name = 只读提示（会被 join 成一行，务必短）
+       * 顺序是 coarse→fine 的阶梯：是什么（入门）→ … → 怎么选（进阶），非并列。
+       * 治的是「看了东西，但想不出该问什么」——先辨事实，再质疑，最后收到自己、行动和取舍。
+       */
+      createExamples: {
+        id: '',
+        name: '想不到问什么？试试这些角度',
+        items: [
+          {
+            id: 'fact',
+            name: '是什么',
+            desc: '它到底是怎么回事？',
+            items: [
+              { id: '', name: '读了xx，书里在说什么' },
+              { id: '', name: '这意味着什么' },
+              { id: '', name: '有什么相关联的' },
+            ],
+          },
+          {
+            id: 'why',
+            name: '为什么',
+            desc: '为什么会这样？',
+            items: [
+              { id: '', name: '为什么天会下雨' },
+              { id: '', name: '冰为什么浮起来' },
+              { id: '', name: '为什么有人打呼噜' },
+            ],
+          },
+          {
+            id: 'verify',
+            name: '真的吗',
+            desc: '真的是这样吗？',
+            items: [
+              { id: '', name: '这事有没有例外' },
+              { id: '', name: '这事是真意味着什么' },
+              { id: '', name: '一直都这样吗' },
+            ],
+          },
+          {
+            id: 'relate',
+            name: '和我有关',
+            desc: '这和我有什么关系？',
+            items: [
+              { id: '', name: '看过xx，这和我有什么关系' },
+              { id: '', name: '我身边也有吗' },
+              { id: '', name: '什么时候能用上' },
+            ],
+          },
+          {
+            id: 'action',
+            name: '怎么做',
+            desc: '我能做点什么？',
+            items: [
+              { id: '', name: '知道xx，应该做点什么' },
+              { id: '', name: '我可以先做哪步' },
+              { id: '', name: '换我会怎么办' },
+            ],
+          },
+          {
+            id: 'tradeoff',
+            name: '怎么选',
+            desc: '两边都想要，怎么办？',
+            items: [
+              { id: '', name: '两难问题，先选哪个' },
+              { id: '', name: '能都选吗' },
+              { id: '', name: '不选会怎样' },
+            ],
+          },
+        ],
+      },
       finish: '今天问的哪个问题最烧脑？',
       celebrates: [
         '好奇心又点亮一颗星 ❓',
